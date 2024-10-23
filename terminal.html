@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>TERMINAL</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="UTF-8"> 
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<script type="text/javascript" src="suffix.js"></script>
+	</head>
+	
+	<body>
+		<div id="window" class="parentRow">
+			<div id="tagDisplay" class="parentCol">
+				<div class="tagPair parentCol" id="pair1">
+					<span class="tag tagGry" id="tag1"></span>
+					<span class="tag tagGry" id="tag2"></span>
+				</div>
+				<div class="tagPair parentCol" id="pair2">
+					<span class="tag tagGry" id="tag3"></span>
+					<span class="tag tagGry" id="tag4"></span>
+				</div>
+				<div class="tagPair parentCol" id="pair3">
+					<span class="tag tagGry" id="tag5"></span>
+					<span class="tag tagGry" id="tag6"></span>
+				</div>
+				<div class="tagPair parentCol" id="pair4">
+					<span class="tag tagGry" id="tag7"></span>
+					<span class="tag tagGry" id="tag8"></span>
+				</div>
+				<div class="tagPair parentCol" id="pair5">
+					<span class="tag tagGry" id="tag9"></span>
+					<span class="tag tagGry" id="tag10"></span>
+				</div>
+				<div id="tagtencontainer" class="parentGrid dsegContainer">
+					<span id="tagtenbg" class="childGrid dsegAmb dsegOff centerAlign">~~</span>
+					<span id="tagtens" class="childGrid dsegAmb dsegOn centerAlign">!!</span>
+				</div>
+			</div>
+			<div id="main" class="parentCol">
+				<div id="header" class="">
+					<p id="title" class="rightAlign">TERMINAL</p>
+				</div>
+				<div id="timer" class="parentCol">
+					<div id="stage" class="centerAlign">CRACKING HOST</div>
+					<div id="countdowncontainer" class="parentGrid centerAlign">
+						<span class="childGrid dsegAmb dsegOff">~~:~~.~~</span>
+						<span id="countdown" class="childGrid dsegAmb dsegOn">00:00.00</span>
+					</div>
+				</div>
+				<div id="stats" class="parentCol">
+					<!--
+					<div id="statsname" class="parentCol">
+						<p class="centerAlign"><u>REQUIRED INFORMATION</u></p>
+						<span><label for="handle">Handle<span id="reqstar">*</span>:</label> <input type="text" id="statshandle" name="handle" form="statsForm" required></span>
+						<span class="parentRow"><input type="checkbox" id="maskcheck" name="maskcheck" oninput="toggleRequired()" form="statsForm"> <label for="maskcheck">Use Function: "Mask"</label></span>
+					</div>
+					<button id="statsdropdown" class="dropdown dd_show">
+						<span class="centerAlign"><u>&nabla; SELECT ADDITIONAL FUNCTIONS &nabla;</u></span>
+					</button>
+					<div id="statsmisc" class="ddpanel parentCol">
+						<div id="statsTop" class="parentRow">
+							<div id="statsL" class="">
+								<span class="parentRow"><input type="checkbox" id="wipecheck" name="wipecheck" form="statsForm"> <label for="wipecheck">Wipe Your Tracks</label></span>
+								<span class="parentRow"><input type="checkbox" id="reasscheck" name="reasscheck" form="statsForm"> <label for="reasscheck">Reassign</label></span>
+								<br/>
+								<span class="parentRow"><input type="checkbox" id="bdcheck" name="bdcheck" form="statsForm"> <label for="bdcheck">Backdoor</label></span>
+								<span class="parentRow"><input type="checkbox" id="ibdcheck" name="ibdcheck" form="statsForm"> <label for="ibdcheck">Improved Backdoor</label></span>
+							</div>
+							<div id="statsR" class="">
+								<span class="parentRow"><input type="checkbox" id="brickcheck" name="brickcheck" form="statsForm"> <label for="brickcheck">Brick</label></span>
+								<span class="parentRow"><input type="checkbox" id="riggcheck" name="riggcheck" form="statsForm"> <label for="riggcheck">Rigged</label></span>
+								<span class="parentRow"><input type="checkbox" id="rootcheck" name="rootcheck" form="statsForm"> <label for="rootcheck">Root Device</label></span>
+								<br/>
+							</div>
+						</div>
+						<div id="statsBot" class="">
+							<span class="parentRow"><input type="checkbox" id="dwacheck" name="dwacheck" form="statsForm"> <label for="dwacheck">Dark Web Operator/Merchant</label></span><br/>
+							<label for="repeatrange">Repeat (Rank):</label>
+							<div id="repeatrange" class="parentRow">
+								<span class="parentCol"><label for="repeatradio0" class="centerAlign">0</label><input type="radio" id="repeatradio0" name="repeatradio" form="statsForm" value="0" checked></span>
+								<span class="parentCol"><label for="repeatradio1" class="centerAlign">1</label><input type="radio" id="repeatradio1" name="repeatradio" form="statsForm" value="1"></span>
+								<span class="parentCol"><label for="repeatradio2" class="centerAlign">2</label><input type="radio" id="repeatradio2" name="repeatradio" form="statsForm" value="2"></span>
+								<span class="parentCol"><label for="repeatradio3" class="centerAlign">3</label><input type="radio" id="repeatradio3" name="repeatradio" form="statsForm" value="3"></span>
+								<!--<span class="parentCol"><label for="repeatradio4" class="centerAlign">4</label><input type="radio" id="repeatradio4" name="repeatradio" form="statsForm" value="4"></span>
+								<span class="parentCol"><label for="repeatradio5" class="centerAlign">5</label><input type="radio" id="repeatradio5" name="repeatradio" form="statsForm" value="5"></span>--><!--
+							</div>
+						</div>
+					</div>
+					-->
+					<div id="statsname" class="parentCol">
+						<p id="payload">NO PAYLOAD CONFIGURED<br/><button onclick="window.open('./profile.html','_blank')">Configure Payload Profile</button></p>
+					</div>
+				</div>
+				<div id="termsetup" class="parentCol">
+					<div id="setupreqtags" class="parentCol">
+						<span class="centerAlign">Tags Required For Access:</span>
+						<div id="reqTagContainer" class="parentGrid dsegContainer">
+							<span id="reqTagsBG" class="childGrid dsegOffBlend centerAlign">~~</span>
+							<span id="reqTags" class="childGrid dsegOnBlend centerAlign">00</span>
+						</div>
+					</div>
+					<div id="setuppaytags" class="parentCol">
+						<span class="centerAlign">Tags Uploaded from Payload:</span>
+						<div id="payTagContainer" class="parentGrid dsegContainer">
+							<span id="payTagsBG" class="childGrid dsegAmb dsegOff centerAlign">~~</span>
+							<span id="payTags" class="childGrid dsegAmb dsegOn centerAlign">00</span>
+						</div>
+						<div id="payHack" class="centerAlign">[ Tags from Hacking Func: <span id="payHackTags">00</span> ]</div>
+						<div id="payREx" class="centerAlign">[ Tags from Root Exploit: +2 ]</div>
+					</div>
+					<div id="setupmaxtags" class="parentCol">
+						<span class="centerAlign">Extra Tags?</span>
+						<div id="tagselector" class="parentRow centerline">
+							<!-- - # + -->
+							<button id="setupTagMinus" onMouseUp="setupExtraTags(-1)">-</button>
+							<div id="extTagContainer" class="parentGrid dsegContainer">
+								<span id="extTagsBG" class="childGrid dsegBlu dsegOff centerAlign">~~</span>
+								<span id="extTags" class="childGrid dsegBlu dsegOn centerAlign">00</span>
+							</div>
+							<button id="setupTagPlus" onMouseUp="setupExtraTags(1)">+</button>
+						</div>
+					</div>
+					<div id="setupremtags" class="parentCol">
+						<span class="centerAlign">Total Remaining Tags After Access:</span>
+						<div id="remTagContainer" class="parentGrid dsegContainer">
+							<span id="remTagsBG" class="childGrid dsegBlu dsegOff centerAlign">~~</span>
+							<span id="remTags" class="childGrid dsegBlu dsegOn centerAlign">00</span>
+						</div>
+					</div>
+					<form id="statsForm" class="parentCol" onSubmit="statSubmit(event)">
+						<button id="readyButton" type="submit" form="statsForm" disabled>Access Terminal</button>
+						<!--<p>Press "Ready" when you've selected your maximum amount of tags for this session. The terminal will become accessed once both the Ready button has been selected, and the timer has expired.</p>-->
+					</form>
+				</div>
+				<div id="hackstats" class="parentCol">
+					<div id="hacklog" class="parentCol">
+						<div>TERMINAL ACCESS LOG:</div>
+						<ul id="accessLog"></ul>
+					</div>
+				</div><!--
+				<div id="hackabilities" class="parentCol">
+					<ul id="userlog" class="userouterlist">
+						<li id="userloglabel">ACCESS LOG ACTIONS:</li>
+						<ul id="userloglist" class="userinnerlist">
+							<li id="userlogwipe">Wipe Your Tracks [1 Tag]</li>
+							<li id="userlogreass">Reassign [2 Tags]</li>
+						</ul>
+					</ul>
+					<ul id="userpriv" class="userouterlist">
+						<li id="userprivlabel">ACCESS PRIVILEGES:</li>
+						<ul id="userprivlist" class="userinnerlist">
+							<li id="userprivbd"><span id="uaibd">Improved&nbsp;</span>Backdoor</li>
+							<li id="userprivrepeat">Repeat&nbsp;</li>
+							<li id="userprivdwa">Dark Web Access</li>
+							<li id="userprivrex">Root Exploit</li>
+						</ul>
+					</ul>
+					<ul id="userabil" class="userouterlist">
+						<li id="userabillabel">ADDITIONAL ABILITIES:</li>
+						<ul id="userabillist" class="userinnerlist">
+							<li id="userabilbrick">Brick [4 Tags]</li>
+							<li id="userabilrigg">Rigged [6 Tags]</li>
+							<li id="userabilroot">Root Device [6 Tags]</li>
+						</ul>
+					</ul>
+				</div>-->
+				<div id="tabcontainer">
+					<div class="tab parentRow">
+						<button class="tablinks active" onclick="openTab(event,'filesTab')">FILES</button>
+						<button class="tablinks" onclick="openTab(event,'dwTab')">DARK WEB</button>
+						<button class="tablinks" onclick="openTab(event,'abilTab')">ABILITIES</button>
+						<button class="tablinks" onclick="openTab(event,'itemsTab')">ITEMS</button>
+					</div>
+	<!-- FILES -->	<div id="filesTab" class="tabcontent" style="display:block">
+						<div id="hackfiles" class="gridParent">
+						</div>
+					</div>
+	<!-- DARK WEB--><div id="dwTab" class="tabcontent">
+						<div id="hackdw" class="gridParent">
+						</div>
+					</div>
+    <!--ABILITIES--><div id="abilTab" class="tabcontent">
+						<div id="hackabil" class="gridParent">
+						</div>
+					</div>
+	<!-- ITEMS -->	<div id="itemsTab" class="tabcontent">
+						<div id="hackitems" class="gridParent">
+						</div>
+					</div>
+				</div>
+				<div id="footer" class="">
+					<p class="rightAlign">CPU FOOTER</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

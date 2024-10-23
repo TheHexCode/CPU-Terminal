@@ -1,0 +1,41 @@
+{
+	"name": "TERMINAL DORM",
+	"type": "terminal",
+	"access": 2,
+	"files":
+	[
+		{
+			"type": "data",
+			"name": "X Credits Paydata",
+			"access": 0,
+			"modify": 1
+		},
+		{
+			"type": "trap",
+			"name": "Trap! 3 Strikes to Torso!",
+			"access": 1,
+			"modify": 2
+		},
+		{
+			"type": "data",
+			"name": "Target Data",
+			"access": 2,
+			"modify": 3
+		},
+		{
+			"type": "ice",
+			"name": "EXAMPLE ICE",
+			"access": 3,
+			"modify": 4
+		}
+	],
+	"darkweb":
+	[
+		{
+			"name": "DW - X Credits Paydata",
+			"type": "data",
+			"access": 4,
+			"modify": 5
+		}
+	]
+}
