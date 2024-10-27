@@ -4,31 +4,31 @@
 		<title>PAYLOAD CUSTOMIZATION</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta charset="UTF-8"> 
-		<link rel="stylesheet" type="text/css" href="prostyle.css"/>
+		<!--<link rel="stylesheet" type="text/css" href="prostyle.css"/>-->
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<script type="text/javascript" src="payload.js"></script>
+		<!--<script type="text/javascript" src="payload.js"></script>-->
 	</head>
 	
 	<body>
-		<div id="window" class="parentCol">
-			<div id="previewTitle" class="centerAlign"><p class="pageTitle">PAYLOAD PREVIEW</p></div>
-			<div id="previewDefault" class="gridDefault">
-				<div id="defLabel">
-					<label id="handleLabel" for="handle">Default Access Log Handle:<span class="reqstar">*</span></label>
+		<div>
+			<div>PAYLOAD PREVIEW</div>
+			<div>
+				<div>
+					<label for="handle">Default Access Log Handle:*</label>
 				</div>
-				<div id="defInput">
-					<input type="text" id="statsHandle" name="handle" form="statsForm" required></input>
+				<div>
+					<input type="text" name="handle" form="statsForm" required></input>
 				</div>
-				<div id="defMaskLabel">
-					<label id="maskLabel" for="mask">Default Masked Handle:</label>
+				<div>
+					<label for="mask">Default Masked Handle:</label>
 				</div>
-				<div id="defMaskInput">
-					<input type="text" id="maskHandle" name="mask" form="statsForm" placeholder="Leave blank for anonymous log entry"></input>
+				<div>
+					<input type="text" name="mask" form="statsForm" placeholder="Leave blank for anonymous log entry"></input>
 				</div>
-				<div id="defPrimary">
-					<label id="primaryLabel" for="primaryRole">Primary Role:</label>
-					<select id="statsPrimary" name="primaryRole" onchange="roleChange()">
+				<div>
+					<label for="primaryRole">Primary Role:</label>
+					<select name="primaryRole">
 						<option value="none">-Select-</option>
 						<option value="bastion">Bastion</option>           <!-- bast -->
 						<option value="dissimulator">Dissimulator</option> <!-- diss -->
@@ -38,9 +38,9 @@
 						<option value="other">Other</option>               <!-- stnd -->
 					</select>
 				</div>
-				<div id="defSecondary">
-					<label id="secondaryLabel" for="secondaryRole">Secondary Role:</label>
-					<select id="statsSecondary" name="secondaryRole" onchange="roleChange()">
+				<div>
+					<label for="secondaryRole">Secondary Role:</label>
+					<select name="secondaryRole">
 						<option value="none">-Select-</option>
 						<option value="bastion">Bastion</option>
 						<option value="dissimulator">Dissimulator</option>
@@ -51,190 +51,331 @@
 					</select>
 				</div>
 			</div>
-			<div id="tabcontainer">
-				<div class="tab">
-					<button class="tablinks active" onclick="openTab(event,'stndTab')">STANDARD</button>
-					<button id="priButton" class="tablinks" onclick="openTab(event,'priTab')">PRIMARY</button>
-					<button id="secButton" class="tablinks" onclick="openTab(event,'secTab')">SECONDARY</button>
-					<button class="tablinks" onclick="openTab(event,'itemTab')">ITEM</button>
+			<div>
+				<div>
+					<button>STANDARD</button>
+					<button>PRIMARY</button>
+					<button>SECONDARY</button>
+					<button>ITEM</button>
 				</div>
-<!-- STANDARD--><div id="stndTab" class="tabcontent" style="display:block">
-					<div id="statHack" class="statBlock parentCol">
-						<div id="hackStnd" class="statItem">
-							<p class="centerAlign"><u>HACKING EXPERTISE</u></p>
-							<span class="parentRow"><input type="checkbox" id="stnd_hack_check" name="stnd_hack_check" form="statsForm" class="standard" data-skill="hack" data-value="1"> <label for="stnd_hack_check">Tier 3 - Hacking I</label></span>
+<!-- STANDARD--><div>
+					<div>
+						<div>
+							<p><u>HACKING EXPERTISE</u></p>
+							<div>
+								<input type="checkbox" name="stnd_hack_check" form="statsForm" data-skill="hack" data-value="1">
+								<label for="stnd_hack_check">Tier 3 - Hacking I</label>
+							</div>
 						</div>
 					</div>
 				</div>
-<!-- PRIMARY --><div id="priTab" class="tabcontent">
-					<div id="pStatNone" class="statBlock priStat hiddenStat none parentCol">
-						<p class="centerAlign"><u>NO PRIMARY ROLE SELECTED</u></p>
+<!-- PRIMARY --><div>
+					<div>
+						<p><u>NO PRIMARY ROLE SELECTED</u></p>
 						<p>Please select a Primary Role in the drop-down above, even if it's Other.</p>
 					</div>
-					<div id="pStatOther" class="statBlock priStat hiddenStat other parentCol">
-						<p class="centerAlign"><u>OTHER PRIMARY ROLE SELECTED</u></p>
+					<div>
+						<p><u>OTHER PRIMARY ROLE SELECTED</u></p>
 						<p>Your Primary Role is not one which provides any hacking benefits. If you have a Secondary Role, make sure to select them in the drop-down above, or utilize the Standard Role for your payload.</p>
 					</div>
-					<div id="pStatHack" class="statBlock priStat hiddenStat bastion dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>HACKING EXPERTISE</u></p>
-						<div id="pHackBast" class="statItem priStat hiddenStat bastion parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_bast_hack_check_1" name="bast_hack_check_1" form="statsForm" class="bastion" data-skill="hack" data-value="1"> <label for="p_bast_hack_check_1">Tier 2 - Hacking I</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_bast_hack_check_2" name="bast_hack_check_2" form="statsForm" class="bastion" data-skill="hack" data-value="2"> <label for="p_bast_hack_check_2">Tier 4 - Hacking II</label></span>
+					<div>
+						<p><u>HACKING EXPERTISE</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="bast_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+								<label for="p_bast_hack_check_1">Tier 2 - Hacking I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="bast_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+								<label for="p_bast_hack_check_2">Tier 4 - Hacking II</label>
+							</div>
 						</div>
-						<div id="pHackDiss" class="statItem priStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_diss_hack_check_1" name="diss_hack_check_1" form="statsForm" class="dissimulator" data-skill="hack" data-value="1"> <label for="p_diss_hack_check_1">Tier 1 - Hacking I</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_diss_hack_check_2" name="diss_hack_check_2" form="statsForm" class="dissimulator" data-skill="hack" data-value="1"> <label for="p_diss_hack_check_2">Tier 2 - Hacking I</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+								<label for="p_diss_hack_check_1">Tier 1 - Hacking I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_hack_check_2" form="statsForm" data-skill="hack" data-value="1">
+								<label for="p_diss_hack_check_2">Tier 2 - Hacking I</label>
+							</div>
 						</div>
-						<div id="pHackSlip" class="statItem priStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_slip_hack_check_1" name="slip_hack_check_1" form="statsForm" class="slipstream" data-skill="hack" data-value="1"> <label for="p_slip_hack_check_1">Tier 2 - Hacking I</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_slip_hack_check_2" name="slip_hack_check_2" form="statsForm" class="slipstream" data-skill="hack" data-value="2"> <label for="p_slip_hack_check_2">Tier 5 - Hacking II</label></span>
-						</div>
-					</div>
-					<div id="pStatLog" class="statBlock priStat hiddenStat dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>ACCESS LOG MANIPULATION</u></p>
-						<div id="pLogDiss" class="statItem priStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_diss_wipe_check" name="diss_wipe_check" form="statsForm" class="dissimulator" data-skill="wipe"> <label for="p_diss_wipe_check">Tier 3 - Wipe Your Tracks</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_diss_reass_check" name="diss_reass_check" form="statsForm" class="dissimulator" data-skill="reass"> <label for="p_diss_reass_check">Tier 4 - Reassign</label></span>
-						</div>
-						<div id="pLogSlip" class="statItem priStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_slip_wipe_check" name="slip_wipe_check" form="statsForm" class="slipstream" data-skill="wipe"> <label for="p_slip_wipe_check">Tier 1 - Wipe Your Tracks</label></span>
-							<span class="parentRow" onMouseUp="checkMask()"><input type="checkbox" id="p_slip_mask_check" name="slip_mask_check" form="statsForm" class="slipstream" data-skill="mask"> <label for="p_slip_mask_check">Tier 4 - Mask</label></span>
-						</div>
-					</div>
-					<div id="pStatBD" class="statBlock priStat hiddenStat dissimulator parentCol">
-						<p class="centerAlign"><u>BACKDOOR EXPLOITATION</u></p>
-						<div id="pBdDiss" class="statItem priStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_diss_bd_check" name="diss_bd_check" form="statsForm" class="dissimulator" data-skill="bd"> <label for="p_diss_bd_check">Tier 2 - Backdoor</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_diss_ibd_check" name="diss_ibd_check" form="statsForm" class="dissimulator" data-skill="ibd"> <label for="p_diss_ibd_check">Tier 4 - Improved Backdoor</label></span>
-						</div>
-					</div>
-					<div id="pStatPass" class="statBlock priStat hiddenStat dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>PASSIVE ABILITIES</u></p>
-						<div id="pPassDiss" class="statItem priStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_diss_repeat_check" name="diss_repeat_check" form="statsForm" class="dissimulator" data-skill="repeat" data-value="1"> <label for="p_diss_repeat_check">Tier 2 - Repeat I</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_diss_rex_check" name="diss_rex_check" form="statsForm" class="dissimulator" data-skill="rex"> <label for="p_diss_rex_check">Tier 5 - Root Exploit</label></span>
-						</div>
-						<div id="pPassSlip" class="statItem priStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_slip_repeat_check" name="slip_repeat_check" form="statsForm" class="slipstream" data-skill="repeat" data-value="2"> <label for="p_slip_repeat_check">Tier 3 - Repeat II</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+								<label for="p_slip_hack_check_1">Tier 2 - Hacking I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="slip_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+								<label for="p_slip_hack_check_2">Tier 5 - Hacking II</label>
+							</div>
 						</div>
 					</div>
-					<div id="pStatAct" class="statBlock priStat hiddenStat dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>ACTIVE ABILITIES</u></p>
-						<div id="pActDiss" class="statItem priStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_diss_brick_check" name="diss_brick_check" form="statsForm" class="dissimulator" data-skill="brick"> <label for="p_diss_brick_check">Tier 4 - Brick</label></span>
-							<span class="parentRow"><input type="checkbox" id="p_diss_rigg_check" name="diss_rigg_check" form="statsForm" class="dissimulator" data-skill="rigg"> <label for="p_diss_rigg_check">Tier 5 - Rigged</label></span>
+					<div>
+						<p><u>ACCESS LOG MANIPULATION</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_wipe_check" form="statsForm" data-skill="wipe">
+								<label for="p_diss_wipe_check">Tier 3 - Wipe Your Tracks</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_reass_check" form="statsForm" data-skill="reass">
+								<label for="p_diss_reass_check">Tier 4 - Reassign</label>
+							</div>
 						</div>
-						<div id="pActSlip" class="statItem priStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_slip_root_check" name="slip_root_check" form="statsForm" class="slipstream" data-skill="root"> <label for="p_slip_root_check">Tier 5 - Root Device</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_wipe_check" form="statsForm" data-skill="wipe">
+								<label for="p_slip_wipe_check">Tier 1 - Wipe Your Tracks</label>
+							</div>
+							<div>
+								<input type="checkbox" name="slip_mask_check" form="statsForm" data-skill="mask">
+								<label for="p_slip_mask_check">Tier 4 - Mask</label>
+							</div>
 						</div>
 					</div>
-					<div id="pStatDW" class="statBlock priStat hiddenStat bastion mastermind scoundrel slipstream parentCol">
-						<p class="centerAlign"><u>DARK WEB CONNECTIONS</u></p>
-						<div id="pDwBast" class="statItem priStat hiddenStat bastion parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_bast_dwa_check" name="bast_dwa_check" form="statsForm" class="bastion" data-skill="dwa"> <label for="p_bast_dwa_check">Tier 3 - Dark Web Operator</label></span>
+					<div>
+						<p><u>BACKDOOR EXPLOITATION</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_bd_check" form="statsForm" data-skill="bd">
+								<label for="p_diss_bd_check">Tier 2 - Backdoor</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_ibd_check" form="statsForm" data-skill="ibd">
+								<label for="p_diss_ibd_check">Tier 4 - Improved Backdoor</label>
+							</div>
 						</div>
-						<div id="pDwMast" class="statItem priStat hiddenStat mastermind parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_mast_dwa_check" name="mast_dwa_check" form="statsForm" class="mastermind" data-skill="dwa"> <label for="p_mast_dwa_check">Tier 3 - Dark Web Merchant</label></span>
+					</div>
+					<div>
+						<p><u>PASSIVE ABILITIES</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_repeat_check" form="statsForm" data-skill="repeat" data-value="1">
+								<label for="p_diss_repeat_check">Tier 2 - Repeat I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_rex_check" form="statsForm" data-skill="rex">
+								<label for="p_diss_rex_check">Tier 5 - Root Exploit</label>
+							</div>
 						</div>
-						<div id="pDwScou" class="statItem priStat hiddenStat scoundrel parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_scnd_dwa_check" name="scnd_dwa_check" form="statsForm" class="scoundrel" data-skill="dwa"> <label for="p_scnd_dwa_check">Tier 4 - Dark Web Operator</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_repeat_check" form="statsForm" data-skill="repeat" data-value="2">
+								<label for="p_slip_repeat_check">Tier 3 - Repeat II</label>
+							</div>
 						</div>
-						<div id="pDwSlip" class="statItem priStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="p_slip_dwa_check" name="slip_dwa_check" form="statsForm" class="slipstream" data-skill="dwa"> <label for="p_slip_dwa_check">Tier 3 - Dark Web Operator</label></span>
+					</div>
+					<div>
+						<p><u>ACTIVE ABILITIES</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_brick_check" form="statsForm" data-skill="brick">
+								<label for="p_diss_brick_check">Tier 4 - Brick</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_rigg_check" form="statsForm" data-skill="rigg">
+								<label for="p_diss_rigg_check">Tier 5 - Rigged</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_root_check" form="statsForm" data-skill="root">
+								<label for="p_slip_root_check">Tier 5 - Root Device</label>
+							</div>
+						</div>
+					</div>
+					<div>
+						<p><u>DARK WEB CONNECTIONS</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="bast_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="p_bast_dwa_check">Tier 3 - Dark Web Operator</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="mast_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="p_mast_dwa_check">Tier 3 - Dark Web Merchant</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="scnd_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="p_scnd_dwa_check">Tier 4 - Dark Web Operator</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="p_slip_dwa_check">Tier 3 - Dark Web Operator</label>
+							</div>
 						</div>
 					</div>
 				</div>
-<!--SECONDARY--><div id="secTab" class="tabcontent">
-					<div id="sStatNone" class="statBlock secStat hiddenStat none parentCol">
-						<p class="centerAlign"><u>NO SECONDARY ROLE SELECTED</u></p>
+<!--SECONDARY--><div>
+					<div>
+						<p><u>NO SECONDARY ROLE SELECTED</u></p>
 						<p>If you have a Secondary Role, please select it in the drop-down above. Otherwise, if you do not have a Secondary Role, this text is what you should expect to see.</p>
 					</div>
-					<div id="sStatOther" class="statBlock secStat hiddenStat other parentCol">
-						<p class="centerAlign"><u>OTHER SECONDARY ROLE SELECTED</u></p>
+					<div>
+						<p><u>OTHER SECONDARY ROLE SELECTED</u></p>
 						<p>Your Secondary Role is not one which provides any hacking benefits. You'll have to rely on your Primary Role or the Standard Role for your payload.</p>
 					</div>
-					<div id="sStatHack" class="statBlock secStat hiddenStat bastion dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>HACKING EXPERTISE</u></p>
-						<div id="sHackBast" class="statItem secStat hiddenStat bastion parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_bast_hack_check_1" name="bast_hack_check_1" form="statsForm" class="bastion" data-skill="hack" data-value="1"> <label for="s_bast_hack_check_1">Tier 2 - Hacking I</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_bast_hack_check_2" name="bast_hack_check_2" form="statsForm" class="bastion" data-skill="hack" data-value="2"> <label for="s_bast_hack_check_2">Tier 4 - Hacking II</label></span>
+					<div>
+						<p><u>HACKING EXPERTISE</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="bast_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+								<label for="s_bast_hack_check_1">Tier 2 - Hacking I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="bast_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+								<label for="s_bast_hack_check_2">Tier 4 - Hacking II</label>
+							</div>
 						</div>
-						<div id="sHackDiss" class="statItem secStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_diss_hack_check_1" name="diss_hack_check_1" form="statsForm" class="dissimulator" data-skill="hack" data-value="1"> <label for="s_diss_hack_check_1">Tier 1 - Hacking I</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_diss_hack_check_2" name="diss_hack_check_2" form="statsForm" class="dissimulator" data-skill="hack" data-value="1"> <label for="s_diss_hack_check_2">Tier 2 - Hacking I</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+								<label for="s_diss_hack_check_1">Tier 1 - Hacking I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_hack_check_2" form="statsForm" data-skill="hack" data-value="1">
+								<label for="s_diss_hack_check_2">Tier 2 - Hacking I</label>
+							</div>
 						</div>
-						<div id="sHackSlip" class="statItem secStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_slip_hack_check_1" name="slip_hack_check_1" form="statsForm" class="slipstream" data-skill="hack" data-value="1"> <label for="s_slip_hack_check_1">Tier 2 - Hacking I</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_slip_hack_check_2" name="slip_hack_check_2" form="statsForm" class="slipstream" data-skill="hack" data-value="2"> <label for="s_slip_hack_check_2">Tier 5 - Hacking II</label></span>
-						</div>
-					</div>
-					<div id="sStatLog" class="statBlock secStat hiddenStat dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>ACCESS LOG MANIPULATION</u></p>
-						<div id="sLogDiss" class="statItem secStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_diss_wipe_check" name="diss_wipe_check" form="statsForm" class="dissimulator" data-skill="wipe"> <label for="s_diss_wipe_check">Tier 3 - Wipe Your Tracks</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_diss_reass_check" name="diss_reass_check" form="statsForm" class="dissimulator" data-skill="reass"> <label for="s_diss_reass_check">Tier 4 - Reassign</label></span>
-						</div>
-						<div id="sLogSlip" class="statItem secStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_slip_wipe_check" name="slip_wipe_check" form="statsForm" class="slipstream" data-skill="wipe"> <label for="s_slip_wipe_check">Tier 1 - Wipe Your Tracks</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_slip_mask_check" name="slip_mask_check" form="statsForm" class="slipstream" data-skill="mask"> <label for="s_slip_mask_check">Tier 4 - Mask</label></span>
-						</div>
-					</div>
-					<div id="sStatBD" class="statBlock secStat hiddenStat dissimulator parentCol">
-						<p class="centerAlign"><u>BACKDOOR EXPLOITATION</u></p>
-						<div id="sBdDiss" class="statItem secStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_diss_bd_check" name="diss_bd_check" form="statsForm" class="dissimulator" data-skill="bd"> <label for="s_diss_bd_check">Tier 2 - Backdoor</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_diss_ibd_check" name="diss_ibd_check" form="statsForm" class="dissimulator" data-skill="ibd"> <label for="s_diss_ibd_check">Tier 4 - Improved Backdoor</label></span>
-						</div>
-					</div>
-					<div id="sStatPass" class="statBlock secStat hiddenStat dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>PASSIVE ABILITIES</u></p>
-						<div id="sPassDiss" class="statItem secStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_diss_repeat_check" name="diss_repeat_check" form="statsForm" class="dissimulator" data-skill="repeat" data-value="1"> <label for="s_diss_repeat_check">Tier 2 - Repeat I</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_diss_rex_check" name="diss_rex_check" form="statsForm" class="dissimulator" data-skill="rex"> <label for="s_diss_rex_check">Tier 5 - Root Exploit</label></span>
-						</div>
-						<div id="sPassSlip" class="statItem secStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_slip_repeat_check" name="slip_repeat_check" form="statsForm" class="slipstream" data-skill="repeat" data-value="2"> <label for="s_slip_repeat_check">Tier 3 - Repeat II</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+								<label for="s_slip_hack_check_1">Tier 2 - Hacking I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="slip_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+								<label for="s_slip_hack_check_2">Tier 5 - Hacking II</label>
+							</div>
 						</div>
 					</div>
-					<div id="sStatAct" class="statBlock secStat hiddenStat dissimulator slipstream parentCol">
-						<p class="centerAlign"><u>ACTIVE ABILITIES</u></p>
-						<div id="sActDiss" class="statItem secStat hiddenStat dissimulator parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_diss_brick_check" name="diss_brick_check" form="statsForm" class="dissimulator" data-skill="brick"> <label for="s_diss_brick_check">Tier 4 - Brick</label></span>
-							<span class="parentRow"><input type="checkbox" id="s_diss_rigg_check" name="diss_rigg_check" form="statsForm" class="dissimulator" data-skill="rigg"> <label for="s_diss_rigg_check">Tier 5 - Rigged</label></span>
+					<div>
+						<p><u>ACCESS LOG MANIPULATION</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_wipe_check" form="statsForm" data-skill="wipe">
+								<label for="s_diss_wipe_check">Tier 3 - Wipe Your Tracks</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_reass_check" form="statsForm" data-skill="reass">
+								<label for="s_diss_reass_check">Tier 4 - Reassign</label>
+							</div>
 						</div>
-						<div id="sActSlip" class="statItem secStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_slip_root_check" name="slip_root_check" form="statsForm" class="slipstream" data-skill="root"> <label for="s_slip_root_check">Tier 5 - Root Device</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_wipe_check" form="statsForm" data-skill="wipe">
+								<label for="s_slip_wipe_check">Tier 1 - Wipe Your Tracks</label>
+							</div>
+							<div>
+								<input type="checkbox" name="slip_mask_check" form="statsForm" data-skill="mask">
+								<label for="s_slip_mask_check">Tier 4 - Mask</label>
+							</div>
 						</div>
 					</div>
-					<div id="sStatDW" class="statBlock secStat hiddenStat bastion mastermind scoundrel slipstream parentCol">
-						<p class="centerAlign"><u>DARK WEB CONNECTIONS</u></p>
-						<div id="sDwBast" class="statItem secStat hiddenStat bastion parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_bast_dwa_check" name="bast_dwa_check" form="statsForm" class="bastion" data-skill="dwa"> <label for="s_bast_dwa_check">Tier 3 - Dark Web Operator</label></span>
+					<div>
+						<p><u>BACKDOOR EXPLOITATION</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_bd_check" form="statsForm" data-skill="bd">
+								<label for="s_diss_bd_check">Tier 2 - Backdoor</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_ibd_check" form="statsForm" data-skill="ibd">
+								<label for="s_diss_ibd_check">Tier 4 - Improved Backdoor</label>
+							</div>
 						</div>
-						<div id="sDwMast" class="statItem secStat hiddenStat mastermind parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_mast_dwa_check" name="mast_dwa_check" form="statsForm" class="mastermind" data-skill="dwa"> <label for="s_mast_dwa_check">Tier 3 - Dark Web Merchant</label></span>
+					</div>
+					<div>
+						<p><u>PASSIVE ABILITIES</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_repeat_check" form="statsForm" data-skill="repeat" data-value="1">
+								<label for="s_diss_repeat_check">Tier 2 - Repeat I</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_rex_check" form="statsForm" data-skill="rex">
+								<label for="s_diss_rex_check">Tier 5 - Root Exploit</label>
+							</div>
 						</div>
-						<div id="sDwScou" class="statItem secStat hiddenStat scoundrel parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_scnd_dwa_check" name="scnd_dwa_check" form="statsForm" class="scoundrel" data-skill="dwa"> <label for="s_scnd_dwa_check">Tier 4 - Dark Web Operator</label></span>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_repeat_check" form="statsForm" data-skill="repeat" data-value="2">
+								<label for="s_slip_repeat_check">Tier 3 - Repeat II</label>
+							</div>
 						</div>
-						<div id="sDwSlip" class="statItem secStat hiddenStat slipstream parentCol">
-							<span class="parentRow"><input type="checkbox" id="s_slip_dwa_check" name="slip_dwa_check" form="statsForm" class="slipstream" data-skill="dwa"> <label for="s_slip_dwa_check">Tier 3 - Dark Web Operator</label></span>
+					</div>
+					<div>
+						<p><u>ACTIVE ABILITIES</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="diss_brick_check" form="statsForm" data-skill="brick">
+								<label for="s_diss_brick_check">Tier 4 - Brick</label>
+							</div>
+							<div>
+								<input type="checkbox" name="diss_rigg_check" form="statsForm" data-skill="rigg">
+								<label for="s_diss_rigg_check">Tier 5 - Rigged</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_root_check" form="statsForm" data-skill="root">
+								<label for="s_slip_root_check">Tier 5 - Root Device</label>
+							</div>
+						</div>
+					</div>
+					<div>
+						<p><u>DARK WEB CONNECTIONS</u></p>
+						<div>
+							<div>
+								<input type="checkbox" name="bast_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="s_bast_dwa_check">Tier 3 - Dark Web Operator</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="mast_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="s_mast_dwa_check">Tier 3 - Dark Web Merchant</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="scnd_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="s_scnd_dwa_check">Tier 4 - Dark Web Operator</label>
+							</div>
+						</div>
+						<div>
+							<div>
+								<input type="checkbox" name="slip_dwa_check" form="statsForm" data-skill="dwa">
+								<label for="s_slip_dwa_check">Tier 3 - Dark Web Operator</label>
+							</div>
 						</div>
 					</div>
 				</div>
-<!--  ITEMS  --><div id="itemTab" class="tabcontent">
-					<p>ITEMS</p>
+<!--  ITEMS  --><div>
+					<div>
+						<p><u>CYBERDECKS</u></p>
+						<div>
+							<input type="checkbox" name="item_deck_basic_check" form="statsForm">
+							<label for="item_deck_basic_check">Basic Cyberdeck</label>
+						</div>
+					</div>
 				</div>
 			</div>
 			
-			<div id="saveState" class="parentRow">
+			<div>
 				<span>SAVED!</span>
-				<form id="statsForm" onSubmit="statSubmit(event)">
-					<button id="readyButton" type="submit" form="statsForm">SAVE PAYLOAD DATA TO PROFILE</button>
+				<form id="statsForm">
+					<button type="submit" form="statsForm">SAVE PAYLOAD DATA TO PROFILE</button>
 				</form>
 			</div>
-			<div id="footer" class="">
-				<p class="rightAlign">CPU FOOTER</p>
+			<div>
+				<p>CPU FOOTER</p>
 			</div>
 		</div>
 	</body>
