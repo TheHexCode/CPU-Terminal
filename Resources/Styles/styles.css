@@ -160,11 +160,10 @@ footer {
 .tags {
     display: inline-flex;
     flex-flow: column nowrap;
-    width: clamp(3rem, 3.5rem, 4rem);
+    width: clamp(3rem, 3.5rem, 3rem);
     height: auto;
     align-items: stretch;
     justify-content: space-between;
-    padding: 0.5rem 0;
     gap: 0.5rem
 }
 
