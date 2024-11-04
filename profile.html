@@ -15,43 +15,45 @@
 				<h1>PAYLOAD CUSTOMIZATION</h1>
 				<section class="options">
 					<h2>PAYLOAD PREVIEW</h2>
-					<div>
-						<label for="handle">Default Access Log Handle:*</label>
-						<input type="text" id="handle" form="statsForm" required></input>
-					</div>
-					<div>
-						<label for="mask">Default Masked Handle:</label>
-						<input type="text" id="mask" form="statsForm" placeholder="Leave blank for anonymous log entry"></input>
-					</div>
-					<div>
-						<label for="primaryRole">Primary Role:</label>
-						<select id="primaryRole">
-							<option value="none">-Select-</option>
-							<option value="bastion">Bastion</option>           <!-- bast -->
-							<option value="dissimulator">Dissimulator</option> <!-- diss -->
-							<option value="mastermind">Mastermind</option>     <!-- mast -->
-							<option value="scoundrel">Scoundrel</option>       <!-- scnd -->
-							<option value="slipstream">Slipstream</option>     <!-- slip -->
-							<option value="other">Other</option>               <!-- stnd -->
-						</select>
-					</div>
-					<div>
-						<label for="secondaryRole">Secondary Role:</label>
-						<select id="secondaryRole">
-							<option value="none">-Select-</option>
-							<option value="bastion">Bastion</option>
-							<option value="dissimulator">Dissimulator</option>
-							<option value="mastermind">Mastermind</option>
-							<option value="scoundrel">Scoundrel</option>
-							<option value="slipstream">Slipstream</option>
-							<option value="other">Other</option>
-						</select>
-					</div>
-					<div>
-						<button>STANDARD</button>
-						<button>PRIMARY</button>
-						<button>SECONDARY</button>
-						<button>ITEM</button>
+					<div class="group">
+						<div>
+							<label for="handle">Default Access Log Handle:*</label>
+							<input type="text" id="handle" form="statsForm" required></input>
+						</div>
+						<div>
+							<label for="mask">Default Masked Handle:</label>
+							<input type="text" id="mask" form="statsForm" placeholder="Leave blank for anonymous log entry"></input>
+						</div>
+						<div>
+							<label for="primaryRole">Primary Role:</label>
+							<select id="primaryRole">
+								<option value="none">-Select-</option>
+								<option value="bastion">Bastion</option>           <!-- bast -->
+								<option value="dissimulator">Dissimulator</option> <!-- diss -->
+								<option value="mastermind">Mastermind</option>     <!-- mast -->
+								<option value="scoundrel">Scoundrel</option>       <!-- scnd -->
+								<option value="slipstream">Slipstream</option>     <!-- slip -->
+								<option value="other">Other</option>               <!-- stnd -->
+							</select>
+						</div>
+						<div>
+							<label for="secondaryRole">Secondary Role:</label>
+							<select id="secondaryRole">
+								<option value="none">-Select-</option>
+								<option value="bastion">Bastion</option>
+								<option value="dissimulator">Dissimulator</option>
+								<option value="mastermind">Mastermind</option>
+								<option value="scoundrel">Scoundrel</option>
+								<option value="slipstream">Slipstream</option>
+								<option value="other">Other</option>
+							</select>
+						</div>
+						<div>
+							<button>STANDARD</button>
+							<button>PRIMARY</button>
+							<button>SECONDARY</button>
+							<button>ITEM</button>
+						</div>
 					</div>
 				</section>
 	<!-- STANDARD--><section class="options">
@@ -334,13 +336,14 @@
 							</div>
 						</section>
 					</div>
-				</div>
+				
 				<div>
 					<span>SAVED!</span>
 					<form id="statsForm">
 						<button type="submit" form="statsForm">SAVE PAYLOAD DATA TO PROFILE</button>
 					</form>
 				</div>
+			</div>
 				<footer>
 					<span>CPU FOOTER</span>
 				</footer>
