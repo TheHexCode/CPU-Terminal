@@ -1,11 +1,68 @@
 html {
     font-size: 1rem;
+    --accent: #e2b111;
 }
 
 * {
     box-sizing: border-box;
 }
 
-body{
-    font-style: monospace;
+body {
+    font-family: monospace;
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    text-decoration: underline;
+}
+
+p {
+    margin: 0;
+}
+
+p::before,
+p::after {
+    font-weight: 900;
+}
+
+p::before {
+    content: '(info) =\> {';
+    padding: 0 0.5rem 0 0;
+}
+
+p::after {
+    content: '};';
+    padding: 0 0 0 0.5rem;
+}
+
+menu,
+ul {
+    list-style-type: square;
+}
+
+em,
+label {
+    color: var(--accent);
+    font-weight: 900;
+    font-style: normal;
+    font-variant: small-caps;
+    text-transform: uppercase;
+}
+
+.options,
+.info {
+    border: 0.15rem solid black;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 1rem;
+}
+
+.tags {
+    display: inline-block;
+}
+
+.hidden {
+    display: none;
 }
