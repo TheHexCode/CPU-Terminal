@@ -125,10 +125,6 @@ footer {
     gap: 1rem;
 }
 
-.flex-contained main {
-    width: 100%;
-}
-
 .options,
 .info {
     border: 0.15rem solid var(--black);
