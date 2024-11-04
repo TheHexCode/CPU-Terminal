@@ -140,6 +140,11 @@ footer {
     align-items: center;
 }
 
+.info p {
+    text-align: justify;
+    text-align-last: left;
+}
+
 .countdown {
     font-size: 1.75rem;
     text-align: center;
