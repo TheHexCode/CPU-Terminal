@@ -11,6 +11,7 @@ html {
     --font-color: #a1a1a1;
     --section-bg: #1d1d1d;
     --body-bg: #121212;
+    --inset-shadow: inset -0.15rem 0.15rem 0.1rem rgba(0,0,0,0.25);
 }
 
 * {
@@ -130,6 +131,7 @@ footer {
     margin: 1rem 0;
     border-radius: 1rem;
     background: var(--section-bg);
+    box-shadow: var(--inset-shadow);
 }
 
 .options .select {
@@ -186,7 +188,7 @@ footer {
     font-size: 1.5rem;
     color: var(--common);
     text-shadow: -0.065em 0.05em 0 var(--common);
-    box-shadow: inset -0.15rem 0.15rem 0.1rem rgba(0,0,0,0.25);
+    box-shadow: var(--inset-shadow);
     aspect-ratio: 1 / 1;
     overflow: clip;
     background: var(--timer-face);
