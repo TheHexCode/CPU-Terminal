@@ -10,7 +10,7 @@
 <!--<script type="text/javascript" src="suffix.js"></script>-->
 </head>
 	<body>
-		<div class="contained">
+		<div class="flex-contained">
 			<div class="tags"> <!--TAGS-->
 				<div id="pair1">
 					<div class="top">
@@ -47,83 +47,83 @@
 				</div>
 			</div>
 			<main id="terminal"> <!--HEADER-->
-				<div>
+				<div class="contained">
 					<h1>TERMINAL</h1>
-					<div>
-						<div>Status</div>
-						<div>00:00.00</div>
-					</div>
-				</div>
-				<div> <!--PAGE ONE-->
-					<div>
-						<div>COOKIE TITLE CHECK</div>
-						<div>COOKIE HANDLE</div>
-						<button>BUTTON TO EDIT COOKIE</button>
-					</div>
-					<div>
-						<div>ACCESS TAGS</div>
-						<div>02</div>
-						<div>COOKIE TAGS</div>
-						<div>06</div>
-						<div>EXTRA TAGS?</div>
-						<button> - </button>
-						<span>00</span>
-						<button> + </button>
-						<div>AFTER ACCESS</div>
-						<div>04</div>
-						<button>ACCESS BUTTON</button>
-					</div>
-				</div>
-				<div> <!--PAGE TWO-->
-					<div>
-						<h2>TERMINAL ACCESS LOG</h2>
-						<ul>
-							<li>EXAMPLE NAME
-								<div>
-									REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
-								</div>
-							</li>
-							<li>EXAMPLE NAME
-								<div>
-									REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
-								</div>
-							</li>
-							<li>EXAMPLE NAME
-								<div>
-									REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
-								</div>
-							</li>
-						</ul>
-					</div>
-					<div>
+					<section class="info">
 						<div>
-							<span>FILES TAB</span>
-							<span>DW TAB</span>
-							<span>ABILITIES</span>
-							<span>ITEMS</span>
+							<h2>STATUS</h2>
+							<div class="countdown">00:00.00</div>
 						</div>
-						<div> <!--FILES-->
-							<span>File 0:</span><span>File Name</span><br>
-							<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
+					</section>
+					<section class="options"> <!--PAGE ONE-->
+						<div>
+							<h2>COOKIE TITLE CHECK</h2>
+							<div>COOKIE HANDLE</div>
+							<button>BUTTON TO EDIT COOKIE</button>
 						</div>
-						<div> <!--DARK WEB-->
-							<span>File 0:</span><span>File Name</span><br>
-							<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
+						<div>
+							<div>ACCESS TAGS</div>
+							<div>02</div>
+							<div>COOKIE TAGS</div>
+							<div>06</div>
+							<div>EXTRA TAGS?</div>
+							<button> - </button>
+							<span>00</span>
+							<button> + </button>
+							<div>AFTER ACCESS</div>
+							<div>04</div>
+							<button>ACCESS BUTTON</button>
 						</div>
-						<div> <!--ABILITIES-->
-							<span>BRICK: <button>4 Tags</button></span>
-							<span>RIGGED: <button>6 Tags</button></span>
-							<span>ROOT DEVICE: <button>6 Tags</button></span>
-						</div>
-						<div> <!--ITEMS-->
+					</section>
+					<section class="options"> <!--PAGE TWO-->
+							<h2>TERMINAL ACCESS LOG</h2>
+						<div class="access-log">
+							<ul>
+								<li>EXAMPLE NAME
+									<div>
+										REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
+									</div>
+								</li>
+								<li>EXAMPLE NAME
+									<div>
+										REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
+									</div>
+								</li>
+								<li>EXAMPLE NAME
+									<div>
+										REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
+									</div>
+								</li>
+							</ul>
 							<div>
-								<span>BASIC CYBERDECK:</span><br/>
-								<ul>
-									<li>1 EXTRA TAG<button>1/SIM</button></span>
-								</ul>
+								<div>
+									<span>FILES TAB</span>
+									<span>DW TAB</span>
+									<span>ABILITIES</span>
+									<span>ITEMS</span>
+								</div>
+								<div> <!--FILES-->
+									<span>File 0:</span><span>File Name</span><br>
+									<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
+								</div>
+								<div> <!--DARK WEB-->
+									<span>File 0:</span><span>File Name</span><br>
+									<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
+								</div>
+								<div> <!--ABILITIES-->
+									<span>BRICK: <button>4 Tags</button></span>
+									<span>RIGGED: <button>6 Tags</button></span>
+									<span>ROOT DEVICE: <button>6 Tags</button></span>
+								</div>
+								<div> <!--ITEMS-->
+									<span>BASIC CYBERDECK:</span><br/>
+									<ul>
+										<li>1 EXTRA TAG<button>1/SIM</button></span>
+									</ul>
+								</div>
 							</div>
 						</div>
-					</div>
+					</section>
 				</div>
 			</main>
 		</div>
