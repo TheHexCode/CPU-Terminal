@@ -6,6 +6,7 @@ html {
     --const: rgb(58, 94, 255);
     --let: var(--accent);
     --comments: rgb(37, 141, 16);
+    --glow: rgba(37, 141, 16, 0.25);
     --function: rgb(208, 37, 214);
     --common-height: calc(100vh - 16px);
     --font-color: #a1a1a1;
@@ -28,6 +29,7 @@ h2,
 h3 {
     text-align: center;
     color: var(--comments);
+    text-shadow: 0 0 0.75rem var(--glow);
 }
 
 h2,
@@ -97,6 +99,21 @@ input[type="checkbox" i] {
     margin: 0;
 }
 
+body::before,
+body::after {
+    content: '';
+    background: linear-gradient(to bottom, #757575, #c4c4c4);
+    mix-blend-mode: overlay;
+    background-repeat: repeat;
+    pointer-events: none;
+    inset: 0;
+    position: fixed;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    background-size: 100% 2px;
+}
+
 body {
     font-family: 'Terminal', 'Monaco', 'Cascadia Code', monospace;
     margin: 0;
@@ -104,6 +121,7 @@ body {
     height: var(--common-height);
     background: var(--body-bg);
     color: var(--font-color);
+    position: relative;
 }
 
 footer {
