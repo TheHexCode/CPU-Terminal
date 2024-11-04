@@ -110,13 +110,13 @@ footer {
 .flex-contained {
     margin: auto;
     max-width: 600px;
-    padding: 0 1rem;
 }
 
 .flex-contained {
     display: flex;
     flex-flow: row nowrap;
     justify-content: stretch;
+    gap: 1rem;
 }
 
 .flex-contained main {
@@ -162,7 +162,7 @@ footer {
     height: auto;
     align-items: stretch;
     justify-content: space-between;
-    padding: 0.5rem;
+    padding: 0.5rem 0;
     gap: 0.5rem
 }
 
