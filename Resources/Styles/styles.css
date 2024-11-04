@@ -110,6 +110,7 @@ footer {
 .flex-contained {
     margin: auto;
     max-width: 600px;
+    padding: 0 1rem;
 }
 
 .flex-contained {
@@ -125,7 +126,7 @@ footer {
 .options,
 .info {
     border: 0.15rem solid var(--black);
-    padding: 1rem;
+    padding: 1rem 0;
     margin: 1rem;
     border-radius: 1rem;
     background: var(--section-bg);
