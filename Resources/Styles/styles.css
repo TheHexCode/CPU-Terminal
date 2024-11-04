@@ -102,11 +102,6 @@ footer {
     padding: 1rem;
 }
 
-.countdown {
-    font-size: 1.75rem;
-    text-align: center;
-}
-
 .contained,
 .flex-contained {
     margin: auto;
@@ -136,6 +131,17 @@ footer {
     flex-flow: row wrap;
     align-items: center;
     gap: 1rem;
+}
+
+.options {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+.countdown {
+    font-size: 1.75rem;
+    text-align: center;
 }
 
 .access-log {
