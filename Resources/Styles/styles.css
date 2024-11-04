@@ -1,6 +1,8 @@
 html {
     font-size: 1rem;
-    --accent: #e2b111;
+    --borders: #130701;
+    --accent: #eea00e;
+    --black: #000;
 }
 
 * {
@@ -8,7 +10,9 @@ html {
 }
 
 body {
-    font-family: monospace;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 8px;
 }
 
 h1,
@@ -51,16 +55,97 @@ label {
     text-transform: uppercase;
 }
 
+body {
+    max-height: calc(100vh - 16px);
+}
+
+footer {
+    text-align: center;
+    font-size: 0.75rem;
+    padding: 1rem;
+}
+
+.contained {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1rem;
+}
+
 .options,
 .info {
-    border: 0.15rem solid black;
+    border: 0.15rem solid var(--black);
     padding: 1rem;
     margin: 1rem;
     border-radius: 1rem;
 }
 
+.options h2,
+.preview h2 {
+    text-align: center;
+}
+
 .tags {
-    display: inline-block;
+    display: inline-flex;
+    flex-flow: column nowrap;
+    width: clamp(3rem, 3.5rem, 4rem);
+    /* height: var(--common-height); */
+    height: calc(100vh - 16px);
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 0.5rem;
+    gap: 0.5rem
+}
+
+.tags > div:not(:last-child) {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    height: 100%;
+    border: 0.2rem solid var(--borders);
+    border-radius: 0.25rem;
+    background: var(--borders);
+}
+
+.tags > div:last-child {
+    --timer-face: #3d4c4f;
+    --common: rgba(0,0,0,0.5);
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: var(--common);
+    text-shadow: -0.065em 0.05em 0 var(--common);
+    box-shadow: inset -0.15rem 0.15rem 0.1rem rgba(0,0,0,0.25);
+    aspect-ratio: 1 / 1;
+    overflow: clip;
+    background: var(--timer-face);
+    border-radius: 0.25rem;
+    border: 0.2rem solid var(--borders);
+    text-align: center;
+    font-weight: 900;
+}
+
+.top,
+.bottom{
+    --top: #999;
+    --left: #333;
+    --bottoms-bottom: #444;
+    --tops-bottom: #555;
+    --right: #ccc;
+    background: var(--accent);
+    border-width: 0.5rem;
+    border-style: solid;
+    border-left-color: var(--left);
+    border-bottom-color: var(--bottoms-bottom);
+    border-top-color: var(--top);
+    border-right-color: var(--right);
+    height: calc(50% - 0.1rem);
+    border-radius: 0.125rem;
+}
+
+.top{
+    border-bottom-color: var(--tops-bottom);
 }
 
 .hidden {
