@@ -126,8 +126,8 @@ footer {
 .options,
 .info {
     border: 0.15rem solid var(--black);
-    padding: 1rem 0;
-    margin: 1rem;
+    padding: 1rem;
+    margin: 1rem 0;
     border-radius: 1rem;
     background: var(--section-bg);
 }
