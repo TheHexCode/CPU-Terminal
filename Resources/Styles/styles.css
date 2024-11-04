@@ -18,6 +18,11 @@ html {
     box-sizing: border-box;
 }
 
+a:link,
+a:visited {
+    color: var(--const);
+}
+
 h1,
 h2,
 h3 {
