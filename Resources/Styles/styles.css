@@ -155,10 +155,6 @@ footer {
     text-align: center;
 }
 
-.group {
-    uh: "";
-}
-
 .tags {
     display: inline-flex;
     flex-flow: column nowrap;
