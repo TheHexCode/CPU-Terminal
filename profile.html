@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>PAYLOAD CUSTOMIZATION</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta charset="UTF-8"> 
-		<!--<link rel="stylesheet" type="text/css" href="prostyle.css"/>-->
-		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<!--<script type="text/javascript" src="payload.js"></script>-->
-	</head>
-	
+<head>
+<title>PAYLOAD CUSTOMIZATION</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"> 
+<!--<link rel="stylesheet" type="text/css" href="prostyle.css"/>-->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+<!--<script type="text/javascript" src="payload.js"></script>-->
+</head>
 	<body>
-		<div>
-			<div>PAYLOAD PREVIEW</div>
+		<main>
+			<h1>PAYLOAD PREVIEW</h1>
 			<div>
 				<div>
 					<label for="handle">Default Access Log Handle:*</label>
-				</div>
-				<div>
-					<input type="text" name="handle" form="statsForm" required></input>
+					<input type="text" id="handle" form="statsForm" required></input>
 				</div>
 				<div>
 					<label for="mask">Default Masked Handle:</label>
+					<input type="text" id="mask" form="statsForm" placeholder="Leave blank for anonymous log entry"></input>
 				</div>
-				<div>
-					<input type="text" name="mask" form="statsForm" placeholder="Leave blank for anonymous log entry"></input>
-				</div>
-				<div>
+				<section>
 					<label for="primaryRole">Primary Role:</label>
-					<select name="primaryRole">
+					<select id="primaryRole">
 						<option value="none">-Select-</option>
 						<option value="bastion">Bastion</option>           <!-- bast -->
 						<option value="dissimulator">Dissimulator</option> <!-- diss -->
@@ -37,10 +32,10 @@
 						<option value="slipstream">Slipstream</option>     <!-- slip -->
 						<option value="other">Other</option>               <!-- stnd -->
 					</select>
-				</div>
-				<div>
+				</section>
+				<section>
 					<label for="secondaryRole">Secondary Role:</label>
-					<select name="secondaryRole">
+					<select id="secondaryRole">
 						<option value="none">-Select-</option>
 						<option value="bastion">Bastion</option>
 						<option value="dissimulator">Dissimulator</option>
@@ -49,334 +44,275 @@
 						<option value="slipstream">Slipstream</option>
 						<option value="other">Other</option>
 					</select>
-				</div>
+				</section>
 			</div>
 			<div>
-				<div>
+				<section>
 					<button>STANDARD</button>
 					<button>PRIMARY</button>
 					<button>SECONDARY</button>
 					<button>ITEM</button>
-				</div>
-<!-- STANDARD--><div>
+				</section>
+<!-- STANDARD--><section>
+					<h2>HACKING EXPERTISE</h2>
 					<div>
-						<div>
-							<p><u>HACKING EXPERTISE</u></p>
-							<div>
-								<input type="checkbox" name="stnd_hack_check" form="statsForm" data-skill="hack" data-value="1">
-								<label for="stnd_hack_check">Tier 3 - Hacking I</label>
-							</div>
-						</div>
+						<input type="checkbox" id="stnd_hack_check" form="statsForm" data-skill="hack" data-value="1">
+						<label for="stnd_hack_check">Tier 3 - Hacking I</label>
 					</div>
-				</div>
+				</section>
 <!-- PRIMARY --><div>
-					<div>
-						<p><u>NO PRIMARY ROLE SELECTED</u></p>
-						<p>Please select a Primary Role in the drop-down above, even if it's Other.</p>
-					</div>
-					<div>
-						<p><u>OTHER PRIMARY ROLE SELECTED</u></p>
-						<p>Your Primary Role is not one which provides any hacking benefits. If you have a Secondary Role, make sure to select them in the drop-down above, or utilize the Standard Role for your payload.</p>
-					</div>
-					<div>
-						<p><u>HACKING EXPERTISE</u></p>
+					<section>
 						<div>
-							<div>
-								<input type="checkbox" name="bast_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
-								<label for="p_bast_hack_check_1">Tier 2 - Hacking I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="bast_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
-								<label for="p_bast_hack_check_2">Tier 4 - Hacking II</label>
-							</div>
+							<h2>NO PRIMARY ROLE SELECTED</h2>
+							<p>Please select a Primary Role in the drop-down above, even if it's Other.</p>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="diss_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
-								<label for="p_diss_hack_check_1">Tier 1 - Hacking I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_hack_check_2" form="statsForm" data-skill="hack" data-value="1">
-								<label for="p_diss_hack_check_2">Tier 2 - Hacking I</label>
-							</div>
+							<h2>OTHER PRIMARY ROLE SELECTED</h2>
+							<p>Your Primary Role is not one which provides any hacking benefits. If you have a Secondary Role, make sure to select them in the drop-down above, or utilize the Standard Role for your payload.</p>
+						</div>
+					</section>
+					<section>
+						<h2>HACKING EXPERTISE</h2>
+						<div>
+							<input type="checkbox" id="p_bast_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+							<label for="p_bast_hack_check_1">Tier 2 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
-								<label for="p_slip_hack_check_1">Tier 2 - Hacking I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="slip_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
-								<label for="p_slip_hack_check_2">Tier 5 - Hacking II</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>ACCESS LOG MANIPULATION</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_wipe_check" form="statsForm" data-skill="wipe">
-								<label for="p_diss_wipe_check">Tier 3 - Wipe Your Tracks</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_reass_check" form="statsForm" data-skill="reass">
-								<label for="p_diss_reass_check">Tier 4 - Reassign</label>
-							</div>
+							<input type="checkbox" id="p_bast_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+							<label for="p_bast_hack_check_2">Tier 4 - Hacking II</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_wipe_check" form="statsForm" data-skill="wipe">
-								<label for="p_slip_wipe_check">Tier 1 - Wipe Your Tracks</label>
-							</div>
-							<div>
-								<input type="checkbox" name="slip_mask_check" form="statsForm" data-skill="mask">
-								<label for="p_slip_mask_check">Tier 4 - Mask</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>BACKDOOR EXPLOITATION</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_bd_check" form="statsForm" data-skill="bd">
-								<label for="p_diss_bd_check">Tier 2 - Backdoor</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_ibd_check" form="statsForm" data-skill="ibd">
-								<label for="p_diss_ibd_check">Tier 4 - Improved Backdoor</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>PASSIVE ABILITIES</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_repeat_check" form="statsForm" data-skill="repeat" data-value="1">
-								<label for="p_diss_repeat_check">Tier 2 - Repeat I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_rex_check" form="statsForm" data-skill="rex">
-								<label for="p_diss_rex_check">Tier 5 - Root Exploit</label>
-							</div>
+							<input type="checkbox" id="p_diss_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+							<label for="p_diss_hack_check_1">Tier 1 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_repeat_check" form="statsForm" data-skill="repeat" data-value="2">
-								<label for="p_slip_repeat_check">Tier 3 - Repeat II</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>ACTIVE ABILITIES</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_brick_check" form="statsForm" data-skill="brick">
-								<label for="p_diss_brick_check">Tier 4 - Brick</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_rigg_check" form="statsForm" data-skill="rigg">
-								<label for="p_diss_rigg_check">Tier 5 - Rigged</label>
-							</div>
+							<input type="checkbox" id="p_diss_hack_check_2" form="statsForm" data-skill="hack" data-value="1">
+							<label for="p_diss_hack_check_2">Tier 2 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_root_check" form="statsForm" data-skill="root">
-								<label for="p_slip_root_check">Tier 5 - Root Device</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>DARK WEB CONNECTIONS</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="bast_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="p_bast_dwa_check">Tier 3 - Dark Web Operator</label>
-							</div>
+							<input type="checkbox" id="p_slip_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+							<label for="p_slip_hack_check_1">Tier 2 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="mast_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="p_mast_dwa_check">Tier 3 - Dark Web Merchant</label>
-							</div>
+							<input type="checkbox" id="p_slip_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+							<label for="p_slip_hack_check_2">Tier 5 - Hacking II</label>
+						</div>
+					</section>
+					<section>
+						<h2>ACCESS LOG MANIPULATION</h2>
+						<div>
+							<input type="checkbox" id="p_diss_wipe_check" form="statsForm" data-skill="wipe">
+							<label for="p_diss_wipe_check">Tier 3 - Wipe Your Tracks</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="scnd_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="p_scnd_dwa_check">Tier 4 - Dark Web Operator</label>
-							</div>
+							<input type="checkbox" id="p_diss_reass_check" form="statsForm" data-skill="reass">
+							<label for="p_diss_reass_check">Tier 4 - Reassign</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="p_slip_dwa_check">Tier 3 - Dark Web Operator</label>
-							</div>
+							<input type="checkbox" id="p_slip_wipe_check" form="statsForm" data-skill="wipe">
+							<label for="p_slip_wipe_check">Tier 1 - Wipe Your Tracks</label>
 						</div>
-					</div>
+						<div>
+							<input type="checkbox" id="p_slip_mask_check" form="statsForm" data-skill="mask">
+							<label for="p_slip_mask_check">Tier 4 - Mask</label>
+						</div>
+					</section>
+					<section>
+						<h2>BACKDOOR EXPLOITATION</h2>
+						<div>
+							<input type="checkbox" id="p_diss_bd_check" form="statsForm" data-skill="bd">
+							<label for="p_diss_bd_check">Tier 2 - Backdoor</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_diss_ibd_check" form="statsForm" data-skill="ibd">
+							<label for="p_diss_ibd_check">Tier 4 - Improved Backdoor</label>
+						</div>
+					</section>
+					<section>
+						<h2>PASSIVE ABILITIES</h2>
+						<div>
+							<input type="checkbox" id="d_diss_repeat_check" form="statsForm" data-skill="repeat" data-value="1">
+							<label for="p_diss_repeat_check">Tier 2 - Repeat I</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_diss_rex_check" form="statsForm" data-skill="rex">
+							<label for="p_diss_rex_check">Tier 5 - Root Exploit</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_slip_repeat_check" form="statsForm" data-skill="repeat" data-value="2">
+							<label for="p_slip_repeat_check">Tier 3 - Repeat II</label>
+						</div>
+					</section>
+					<section>
+						<h2>ACTIVE ABILITIES</h2>
+						<div>
+							<input type="checkbox" id="p_diss_brick_check" form="statsForm" data-skill="brick">
+							<label for="p_diss_brick_check">Tier 4 - Brick</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_diss_rigg_check" form="statsForm" data-skill="rigg">
+							<label for="p_diss_rigg_check">Tier 5 - Rigged</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_slip_root_check" form="statsForm" data-skill="root">
+							<label for="p_slip_root_check">Tier 5 - Root Device</label>
+						</div>
+					</section>
+					<section>
+						<h2>DARK WEB CONNECTIONS</h2>
+						<div>
+							<input type="checkbox" id="p_bast_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="p_bast_dwa_check">Tier 3 - Dark Web Operator</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_mast_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="p_mast_dwa_check">Tier 3 - Dark Web Merchant</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_scnd_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="p_scnd_dwa_check">Tier 4 - Dark Web Operator</label>
+						</div>
+						<div>
+							<input type="checkbox" id="p_slip_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="p_slip_dwa_check">Tier 3 - Dark Web Operator</label>
+						</div>
+					</section>
 				</div>
 <!--SECONDARY--><div>
-					<div>
-						<p><u>NO SECONDARY ROLE SELECTED</u></p>
-						<p>If you have a Secondary Role, please select it in the drop-down above. Otherwise, if you do not have a Secondary Role, this text is what you should expect to see.</p>
-					</div>
-					<div>
-						<p><u>OTHER SECONDARY ROLE SELECTED</u></p>
-						<p>Your Secondary Role is not one which provides any hacking benefits. You'll have to rely on your Primary Role or the Standard Role for your payload.</p>
-					</div>
-					<div>
-						<p><u>HACKING EXPERTISE</u></p>
+					<section>
 						<div>
-							<div>
-								<input type="checkbox" name="bast_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
-								<label for="s_bast_hack_check_1">Tier 2 - Hacking I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="bast_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
-								<label for="s_bast_hack_check_2">Tier 4 - Hacking II</label>
-							</div>
+							<h2>NO SECONDARY ROLE SELECTED</h2>
+							<p>If you have a Secondary Role, please select it in the drop-down above. Otherwise, if you do not have a Secondary Role, this text is what you should expect to see.</p>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="diss_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
-								<label for="s_diss_hack_check_1">Tier 1 - Hacking I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_hack_check_2" form="statsForm" data-skill="hack" data-value="1">
-								<label for="s_diss_hack_check_2">Tier 2 - Hacking I</label>
-							</div>
+							<h2>OTHER SECONDARY ROLE SELECTED</h2>
+							<p>Your Secondary Role is not one which provides any hacking benefits. You'll have to rely on your Primary Role or the Standard Role for your payload.</p>
+						</div>
+					</section>
+					<section>
+						<h2>HACKING EXPERTISE</h2>
+						<div>
+							<input type="checkbox" id="s_bast_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+							<label for="s_bast_hack_check_1">Tier 2 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
-								<label for="s_slip_hack_check_1">Tier 2 - Hacking I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="slip_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
-								<label for="s_slip_hack_check_2">Tier 5 - Hacking II</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>ACCESS LOG MANIPULATION</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_wipe_check" form="statsForm" data-skill="wipe">
-								<label for="s_diss_wipe_check">Tier 3 - Wipe Your Tracks</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_reass_check" form="statsForm" data-skill="reass">
-								<label for="s_diss_reass_check">Tier 4 - Reassign</label>
-							</div>
+							<input type="checkbox" id="s_bast_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+							<label for="s_bast_hack_check_2">Tier 4 - Hacking II</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_wipe_check" form="statsForm" data-skill="wipe">
-								<label for="s_slip_wipe_check">Tier 1 - Wipe Your Tracks</label>
-							</div>
-							<div>
-								<input type="checkbox" name="slip_mask_check" form="statsForm" data-skill="mask">
-								<label for="s_slip_mask_check">Tier 4 - Mask</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>BACKDOOR EXPLOITATION</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_bd_check" form="statsForm" data-skill="bd">
-								<label for="s_diss_bd_check">Tier 2 - Backdoor</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_ibd_check" form="statsForm" data-skill="ibd">
-								<label for="s_diss_ibd_check">Tier 4 - Improved Backdoor</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>PASSIVE ABILITIES</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_repeat_check" form="statsForm" data-skill="repeat" data-value="1">
-								<label for="s_diss_repeat_check">Tier 2 - Repeat I</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_rex_check" form="statsForm" data-skill="rex">
-								<label for="s_diss_rex_check">Tier 5 - Root Exploit</label>
-							</div>
+							<input type="checkbox" id="s_diss_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+							<label for="s_diss_hack_check_1">Tier 1 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_repeat_check" form="statsForm" data-skill="repeat" data-value="2">
-								<label for="s_slip_repeat_check">Tier 3 - Repeat II</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>ACTIVE ABILITIES</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="diss_brick_check" form="statsForm" data-skill="brick">
-								<label for="s_diss_brick_check">Tier 4 - Brick</label>
-							</div>
-							<div>
-								<input type="checkbox" name="diss_rigg_check" form="statsForm" data-skill="rigg">
-								<label for="s_diss_rigg_check">Tier 5 - Rigged</label>
-							</div>
+							<input type="checkbox" id="s_diss_hack_check_2" form="statsForm" data-skill="hack" data-value="1">
+							<label for="s_diss_hack_check_2">Tier 2 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_root_check" form="statsForm" data-skill="root">
-								<label for="s_slip_root_check">Tier 5 - Root Device</label>
-							</div>
-						</div>
-					</div>
-					<div>
-						<p><u>DARK WEB CONNECTIONS</u></p>
-						<div>
-							<div>
-								<input type="checkbox" name="bast_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="s_bast_dwa_check">Tier 3 - Dark Web Operator</label>
-							</div>
+							<input type="checkbox" id="s_slip_hack_check_1" form="statsForm" data-skill="hack" data-value="1">
+							<label for="s_slip_hack_check_1">Tier 2 - Hacking I</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="mast_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="s_mast_dwa_check">Tier 3 - Dark Web Merchant</label>
-							</div>
+							<input type="checkbox" id="s_slip_hack_check_2" form="statsForm" data-skill="hack" data-value="2">
+							<label for="s_slip_hack_check_2">Tier 5 - Hacking II</label>
+						</div>
+					</section>
+					<section>
+						<h2>ACCESS LOG MANIPULATION</h2>
+						<div>
+							<input type="checkbox" id="s_diss_wipe_check" form="statsForm" data-skill="wipe">
+							<label for="s_diss_wipe_check">Tier 3 - Wipe Your Tracks</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="scnd_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="s_scnd_dwa_check">Tier 4 - Dark Web Operator</label>
-							</div>
+							<input type="checkbox" id="s_diss_reass_check" form="statsForm" data-skill="reass">
+							<label for="s_diss_reass_check">Tier 4 - Reassign</label>
 						</div>
 						<div>
-							<div>
-								<input type="checkbox" name="slip_dwa_check" form="statsForm" data-skill="dwa">
-								<label for="s_slip_dwa_check">Tier 3 - Dark Web Operator</label>
-							</div>
+							<input type="checkbox" id="s_slip_wipe_check" form="statsForm" data-skill="wipe">
+							<label for="s_slip_wipe_check">Tier 1 - Wipe Your Tracks</label>
 						</div>
-					</div>
+						<div>
+							<input type="checkbox" id="s_slip_mask_check" form="statsForm" data-skill="mask">
+							<label for="s_slip_mask_check">Tier 4 - Mask</label>
+						</div>
+					</section>
+					<section>
+						<h2>BACKDOOR EXPLOITATION</h2>
+						<div>
+							<input type="checkbox" id="s_diss_bd_check" form="statsForm" data-skill="bd">
+							<label for="s_diss_bd_check">Tier 2 - Backdoor</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_diss_ibd_check" form="statsForm" data-skill="ibd">
+							<label for="s_diss_ibd_check">Tier 4 - Improved Backdoor</label>
+						</div>
+					</section>
+					<section>
+						<h2>PASSIVE ABILITIES</h2>
+						<div>
+							<input type="checkbox" id="s_diss_repeat_check" form="statsForm" data-skill="repeat" data-value="1">
+							<label for="s_diss_repeat_check">Tier 2 - Repeat I</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_diss_rex_check" form="statsForm" data-skill="rex">
+							<label for="s_diss_rex_check">Tier 5 - Root Exploit</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_slip_repeat_check" form="statsForm" data-skill="repeat" data-value="2">
+							<label for="s_slip_repeat_check">Tier 3 - Repeat II</label>
+						</div>
+					</section>
+					<section>
+						<h2>ACTIVE ABILITIES</h2>
+						<div>
+							<input type="checkbox" id="s_diss_brick_check" form="statsForm" data-skill="brick">
+							<label for="s_diss_brick_check">Tier 4 - Brick</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_diss_rigg_check" form="statsForm" data-skill="rigg">
+							<label for="s_diss_rigg_check">Tier 5 - Rigged</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_slip_root_check" form="statsForm" data-skill="root">
+							<label for="s_slip_root_check">Tier 5 - Root Device</label>
+						</div>
+					</section>
+					<section>
+						<h2>DARK WEB CONNECTIONS</h2>
+						<div>
+							<input type="checkbox" id="s_bast_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="s_bast_dwa_check">Tier 3 - Dark Web Operator</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_mast_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="s_mast_dwa_check">Tier 3 - Dark Web Merchant</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_scnd_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="s_scnd_dwa_check">Tier 4 - Dark Web Operator</label>
+						</div>
+						<div>
+							<input type="checkbox" id="s_slip_dwa_check" form="statsForm" data-skill="dwa">
+							<label for="s_slip_dwa_check">Tier 3 - Dark Web Operator</label>
+						</div>
+					</section>
 				</div>
 <!--  ITEMS  --><div>
-					<div>
-						<p><u>CYBERDECKS</u></p>
-						<div>
-							<input type="checkbox" name="item_deck_basic_check" form="statsForm">
-							<label for="item_deck_basic_check">Basic Cyberdeck</label>
-						</div>
-					</div>
+					<section>
+						<h2>CYBERDECKS</h2>
+						<input type="checkbox" id="item_deck_basic_check" form="statsForm">
+						<label for="item_deck_basic_check">Basic Cyberdeck</label>
+					</section>
 				</div>
 			</div>
-			
 			<div>
 				<span>SAVED!</span>
 				<form id="statsForm">
 					<button type="submit" form="statsForm">SAVE PAYLOAD DATA TO PROFILE</button>
 				</form>
 			</div>
-			<div>
+			<footer>
 				<p>CPU FOOTER</p>
-			</div>
-		</div>
+			</footer>
+		</main>
 	</body>
 </html>
