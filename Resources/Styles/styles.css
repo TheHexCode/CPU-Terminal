@@ -1,3 +1,10 @@
+@font-face {
+    font-family: "DSEG14-Classic";
+    src: url("./resources/fonts/DSEG14Classic-Regular.woff2") format("woff2"),
+         url("./resources/fonts/DSEG14Classic-Regular.woff") format("woff"),
+         url("./resources/fonts/DSEG14Classic-Regular.ttf") format("truetype");
+}
+
 html {
     font-size: 14px;
     --black: #000;
