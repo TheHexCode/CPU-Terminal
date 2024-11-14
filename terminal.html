@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="resources/styles/styles.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-<!--<script type="text/javascript" src="suffix.js"></script>-->
+<script type="text/javascript" src="resources/scripts/suffix.js"></script>
 </head>
 	<body>
 		<div class="flex-contained">
@@ -55,77 +55,92 @@
 							<div class="countdown">00:00.00</div>
 						</div>
 					</section>
-					<section class="options"> <!--PAGE ONE-->
-					<div class="group">
-						<div>
-							<h2>COOKIE TITLE CHECK</h2>
-							<div>COOKIE HANDLE</div>
-							<button>BUTTON TO EDIT COOKIE</button>
-						</div>
-						<div>
-							<div>ACCESS TAGS</div>
-							<div>02</div>
-							<div>COOKIE TAGS</div>
-							<div>06</div>
-							<div>EXTRA TAGS?</div>
-							<button> - </button>
-							<span>00</span>
-							<button> + </button>
-							<div>AFTER ACCESS</div>
-							<div>04</div>
-							<button>ACCESS BUTTON</button>
-						</div>
-					</div>
-					</section>
-					<section class="options"> <!--PAGE TWO-->
-							<h2>TERMINAL ACCESS LOG</h2>
-						<div class="group">
-							<ul>
-								<li>EXAMPLE NAME
-									<div>
-										REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
-									</div>
-								</li>
-								<li>EXAMPLE NAME
-									<div>
-										REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
-									</div>
-								</li>
-								<li>EXAMPLE NAME
-									<div>
-										REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
-									</div>
-								</li>
-							</ul>
-							<div>
+					<div id="pageOne"> <!--PAGE ONE-->
+						<section class="options">
+							<div class="group">
 								<div>
-									<span>FILES TAB</span>
-									<span>DW TAB</span>
-									<span>ABILITIES</span>
-									<span>ITEMS</span>
-								</div>
-								<div> <!--FILES-->
-									<span>File 0:</span><span>File Name</span><br>
-									<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
-								</div>
-								<div> <!--DARK WEB-->
-									<span>File 0:</span><span>File Name</span><br>
-									<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
-								</div>
-								<div> <!--ABILITIES-->
-									<span>BRICK: <button>4 Tags</button></span>
-									<span>RIGGED: <button>6 Tags</button></span>
-									<span>ROOT DEVICE: <button>6 Tags</button></span>
-								</div>
-								<div> <!--ITEMS-->
-									<span>BASIC CYBERDECK:</span><br/>
-									<ul>
-										<li>1 EXTRA TAG<button>1/SIM</button></span>
-									</ul>
+									<h2>COOKIE TITLE CHECK</h2>
+									<div>COOKIE HANDLE</div>
+									<button>BUTTON TO EDIT COOKIE</button>
 								</div>
 							</div>
+						</section>
+						<section class="options">
+							<div class="group">
+								<div>
+									<h2>ACCESS TAGS</h2>
+									<div>ACCESS TAGS</div>
+									<div>02</div>
+									<div>COOKIE TAGS</div>
+									<div>06</div>
+									<div>EXTRA TAGS?</div>
+									<button> - </button>
+									<span>00</span>
+									<button> + </button>
+									<div>AFTER ACCESS</div>
+									<div>04</div>
+									<button>ACCESS BUTTON</button>
+								</div>
+							</div>
+						</section>
+					</div>
+					<div id="pageTwo" class="hidden">
+						<section class="options"> <!--PAGE TWO-->
+							<h2>TERMINAL ACCESS LOG</h2>
+							<div class="group">
+								<ul>
+									<li>EXAMPLE NAME
+										<div>
+											REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
+										</div>
+									</li>
+									<li>EXAMPLE NAME
+										<div>
+											REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
+										</div>
+									</li>
+									<li>EXAMPLE NAME
+										<div>
+											REASSIGN: <button>2 Tags</button> - WIPE: <button>1 Tag</button>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</section>
+						<div class="tabContainer">
+							<button class="tab active" onclick="openTab(event,'filesTab')">FILES</button>
+							<button class="tab" onclick="openTab(event,'dwTab')">DARK WEB</button>
+							<button class="tab" onclick="openTab(event,'abilTab')">ABILITIES</button>
+							<button class="tab" onclick="openTab(event,'itemsTab')">ITEMS</button>
 						</div>
-					</section>
+		<!--FILES-->	<div id="filesTab" class="tabContent">
+							<section class="options">
+								<span>File 0:</span><span>File Name</span><br>
+								<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
+							</section>
+						</div>
+		<!--DARK WEB-->	<div id="dwTab" class="tabContent hidden">
+							<section class="options">
+								<span>File 0:</span><span>File Name</span><br>
+								<span>Access:</span><button>1 Tag</button><span>Modify:</span><button>2 Tags</button>
+							</section>
+						</div>
+		<!--ABILITIES--><div id="abilTab" class="tabContent hidden">
+							<div class="options">
+								<span>BRICK: <button>4 Tags</button></span>
+								<span>RIGGED: <button>6 Tags</button></span>
+								<span>ROOT DEVICE: <button>6 Tags</button></span>
+							</div>
+						</div>
+		<!--ITEMS-->	<div id="itemsTab" class="tabContent hidden">
+							<div class="options">
+								<span>BASIC CYBERDECK:</span><br/>
+								<ul>
+									<li>1 EXTRA TAG<button>1/SIM</button></span>
+								</ul>
+							</div>
+						</div>
+					</div>
 				</div>
 			</main>
 		</div>

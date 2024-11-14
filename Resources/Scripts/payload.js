@@ -22,52 +22,41 @@ $(document).ready(function()
 
 function openTab(evt, tabName)
 {
-	var i, tabcontent, tablinks;
+	$(".tabContent").addClass("hidden");
+	$(".tab").removeClass("active");
 	
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for(i = 0; i < tabcontent.length; i++)
-	{
-		tabcontent[i].style.display="none";
-	}
-	
-	tablinks = document.getElementsByClassName("tablinks");
-	for(i = 0; i < tablinks.length; i++)
-	{
-		tablinks[i].className = tablinks[i].className.replace(" active","");
-	}
-	
-	document.getElementById(tabName).style.display = "block";
-	evt.currentTarget.className += " active";
+	$("#"+tabName).removeClass("hidden");
+	$(evt.currentTarget).addClass("active");
   
-	activeIndex = 99;
-	for(i = 0; i < tablinks.length; i++)
+	activeIndex = 50;
+	for(let i = 0; i < $(".tab").length; i++)
 	{
 		if(i < activeIndex)
 		{
-			if(tablinks[i].className.includes("active"))
+			if($(".tab")[i].className.includes("active"))
 			{
 				activeIndex = i;
-				$(".tab button:nth-child("+(i+1)+")").css("z-index",99);
+				$(".tabContainer button:nth-child("+(i+1)+")").css("z-index",50);
 			}
 			else
 			{
-				$(".tab button:nth-child("+(i+1)+")").css("z-index",i+1);
+				$(".tabContainer button:nth-child("+(i+1)+")").css("z-index",i+1);
 			}
 		}
 		else
 		{
-			$(".tab button:nth-child("+(i+1)+")").css("z-index",99-i);
+			$(".tabContainer button:nth-child("+(i+1)+")").css("z-index",50-i);
 		}
 	}
 }
 
 function roleChange()
 {
-	$(".shownStat").addClass("hiddenStat");
-	$(".shownStat").removeClass("shownStat");
+	$("#priTab .info, #priTab .options, #priTab .select").addClass("hidden");
+	$("#secTab .info, #secTab .options, #secTab .select").addClass("hidden");
 	
-	let priRole = $("select[name='primaryRole']")[0].selectedOptions[0].value;
-	let secRole = $("select[name='secondaryRole']")[0].selectedOptions[0].value;
+	let priRole = $("select[id='primaryRole']")[0].selectedOptions[0].value;
+	let secRole = $("select[id='secondaryRole']")[0].selectedOptions[0].value;
 	
 	switch (priRole)
 	{
@@ -88,31 +77,25 @@ function roleChange()
 		default:
 			$("#secButton").html(secRole.toUpperCase());
 	}
+
+	console.log($("#p_bast_hack_check_2").parent())
 	
-	$(".priStat."+priRole).addClass("shownStat");
-	$(".priStat."+priRole).removeClass("hiddenStat");
-	$(".secStat."+secRole).addClass("shownStat");
-	$(".secStat."+secRole).removeClass("hiddenStat");
+	$("#priTab section[data-roles*='"+priRole+"']").removeClass("hidden");
+	$("#secTab section[data-roles*='"+secRole+"']").removeClass("hidden");
+
+	console.log($("#p_bast_hack_check_2").parent())
+
+	$("#priTab div[data-role='"+priRole+"']").removeClass("hidden");
+	$("#secTab div[data-role='"+secRole+"']").removeClass("hidden");
+
+	console.log($("#p_bast_hack_check_2").parent())
 	
 	$("input[type='checkbox']").each(function() {
-		if(!($(this).hasClass(priRole) || $(this).hasClass(secRole) || $(this).hasClass("standard")))
+		if(!($(this).parent().hasClass(priRole) || $(this).hasClass(secRole) || $(this).hasClass("standard")))
 		{
 			$(this).prop("checked",false);
 		}
 	});
-	
-	/*
-	if((priRole == "dissimulator" && secRole == "slipstream") || (priRole == "slipstream" && secRole == "dissimulator"))
-	{
-		$("label[for='diss_wipe_check']").html("T3 - WYT");
-		$("label[for='slip_wipe_check']").html("T1 - WYT");
-	}
-	else
-	{
-		$("label[for='diss_wipe_check']").html("T3 - Wipe Your Tracks");
-		$("label[for='slip_wipe_check']").html("T1 - Wipe Your Tracks");
-	}
-	*/
 }
 
 function statSubmit(event)
@@ -123,8 +106,8 @@ function statSubmit(event)
 	let handle = $("#statsHandle").val();
 	
 	// ROLES
-	let priRole = $("select[name='primaryRole']")[0].selectedOptions[0].value;
-	let secRole = $("select[name='secondaryRole']")[0].selectedOptions[0].value;
+	let priRole = $("select[id='primaryRole']")[0].selectedOptions[0].value;
+	let secRole = $("select[id='secondaryRole']")[0].selectedOptions[0].value;
 	
 	// HACKING
 	let hack_sum = 0;

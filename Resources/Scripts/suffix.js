@@ -14,28 +14,6 @@ var tensFormat = new Intl.NumberFormat('en-US', {
 
 $(document).ready(function()
 {
-	//var vpHeight = window.innerHeight;
-	
-	/*
-	var dd = document.getElementsByClassName("dropdown");
-
-	for (let i = 0; i < dd.length; i++) {
-	  dd[i].addEventListener("mouseup", function() {
-		/* Toggle between adding and removing the "active" class,
-		to highlight the button that controls the panel */
-		//this.classList.toggle("dd_show");
-
-		/* Toggle between hiding and showing the active panel *//*
-		var panel = this.nextElementSibling;
-		if (panel.style.maxHeight) {
-		  panel.style.maxHeight = null;
-		} else {
-		  panel.style.maxHeight = panel.scrollHeight + "px";
-		} 
-	  });
-	} 
-	*/
-
 	suffix = new URLSearchParams(window.location.search);
 	
 	readTerminalData(suffix.get("id"));
@@ -486,41 +464,30 @@ function statSubmit(event)
 
 function openTab(evt, tabName)
 {
-	var i, tabcontent, tablinks;
-	
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for(i = 0; i < tabcontent.length; i++)
-	{
-		tabcontent[i].style.display="none";
-	}
-	
-	tablinks = document.getElementsByClassName("tablinks");
-	for(i = 0; i < tablinks.length; i++)
-	{
-		tablinks[i].className = tablinks[i].className.replace(" active","");
-	}
-	
-	document.getElementById(tabName).style.display = "block";
-	evt.currentTarget.className += " active";
+	$(".tabContent").addClass("hidden");
+	$(".tab").removeClass("active");
+
+	$("#"+tabName).removeClass("hidden");
+	$(evt.currentTarget).addClass("active");
   
-	activeIndex = 99;
-	for(i = 0; i < tablinks.length; i++)
+	activeIndex = 50;
+	for(let i = 0; i < $(".tab").length; i++)
 	{
 		if(i < activeIndex)
 		{
-			if(tablinks[i].className.includes("active"))
+			if($(".tab")[i].className.includes("active"))
 			{
 				activeIndex = i;
-				$(".tab button:nth-child("+(i+1)+")").css("z-index",99);
+				$(".tabContainer button:nth-child("+(i+1)+")").css("z-index",50);
 			}
 			else
 			{
-				$(".tab button:nth-child("+(i+1)+")").css("z-index",i+1);
+				$(".tabContainer button:nth-child("+(i+1)+")").css("z-index",i+1);
 			}
 		}
 		else
 		{
-			$(".tab button:nth-child("+(i+1)+")").css("z-index",99-i);
+			$(".tabContainer button:nth-child("+(i+1)+")").css("z-index",50-i);
 		}
 	}
 }
