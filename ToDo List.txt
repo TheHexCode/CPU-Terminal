@@ -1,0 +1,63 @@
+- Override Title/Contents (Delete File)
+- Include Payload's Name (Do this while adding Reassign/Wipe Tracks)
+- Blend Animation
+- Pause Timer Button
+- Make it so endTimer doesn't enable the button until enough tags exist, either through payload or extra
+- Repeat
+
+- Incorporate Payload
+ -- Adjust Text Sizes for Small Screens
+ -- Fix Tabs (Too Big!)
+ -- Hide Mask Until Mask Picked (Notify that Mask Name is now available?)
+ -- Make selecting a role remove it from the other role selector
+
+-------------------------------------------------------------------------------------------------------------
+
+- Auto-Save Cookie
+- Track User Actions
+- Items
+- Make Active Actions work
+- Loading Animation
+- Make Mask editable in terminal view, and send whatever's there
+- What if someone's handle is the same as an already extant log entry? That CAN'T be you now, because Mask doesn't allow for that.
+- Create Access Log/OOC_Action_Log if it doesn't already exist
+
+-------------------------------------------------------------------------------------------------------------
+
+- Glitchy look to reassigned names
+- Static Glitchy Animation
+- Static Animation Fadeaway
+
+
+
+
+
+
+
+
+
+WEAPONS
+ - CMM Widow > 1HR > The first time you use Slip in a scnee, gain +1 Tags on the next device you hack
+
+SHIELDS
+ - CMM Cocoon > Small Shield > The first time you use Slip in a Scene, gain +1 Tags on the next device you hack
+
+UTILITY
+ - Budget Cyberdeck > Cyberdeck > 1xSim: When you activate Hacking, you gain one extra Tag
+ - CipherSync Beacon > Hacking Watch > While the stopwatch is running, you may increase your Rank in Hacking by 1
+ - CRD Spider Cyberdeck > Cyberdeck > 1xSim: When you active Hacking, you gain one extra Tag
+ - MM Console > Cyberdeck > 2xSim: +1 Tag
+ - Johnny's Special Touch > Cyberdeck > After the first Access action, every other Action action costs 1 fewer Tag, to a minimum of 0
+ - DigiPet > Utility > 1xScene: You can plug your DigiPet into a terminal you have hacked and leave it. It will complete a Hacking Action you have begun. Once you pick up the DigitPet, you can collect any result from it completing the Hacking Action. This does not permit you to do two Hacking Actions simultaneously on the same device.
+ - FKD DC-17 > Cyberdeck > 1xScene: You gain +2 Tags on a drone you've already gained Tags on.
+ - Nerd's Safety Glasses > Utility > 1xSim: When you fail a puzzle that benefits from/requries a Knowledge, you may reattempt it.
+ - Power Glove (Ultra-Hacking 9000) > Arm Implant > All Hacking Actions are 5 seconds faster, to a minimum of 10 seconds.
+ - Shimmerstick Tier 0 > Consumable > Hacking Actions cost 1 additional Tag and take 30 seconds longer
+ - Shimmerstick Tier 1 > Consumable > "                                 "   and take 15 seconds longer
+ - Vigil > Consumable > Use Extra Tags Feature (Max 10 Tags)
+ 
+CUSTOMIZATIONS
+ - Copycat > Cyberdeck Cust. > 1xSim: You may do an additional action in the same category as an action you've already taken on the device instantly.
+ - Pocket Hacker Tier 0 > A/S/W Cust. > 1xSim: You may gain an extra Tag on a device
+ - Pocket Hacker Tier 1 > A/S/W Cust. > 2xSim: "", these are the normal cyberdeck bonuses
+ 
