@@ -1,284 +1,255 @@
-.parentRow
-{
-	display: flex;
-	flex-direction: row;
-	/*padding: 0.25rem;*/
+@font-face {
+	font-family: "DSEG14-ClassicLight";
+	src: url("../Fonts/DSEG14Classic-Light.woff2") format("woff2"),
+         url("../Fonts/DSEG14Classic-Light.woff") format("woff"),
+         url("../Fonts/DSEG14Classic-Light.ttf") format("truetype");
 }
 
-.parentCol
-{
-	display: flex;
-	flex-direction: column;
-	/*padding: 0.25rem;*/
+@font-face {
+	font-family: "DSEG14-ClassicRegular";
+	src: url("../Fonts/DSEG14Classic-Regular.woff2") format("woff2"),
+         url("../Fonts/DSEG14Classic-Regular.woff") format("woff"),
+         url("../Fonts/DSEG14Classic-Regular.ttf") format("truetype");
 }
 
-.rightAlign
-{
-	text-align: right;
+@font-face {
+	font-family: "BigBlue-TerminalPlus";
+	src: url("../Fonts/BigBlue_TerminalPlus.TTF") format("truetype");
 }
 
-.centerAlign
+:root
 {
-	text-align: center;
-	justify-content: center;
+	--bg-color: #110;
+	--fg-color: #FFAC00;
 }
 
-#window
+body
 {
-	background-color: rgba(200,0,200,0.2);
-	gap: 0.25rem;
-	height: 97vh;
-}
-
-/*
-#window div
-{
-	padding: 0.25rem;
-}
-*/
-
-.tab
-{
-	overflow: hidden;
-	justify-content: start;
-	padding: 0;
-	/*color: #0f0;*/
-}
-
-.tab button
-{
-	position: relative;
-	color: inherit;
-	float: left;
-	/*border: 0.5rem outset grey;*/
-	border-image: linear-gradient(to right, #ccc -50%, #666 100%) 1;
-	border-width: 0.5rem;
-	border-style: solid;
-	border-bottom: none;
-	outline: none;
-	cursor: pointer;
-	padding: 0.5rem 0.25rem;
-	margin-top: 0.5rem;
-}
-
-.tab button.active
-{
-	position:relative;
-	z-index: 99;
-	/*background-color: #000;*/
-	background-color: #fff;
-	padding: 0.75rem 0.25rem;
-	border-color: #ccc;
-	border-image: none;
-	border-bottom: none;
+	height: 98vh;
 	margin: 0;
-}
-
-.tab button:not(.active)
-{
-	padding-top: 0.25rem;
-	/*background-color: #030;*/
-	background-color: #ddd;
-}
-
-.tab button:nth-child(1):not(.active)
-{
-	z-index: 4;
-}
-
-.tab button:nth-child(2):not(.active)
-{
-	z-index: 3;
-}
-
-.tab button:nth-child(3):not(.active)
-{
-	z-index: 2;
-}
-
-.tab button:nth-child(4):not(.active)
-{
-	z-index: 1;
-}
-
-.tab button:not(:first-child)
-{
-	margin-left: -0.5rem;
-}
-
-.tabcontent
-{
-	position: relative;
-	z-index: 98;
-	display: none;
-	/*background-color: #000;*/
-	background-color: #fff;
-	/*border: 0.5rem outset grey;*/
-	border-image: linear-gradient(to bottom, #ccc 0%, #666 100%) 1;
-	border-width: 0.5rem;
-	border-style: solid;
-	margin-top: -0.5rem;
-}
-
-.gridDefault
-{
-	display: grid;
-	grid-template-columns: 10% max-content auto [end];
-	column-gap: 0.5rem;
-	grid-row-gap: 0.25rem;
 	padding: 0.5rem;
-	border: 1px black solid;
+	font-family: "BigBlue-TerminalPlus";
+	font-size: 1em;
+	background: var(--bg-color);
+	color: var(--fg-color);
+	text-shadow: 0 0 0px;
 }
 
-#defLabel
+body::before,
+body::after
 {
-	grid-row: 1;
-	grid-column: 1 / end;
-	display: grid;
-	grid-template-columns: subgrid;
+	content:"";
+	background: linear-gradient(to bottom, #FFF, #AAA);
+    mix-blend-mode: multiply;
+    background-repeat: repeat;
+	background-size: 100% 2px;
+	pointer-events: none;
+    inset: 0;
+    position: fixed;
+    z-index: 99;
+	width: 100%;
+	height: 100%;
 }
 
-#handleLabel
-{
-	grid-column: 1 / end;
-}
-
-#defInput
-{
-	display: grid;
-	grid-template-columns: subgrid;
-	grid-row: 2;
-	grid-column: 1 / end;
-}
-
-.reqstar,.error
+.red
 {
 	color: red;
 }
 
-#statsHandle
-{
-	grid-column: 2 / end;
-}
-
-#defMaskLabel
-{
-	grid-row: 3;
-	grid-column: 1 / end;
-	display: grid;
-	grid-template-columns: subgrid;
-}
-
-#maskLabel
-{
-	display: none;
-	grid-column: 1 / end;
-}
-
-#defMaskInput
-{
-	display: grid;
-	grid-template-columns: subgrid;
-	grid-row: 4;
-	grid-column: 1 / end;
-}
-
-#maskHandle
-{
-	display: none;
-	grid-column: 2 / end;
-}
-
-#defPrimary
-{
-	grid-row: 5;
-	grid-column: 1 / end;
-	display: grid;
-	grid-template-columns: subgrid;
-}
-
-#primaryLabel
-{
-	grid-column: 1 / 3;
-}
-
-#statsPrimary
-{
-	grid-column: 3;
-}
-
-#defSecondary
-{
-	grid-row: 6;
-	grid-column: 1 / end;
-	display: grid;
-	grid-template-columns: subgrid;
-}
-
-#secondaryLabel
-{
-	grid-column: 1 / 3;
-}
-
-#statsSecondary
-{
-	grid-column: 3;
-}
-
-.statBlock
-{
-	/*border: 1px #0f0 solid;*/
-	border: 1px #000 solid;
-	border-radius: 0.5rem;
-	/*color: #0f0;*/
-	color: #000;
-	background-color: inherit;
-	/*background-color: rgba(100,100,0,0.2);*/
-	margin: 0.25rem;
-	padding: 0rem 0.25rem 0.25rem 0rem;
-}
-
-.statItem
-{
-	flex-grow: 1;
-	flex-basis: content;
-	margin: 0.25rem 0rem 0rem 0.25rem;
-}
-
-.hiddenStat
+.hidden
 {
 	display: none;
 }
 
-.shownStat
+.invisible
+{
+	visibility: hidden;
+}
+
+.dimmed
+{
+	filter: brightness(50%);
+}
+
+button
+{
+	font-family: "BigBlue-TerminalPlus";
+	background-color: var(--fg-color);
+	color: var(--bg-color);
+	border-color: var(--bg-color);
+	border-radius: 0.25rem;
+	border-width: 2px;
+	box-shadow: 0 0 0.5rem var(--fg-color);
+}
+
+button:not(:disabled):not(.profTab):hover
+{
+	box-shadow: 0 0 15px var(--fg-color);
+}
+
+input[type="checkbox"]
+{
+	background-color: var(--bg-color);
+}
+
+h2
+{
+	margin-top: 0;
+	text-decoration: underline;
+}
+
+#main
+{
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.25rem;
+	max-width: 400px;
+	margin: 0 auto;
+}
+h1
+{
+	margin: 0;
+	text-align: center;
+	text-decoration: underline;
+	font-size: 180%
+}
+
+h2
+{
+	margin: 1rem;
+	text-align: center;
+	text-decoration: underline;
+	font-size: 140%;
+}
+
+.infoBox
 {
 	display: flex;
+	flex-direction: column;
+	border: 0.5rem solid grey;
+	/*align-items: center;*/
+	/*text-align: center;*/
+	padding: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
-p
+.infoName
 {
-	margin: 0.25rem;
+	display: grid;
+	grid-template-columns: [start] 1rem [tab] auto [end];
 }
 
-.statBlock > p
+.infoName label
 {
-	margin: 0.25rem 0rem 0rem 0.25rem;
+	grid-row: 1;
+	grid-column: start / end;
 }
 
-#saveState
+.infoName input
 {
+	grid-row: 2;
+	grid-column: tab / end;
+}
+
+.infoRole
+{
+	display: grid;
+	grid-template-columns: [start] 50% [mid] auto [end];
+}
+
+.infoRole label
+{
+	grid-row: 1;
+	grid-column: start / mid;
+}
+
+.infoRole select
+{
+	display: grid;
+	grid-column: mid / end;
+}
+
+.zoneBox
+{
+	display: flex;
+	flex-direction: column;
+}
+
+#profTabContainer
+{
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.tabSubContainer
+{
+	flex-grow: 1;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	margin-top: -0.5rem;
+}
+
+.profTab
+{
+    flex-grow: 1;
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+	box-shadow: 0 0 0;
+	cursor: pointer;
+	padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+	border-radius: 0;
+}
+
+.profTab.active
+{
+	z-index: 75;
+	border-image: linear-gradient(to bottom, var(--fg-color) 30%, grey 100%) 1;
+	border-width: 0.5rem;
+	border-bottom: none;
+}
+
+.profTab:not(.active)
+{
+	border-image: linear-gradient(to bottom, dimgrey 30%, transparent 100%) 1;
+	border-width: 0.5rem;
+	border-style: solid;
+}
+
+.tabSubContainer .profTab:first-of-type:not(.active)
+{
+	margin: 0.5rem -0.5rem 0 0;
+}
+
+.tabSubContainer .profTab:last-of-type:not(.active)
+{
+	margin: 0.5rem 0 0 -0.5rem;
+}
+
+
+.profContent
+{
+    border: 0.5rem solid grey;
+    padding: 0.5rem;
+    margin-top: -0.5rem;
+}
+
+#saveBar
+{
+	display: flex;
+	flex-direction: row;
 	justify-content: space-between;
+	align-items: flex-end;
 }
 
-#footer
+.spacer
 {
-	order: 99;
+	flex-grow: 1;
+}
+
+footer
+{
 	margin-top: auto;
-	margin-bottom: 0.25rem;
+	align-self: flex-end;
 }
-/*
-:not(.parentCol,.parentRow,.dsegOn)
-{
-	background-color: #FFF;
-}
-*/

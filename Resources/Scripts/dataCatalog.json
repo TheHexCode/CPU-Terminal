@@ -1,0 +1,340 @@
+{
+	"files":
+	{
+		"title": "FILES",
+		"unit": "File",
+		"states":
+		{
+			"initial":
+			{
+				"title": false,
+				"contents": false,
+				"access":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Access File",
+							"state": "read"
+						}
+					]
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Copy File",
+							"state": "copied"
+						},
+						{
+							"title": "Delete File",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"read":
+			{
+				"title": true,
+				"contents": true,
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Copy File",
+							"state": "copied"
+						},
+						{
+							"title": "Delete File",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"copied":
+			{
+				"title": true,
+				"contents": true,
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Delete File",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"deleted":
+			{
+				"title": "ERROR",
+				"contents": "File Not Found",
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": false
+				}
+			}
+		}
+	},
+	"darkweb":
+	{
+		"title": "DARK WEB",
+		"unit": "File",
+		"states":
+		{
+			"initial":
+			{
+				"title": false,
+				"contents": false,
+				"access":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Access File",
+							"state": "read"
+						}
+					]
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Copy File",
+							"state": "copied"
+						},
+						{
+							"title": "Delete File",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"read":
+			{
+				"title": true,
+				"contents": true,
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Copy File",
+							"state": "copied"
+						},
+						{
+							"title": "Delete File",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"copied":
+			{
+				"title": true,
+				"contents": true,
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Delete File",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"deleted":
+			{
+				"title": "ERROR",
+				"contents": "File Not Found",
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": false
+				}
+			}
+		}
+	},
+	"cameras":
+	{
+		"title": "CAMERAS",
+		"unit": "Cam",
+		"states":
+		{
+			"initial":
+			{
+				"access":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "View Feed",
+							"state": "view"
+						},
+						{
+							"title": "Power Down",
+							"state": "disabled"
+						}
+					]
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Copy Footage",
+							"state": "copied"
+						},
+						{
+							"title": "Delete Footage",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"view":
+			{
+				"access":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Power Down",
+							"state": "disabled"
+						}
+					]
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Copy Footage",
+							"state": "copied"
+						},
+						{
+							"title": "Delete Footage",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"disabled":
+			{
+				"access":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Power On",
+							"state": "previous"
+						}
+					]
+				},
+				"modify":
+				{
+					"enabled": false
+				}
+			},
+			"copied":
+			{
+				"access":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Power Down",
+							"state": "disabled"
+						}
+					]
+				},
+				"modify":
+				{
+					"enabled": true,
+					"actions":
+					[
+						{
+							"title": "Delete Footage",
+							"state": "deleted"
+						}
+					]
+				}
+			},
+			"deleted":
+			{
+				"title_override": "ERROR",
+				"contents_override": "File Not Found",
+				"access":
+				{
+					"enabled": false
+				},
+				"modify":
+				{
+					"enabled": false
+				}
+			}
+		}
+	},
+	"locks":
+	{
+		"title": "LOCKS",
+		"unit": "Lock"
+	},
+	"defenses":
+	{
+		"title": "AUTOMATED DEFENSIVE SYSTEMS",
+		"unit": "Sys"
+	},
+	"utilities":
+	{
+		"title": "UTILITY SYSTEMS",
+		"unit": "Sys"
+	},
+	"puzzles":
+	{
+		"title": "PUZZLES",
+		"unit": "Puzzle"
+	}
+}
