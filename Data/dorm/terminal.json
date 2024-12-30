@@ -1,41 +1,108 @@
 {
 	"name": "TERMINAL DORM",
-	"type": "terminal",
 	"access": 2,
-	"files":
+	"data":
 	[
 		{
-			"type": "data",
-			"name": "X Credits Paydata",
-			"access": 0,
-			"modify": 1
+			"type": "files",
+			"entries":
+			[
+				{
+					"title": "Paydata",
+					"contents": "10 Credits",
+					"access": 0,
+					"modify": 1
+				},
+				{
+					"special": "trap",
+					"effects":
+					[
+						"3 Strikes to Torso!"
+					],
+					"access": 1,
+					"modify": 2
+				},
+				{
+					"title": "Mission Data",
+					"contents": "Data Piece #1/3",
+					"access": 2,
+					"modify": 3
+				},
+				{
+					"special": "ice",
+					"title": "SNITCHES 2",
+					"effects":
+					[
+						"ALARM",
+						"FEAR 30s",
+						"MARKED"
+					],
+					"disarm": 3,
+					"subEntries":
+					[
+						{
+							"title": "Mission Data",
+							"contents": "Data Piece #2/3",
+							"access": 1,
+							"modify": 2
+						},
+						{
+							"title": "Paydata",
+							"contents": "100 Credits",
+							"access": 2,
+							"modify": 3
+						}
+					]
+				}
+			]
 		},
 		{
-			"type": "trap",
-			"name": "Trap! 3 Strikes to Torso!",
-			"access": 1,
-			"modify": 2
+			"type": "darkweb",
+			"entries":
+			[
+				{
+					"title": "Paydata",
+					"contents": "15 Credits",
+					"access": 3,
+					"modify": 4
+				},
+				{
+					"title": "Mission Data",
+					"contents": "Data Piece #3/3",
+					"access": 4,
+					"modify": 5
+				}
+			]
 		},
 		{
-			"type": "data",
-			"name": "Target Data",
-			"access": 2,
-			"modify": 3
+			"type": "cameras",
+			"entries":
+			[
+			]
 		},
 		{
-			"type": "ice",
-			"name": "EXAMPLE ICE",
-			"access": 3,
-			"modify": 4
-		}
-	],
-	"darkweb":
-	[
+			"type": "locks",
+			"entries":
+			[
+			]
+		},
 		{
-			"name": "DW - X Credits Paydata",
-			"type": "data",
-			"access": 4,
-			"modify": 5
+			"type": "defenses",
+			"entries":
+			[
+			]
+		},
+		{
+			"type": "utilities",
+			"entries":
+			[
+			]
+		},
+		{
+			"type": "puzzles",
+			"entries":
+			[
+			]
 		}
 	]
 }

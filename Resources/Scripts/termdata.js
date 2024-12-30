@@ -256,13 +256,20 @@ class Terminal
 	
 	appendAccessLog(newAccess)
 	{
-		return (this.#accessLog.push(newAccess))-1;
-		
-		/*
-		fs.writeFile("Data\\"+this.#suffix+"\\accessLog.json",JSON.stringify(this.#accessLog),(err) => {
-			if (err) throw err;
+		let $newIndex = this.#accessLog.push(newAccess)-1;
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "Resources\\Scripts\\Files\\updateAccessLog.php",
+			data:
+			{
+				suffixID: this.#suffix,
+				newLog: JSON.stringify(this.#accessLog)
+			}
 		});
-		*/
+
+		return $newIndex;
 	}
 	
 	#buildEntry(catType, index, entry, parentEntry=false)
@@ -839,13 +846,9 @@ $(document).ready(async function()
 	
 	setupAccessPage();
 	
-	preloadImages();
-	
 	startTimer("CRACK",5);
 	
 	setupTerminalPage();
-	
-	console.log(await createFile("./Resources/Scripts/dataCatalog.json","./Data/" + suffix.get("id") + "/actionLog.csv","text/plain"));
 });
 
 $(document).on("focus",function()
@@ -858,22 +861,6 @@ $(document).on("focus",function()
 		}
 	}
 });
-
-function preloadImages()
-{
-	let img = new Image();
-	img.src = "Resources\\Images\\Borders\\Bracket_Border.png";
-	img.src = "Resources\\Images\\Borders\\Bracket_Border_Ice.png";
-	img.src = "Resources\\Images\\Borders\\Thin_Border.png";
-	img.src = "Resources\\Images\\PlayPause\\Pause.png";
-	img.src = "Resources\\Images\\PlayPause\\Play.png";
-	img.src = "Resources\\Images\\SubTabs\\cameras.png";
-	img.src = "Resources\\Images\\SubTabs\\darkweb.png";
-	img.src = "Resources\\Images\\SubTabs\\defenses.png";
-	img.src = "Resources\\Images\\SubTabs\\files.png";
-	img.src = "Resources\\Images\\SubTabs\\locks.png";
-	img.src = "Resources\\Images\\SubTabs\\utilities.png";
-}
 
 function startTimer(context,seconds,callback=null)
 {
@@ -1318,7 +1305,6 @@ function accessTerminal()
 	payload.setCurrentTags(payload.getCurrentTags()-terminal.getReqAccess());
 	updateTagDisplay("STANDBY",payload.getCurrentTags());
 	
-	//.entryInterface > 
 	$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") > payload.getCurrentTags()}).prop("disabled",true);
 	
 	clearInterval(timer);
@@ -1390,34 +1376,23 @@ function logAction(logIndex,action)
 	if(action === "reassign")
 	{
 		actionCost = 2;
-		
-		buttonActions.push({
-			text: "Confirm",
-			click: function()
-			{
-				$(this).dialog("close");
-				updateAccessLog(path,"disarm",actionCost); //CHANGE
-			}
-		});
-		
-		$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?");
 	}
 	else if (action === "wipe")
 	{
 		actionCost = 1;
-		
-		buttonActions.push({
-			text: "Confirm",
-			click: function()
-			{
-				$(this).dialog("close");
-				updateAccessLog(path,"disarm",actionCost); //CHANGE
-			}
-		});
-		
-		$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?");
 	}
+		
+	buttonActions.push({
+		text: "Confirm",
+		click: function()
+		{
+			$(this).dialog("close");
+			updateAccessLog(path,action,actionCost); //CHANGE
+		}
+	});
 	
+	$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?");
+
 	$("#popup").dialog({
 		title: "Confirm " + (action.charAt(0).toUpperCase() + action.slice(1)) + " Action",
 		height: "auto",
