@@ -130,11 +130,12 @@ body::after
 {
 	--rgb: rgb(128,128,128);
 }
-
+/*
 .hidden
 {
 	display: none;
 }
+*/
 
 .invisible
 {
@@ -737,7 +738,7 @@ ul
 	color: red;
 }
 
-.disarmed
+.disarmed, .broken
 {
 	text-decoration: line-through;
 }
@@ -797,4 +798,9 @@ ul
 footer
 {
 	align-self: flex-end;
+}
+
+.hidden
+{
+	display: none;
 }

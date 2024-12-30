@@ -45,6 +45,24 @@ class Terminal
 		
 		return this.#termData.data[catIndex];
 	}
+
+	getLogEntry(index)
+	{
+		let entry = this.#accessLog[index];
+
+		if(entry.reassignee)
+		{
+			return entry.reassignee;
+		}
+		else if(entry.mask)
+		{
+			return entry.mask;
+		}
+		else
+		{
+			return entry.handle;
+		}
+	}
 	
 	getEntry(path)
 	{
@@ -137,9 +155,9 @@ class Terminal
 					catalogEntry.state = "open";
 					console.log(catalogEntry);
 				}
-				else if(state == "disarm")
+				else if(state == "break")
 				{
-					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entrySecret").addClass("disarmed");
+					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entrySecret").addClass("broken");
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entryMasking").addClass("invisible");
 				
 					$(terminalEntry + "> .entryIntContainer button").attr("data-enabled","false");
@@ -227,12 +245,12 @@ class Terminal
 			{
 				if($('[id="'+entry.id+'"]').hasClass("ice"))
 				{
-					let newDisCost = Math.max($('[id="'+entry.id+'"] .disarmButton').attr("data-cost")-rank,0);
+					let newDisCost = Math.max($('[id="'+entry.id+'"] .breakButton').attr("data-cost")-rank,0);
 					
 					let disS = (newDisCost === 1) ? "" : "s";
 					
-					$('[id="'+entry.id+'"] .disarmButton').attr("data-cost",newDisCost);
-					$('[id="'+entry.id+'"] .disarmButton').text(newDisCost + " Tag" + disS);
+					$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newDisCost);
+					$('[id="'+entry.id+'"] .breakButton').text(newDisCost + " Tag" + disS);
 				}
 				else
 				{
@@ -270,6 +288,29 @@ class Terminal
 		});
 
 		return $newIndex;
+	}
+
+	updateAccessLog(index,type,newReass)
+	{
+		if(type === "wipe")
+		{
+			this.#accessLog[index].state = "wiped";
+		}
+		else if (type === "reassign")
+		{
+			this.#accessLog[index].reassignee = newReass;
+		}
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "Resources\\Scripts\\Files\\updateAccessLog.php",
+			data:
+			{
+				suffixID: this.#suffix,
+				newLog: JSON.stringify(this.#accessLog)
+			}
+		});
 	}
 	
 	#buildEntry(catType, index, entry, parentEntry=false)
@@ -361,12 +402,18 @@ class Terminal
 			if(logEntry.state !== "wiped")
 			{
 				allContent += 	'<li id="log' + index + '" class="logEntry">' +
-									'User: ' + logHandle +
+									'User: <span class="logName">' + logHandle + '</span>' +
 									'<div class="logActions hidden">' +
 										'<hr/>' +
 										'<span class="hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" onclick="logAction('+index+',\'reassign\')">2 Tags</button></span>' +
 										'<span class="hidden">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" onclick="logAction('+index+',\'wipe\')">1 Tag</button></span>' +
 									'</div>' +
+								'</li>';
+			}
+			else
+			{
+				allContent += 	'<li id="log' + index + '" class="logEntry">' +
+									'ERROR: LOG ENTRY NOT FOUND' +
 								'</li>';
 			}
 		});
@@ -381,7 +428,7 @@ class Terminal
 			{
 				let accS = (entry.access==1) ? "" : "s";
 				let modS = (entry.modify==1) ? "" : "s";
-				let disS = (entry.disarm==1) ? "" : "s";
+				let disS = (entry.break==1) ? "" : "s";
 				
 				let entryString = 	'<div id="' + entry.path + '" class="entry ' + subClass + '">' +
 										'<div class="entryTitleBar">';
@@ -402,7 +449,7 @@ class Terminal
 												'Unwrap:<button class="unwrapButton" data-enabled="true" data-cost="0" onclick="termAction(\'' + entry.path + '\',\'unwrap\')">Free!</button>' +
 											'</div>' +
 											'<div class="entryInterface">' +
-												'Disarm:<button class="disarmButton" data-enabled="true" data-cost="' + entry.disarm + '" onclick="termAction(\'' + entry.path + '\',\'disarm\')">' + entry.disarm +' Tag' + disS + '</button>' +
+												'Break:<button class="breakButton" data-enabled="true" data-cost="' + entry.break + '" onclick="termAction(\'' + entry.path + '\',\'break\')">' + entry.break +' Tag' + disS + '</button>' +
 											'</div>' +
 										'</div>';
 				}
@@ -1108,7 +1155,7 @@ function rewriteTerminalPage()
 					((newLogEntry.mask !== null) ? newLogEntry.mask : newLogEntry.handle));
 	
 	$("#logList").append(	'<li id="log' + newIndex + '" class="logEntry itsYou">' +
-								'You: ' + logHandle +
+								'You:  <span class="logName">' + logHandle + '</span>' +
 								'<div class="logActions hidden">' +
 									'<hr/>' +
 									'<span class="hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" onclick="logAction('+newIndex+',\'reassign\')">2 Tags</button></span>' +
@@ -1337,6 +1384,41 @@ function executeCommand(path,newState,cost)
 	payload.setCurrentTags(payload.getCurrentTags()-cost);
 }
 
+function updateAccessLog(logIndex,action,reass)
+{
+	let cost;
+	let callback;
+
+	if(action === "reassign")
+	{
+		cost = 2;
+		callback = function() {
+			terminal.updateAccessLog(logIndex,"reassign",reass);
+			$("#log"+logIndex+" .logName").html(reass);
+
+			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+		};
+	}
+	else if (action === "wipe")
+	{
+		cost = 1;
+		callback = function() {
+			terminal.updateAccessLog(logIndex,"wipe");
+			$("#log"+logIndex).html('ERROR: LOG ENTRY NOT FOUND');
+			
+			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+		};
+	}
+	
+	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
+
+	startTimer("EXECUTE",payload.getTimerSecs(),callback);
+		
+	$("button[data-cost]").prop("disabled",true);
+	$("#status").html(">> EXECUTING COMMAND...");
+	payload.setCurrentTags(payload.getCurrentTags()-cost);
+}
+
 function openTab(evt, bodyID)
 {
 	$(".hackTab.active").removeClass("active");
@@ -1368,7 +1450,7 @@ function helpPopup()
 
 function logAction(logIndex,action)
 {
-	let logEntry = terminal.getLogEntry(logIndex); //CREATE
+	let logEntry = terminal.getLogEntry(logIndex);
 	
 	let actionCost;
 	let buttonActions = [];
@@ -1376,10 +1458,15 @@ function logAction(logIndex,action)
 	if(action === "reassign")
 	{
 		actionCost = 2;
+		$("#popup").html("Reassign Log Entry of User " + logEntry + " to the below username for 2 Tags?<br/><br/>" +
+						 "<input id='newReass' placeholder='Enter New Log Entry Name Here' style='width:100%'></input><br/><br/>" +
+						 "NOTE: This Reassignment MAY be used to imitate someone else!");
 	}
 	else if (action === "wipe")
 	{
 		actionCost = 1;
+
+		$("#popup").html("Wipe Log Entry of User " + logEntry + " for 1 Tag?");
 	}
 		
 	buttonActions.push({
@@ -1387,12 +1474,10 @@ function logAction(logIndex,action)
 		click: function()
 		{
 			$(this).dialog("close");
-			updateAccessLog(path,action,actionCost); //CHANGE
+			updateAccessLog(logIndex,action,$("#newReass").val());
 		}
 	});
 	
-	$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?");
-
 	$("#popup").dialog({
 		title: "Confirm " + (action.charAt(0).toUpperCase() + action.slice(1)) + " Action",
 		height: "auto",
@@ -1430,9 +1515,9 @@ function termAction(path,action)
 				}
 			});
 		
-			$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for no Tags?<br/><br/>WARNING: Unwrapping ICE will trip the ICE, incurring negative effects! Disarm the ICE instead to avoid these effects.");
+			$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for no Tags?<br/><br/>WARNING: Unwrapping will trip the ICE, incurring negative effects! Break the ICE instead to avoid these effects.");
 		}
-		else if(action == "disarm")
+		else if(action == "break")
 		{
 			let actionCost = Math.max(entry[action]-category.repeated,0);
 			
@@ -1441,7 +1526,7 @@ function termAction(path,action)
 				click: function()
 				{
 					$(this).dialog("close");
-					executeCommand(path,"disarm",actionCost);
+					executeCommand(path,"break",actionCost);
 				}
 			});
 			

@@ -37,7 +37,7 @@
 						"FEAR 30s",
 						"MARKED"
 					],
-					"disarm": 3,
+					"break": 3,
 					"subEntries":
 					[
 						{
