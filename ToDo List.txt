@@ -19,8 +19,26 @@
 - Make Active Actions work
 - Loading Animation
 - Make Mask editable in terminal view, and send whatever's there
-- What if someone's handle is the same as an already extant log entry? That CAN'T be you now, because Mask doesn't allow for that.
 - Create Access Log/OOC_Action_Log if it doesn't already exist
+
+- Subtab Images For:
+ -- Log -> ">_" or bullet list?
+ -- Files
+ -- DarkWeb -> Sunglasses?
+ -- Camera -> Security Camera?
+ -- Locks
+ -- Defenses -> Better Bullseye/Crosshairs?
+ -- Utilities -> Better Lightning Bolt?
+ -- Puzzles -> Puzzle Piece
+
+ -- Active/Passive/Items
+
+- CPU Disclaimer text
+
+-------------------------------------------------------------------------------------------------------------
+
+- Use POST instead of GET for term info
+- Use SQL Database for term info
 
 -------------------------------------------------------------------------------------------------------------
 

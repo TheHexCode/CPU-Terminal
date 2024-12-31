@@ -35,6 +35,12 @@ body
 	text-shadow: 0 0 0px;
 }
 
+body.bricked
+{
+	background: var(--fg-color);
+	color: var(--bg-color);
+}
+
 body::before,
 body::after
 {
@@ -88,7 +94,7 @@ body::after
 	border-radius: 0;
 }
 
-.ui-button, .ui-button:hover
+.ui-button, .ui-button:hover, .ui-button:focus
 {
 	color: var(--bg-color);
 	background-image: none;
@@ -850,6 +856,7 @@ ul
 footer
 {
 	align-self: flex-end;
+	font-size: 0.6rem;
 }
 
 .hidden

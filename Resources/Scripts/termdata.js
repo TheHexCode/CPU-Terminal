@@ -20,6 +20,11 @@ class Terminal
 		this.#buildDataEntries();
 		this.#writeTerminal();
 	}
+
+	getTitle()
+	{
+		return this.#termData.name;
+	}
 	
 	getReqAccess()
 	{
@@ -727,7 +732,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>BRICK:</span>' +
-										'<button data-enabled="true" data-cost="4" onclick="payAction(\"brick\")">4 Tags</span>' +
+										'<button data-enabled="true" data-cost="4" onclick="payAction(\'brick\')">4 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -736,7 +741,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>RIGGED:</span>' +
-										'<button data-enabled="true" data-cost="6" onclick="payAction(\"rigg\")">6 Tags</span>' +
+										'<button data-enabled="true" data-cost="6" onclick="payAction(\'rigg\')">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -745,7 +750,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>ROOT DEVICE:</span>' +
-										'<button data-enabled="true" data-cost="6" onclick="payAction(\"root\")">6 Tags</span>' +
+										'<button data-enabled="true" data-cost="6" onclick="payAction(\'root\')">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -880,7 +885,7 @@ function tens(numStr)
 $(document).ready(async function()
 {	
 	preloadImages();
-	
+
 	suffix = new URLSearchParams(window.location.search);
 	
 	termJSON = await fetch("Data\\"+suffix.get("id")+"\\terminal.json", {cache:"reload"});
@@ -1085,6 +1090,8 @@ function pauseTimer()
 
 function setupAccessPage()
 {
+	$("#termTitle").html(terminal.getTitle());
+
 	$("#reqTags").html(tens(terminal.getReqAccess()));
 	
 	if(payload.hasPayload())
@@ -1171,10 +1178,7 @@ function setupTerminalPage()
 }
 
 function rewriteTerminalPage()
-{	
-	let payloadHandle = payload.getHandle();
-	let handle;
-	
+{		
 	let newLogEntry = {};
 	newLogEntry["handle"] = payload.getPayloadFunction("handle");
 	newLogEntry["mask"] = payload.getPayloadFunction("mask") ? payload.getPayloadFunction("maskHandle") : null;
@@ -1409,11 +1413,11 @@ function executeCommand(path,newState,cost)
 		}
 		
 		$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+		payload.setCurrentTags(payload.getCurrentTags()-cost);
 	});
 	
 	$("button[data-cost]").prop("disabled",true);
 	$("#status").html(">> EXECUTING COMMAND...");
-	payload.setCurrentTags(payload.getCurrentTags()-cost);
 }
 
 function updateAccessLog(logIndex,action,reass)
@@ -1429,6 +1433,7 @@ function updateAccessLog(logIndex,action,reass)
 			$("#log"+logIndex+" .logName").html(reass);
 
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+			payload.setCurrentTags(payload.getCurrentTags()-cost);
 		};
 	}
 	else if (action === "wipe")
@@ -1439,6 +1444,7 @@ function updateAccessLog(logIndex,action,reass)
 			$("#log"+logIndex).html('ERROR: LOG ENTRY NOT FOUND');
 			
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+			payload.setCurrentTags(payload.getCurrentTags()-cost);
 		};
 	}
 	
@@ -1448,7 +1454,76 @@ function updateAccessLog(logIndex,action,reass)
 		
 	$("button[data-cost]").prop("disabled",true);
 	$("#status").html(">> EXECUTING COMMAND...");
-	payload.setCurrentTags(payload.getCurrentTags()-cost);
+}
+
+function executeAction(action)
+{
+	let cost;
+	let timerSecs;
+	let callback;
+
+	if(action === "brick")
+	{
+		cost = 4;
+		timerSecs = payload.getTimerSecs();
+		callback = function() {
+			$("body").addClass("bricked");
+
+			let handle = payload.getHandle();
+			handle = (handle.masked) ? handle.mask : handle.handle;
+			handleLength = handle.length;
+
+			let hexHandle = [];
+
+			for(let i = 0; i < handleLength; i++)
+			{
+				hexHandle.push(handle.charCodeAt(i).toString(16));
+			}
+
+			for(let j = handleLength; j < 15; j++)
+			{
+				hexHandle.push("00");
+			}
+
+			let stopCode =  "0x000000" + hexHandle[0] + "<br/>" +
+							"(0x" + hexHandle[1] + hexHandle[2] + hexHandle[3] + hexHandle[4] + "," +
+							"0x" + hexHandle[5] + hexHandle[6] + hexHandle[7] + hexHandle[8] + ",<br/>" +
+							"&nbsp;0x" + hexHandle[9] + hexHandle[10] + hexHandle[11] + hexHandle[12] + "," +
+							"0x" + hexHandle[13] + hexHandle[14] + "0000 )"
+
+			$("#main").html("<p>A problem has been detected and HexOS has been shut down to prevent damage to your device.</p>" +
+							"<p>UNMOUNTABLE_BOOT_VOLUME</p>" +
+							"<p>If this is the first time you've seen this error screen, restart your computer. If this screen appears again, follow these steps:" +
+							"<p>Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer for any HexOS updates you might need.</p>" +
+							"<p>If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use Safe Mode to remove or disable components, restart your computer, press F8 to select Advanced Startup Options, and then select Safe Mode.</p>" +
+							"<p>Technical Information:</p>" +
+							"<p>*** STOP: " + stopCode + "</p>" +
+							"<p><br/>Beginning dump of physical memory<br/>" +
+							"Physical memory dump complete.<br/>" +
+							"Contact your system administrator or technical support group for further<br/>" +
+							"assistance.</p>" +
+							"<footer>CPU DISCLAIMER</footer>"
+			);
+			payload.setCurrentTags(payload.getCurrentTags()-cost);
+		};
+	}/*
+	else if (action === "wipe")
+	{
+		cost = 1;
+		callback = function() {
+			terminal.updateAccessLog(logIndex,"wipe");
+			$("#log"+logIndex).html('ERROR: LOG ENTRY NOT FOUND');
+			
+			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+		};
+	}*/
+	
+	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
+
+	startTimer("EXECUTE",timerSecs,callback);
+		
+	$("button[data-cost]").prop("disabled",true);
+	$("#status").html(">> EXECUTING COMMAND...");
 }
 
 function openTab(evt, bodyID)
@@ -1483,9 +1558,7 @@ function helpPopup()
 function logAction(logIndex,action)
 {
 	let logEntry = terminal.getLogEntry(logIndex);
-	
 	let actionCost;
-	let buttonActions = [];
 	
 	if(action === "reassign")
 	{
@@ -1500,21 +1573,19 @@ function logAction(logIndex,action)
 
 		$("#popup").html("Wipe Log Entry of User " + logEntry + " for 1 Tag?");
 	}
-		
-	buttonActions.push({
-		text: "Confirm",
-		click: function()
-		{
-			$(this).dialog("close");
-			updateAccessLog(logIndex,action,$("#newReass").val());
-		}
-	});
 	
 	$("#popup").dialog({
 		title: "Confirm " + (action.charAt(0).toUpperCase() + action.slice(1)) + " Action",
 		height: "auto",
 		width:$("#main").width(),
-		buttons: buttonActions,
+		buttons: [{
+			text: "Confirm",
+			click: function()
+			{
+				$(this).dialog("close");
+				updateAccessLog(logIndex,action,$("#newReass").val());
+			}
+		}],
 		open: function(event,ui)
 		{
 			updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
@@ -1528,9 +1599,41 @@ function logAction(logIndex,action)
 
 function payAction(action)
 {
-	//brick -> 4 Tags, permanently disable device (until repair?)
-	//rigg -> 6 Tags, all files/data on terminal deleted at end of scene
-	//root -> 6 Tags, wipe all software/data from device (can install new software if in possession)
+	//brick -> 4 Tags, Action Seconds -> Blue Screen | [permanently disable device (until repair?)]
+	//rig -> 6 Tags, Action Seconds -> Rigged Stamp | [all files/data on terminal deleted at end of scene]
+	//root -> 6 Tags, Hard 30s, 5min hands-off timer -> BIOS | wipe all software/data from device (can install new software if in possession)
+
+	let actionCost;
+
+	if(action === "brick")
+	{
+		actionCost = 4;
+
+		$("#popup").html("Brick Device for 4 Tags?<br/><br/>" +
+			"<span class='red'>WARNING: Bricking a Device will render it inoperable until repaired!</span>");
+	}
+
+	$("#popup").dialog({
+		title: "Confirm " + (action.charAt(0).toUpperCase() + action.slice(1)) + " Action",
+		height: "auto",
+		width:$("#main").width(),
+		buttons: [{
+			text: "Confirm",
+			click: function()
+			{
+				$(this).dialog("close");
+				executeAction(action);
+			}
+		}],
+		open: function(event,ui)
+		{
+			updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
+		},
+		close: function(event,ui)
+		{
+			updateTagDisplay("STANDBY",payload.getCurrentTags());
+		}
+	});
 }
 
 function termAction(path,action)
