@@ -862,7 +862,6 @@ class Payload
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//const fs = require('fs');
 var timer = 100;
 var timerBlink;
 var pause = false;
@@ -896,6 +895,8 @@ $(document).ready(async function()
 	startTimer("CRACK",5);
 	
 	setupTerminalPage();
+
+	preloadImages();
 });
 
 $(document).on("focus",function()
@@ -908,6 +909,32 @@ $(document).on("focus",function()
 		}
 	}
 });
+
+function preloadImages()
+{
+	const bracketBorder = new Image();
+	bracketBorder.src = "Data\\Images\\Borders\\Bracket_Border.png"
+	const bracketBorderIce = new Image();
+	bracketBorderIce.src = "Data\\Images\\Borders\\Bracket_Border_Ice.png"
+	const thinBorder = new Image();
+	thinBorder.src = "Data\\Images\\Borders\\Thin_Border.png"
+	const pauseImage = new Image();
+	thinBorder.src = "Data\\Images\\PlayPause\\Pause.png"
+	const playImage = new Image();
+	thinBorder.src = "Data\\Images\\PlayPause\\Play.png"
+	const subCameras = new Image();
+	thinBorder.src = "Data\\Images\\SubTabs\\cameras.png"
+	const subDarkWeb = new Image();
+	thinBorder.src = "Data\\Images\\SubTabs\\darkweb.png"
+	const subDefenses = new Image();
+	thinBorder.src = "Data\\Images\\SubTabs\\defenses.png"
+	const subFiles = new Image();
+	thinBorder.src = "Data\\Images\\SubTabs\\files.png"
+	const subLocks = new Image();
+	thinBorder.src = "Data\\Images\\SubTabs\\locks.png"
+	const subUtilties = new Image();
+	thinBorder.src = "Data\\Images\\SubTabs\\utilities.png"
+}
 
 function startTimer(context,seconds,callback=null)
 {

@@ -527,19 +527,21 @@ h2
 	margin-right: 0.25rem;
 }
 
+/*
 .subTab.active
+{
+	--fg-color: var(--fg-color);
+}
+*/
+
+.subTab.inactive
 {
 	--fg-color: rgb(0,224,255);
 }
 
-.subTab.inactive
-{
-	--fg-color: rgb(0,204,204);
-}
-
 .subTab.disabled
 {
-	--fg-color: rgb(66,66,66);
+	--fg-color: dimgrey;
 	box-shadow: 0 0 0;
 	cursor: initial;
 }
