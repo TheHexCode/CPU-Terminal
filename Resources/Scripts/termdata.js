@@ -741,7 +741,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>RIGGED:</span>' +
-										'<button data-enabled="true" data-cost="6" onclick="payAction(\'rigg\')">6 Tags</span>' +
+										'<button data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -944,6 +944,8 @@ function preloadImages()
 	//SubTabs\active.png
 	//SubTabs\items.png
 	//SubTabs\passive.png
+	const actRigged = new Image();
+	actRigged.src = "Resources\\Images\\Actions\\Rigged.png"
 }
 
 function startTimer(context,seconds,callback=null)
@@ -1506,17 +1508,42 @@ function executeAction(action)
 			);
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 		};
-	}/*
-	else if (action === "wipe")
+	}
+	else if (action === "rig")
 	{
-		cost = 1;
+		cost = 6;
+		timerSecs = payload.getTimerSecs();
 		callback = function() {
-			terminal.updateAccessLog(logIndex,"wipe");
-			$("#log"+logIndex).html('ERROR: LOG ENTRY NOT FOUND');
-			
+			$("#rigged").removeClass("hidden");
+
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+			payload.setCurrentTags(payload.getCurrentTags()-cost);
 		};
-	}*/
+	}
+	else if(action === "root")
+	{
+		cost = 6;
+		timerSecs = 30;
+		callback = function() {
+			$("body").addClass("rooted");
+
+			$("#main").html("<p>A problem has been detected and HexOS has been shut down to prevent damage to your device.</p>" +
+							"<p>UNMOUNTABLE_BOOT_VOLUME</p>" +
+							"<p>If this is the first time you've seen this error screen, restart your computer. If this screen appears again, follow these steps:" +
+							"<p>Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer for any HexOS updates you might need.</p>" +
+							"<p>If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use Safe Mode to remove or disable components, restart your computer, press F8 to select Advanced Startup Options, and then select Safe Mode.</p>" +
+							"<p>Technical Information:</p>" +
+							"<p>*** STOP: " + stopCode + "</p>" +
+							"<p><br/>Beginning dump of physical memory<br/>" +
+							"Physical memory dump complete.<br/>" +
+							"Contact your system administrator or technical support group for further<br/>" +
+							"assistance.</p>" +
+							"<footer>CPU DISCLAIMER</footer>"
+			);
+
+			payload.setCurrentTags(payload.getCurrentTags()-cost);
+		};
+	}
 	
 	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 
@@ -1610,7 +1637,21 @@ function payAction(action)
 		actionCost = 4;
 
 		$("#popup").html("Brick Device for 4 Tags?<br/><br/>" +
-			"<span class='red'>WARNING: Bricking a Device will render it inoperable until repaired!</span>");
+			"<span class='red'>WARNING: Bricking this Device will render it inoperable until repaired!</span>");
+	}
+	else if(action === "rig")
+	{
+		actionCost = 6;
+
+		$("#popup").html("Rig Device for 6 Tags?<br/><br/>" +
+			"<span class='red'>WARNING: Triggering a Rigged Device (by calling \"Room Strike Lock\") will cause all data to be deleted at the end of the Scene!</span>");
+	}
+	else if(action === "root")
+	{
+		actionCost = 6;
+
+		$("#popup").html("Root Device for 6 Tags?<br/><br/>" +
+			"<span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>");
 	}
 
 	$("#popup").dialog({

@@ -1,14 +1,1 @@
-[
-    {
-        "handle": "WYV3RN",
-        "state": "present",
-        "mask": null,
-        "reassignee": null
-    },
-    {
-        "handle": "Z16Z46",
-        "state": "present",
-        "mask": null,
-        "reassignee": null
-    }
-]
+[{"handle":"WYV3RN","state":"present","mask":null,"reassignee":null},{"handle":"Z16Z46","state":"present","mask":null,"reassignee":null},{"handle":"Test","mask":"Spooky","state":"present","reassignee":null},{"handle":"Test","mask":"Spooky","state":"present","reassignee":null},{"handle":"Test","mask":"Spooky","state":"present","reassignee":null},{"handle":"Test","mask":"Spooky","state":"present","reassignee":null},{"handle":"Test","mask":"Spooky","state":"present","reassignee":null}]

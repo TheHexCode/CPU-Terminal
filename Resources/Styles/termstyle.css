@@ -107,6 +107,20 @@ body::after
 	background-image: url("https://code.jquery.com/ui/1.14.1/themes/black-tie/images/ui-icons_222222_256x240.png");
 }
 
+#rigged
+{
+	align-self: flex-start;
+}
+
+#rigged img
+{
+	position: absolute;
+	z-index: 90;
+	max-height: 100px;
+	max-width: 100px;
+	pointer-events: none;
+}
+
 .dseg
 {
 	font-family: "DSEG14-ClassicRegular";
