@@ -193,7 +193,7 @@ function statSubmit(event)
 					
 	stats += '"hash" : ' + hash + ' }' ;
 	
-	console.log(JSON.parse(stats));
+	//console.log(JSON.parse(stats));
 	
 	Cookies.set("payload",stats,{expires: 30,path: "",sameSite: "Strict"});
 }

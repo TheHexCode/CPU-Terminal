@@ -41,6 +41,17 @@ body.bricked
 	color: var(--bg-color);
 }
 
+body.rooting
+{
+	--fg-color: red;
+	--bg-color: #100;
+}
+
+body.rooting > #main > div
+{
+	border-color: maroon;
+}
+
 body::before,
 body::after
 {
@@ -77,7 +88,7 @@ body::after
 {
 	color: var(--fg-color);
 	background-color: var(--bg-color);
-	border-width: 0 0 0.5rem 0;
+	border-width: 0 0 0.25rem 0;
 	border-color: dimgrey;
 	text-decoration: underline;
 	margin: -0.2em;
@@ -196,6 +207,25 @@ body::after
     animation-fill-mode: both;
 }
 
+@keyframes gemRoot
+{
+	0% {
+		background-color: rgb(255,0,0);
+	}
+	100% {
+		background-color: rgb(17,0,0);
+	}
+}
+
+.gem.root
+{
+	animation: gemRoot ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
 .clear
 {
 	--rgb: rgb(128,128,128);
@@ -240,6 +270,46 @@ h2
 	text-decoration: underline;
 }
 
+@keyframes reverseTV
+{
+	0%
+	{
+		height: 50vh;
+	}
+	100%
+	{
+		height: 0;
+	}
+}
+
+#load::before, #load::after
+{
+	height: 50vh;
+	background-color: var(--bg-color);
+	content: "";
+	left: 0;
+	position: absolute;
+	z-index: 998;
+}
+
+#load.loaded::before, #load.loaded::after
+{
+	animation: reverseTV 0.5s ease-in;
+	height: 0;
+}
+
+#load::before
+{
+	top: 0;
+	width: 100%
+}
+
+#load::after
+{
+	bottom: 0;
+	width: 100%;
+}
+
 #main
 {
 	height: 100%;
@@ -248,6 +318,11 @@ h2
 	row-gap: 0.25rem;
 	max-width: 400px;
 	margin: 0 auto;
+}
+
+#main.hidden
+{
+	display: none;
 }
 
 #gemBar
@@ -869,6 +944,7 @@ ul
 
 footer
 {
+	margin-top: auto;
 	align-self: flex-end;
 	font-size: 0.6rem;
 }

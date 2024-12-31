@@ -21,7 +21,7 @@ class Terminal
 		this.#writeTerminal();
 	}
 
-	getTitle()
+	getTerminalName()
 	{
 		return this.#termData.name;
 	}
@@ -51,7 +51,7 @@ class Terminal
 		return this.#termData.data[catIndex];
 	}
 
-	getLogEntry(index)
+	getLogHandle(index)
 	{
 		let entry = this.#accessLog[index];
 
@@ -66,6 +66,19 @@ class Terminal
 		else
 		{
 			return entry.handle;
+		}
+	}
+
+	getLogIndex(handle)
+	{
+		let maskIndex = this.#accessLog.findIndex(entry => entry.mask === handle)
+		if(maskIndex === -1)
+		{
+			return this.#accessLog.findIndex(entry => entry.handle === handle)
+		}
+		else
+		{
+			return maskIndex;
 		}
 	}
 	
@@ -407,7 +420,7 @@ class Terminal
 			if(logEntry.state !== "wiped")
 			{
 				allContent += 	'<li id="log' + index + '" class="logEntry">' +
-									'User: <span class="logName">' + logHandle + '</span>' +
+									'<span class="logPerson">User:&nbsp;</span><span class="logName">' + logHandle + '</span>' +
 									'<div class="logActions hidden">' +
 										'<hr/>' +
 										'<span class="hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" onclick="logAction('+index+',\'reassign\')">2 Tags</button></span>' +
@@ -883,25 +896,32 @@ function tens(numStr)
 }
 
 $(document).ready(async function()
-{	
+{
 	preloadImages();
 
 	suffix = new URLSearchParams(window.location.search);
 	
 	termJSON = await fetch("Data\\"+suffix.get("id")+"\\terminal.json", {cache:"reload"});
 	catalogJSON = await fetch("Resources\\Scripts\\dataCatalog.json", {cache:"reload"});
-	
 	accessCSV = await fetch("Data\\"+suffix.get("id")+"\\accessLog.json", {cache:"reload"});
 
 	terminal = new Terminal(suffix.get("id"), await catalogJSON.json(), await termJSON.json(), await accessCSV.json());
-	
 	payload = new Payload();
-	
+
 	setupAccessPage();
-	
-	startTimer("CRACK",5);
-	
 	setupTerminalPage();
+	
+	if(!(Cookies.get(terminal.getTerminalName())))
+	{
+		$("#load").addClass("loaded");
+		startTimer("CRACK",5);
+	}
+	else
+	{
+		accessTerminal(JSON.parse(Cookies.get(terminal.getTerminalName())));
+		$("#load").addClass("loaded");
+	}
+	
 });
 
 $(document).on("focus",function()
@@ -1056,6 +1076,14 @@ function endTimer(context,callback)
 		$("#mmss > .FG").html("00:"+tens(payload.getTimerSecs()));
 		$("#hundsec > .FG").html("00");	
 	}
+	else if(context == "ROOT")
+	{
+		callback();
+
+		$("#status").html(">> ROOTING DEVICE");
+
+		updateTagDisplay("ROOT",10);
+	}
 }
 
 function pauseTimer()
@@ -1092,7 +1120,7 @@ function pauseTimer()
 
 function setupAccessPage()
 {
-	$("#termTitle").html(terminal.getTitle());
+	$("#termName").html(terminal.getTerminalName());
 
 	$("#reqTags").html(tens(terminal.getReqAccess()));
 	
@@ -1179,27 +1207,42 @@ function setupTerminalPage()
 	$("#termContentContainer").html(terminal.getContentString());
 }
 
-function rewriteTerminalPage()
-{		
-	let newLogEntry = {};
-	newLogEntry["handle"] = payload.getPayloadFunction("handle");
-	newLogEntry["mask"] = payload.getPayloadFunction("mask") ? payload.getPayloadFunction("maskHandle") : null;
-	newLogEntry["state"] = "present"
-	newLogEntry["reassignee"] = null;
-	
-	let newIndex = terminal.appendAccessLog(newLogEntry);
-	
-	let logHandle = ((newLogEntry.reassignee !== null) ? newLogEntry.reassignee :
-					((newLogEntry.mask !== null) ? newLogEntry.mask : newLogEntry.handle));
-	
-	$("#logList").append(	'<li id="log' + newIndex + '" class="logEntry itsYou">' +
-								'You:  <span class="logName">' + logHandle + '</span>' +
-								'<div class="logActions hidden">' +
-									'<hr/>' +
-									'<span class="hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" onclick="logAction('+newIndex+',\'reassign\')">2 Tags</button></span>' +
-									'<span class="hidden">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" onclick="logAction('+newIndex+',\'wipe\')">1 Tag</button></span>' +
-								'</div>' +
-							'</li>');	
+function rewriteTerminalPage(autosave)
+{
+	if(!(autosave))
+	{
+		let newLogEntry = {};
+		newLogEntry["handle"] = payload.getPayloadFunction("handle");
+		newLogEntry["mask"] = payload.getPayloadFunction("mask") ? payload.getPayloadFunction("maskHandle") : null;
+		newLogEntry["state"] = "present"
+		newLogEntry["reassignee"] = null;
+		
+		let newIndex = terminal.appendAccessLog(newLogEntry);
+		
+		let logHandle = ((newLogEntry.reassignee !== null) ? newLogEntry.reassignee :
+						((newLogEntry.mask !== null) ? newLogEntry.mask : newLogEntry.handle));
+		
+		$("#logList").append(	'<li id="log' + newIndex + '" class="logEntry itsYou">' +
+									'<span class="logPerson">You:&nbsp;&nbsp;</span><span class="logName">' + logHandle + '</span>' +
+									'<div class="logActions hidden">' +
+										'<hr/>' +
+										'<span class="hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" onclick="logAction('+newIndex+',\'reassign\')">2 Tags</button></span>' +
+										'<span class="hidden">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" onclick="logAction('+newIndex+',\'wipe\')">1 Tag</button></span>' +
+									'</div>' +
+								'</li>');
+		
+		var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
+
+		Cookies.set(terminal.getTerminalName(),JSON.stringify({handle:logHandle,tags:payload.getCurrentTags()}),{expires: inFifteenMinutes,path: "",sameSite: "Strict"});
+	}
+	else
+	{
+		let logIndex = terminal.getLogIndex(autosave.handle);
+
+		$("#log"+logIndex).addClass("itsYou");
+		$("#log"+logIndex+">.logPerson").html("You:&nbsp;&nbsp;");
+	}
+
 								
 	if(payload.getPayloadFunction("reass") || payload.getPayloadFunction("wyt"))
 	{
@@ -1240,6 +1283,8 @@ function updateTagDisplay(stage,stageOne,stageTwo=stageOne,totalTags=stageTwo)
 			EXECUTE:
 				- 1: Blue  <- All tags
 				- 2: Blend <- Tags required/being used for an ability
+			ROOT:
+				- 1: Root <- All tag slots
 	*/
 	
 	let stageColors = {};
@@ -1262,6 +1307,11 @@ function updateTagDisplay(stage,stageOne,stageTwo=stageOne,totalTags=stageTwo)
 		"gem blue",
 		"gem blend",
 		"gem blend"
+	];
+	stageColors["ROOT"] = [
+		"gem root",
+		"gem root",
+		"gem root"
 	];
 	
 	let tenOnes = Math.floor((stageOne-1)/10);
@@ -1383,11 +1433,22 @@ function extraTags(change)
 	payload.setCurrentTags(newTags);
 }
 
-function accessTerminal()
+function accessTerminal(autosave)
 {
-	rewriteTerminalPage();
+	if(autosave)
+	{
+		payload.setCurrentTags(autosave.tags);
+		rewriteTerminalPage(autosave);
+		$("#status").html(">> RECONNECT SUCCESS");
+	}
+	else
+	{
+		payload.setCurrentTags(payload.getCurrentTags()-terminal.getReqAccess());
+		rewriteTerminalPage(null);
+		$("#status").html(">> AWAITING COMMAND");
+	}
 	
-	payload.setCurrentTags(payload.getCurrentTags()-terminal.getReqAccess());
+	
 	updateTagDisplay("STANDBY",payload.getCurrentTags());
 	
 	$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") > payload.getCurrentTags()}).prop("disabled",true);
@@ -1399,8 +1460,6 @@ function accessTerminal()
 	
 	$("#accessZone").css("display","none");
 	$("#hackZone").css("display","flex");
-	
-	$("#status").html(">> AWAITING COMMAND");
 }
 
 function executeCommand(path,newState,cost)
@@ -1506,8 +1565,12 @@ function executeAction(action)
 							"assistance.</p>" +
 							"<footer>CPU DISCLAIMER</footer>"
 			);
+
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 		};
+
+		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
+		startTimer("EXECUTE",timerSecs,callback);
 	}
 	else if (action === "rig")
 	{
@@ -1519,35 +1582,32 @@ function executeAction(action)
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 		};
+
+		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
+		startTimer("EXECUTE",timerSecs,callback);
 	}
 	else if(action === "root")
 	{
 		cost = 6;
 		timerSecs = 30;
 		callback = function() {
-			$("body").addClass("rooted");
+			$("body").addClass("rooting");
+			$("#timerLCD").removeClass("amber");
+			$("#timerLCD").addClass("red");
+			$("#hackZone").css("display","none");
 
-			$("#main").html("<p>A problem has been detected and HexOS has been shut down to prevent damage to your device.</p>" +
-							"<p>UNMOUNTABLE_BOOT_VOLUME</p>" +
-							"<p>If this is the first time you've seen this error screen, restart your computer. If this screen appears again, follow these steps:" +
-							"<p>Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer for any HexOS updates you might need.</p>" +
-							"<p>If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use Safe Mode to remove or disable components, restart your computer, press F8 to select Advanced Startup Options, and then select Safe Mode.</p>" +
-							"<p>Technical Information:</p>" +
-							"<p>*** STOP: " + stopCode + "</p>" +
-							"<p><br/>Beginning dump of physical memory<br/>" +
-							"Physical memory dump complete.<br/>" +
-							"Contact your system administrator or technical support group for further<br/>" +
-							"assistance.</p>" +
-							"<footer>CPU DISCLAIMER</footer>"
-			);
+			startTimer("EXECUTE",300,function () {
+				$("body").removeClass("rooting");
 
-			payload.setCurrentTags(payload.getCurrentTags()-cost);
+				$("#main").html("<p>HexOS BIOS</p>" +
+					"<footer>CPU DISCLAIMER</footer>"
+				);
+			});
 		};
-	}
-	
-	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 
-	startTimer("EXECUTE",timerSecs,callback);
+		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
+		startTimer("ROOT",timerSecs,callback);
+	}
 		
 	$("button[data-cost]").prop("disabled",true);
 	$("#status").html(">> EXECUTING COMMAND...");
@@ -1584,13 +1644,13 @@ function helpPopup()
 
 function logAction(logIndex,action)
 {
-	let logEntry = terminal.getLogEntry(logIndex);
+	let logHandle = terminal.getLogHandle(logIndex);
 	let actionCost;
 	
 	if(action === "reassign")
 	{
 		actionCost = 2;
-		$("#popup").html("Reassign Log Entry of User " + logEntry + " to the below username for 2 Tags?<br/><br/>" +
+		$("#popup").html("Reassign Log Entry of User " + logHandle + " to the below username for 2 Tags?<br/><br/>" +
 						 "<input id='newReass' placeholder='Enter New Log Entry Name Here' style='width:100%'></input><br/><br/>" +
 						 "NOTE: This Reassignment MAY be used to imitate someone else!");
 	}
@@ -1598,7 +1658,7 @@ function logAction(logIndex,action)
 	{
 		actionCost = 1;
 
-		$("#popup").html("Wipe Log Entry of User " + logEntry + " for 1 Tag?");
+		$("#popup").html("Wipe Log Entry of User " + logHandle + " for 1 Tag?");
 	}
 	
 	$("#popup").dialog({

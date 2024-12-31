@@ -4,6 +4,7 @@
 - Pause Timer Button
 - Make it so endTimer doesn't enable the button until enough tags exist, either through payload or extra
 - Repeat
+- Make Active Actions work
 
 - Incorporate Payload
  -- Adjust Text Sizes for Small Screens
@@ -16,7 +17,6 @@
 - Auto-Save Cookie
 - Track User Actions
 - Items
-- Make Active Actions work
 - Loading Animation
 - Make Mask editable in terminal view, and send whatever's there
 - Create Access Log/OOC_Action_Log if it doesn't already exist
