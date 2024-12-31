@@ -727,7 +727,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>BRICK:</span>' +
-										'<button data-enabled="true" data-cost="4">4 Tags</span>' +
+										'<button data-enabled="true" data-cost="4" onclick="payAction(\"brick\")">4 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -736,7 +736,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>RIGGED:</span>' +
-										'<button data-enabled="true" data-cost="6">6 Tags</span>' +
+										'<button data-enabled="true" data-cost="6" onclick="payAction(\"rigg\")">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -745,7 +745,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>ROOT DEVICE:</span>' +
-										'<button data-enabled="true" data-cost="6">6 Tags</span>' +
+										'<button data-enabled="true" data-cost="6" onclick="payAction(\"root\")">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -879,6 +879,8 @@ function tens(numStr)
 
 $(document).ready(async function()
 {	
+	preloadImages();
+	
 	suffix = new URLSearchParams(window.location.search);
 	
 	termJSON = await fetch("Data\\"+suffix.get("id")+"\\terminal.json", {cache:"reload"});
@@ -895,8 +897,6 @@ $(document).ready(async function()
 	startTimer("CRACK",5);
 	
 	setupTerminalPage();
-
-	preloadImages();
 });
 
 $(document).on("focus",function()
@@ -913,27 +913,32 @@ $(document).on("focus",function()
 function preloadImages()
 {
 	const bracketBorder = new Image();
-	bracketBorder.src = "Data\\Images\\Borders\\Bracket_Border.png"
+	bracketBorder.src = "Resources\\Images\\Borders\\Bracket_Border.png"
 	const bracketBorderIce = new Image();
-	bracketBorderIce.src = "Data\\Images\\Borders\\Bracket_Border_Ice.png"
+	bracketBorderIce.src = "Resources\\Images\\Borders\\Bracket_Border_Ice.png"
 	const thinBorder = new Image();
-	thinBorder.src = "Data\\Images\\Borders\\Thin_Border.png"
+	thinBorder.src = "Resources\\Images\\Borders\\Thin_Border.png"
 	const pauseImage = new Image();
-	thinBorder.src = "Data\\Images\\PlayPause\\Pause.png"
+	pauseImage.src = "Resources\\Images\\PlayPause\\Pause.png"
 	const playImage = new Image();
-	thinBorder.src = "Data\\Images\\PlayPause\\Play.png"
+	playImage.src = "Resources\\Images\\PlayPause\\Play.png"
 	const subCameras = new Image();
-	thinBorder.src = "Data\\Images\\SubTabs\\cameras.png"
+	subCameras.src = "Resources\\Images\\SubTabs\\cameras.png"
 	const subDarkWeb = new Image();
-	thinBorder.src = "Data\\Images\\SubTabs\\darkweb.png"
+	subDarkWeb.src = "Resources\\Images\\SubTabs\\darkweb.png"
 	const subDefenses = new Image();
-	thinBorder.src = "Data\\Images\\SubTabs\\defenses.png"
+	subDefenses.src = "Resources\\Images\\SubTabs\\defenses.png"
 	const subFiles = new Image();
-	thinBorder.src = "Data\\Images\\SubTabs\\files.png"
+	subFiles.src = "Resources\\Images\\SubTabs\\files.png"
 	const subLocks = new Image();
-	thinBorder.src = "Data\\Images\\SubTabs\\locks.png"
+	subLocks.src = "Resources\\Images\\SubTabs\\locks.png"
 	const subUtilties = new Image();
-	thinBorder.src = "Data\\Images\\SubTabs\\utilities.png"
+	subUtilties.src = "Resources\\Images\\SubTabs\\utilities.png"
+	//SubTabs\log.png
+	//SubTabs\puzzles.png
+	//SubTabs\active.png
+	//SubTabs\items.png
+	//SubTabs\passive.png
 }
 
 function startTimer(context,seconds,callback=null)
@@ -1519,6 +1524,13 @@ function logAction(logIndex,action)
 			updateTagDisplay("STANDBY",payload.getCurrentTags());
 		}
 	});
+}
+
+function payAction(action)
+{
+	//brick -> 4 Tags, permanently disable device (until repair?)
+	//rigg -> 6 Tags, all files/data on terminal deleted at end of scene
+	//root -> 6 Tags, wipe all software/data from device (can install new software if in possession)
 }
 
 function termAction(path,action)
