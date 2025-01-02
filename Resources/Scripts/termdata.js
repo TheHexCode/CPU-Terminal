@@ -894,8 +894,16 @@ class Payload
 									'<span class="subContTitle">ITEM ACTIVATIONS</span>' +
 								'</div>' +
 							'<div class="subContBody">';
-								
-								
+
+		if(this.hasPayload())
+		{
+			if(this.#payload.ibd)
+			{
+				contentString += '<li>IMPROVED BACKDOOR</li>'
+				passiveCount++;
+			}
+		}
+
 		contentString +=	'</div>' +
 						'</div>'
 		
@@ -1198,11 +1206,11 @@ function rewriteAccessPage()
 	{
 		let payMask = (payloadHandle.mask == "") ? "Anonymous" : payloadHandle.mask;
 		
-		$("#payloadHeader").html("PROFILE LOADED:<br/>HANDLE: " + payloadHandle.handle + "<br/>MASK: " + payMask);
+		$("#payloadHeader").html("<u>PROFILE LOADED:</u><br/>HANDLE: " + payloadHandle.handle + "<br/>MASK: " + payMask);
 	}
 	else
 	{
-		$("#payloadHeader").html("PROFILE LOADED: " + payloadHandle.handle);
+		$("#payloadHeader").html("<u>PROFILE LOADED:</u> " + payloadHandle.handle);
 	}
 	
 	$("#payloadButton").text("EDIT PAYLOAD PROFILE");

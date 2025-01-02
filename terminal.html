@@ -74,61 +74,72 @@
 						</div>
 					</div>
 					<div class="accessBox">
-						<div id="payloadHeader" class="accessHeader">
+						<div id="payloadHeader">
 							<span class="red">ERROR:</span><span>&nbsp;NO PAYLOAD FOUND</span>
 						</div>
 						<button id="payloadButton" onclick="window.open('./profile.html','_blank')">SETUP PAYLOAD PROFILE</button>
-					</div>
-					<div class="accessTagBox">
-						<div class="accessTagRow">
-							<div class="accessBox">
-								<div class="accessHeader">
-									TAGS FROM PAYLOAD:
-								</div>
-								<div class="lcdBox amber">
-									<span class="dseg BG">~~</span>
-									<span id="payTags" class="dseg FG">XX</span>
-								</div>
-								<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
-								<div id="rexDetails" class="payDetails">[REM EXP: +02]</div>
-							</div>
-							<div class="accessBox">
-								<div class="accessHeader">
-									EXTRA TAGS?
-								</div>
-								<div class="tagInterface">
-									<button onMouseUp="extraTags(-1)">-</button>
-									<div class="lcdBox blue">
-										<span class="dseg BG">~~</span>
-										<span id="extTags" class="dseg FG">00</span>
-									</div>
-									<button onMouseUp="extraTags(1)">+</button>
-								</div>
-							</div>
+						
+						<hr/>
+
+						<div class="accessHeader">
+							TAGS FROM PAYLOAD:
 						</div>
-						<div class="accessBox">
-							<div class="accessHeader">
-								TAGS REMAINING AFTER ACCESS:
-							</div>
+						<div class="lcdBox amber">
+							<span class="dseg BG">~~</span>
+							<span id="payTags" class="dseg FG">XX</span>
+						</div>
+						<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
+						<div id="rexDetails" class="payDetails">[ROOT EXPLOIT: +02]</div>
+					</div>
+					<div class="accessBox">
+						<div class="accessHeader">
+							EXTRA TAGS?
+						</div>
+						<div class="check">
+							<input type="checkbox" id="dis_abil">
+							<label for="dis_abil">DISSIMULATOR: +1 HACKING?</label>
+						</div>
+						<div class="check">
+							<input type="checkbox" id="item_slip">
+							<label for="item_slip">SLIP USED THIS SCENE?</label>
+						</div>
+
+						<hr/>
+
+						<div class="accessHeader">
+							OTHER:
+						</div>
+						<div class="tagInterface">
+							<button onMouseUp="extraTags(-1)"><b>-</b></button>
 							<div class="lcdBox blue">
-								<span id="remTagBG" class="dseg BG">~~</span>
-								<span id="remTags" class="dseg FG">XX</span>
+								<span class="dseg BG">~~</span>
+								<span id="extTags" class="dseg FG">00</span>
 							</div>
+							<button onMouseUp="extraTags(1)">+</button>
 						</div>
-						<!--
-						<svg xmlns="http://www.w3.org/2000/svg">
-							<filter id="filter">
-								<feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="5" seed="5"/>
-								<feColorMatrix values="1 0 0 0 0
-													1 0 0 0 0
-													1 0 0 0 0
-													0 0 0 0 1"/>
-							</filter>
-							<rect width="100%" height="100%" filter="url(#filter)"/>
-						</svg>
-						-->
-						<button id="terminalButton" onclick="accessTerminal(null)" disabled>Standby...</button>
 					</div>
+					<div class="accessBox">
+						<div class="accessHeader">
+							TAGS REMAINING AFTER ACCESS:
+						</div>
+						<div class="lcdBox blue">
+							<span id="remTagBG" class="dseg BG">~~</span>
+							<span id="remTags" class="dseg FG">XX</span>
+						</div>
+					</div>
+					<!--
+					<svg xmlns="http://www.w3.org/2000/svg">
+						<filter id="filter">
+							<feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="5" seed="5"/>
+							<feColorMatrix values="1 0 0 0 0
+												1 0 0 0 0
+												1 0 0 0 0
+												0 0 0 0 1"/>
+						</filter>
+						<rect width="100%" height="100%" filter="url(#filter)"/>
+					</svg>
+					-->
+					<button id="terminalButton" onclick="accessTerminal(null)" disabled>Standby...</button>
 				</div>
 				<div id="hackZone" class="zoneBox">
 					<div id="hackTabContainer">
