@@ -84,7 +84,8 @@ function roleChange()
 	$("#secTab .checkGroup[data-roles*='" + secRole + "'] .check").addClass("hidden");
 	$("#secTab .checkGroup[data-roles*='" + secRole + "'] .check[data-role='" + secRole + "']").removeClass("hidden");
 	
-	$(".check:not([data-role='"+priRole+"']):not([data-role='"+secRole+"']):not([data-role='standard']) > input[type='checkbox']").prop("checked",false);
+	$("#priTab .check:not([data-role='"+priRole+"']) > input[type='checkbox']").prop("checked",false);
+	$("#secTab .check:not([data-role='"+secRole+"']) > input[type='checkbox']").prop("checked",false);
 	
 	maskChange();
 }
@@ -101,6 +102,20 @@ function maskChange()
 		$("input[id='mask']").val("");
 		$("#maskName").addClass("dimmed");
 		$("#mask").prop("disabled",true);
+	}
+}
+
+function toggleRadio(radio)
+{
+	if($(radio).prop("data-active"))
+	{
+		$(radio).prop("data-active",false);
+		$(radio).prop("checked",false);
+	}
+	else
+	{
+		$("input[name='"+$(radio).prop("name")+"']").prop("data-active",false);
+		$(radio).prop("data-active",true);
 	}
 }
 
@@ -158,29 +173,36 @@ function statSubmit(event)
 	// DARK WEB ACCESS
 	let dwa = $("input[data-skill='dwa']:checked").length > 0;
 	
+	// LIST OF ITEMS
+	let items = [];
+	$("#itemsTab input:checked").each(function() { items.push($(this).attr("id")) });
+
 	// LIST OF CHECKED BOXES
-	
 	let checks = [];
 	$Checks = ($("input[data-skill]").filter(function() { if ($(this).prop("checked")) { return this } }));
-	$Checks.each(function() { checks.push("\"" + $(this).attr("id") + "\"") });
-	
-	let stats = '{ "handle"    : "' + handle     + '",' +
-				'  "maskHandle": "' + maskHandle + '",' +
-				'  "priRole"   : "' + priRole    + '",' +
-				'  "secRole"   : "' + secRole    + '",' +
-				'  "hack"      : ' + hack_sum    + ','  +
-				'  "mask"      : ' + mask        + ','  +
-				'  "wyt"       : ' + wipe        + ','  +
-				'  "reass"     : ' + reass       + ','  +
-				'  "bd"        : ' + bd          + ','  +
-				'  "ibd"       : ' + ibd         + ','  +
-				'  "rex"       : ' + rex         + ','  +
-				'  "repeat"    : ' + repeat_sum  + ','  +
-				'  "brick"     : ' + brick       + ','  +
-				'  "rigg"      : ' + rigg        + ','  +
-				'  "root"      : ' + root        + ','  +
-				'  "dwa"       : ' + dwa         + ','  +
-				'  "checks"    : [' + checks     + '],' ;
+	$Checks.each(function() { checks.push($(this).attr("id")) });
+	items.forEach(function(item) { checks.push(item) });
+
+	let stats = {
+		handle: handle,
+		maskHandle: maskHandle,
+		priRole: priRole,
+		secRole: secRole,
+		hack: hack_sum,
+		mask: mask,
+		wyt: wipe,
+		reass: reass,
+		bd: bd,
+		ibd: ibd,
+		rex: rex,
+		repeat: repeat_sum,
+		brick: brick,
+		rigg: rigg,
+		root: root,
+		dwa: dwa,
+		items: items,
+		checks: checks
+	}
 				
 	let hash = 0;
 
@@ -191,9 +213,9 @@ function statSubmit(event)
 		hash = hash & hash;
 	}
 					
-	stats += '"hash" : ' + hash + ' }' ;
+	stats["hash"] = hash;
 	
 	//console.log(JSON.parse(stats));
 	
-	Cookies.set("payload",stats,{expires: 30,path: "",sameSite: "Strict"});
+	Cookies.set("payload",JSON.stringify(stats),{expires: 30,path: "",sameSite: "Strict"});
 }
