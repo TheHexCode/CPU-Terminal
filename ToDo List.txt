@@ -5,6 +5,8 @@
 - Make it so endTimer doesn't enable the button until enough tags exist, either through payload or extra
 - Repeat
 - Make Active Actions work
+- Loading Animation
+- Auto-Save Cookie
 
 - Incorporate Payload
  -- Adjust Text Sizes for Small Screens
@@ -14,24 +16,26 @@
 
 -------------------------------------------------------------------------------------------------------------
 
-- Auto-Save Cookie
 - Track User Actions
+- Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
 - Items
-- Loading Animation
 - Make Mask editable in terminal view, and send whatever's there
 - Create Access Log/OOC_Action_Log if it doesn't already exist
+- Finish Root Exploit
+ -- HexOS BIOS Insert Boot Media
+ -- Scrolling codium ipsum animation
 
 - Subtab Images For:
- -- Log -> ">_" or bullet list?
+ ✓- Log -> ">_" or bullet list?
  -- Files
  -- DarkWeb -> Sunglasses?
  -- Camera -> Security Camera?
  -- Locks
  -- Defenses -> Better Bullseye/Crosshairs?
  -- Utilities -> Better Lightning Bolt?
- -- Puzzles -> Puzzle Piece
+ ✓- Puzzles -> Puzzle Piece
 
- -- Active/Passive/Items
+ ✓- Active/Passive/Items
 
 - Replace RIGGED image
 

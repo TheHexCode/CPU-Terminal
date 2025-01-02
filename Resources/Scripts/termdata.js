@@ -21,6 +21,11 @@ class Terminal
 		this.#writeTerminal();
 	}
 
+	getTerminalID()
+	{
+		return this.#suffix;
+	}
+
 	getTerminalName()
 	{
 		return this.#termData.name;
@@ -71,15 +76,7 @@ class Terminal
 
 	getLogIndex(handle)
 	{
-		let maskIndex = this.#accessLog.findIndex(entry => entry.mask === handle)
-		if(maskIndex === -1)
-		{
-			return this.#accessLog.findIndex(entry => entry.handle === handle)
-		}
-		else
-		{
-			return maskIndex;
-		}
+		return this.#accessLog.findIndex(entry => entry.handle === handle)
 	}
 	
 	getEntry(path)
@@ -110,6 +107,35 @@ class Terminal
 	{
 		return this.#dataCatalog[type];
 	}
+
+	getTermState()
+	{
+		let entries = [];
+		let repeats = [];
+
+		this.#termData.data.forEach(function(category)
+		{
+			let repeat = {
+				type: category.type,
+				repeated: category.repeated
+			};
+			
+			repeats.push(repeat);
+		}, this);
+
+		$(".entry").each(function(index,entry)
+		{
+			let entryData = terminal.getEntry(entry.id);
+			let entryState = {
+				path: entryData.path,
+				state: entryData.state
+			}
+
+			entries.push(entryState);
+		});
+
+		return { "repeats": repeats, "entries": entries };
+	}
 	
 	setEntryState(path,state)
 	{
@@ -123,7 +149,7 @@ class Terminal
 		{
 			if(catalogEntry.special == "trap")
 			{
-				if(state == "access")
+				if(state == "access" || state == "disarmed")
 				{
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entrySecret").addClass("disarmed");
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -140,7 +166,7 @@ class Terminal
 					catalogEntry.state = "disarmed";
 					console.log(catalogEntry);
 				}
-				else if(state == "modify")
+				else if(state == "modify" || state == "sprung")
 				{
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entrySecret").addClass("sprung");
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -160,7 +186,7 @@ class Terminal
 			}
 			else if(catalogEntry.special == "ice")
 			{
-				if(state == "unwrap")
+				if(state == "unwrap" || state == "sprung")
 				{
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entrySecret").addClass("sprung");
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -170,10 +196,10 @@ class Terminal
 					
 					$(terminalEntry + "> .subIce").removeClass("subIce");
 					
-					catalogEntry.state = "open";
+					catalogEntry.state = "sprung";
 					console.log(catalogEntry);
 				}
-				else if(state == "break")
+				else if(state == "break" || state == "broken")
 				{
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entrySecret").addClass("broken");
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -183,7 +209,7 @@ class Terminal
 					
 					$(terminalEntry + "> .subIce").removeClass("subIce");
 					
-					catalogEntry.state = "open";
+					catalogEntry.state = "broken";
 					console.log(catalogEntry);
 				}
 			}
@@ -263,12 +289,12 @@ class Terminal
 			{
 				if($('[id="'+entry.id+'"]').hasClass("ice"))
 				{
-					let newDisCost = Math.max($('[id="'+entry.id+'"] .breakButton').attr("data-cost")-rank,0);
+					let newBrkCost = Math.max($('[id="'+entry.id+'"] .breakButton').attr("data-cost")-rank,0);
 					
-					let disS = (newDisCost === 1) ? "" : "s";
+					let brkS = (newBrkCost === 1) ? "" : "s";
 					
-					$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newDisCost);
-					$('[id="'+entry.id+'"] .breakButton').text(newDisCost + " Tag" + disS);
+					$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newBrkCost);
+					$('[id="'+entry.id+'"] .breakButton').text(newBrkCost + " Tag" + brkS);
 				}
 				else
 				{
@@ -277,7 +303,7 @@ class Terminal
 					
 					let accS = (newAccCost === 1) ? "" : "s"
 					let modS = (newModCost === 1) ? "" : "s"
-					
+
 					$('[id="'+entry.id+'"] .accessButton').attr("data-cost",newAccCost);
 					$('[id="'+entry.id+'"] .modifyButton').attr("data-cost",newModCost);
 					
@@ -406,8 +432,8 @@ class Terminal
 								'</button> ';
 		
 		let allContent = 	'<div id="logContent" class="subContent active">' +
-								'<div class="subContTitle">' +
-									'<u>ACCESS LOG</u>' +
+								'<div class="subContTitleRow">' +
+									'<span class="subContTitle">ACCESS LOG</span>' +
 								'</div>' +
 								'<div class="subContBody">' +
 									'<ul id="logList">';
@@ -543,8 +569,9 @@ class Terminal
 										'</button> ';
 				
 				allContent += 	'<div id="'+ category.type + 'Content" class="subContent">' +
-									'<div class="subContTitle">' +
-										'<u>' + this.#dataCatalog[category.type].title + '</u>' +
+									'<div class="subContTitleRow">' +
+										'<span class="subContRepeat red hidden">REPEAT</span>' +
+										'<span class="subContTitle">' + this.#dataCatalog[category.type].title + '</span>' +
 									'</div>' +
 									'<div class="subContBody">';
 				
@@ -724,8 +751,8 @@ class Payload
 		//ACTIVE
 		
 		let contentString = '<div id="actContent" class="subContent active">' +
-								'<div class="subContTitle">' +
-									'<u>ACTIVE FUNCTIONS</u>' +
+								'<div class="subContTitleRow">' +
+									'<span class="subContTitle">ACTIVE FUNCTIONS</span>' +
 								'</div>' +
 								'<div class="subContBody">' +
 									'<ul id="actList">';
@@ -804,9 +831,9 @@ class Payload
 		//PASSIVE
 		
 		contentString = '<div id="passContent" class="subContent">' +
-							'<div class="subContTitle">' +
-								'<u>PASSIVE FUNCTIONS</u>' +
-							'</div>' +
+							'<div class="subContTitleRow">' +
+									'<span class="subContTitle">PASSIVE FUNCTIONS</span>' +
+								'</div>' +
 							'<div class="subContBody">' +
 								'<ul>';
 
@@ -863,9 +890,9 @@ class Payload
 		//ITEMS
 		
 		contentString = '<div id="itemContent" class="subContent">' +
-							'<div class="subContTitle">' +
-								'<u>ITEM ACTIVATIONS</u>' +
-							'</div>' +
+							'<div class="subContTitleRow">' +
+									'<span class="subContTitle">ITEM ACTIVATIONS</span>' +
+								'</div>' +
 							'<div class="subContBody">';
 								
 								
@@ -911,14 +938,14 @@ $(document).ready(async function()
 	setupAccessPage();
 	setupTerminalPage();
 	
-	if(!(Cookies.get(terminal.getTerminalName())))
+	if(!(Cookies.get(terminal.getTerminalID())))
 	{
 		$("#load").addClass("loaded");
 		startTimer("CRACK",5);
 	}
 	else
 	{
-		accessTerminal(JSON.parse(Cookies.get(terminal.getTerminalName())));
+		accessTerminal(JSON.parse(Cookies.get(terminal.getTerminalID())));
 		$("#load").addClass("loaded");
 	}
 	
@@ -947,6 +974,8 @@ function preloadImages()
 	pauseImage.src = "Resources\\Images\\PlayPause\\Pause.png"
 	const playImage = new Image();
 	playImage.src = "Resources\\Images\\PlayPause\\Play.png"
+	const subLog = new Image();
+	subLog.src = "Resources\\Images\\SubTabs\\log.png"
 	const subCameras = new Image();
 	subCameras.src = "Resources\\Images\\SubTabs\\cameras.png"
 	const subDarkWeb = new Image();
@@ -959,13 +988,36 @@ function preloadImages()
 	subLocks.src = "Resources\\Images\\SubTabs\\locks.png"
 	const subUtilties = new Image();
 	subUtilties.src = "Resources\\Images\\SubTabs\\utilities.png"
-	//SubTabs\log.png
-	//SubTabs\puzzles.png
-	//SubTabs\active.png
-	//SubTabs\items.png
-	//SubTabs\passive.png
+	const subPuzzles = new Image();
+	subPuzzles.src = "Resources\\Images\\SubTabs\\puzzles.png"
+	const subActive = new Image();
+	subActive.src = "Resources\\Images\\SubTabs\\Active.png"
+	const subPassive = new Image();
+	subPassive.src = "Resources\\Images\\SubTabs\\Passive.png"
+	const subItems = new Image();
+	subItems.src = "Resources\\Images\\SubTabs\\Items.png"
 	const actRigged = new Image();
 	actRigged.src = "Resources\\Images\\Actions\\Rigged.png"
+}
+
+function autoSave(handle=null)
+{
+	let saveData;
+
+	if(!handle)
+	{
+		saveData = JSON.parse(Cookies.get(terminal.getTerminalID()));
+	}
+	else
+	{
+		saveData = { handle:handle };
+	}
+
+	saveData["tags"] = payload.getCurrentTags();
+	saveData["saveState"] = terminal.getTermState();
+
+	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
+	Cookies.set(terminal.getTerminalID(),JSON.stringify(saveData),{expires: inFifteenMinutes,path: "",sameSite: "Strict"});
 }
 
 function startTimer(context,seconds,callback=null)
@@ -1230,10 +1282,8 @@ function rewriteTerminalPage(autosave)
 										'<span class="hidden">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" onclick="logAction('+newIndex+',\'wipe\')">1 Tag</button></span>' +
 									'</div>' +
 								'</li>');
-		
-		var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
 
-		Cookies.set(terminal.getTerminalName(),JSON.stringify({handle:logHandle,tags:payload.getCurrentTags()}),{expires: inFifteenMinutes,path: "",sameSite: "Strict"});
+		autoSave(newLogEntry.handle);
 	}
 	else
 	{
@@ -1241,6 +1291,22 @@ function rewriteTerminalPage(autosave)
 
 		$("#log"+logIndex).addClass("itsYou");
 		$("#log"+logIndex+">.logPerson").html("You:&nbsp;&nbsp;");
+
+		autosave.saveState.repeats.forEach(function(repeat)
+		{
+			if(repeat.repeated)
+			{
+				terminal.repeatCategory(repeat.type,repeat.repeated);
+				$("#"+repeat.type+"Content .subContRepeat").removeClass("hidden");
+			}
+		});
+
+		autosave.saveState.entries.forEach(function(entry)
+		{
+			terminal.setEntryState(entry.path,entry.state);
+		});
+
+		$("button[data-enabled='false']").prop("disabled",true);
 	}
 
 								
@@ -1471,10 +1537,12 @@ function executeCommand(path,newState,cost)
 		if(payload.getPayloadFunction("repeat"))
 		{
 			terminal.repeatCategory(path,payload.getPayloadFunction("repeat"));
+			$("#"+path.split(">")[0]+"Content .subContRepeat").removeClass("hidden");
 		}
-		
-		$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+	
 		payload.setCurrentTags(payload.getCurrentTags()-cost);
+		$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+		autoSave();
 	});
 	
 	$("button[data-cost]").prop("disabled",true);
@@ -1493,8 +1561,9 @@ function updateAccessLog(logIndex,action,reass)
 			terminal.updateAccessLog(logIndex,"reassign",reass);
 			$("#log"+logIndex+" .logName").html(reass);
 
-			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
+			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+			autoSave();
 		};
 	}
 	else if (action === "wipe")
@@ -1504,8 +1573,9 @@ function updateAccessLog(logIndex,action,reass)
 			terminal.updateAccessLog(logIndex,"wipe");
 			$("#log"+logIndex).html('ERROR: LOG ENTRY NOT FOUND');
 			
-			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
+			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+			autoSave();
 		};
 	}
 	
@@ -1567,6 +1637,7 @@ function executeAction(action)
 			);
 
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
+			autoSave();
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1579,8 +1650,9 @@ function executeAction(action)
 		callback = function() {
 			$("#rigged").removeClass("hidden");
 
-			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
+			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+			autoSave();
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1607,6 +1679,7 @@ function executeAction(action)
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 		startTimer("ROOT",timerSecs,callback);
+		autoSave();
 	}
 		
 	$("button[data-cost]").prop("disabled",true);

@@ -735,17 +735,29 @@ h2
 	display: none;
 }
 
+.subContTitleRow
+{
+	display: grid;
+	grid-template-columns: [start] 1fr [titlestart] max-content [titleend] 1fr;
+	column-gap: 0.25rem;
+	margin: 0 0 0.25rem 0;
+}
+
+.subContRepeat
+{
+	grid-column: start / titlestart;
+	text-align: center;
+	vertical-align: middle;
+}
+
 .subContTitle
 {
-	/*border: 1px solid black;*/
-	margin: 0 0 0.25rem 0;
-	text-align: center;
+	grid-column: titlestart / titleend;
+	text-decoration: underline;
 }
 
 .subContBody
 {
-	/*border: 1px solid black;
-	border-radius: 0.5rem;*/
 	border-image-source: url("../Images/Borders/Thin_Border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
