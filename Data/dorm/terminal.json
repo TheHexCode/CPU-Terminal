@@ -1,1 +1,133 @@
-{"name":"TEST TERMINAL","access":2,"state":"active","data":[{"type":"files","entries":[{"title":"Paydata","contents":"10 Credits","access":0,"modify":1},{"special":"trap","effects":["3 Strikes to Torso!"],"access":1,"modify":2},{"title":"Mission Data","contents":"Data Piece #1\/3","access":2,"modify":3},{"special":"ice","title":"SNITCHES 2","effects":["ALARM","FEAR 30s","MARKED"],"break":3,"subEntries":[{"title":"Mission Data","contents":"Data Piece #2\/3","access":1,"modify":2},{"title":"Paydata","contents":"100 Credits","access":2,"modify":3}]}]},{"type":"darkweb","entries":[{"title":"Paydata","contents":"15 Credits","access":3,"modify":4},{"title":"Mission Data","contents":"Data Piece #3\/3","access":4,"modify":5}]},{"type":"cameras","entries":[{"title":"Test Camera","contents":"Camera Contents","access":1,"modify":2,"state":"initial","previous":"disabled"}]},{"type":"locks","entries":[{"title":"Test Lock","contents":"Lock Contents","access":1,"modify":2,"state":"friendly","previous":"disabled"}]},{"type":"defenses","entries":[{"title":"Test Defensive System","contents":"Defense Contents","access":1,"modify":2}]},{"type":"utilities","entries":[{"title":"Test Utility","contents":"Utility Contents","access":1,"modify":2}]},{"type":"puzzles","entries":[]}]}
+{
+	"name": "TEST TERMINAL",
+	"access": 2,
+	"state": "active",
+	"data":
+	[
+		{
+			"type": "files",
+			"entries":
+			[
+				{
+					"title": "Paydata",
+					"contents": "10 Credits",
+					"access": 0,
+					"modify": 1
+				},
+				{
+					"special": "trap",
+					"effects":
+					[
+						"3 Strikes to Torso!"
+					],
+					"access": 1,
+					"modify": 2
+				},
+				{
+					"title": "Mission Data",
+					"contents": "Data Piece #1/3",
+					"access": 2,
+					"modify": 3
+				},
+				{
+					"special": "ice",
+					"title": "SNITCHES 2",
+					"effects":
+					[
+						"ALARM",
+						"FEAR 30s",
+						"MARKED"
+					],
+					"break": 3,
+					"subEntries":
+					[
+						{
+							"title": "Mission Data",
+							"contents": "Data Piece #2/3",
+							"access": 1,
+							"modify": 2
+						},
+						{
+							"title": "Paydata",
+							"contents": "100 Credits",
+							"access": 2,
+							"modify": 3
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "darkweb",
+			"entries":
+			[
+				{
+					"title": "Paydata",
+					"contents": "15 Credits",
+					"access": 3,
+					"modify": 4
+				},
+				{
+					"title": "Mission Data",
+					"contents": "Data Piece #3/3",
+					"access": 4,
+					"modify": 5
+				}
+			]
+		},
+		{
+			"type": "cameras",
+			"entries":
+			[
+				{
+					"title": "Test Camera",
+					"contents": "Camera Contents",
+					"access": 1,
+					"modify": 2
+				}
+			]
+		},
+		{
+			"type": "locks",
+			"entries":
+			[
+				{
+					"title": "Test Lock",
+					"contents": "Lock Contents",
+					"access": 1,
+					"modify": 2
+				}
+			]
+		},
+		{
+			"type": "defenses",
+			"entries":
+			[
+				{
+					"title": "Test Defensive System",
+					"contents": "Defense Contents",
+					"access": 1,
+					"modify": 2
+				}
+			]
+		},
+		{
+			"type": "utilities",
+			"entries":
+			[
+				{
+					"title": "Test Utility",
+					"contents": "Utility Contents",
+					"access": 1,
+					"modify": 2
+				}
+			]
+		},
+		{
+			"type": "puzzles",
+			"entries":
+			[
+			]
+		}
+	]
+}
