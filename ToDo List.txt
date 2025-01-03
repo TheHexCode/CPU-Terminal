@@ -8,6 +8,7 @@
 - Loading Animation
 - Auto-Save Cookie
 - Add Other Category Types/States/Test Entries
+- Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
 
 - Incorporate Payload
  -- Adjust Text Sizes for Small Screens
@@ -18,13 +19,14 @@
 -------------------------------------------------------------------------------------------------------------
 
 - Track User Actions
-- Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
+ -- Timestamp|User|Action|Details
 - Items
 - Make Mask editable in terminal view, and send whatever's there
 - Create Access Log/OOC_Action_Log if it doesn't already exist
 - Finish Root Device
  -- HexOS BIOS Insert Boot Media
  -- Scrolling codium ipsum animation
+- Brick/Rigg/Root write to json...getContentString checks for terminal["state"] and sends a different string
 
 - Subtab Images For:
  ✓- Log -> ">_" or bullet list?

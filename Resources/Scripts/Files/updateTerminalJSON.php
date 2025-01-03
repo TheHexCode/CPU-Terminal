@@ -13,7 +13,7 @@ $splitPath = explode(">",$path);
 
 if($splitPath[0] === "state")
 {
-    $terminalJSON["state"] = $newState;
+    $terminalJSON->state = $newState;
 }
 else
 {

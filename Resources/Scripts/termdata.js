@@ -134,7 +134,7 @@ class Terminal
 			entries.push(entryState);
 		});
 
-		return { "repeats": repeats, "entries": entries };
+		return { termState: this.#termData.state, "repeats": repeats, "entries": entries };
 	}
 	
 	setEntryState(path,state)
@@ -1309,9 +1309,30 @@ function rewriteAccessPage()
 }
 
 function setupTerminalPage()
-{	
-	$("#termSubTabs").html(terminal.getSubTabString());
-	$("#termContentContainer").html(terminal.getContentString());
+{
+	let termState = terminal.getTermState().termState;
+
+	if(new Date(termState) != "Invalid Date") //rooting
+	{
+
+	}
+	else if(termState === "bricked")
+	{
+		
+	}
+	else if(termState == "rigged")
+	{
+
+	}
+	else if(termState == "rooted")
+	{
+
+	}
+	else
+	{
+		$("#termSubTabs").html(terminal.getSubTabString());
+		$("#termContentContainer").html(terminal.getContentString());
+	}
 }
 
 function rewriteTerminalPage(autosave)
@@ -1691,11 +1712,23 @@ function executeAction(action)
 							"Physical memory dump complete.<br/>" +
 							"Contact your system administrator or technical support group for further<br/>" +
 							"assistance.</p>" +
-							"<footer>CPU DISCLAIMER</footer>"
+							"<!--<footer>CPU DISCLAIMER</footer>-->"
 			);
 
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			autoSave();
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					path: "state",
+					newState: "bricked"
+				}
+			});
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1711,6 +1744,18 @@ function executeAction(action)
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			autoSave();
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				data:
+				{
+					suffixID: terminal.getSuffix(),
+					path: "state",
+					newState: "rigged"
+				}
+			});
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1730,14 +1775,38 @@ function executeAction(action)
 				$("body").removeClass("rooting");
 
 				$("#main").html("<p>HexOS BIOS</p>" +
-					"<footer>CPU DISCLAIMER</footer>"
+					"<!--<footer>CPU DISCLAIMER</footer>-->"
 				);
+
+				$.ajax({
+					type: "POST",
+					dataType: "json",
+					url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+					data:
+					{
+						suffixID: terminal.getSuffix(),
+						path: "state",
+						newState: "rooted"
+					}
+				});
 			});
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 		startTimer("ROOT",timerSecs,callback);
 		autoSave();
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+			data:
+			{
+				suffixID: terminal.getSuffix(),
+				path: "state",
+				newState: new Date(new Date().getTime() + 5 * 60 * 1000)
+			}
+		});
 	}
 		
 	$("button[data-cost]").prop("disabled",true);
