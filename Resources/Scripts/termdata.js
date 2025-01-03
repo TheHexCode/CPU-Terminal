@@ -144,18 +144,19 @@ class Terminal
 		
 		let category = this.getCategory(path);
 		
+		let newState = state;
 		if(state === "previous")
 		{
-			state = catalogEntry.previous;
+			newState = catalogEntry.previous;
 		}
 		
-		let catalogState = this.#dataCatalog[category.type].states[state];
+		let catalogState = this.#dataCatalog[category.type].states[newState];
 		
 		if(catalogEntry.special)
 		{
 			if(catalogEntry.special == "trap")
 			{
-				if(state == "access" || state == "disarmed")
+				if(newState == "access" || newState == "disarmed")
 				{
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entrySecret").addClass("disarmed");
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -172,7 +173,7 @@ class Terminal
 					catalogEntry.state = "disarmed";
 					//console.log(catalogEntry);
 				}
-				else if(state == "modify" || state == "sprung")
+				else if(newState == "modify" || newState == "sprung")
 				{
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entrySecret").addClass("sprung");
 					$(terminalEntry + "> .entryTitleBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -192,7 +193,7 @@ class Terminal
 			}
 			else if(catalogEntry.special == "ice")
 			{
-				if(state == "unwrap" || state == "sprung")
+				if(newState == "unwrap" || newState == "sprung")
 				{
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entrySecret").addClass("sprung");
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -205,7 +206,7 @@ class Terminal
 					catalogEntry.state = "sprung";
 					//console.log(catalogEntry);
 				}
-				else if(state == "break" || state == "broken")
+				else if(newState == "break" || newState == "broken")
 				{
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entrySecret").addClass("broken");
 					$(terminalEntry + "> .entryContentsBar > .entryMaskContainer > .entryMasking").addClass("invisible");
@@ -281,8 +282,24 @@ class Terminal
 			}
 			
 			catalogEntry["previous"] = catalogEntry.state;
-			catalogEntry.state = state;
+			catalogEntry.state = newState;
 			//console.log(catalogEntry);
+
+			if(catalogState.globalState || (state === "previous"))
+			{
+				$.ajax({
+					type: "POST",
+					dataType: "json",
+					url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+					data:
+					{
+						suffixID: this.#suffix,
+						path: path,
+						newState: catalogEntry.state,
+						newPrev: catalogEntry.previous
+					}
+				});
+			}
 		}
 	}
 	
@@ -383,7 +400,6 @@ class Terminal
 				entry["displayName"] = this.#dataCatalog[catType].unit + " " + displayIndex;
 				entry["title"] = "Trap!"
 				entry["contents"] = entry.effects.join("<br/>");
-				entry["initalVis"] = false;
 				entry["state"] = "initial";
 			}
 			else if(entry.special == "ice")
@@ -391,7 +407,6 @@ class Terminal
 				entry["path"] = path;
 				entry["displayName"] = "ICE " + " " + displayIndex;
 				entry["contents"] = entry.effects.join("<br/>");
-				entry["initalVis"] = false;
 				entry["state"] = "closed";
 				
 				entry.subEntries.forEach((subEntry,subIndex) => this.#buildEntry(catType,subIndex,subEntry,{path:path,index:index}));
@@ -401,12 +416,12 @@ class Terminal
 		{
 			entry["path"] = path;
 			entry["displayName"] = this.#dataCatalog[catType].unit + " " + displayIndex;
-			entry["state"] = "initial";
+
+			entry["state"] = entry["state"] ? entry["state"] : "initial";
+			entry["previous"] = entry["previous"] ? entry["previous"] : null;
 			
-			entry["titleVis"] = this.#dataCatalog[catType].states["initial"].title;
-			entry["contentsVis"] = this.#dataCatalog[catType].states["initial"].contents;
-			entry["access"] = this.#dataCatalog[catType].states["initial"].access.enabled ? entry.access : false;
-			entry["modify"] = this.#dataCatalog[catType].states["initial"].modify.enabled ? entry.modify : false;
+			entry["access"] = this.#dataCatalog[catType].states[entry["state"]].access.enabled ? entry.access : false;
+			entry["modify"] = this.#dataCatalog[catType].states[entry["state"]].modify.enabled ? entry.modify : false;
 		}
 	}
 	
@@ -426,7 +441,7 @@ class Terminal
 			}
 		}, this);
 		
-		//console.log(this.#termData.data);
+		console.log(this.#termData.data);
 	}
 	
 	#writeTerminal()
@@ -476,11 +491,11 @@ class Terminal
 		
 		this.#termData.data.forEach(function(category)
 		{
-			function writeEntry(entry, index, subClass="")
+			function writeEntry(entry, scheme, subClass="")
 			{
-				let accS = (entry.access==1) ? "" : "s";
-				let modS = (entry.modify==1) ? "" : "s";
-				let brkS = (entry.break==1) ? "" : "s";
+				let accS = (entry.access===1) ? "" : "s";
+				let modS = (entry.modify===1) ? "" : "s";
+				let brkS = (entry.break===1) ? "" : "s";
 				
 				let entryString = 	'<div id="' + entry.path + '" class="entry ' + subClass + '">' +
 										'<div class="entryTitleBar">';
@@ -507,21 +522,47 @@ class Terminal
 				}
 				else
 				{
-					let titleMask = entry.titleVis ?
-											'<span>' + entry.title + '</span>'
-											:
-											'<span class="entryMaskContainer">' +
+					let titleMask;
+					if(scheme.states[entry.state].title === true)
+					{
+						titleMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entrySecret">' + entry.title + '</span>' +
+											'</span>';
+					}
+					else if(scheme.states[entry.state].title === false)
+					{
+						titleMask = 		'<span class="entryMaskContainer">' +
 												'<span class="entryMasking"></span>' +
 												'<span class="entrySecret">' + entry.title + '</span>' +
 											'</span>';
+					}
+					else
+					{
+						titleMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entrySecret">' + scheme.states[entry.state].title + '</span>' +
+											'</span>';
+					}
 
-					let contentMask = entry.contentVis ? 
-											'<span>' + entry.contents + '</span>'
-											:
-											'<span class="entryMaskContainer">' +
+					let contentMask;
+					if(scheme.states[entry.state].contents === true)
+					{
+						contentMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entrySecret">' + entry.contents + '</span>' +
+											'</span>';
+					}
+					else if(scheme.states[entry.state].contents === false)
+					{
+						contentMask = 		'<span class="entryMaskContainer">' +
 												'<span class="entryMasking"></span>' +
 												'<span class="entrySecret">' + entry.contents + '</span>' +
 											'</span>';
+					}
+					else
+					{
+						contentMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entrySecret">' + scheme.states[entry.state].contents + '</span>' +
+											'</span>';
+					}
 					
 					let aVisible = (entry.access !== false) ? {
 							disAttr: 'data-enabled="true" data-cost="' + entry.access + '"',
@@ -558,9 +599,9 @@ class Terminal
 				{
 					entryString += '<hr/>';
 					
-					entry.subEntries.forEach(function(subEntry,index)
+					entry.subEntries.forEach(function(subEntry)
 					{
-						entryString += writeEntry(subEntry,index,"subIce");
+						entryString += writeEntry(subEntry,scheme,"subIce");
 					});
 				}
 				
@@ -577,6 +618,8 @@ class Terminal
 			
 			if(category.entries.length)
 			{
+				let catScheme = this.#dataCatalog[category.type];
+
 				subTabs["enabled"] += 	'<button' + subTabID + 'class="subTab inactive" onclick="openSubTab(event,\'' + category.type + 'Content\')">' +
 											'<img src="resources/images/subtabs/' + category.type + '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' +
 										'</button> ';
@@ -584,21 +627,21 @@ class Terminal
 				allContent += 	'<div id="'+ category.type + 'Content" class="subContent">' +
 									'<div class="subContTitleRow">' +
 										'<span class="subContRepeat red hidden">REPEAT</span>' +
-										'<span class="subContTitle">' + this.#dataCatalog[category.type].title + '</span>' +
+										'<span class="subContTitle">' + catScheme.title + '</span>' +
 									'</div>' +
 									'<div class="subContBody">';
-				
+
 				let entryArray = [];
 				
 				category.entries.forEach(function(entry,index)
 				{
 					if (entry.special != "ice")
 					{
-						entryArray[index] = writeEntry(entry,index);
+						entryArray[index] = writeEntry(entry,catScheme);
 					}
 					else
 					{
-						entryArray[index] = writeEntry(entry,index,"ice");
+						entryArray[index] = writeEntry(entry,catScheme,"ice");
 					}
 				},this);
 				
@@ -1315,7 +1358,10 @@ function rewriteTerminalPage(autosave)
 
 		autosave.saveState.entries.forEach(function(entry)
 		{
-			terminal.setEntryState(entry.path,entry.state);
+			if(terminal.getEntry(entry.path).state !== entry.state)
+			{
+				terminal.setEntryState(entry.path,entry.state);
+			}
 		});
 
 		$("button[data-enabled='false']").prop("disabled",true);
