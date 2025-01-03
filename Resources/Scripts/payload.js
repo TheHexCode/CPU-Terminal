@@ -218,4 +218,8 @@ function statSubmit(event)
 	//console.log(JSON.parse(stats));
 	
 	Cookies.set("payload",JSON.stringify(stats),{expires: 30,path: "",sameSite: "Strict"});
+
+	$("#saveText").removeClass("hidden");
+
+	setTimeout(function(){$("#saveText").addClass("hidden");},5000);
 }

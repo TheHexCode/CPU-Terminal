@@ -1,6 +1,7 @@
 {
 	"name": "TEST TERMINAL",
 	"access": 2,
+	"state": "active",
 	"data":
 	[
 		{
@@ -78,24 +79,48 @@
 			"type": "cameras",
 			"entries":
 			[
+				{
+					"title": "Test Camera",
+					"contents": "Camera Contents",
+					"access": 1,
+					"modify": 2
+				}
 			]
 		},
 		{
 			"type": "locks",
 			"entries":
 			[
+				{
+					"title": "Test Lock",
+					"contents": "Lock Contents",
+					"access": 1,
+					"modify": 2
+				}
 			]
 		},
 		{
 			"type": "defenses",
 			"entries":
 			[
+				{
+					"title": "Test Defensive System",
+					"contents": "Defense Contents",
+					"access": 1,
+					"modify": 2
+				}
 			]
 		},
 		{
 			"type": "utilities",
 			"entries":
 			[
+				{
+					"title": "Test Utility",
+					"contents": "Utility Contents",
+					"access": 1,
+					"modify": 2
+				}
 			]
 		},
 		{

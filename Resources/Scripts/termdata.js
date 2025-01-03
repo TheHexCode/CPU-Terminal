@@ -143,7 +143,13 @@ class Terminal
 		let terminalEntry = "[id='"+path+"'] "
 		
 		let category = this.getCategory(path);
-		let catalogState = this.#dataCatalog[path.split(">")[0]].states[state];
+		
+		if(state === "previous")
+		{
+			state = catalogEntry.previous;
+		}
+		
+		let catalogState = this.#dataCatalog[category.type].states[state];
 		
 		if(catalogEntry.special)
 		{
@@ -164,7 +170,7 @@ class Terminal
 					$(terminalEntry + ".modifyButton").html("N/A");
 					
 					catalogEntry.state = "disarmed";
-					console.log(catalogEntry);
+					//console.log(catalogEntry);
 				}
 				else if(state == "modify" || state == "sprung")
 				{
@@ -181,7 +187,7 @@ class Terminal
 					$(terminalEntry + ".modifyButton").html("N/A");
 					
 					catalogEntry.state = "sprung";
-					console.log(catalogEntry);
+					//console.log(catalogEntry);
 				}
 			}
 			else if(catalogEntry.special == "ice")
@@ -197,7 +203,7 @@ class Terminal
 					$(terminalEntry + "> .subIce").removeClass("subIce");
 					
 					catalogEntry.state = "sprung";
-					console.log(catalogEntry);
+					//console.log(catalogEntry);
 				}
 				else if(state == "break" || state == "broken")
 				{
@@ -210,7 +216,7 @@ class Terminal
 					$(terminalEntry + "> .subIce").removeClass("subIce");
 					
 					catalogEntry.state = "broken";
-					console.log(catalogEntry);
+					//console.log(catalogEntry);
 				}
 			}
 		}
@@ -274,8 +280,9 @@ class Terminal
 				$(terminalEntry + ".modifyButton").html("N/A");
 			}
 			
+			catalogEntry["previous"] = catalogEntry.state;
 			catalogEntry.state = state;
-			console.log(catalogEntry);
+			//console.log(catalogEntry);
 		}
 	}
 	
@@ -307,8 +314,8 @@ class Terminal
 					$('[id="'+entry.id+'"] .accessButton').attr("data-cost",newAccCost);
 					$('[id="'+entry.id+'"] .modifyButton').attr("data-cost",newModCost);
 					
-					$('[id="'+entry.id+'"] .accessButton').text(newAccCost + " Tag" + accS);
-					$('[id="'+entry.id+'"] .modifyButton').text(newModCost + " Tag" + modS);
+					$('[id="'+entry.id+'"] .accessButton[data-enabled="true"]').text(newAccCost + " Tag" + accS);
+					$('[id="'+entry.id+'"] .modifyButton[data-enabled="true"]').text(newModCost + " Tag" + modS);
 				}
 			});
 			
@@ -396,7 +403,8 @@ class Terminal
 			entry["displayName"] = this.#dataCatalog[catType].unit + " " + displayIndex;
 			entry["state"] = "initial";
 			
-			entry["initalVis"] = this.#dataCatalog[catType].states["initial"].contents;
+			entry["titleVis"] = this.#dataCatalog[catType].states["initial"].title;
+			entry["contentsVis"] = this.#dataCatalog[catType].states["initial"].contents;
 			entry["access"] = this.#dataCatalog[catType].states["initial"].access.enabled ? entry.access : false;
 			entry["modify"] = this.#dataCatalog[catType].states["initial"].modify.enabled ? entry.modify : false;
 		}
@@ -418,7 +426,7 @@ class Terminal
 			}
 		}, this);
 		
-		console.log(this.#termData.data);
+		//console.log(this.#termData.data);
 	}
 	
 	#writeTerminal()
@@ -472,7 +480,7 @@ class Terminal
 			{
 				let accS = (entry.access==1) ? "" : "s";
 				let modS = (entry.modify==1) ? "" : "s";
-				let disS = (entry.break==1) ? "" : "s";
+				let brkS = (entry.break==1) ? "" : "s";
 				
 				let entryString = 	'<div id="' + entry.path + '" class="entry ' + subClass + '">' +
 										'<div class="entryTitleBar">';
@@ -493,13 +501,21 @@ class Terminal
 												'Unwrap:<button class="unwrapButton" data-enabled="true" data-cost="0" onclick="termAction(\'' + entry.path + '\',\'unwrap\')">Free!</button>' +
 											'</div>' +
 											'<div class="entryInterface">' +
-												'Break:<button class="breakButton" data-enabled="true" data-cost="' + entry.break + '" onclick="termAction(\'' + entry.path + '\',\'break\')">' + entry.break +' Tag' + disS + '</button>' +
+												'Break:<button class="breakButton" data-enabled="true" data-cost="' + entry.break + '" onclick="termAction(\'' + entry.path + '\',\'break\')">' + entry.break +' Tag' + brkS + '</button>' +
 											'</div>' +
 										'</div>';
 				}
 				else
 				{
-					let contentMask = entry.initalVis ? 
+					let titleMask = entry.titleVis ?
+											'<span>' + entry.title + '</span>'
+											:
+											'<span class="entryMaskContainer">' +
+												'<span class="entryMasking"></span>' +
+												'<span class="entrySecret">' + entry.title + '</span>' +
+											'</span>';
+
+					let contentMask = entry.contentVis ? 
 											'<span>' + entry.contents + '</span>'
 											:
 											'<span class="entryMaskContainer">' +
@@ -523,10 +539,7 @@ class Terminal
 						};
 					
 					entryString += 			'<span class="entryPrefix">>> ' + entry.displayName + ':\\</span>' +
-											'<span class="entryMaskContainer">' +
-												'<span class="entryMasking"></span>' +
-												'<span class="entrySecret">&nbsp;' + entry.title + '</span>' +
-											'</span>' +
+											titleMask +
 										'</div>' +
 										'<div class="entryContentsBar">' +
 											contentMask +
@@ -928,7 +941,7 @@ $(document).ready(async function()
 	suffix = new URLSearchParams(window.location.search);
 	
 	termJSON = await fetch("Data\\"+suffix.get("id")+"\\terminal.json", {cache:"reload"});
-	catalogJSON = await fetch("Resources\\Scripts\\dataCatalog.json", {cache:"reload"});
+	catalogJSON = await fetch("Resources\\Schema\\dataCatalog.json", {cache:"reload"});
 	accessCSV = await fetch("Data\\"+suffix.get("id")+"\\accessLog.json", {cache:"reload"});
 
 	terminal = new Terminal(suffix.get("id"), await catalogJSON.json(), await termJSON.json(), await accessCSV.json());

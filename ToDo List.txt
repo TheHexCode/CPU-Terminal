@@ -7,6 +7,7 @@
 - Make Active Actions work
 - Loading Animation
 - Auto-Save Cookie
+- Add Other Category Types/States/Test Entries
 
 - Incorporate Payload
  -- Adjust Text Sizes for Small Screens

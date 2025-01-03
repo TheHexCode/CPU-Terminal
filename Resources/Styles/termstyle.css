@@ -738,7 +738,7 @@ h2
 .subContTitleRow
 {
 	display: grid;
-	grid-template-columns: [start] 1fr [titlestart] max-content [titleend] 1fr;
+	grid-template-columns: [start] 1fr [titlestart] minmax(auto,max-content) [titleend] 1fr;
 	column-gap: 0.25rem;
 	margin: 0 0 0.25rem 0;
 }
@@ -747,12 +747,13 @@ h2
 {
 	grid-column: start / titlestart;
 	text-align: center;
-	vertical-align: middle;
+	margin: auto;
 }
 
 .subContTitle
 {
 	grid-column: titlestart / titleend;
+	text-align: center;
 	text-decoration: underline;
 }
 
