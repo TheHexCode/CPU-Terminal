@@ -74,48 +74,37 @@
 						</div>
 					</div>
 					<div class="accessBox">
-						<div id="payloadHeader">
+						<div id="payloadHeader" class="accessHeader">
 							<span class="red">ERROR:</span><span>&nbsp;NO PAYLOAD FOUND</span>
 						</div>
 						<button id="payloadButton" onclick="window.open('./profile.html','_blank')">SETUP PAYLOAD PROFILE</button>
-						
-						<hr/>
-
-						<div class="accessHeader">
-							TAGS FROM PAYLOAD:
-						</div>
-						<div class="lcdBox amber">
-							<span class="dseg BG">~~</span>
-							<span id="payTags" class="dseg FG">XX</span>
-						</div>
-						<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
-						<div id="rexDetails" class="payDetails">[ROOT EXPLOIT: +02]</div>
 					</div>
-					<div class="accessBox">
-						<div class="accessHeader">
-							EXTRA TAGS?
-						</div>
-						<div class="check">
-							<input type="checkbox" id="dis_abil">
-							<label for="dis_abil">DISSIMULATOR: +1 HACKING?</label>
-						</div>
-						<div class="check">
-							<input type="checkbox" id="item_slip">
-							<label for="item_slip">SLIP USED THIS SCENE?</label>
-						</div>
-
-						<hr/>
-
-						<div class="accessHeader">
-							OTHER:
-						</div>
-						<div class="tagInterface">
-							<button onMouseUp="extraTags(-1)"><b>-</b></button>
-							<div class="lcdBox blue">
-								<span class="dseg BG">~~</span>
-								<span id="extTags" class="dseg FG">00</span>
+					<div class="accessTagBox">
+						<div class="accessTagRow">
+							<div class="accessBox">
+								<div class="accessHeader">
+									TAGS FROM PAYLOAD:
+								</div>
+								<div class="lcdBox amber">
+									<span class="dseg BG">~~</span>
+									<span id="payTags" class="dseg FG">XX</span>
+								</div>
+								<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
+								<div id="rexDetails" class="payDetails">[ROOT EXP:+02]</div>
 							</div>
-							<button onMouseUp="extraTags(1)">+</button>
+							<div class="accessBox">
+								<div class="accessHeader">
+									EXTRA TAGS?
+								</div>
+								<div class="tagInterface">
+									<button onMouseUp="extraTags(-1)"><b>-</b></button>
+									<div class="lcdBox blue">
+										<span class="dseg BG">~~</span>
+										<span id="extTags" class="dseg FG">00</span>
+									</div>
+									<button onMouseUp="extraTags(1)">+</button>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="accessBox">
@@ -181,10 +170,10 @@
 						<div class="hackSpacer"></div>
 					</div>
 				</div>
-				<footer>
-					CPU DISCLAIMER
-				</footer>
 			</div>
+			<footer>
+				CPU DISCLAIMER
+			</footer>
 		<div id="popup" class="hidden"></div>
 	</body>
 </html>
