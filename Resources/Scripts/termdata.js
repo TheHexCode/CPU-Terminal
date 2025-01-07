@@ -982,26 +982,30 @@ function tens(numStr)
 	return tensFormat.format(Number(numStr));
 }
 
-$(document).ready(async function()
+$(document).ready(function()
 {
+	$.ajaxSetup({ cache: false });
+
 	preloadImages();
 
-	suffix = new URLSearchParams(window.location.search);
+	let suffix = new URLSearchParams(window.location.search);
 	
-	termJSON = await fetch("Data\\"+suffix.get("id")+"\\terminal.json", {cache:"reload"});
-	
-	catalogJSON = await fetch("Resources\\Schema\\dataCatalog.json", {cache:"reload"});
-	
-	accessCSV = await fetch("Data\\"+suffix.get("id")+"\\accessLog.json", {cache:"reload"});
+	let catalogJSON = $.getJSON("Resources\\Schema\\dataCatalog.json");
+	let termJSON = $.getJSON("Data\\"+suffix.get("id")+"\\terminal.json");
+	let accessLog = $.getJSON("Resources\\Scripts\\Files\\checkLogs.php",{ suffixID: suffix.get("id") });
 
-	terminal = new Terminal(suffix.get("id"), await catalogJSON.json(), await termJSON.json(), await accessCSV.json());
-	payload = new Payload();
+	$.when(termJSON, catalogJSON, accessLog).done(function()
+	{
+		console.log(accessLog);
+		terminal = new Terminal(suffix.get("id"), catalogJSON.responseJSON, termJSON.responseJSON, accessLog.responseJSON);
+		payload = new Payload();
 
-	setupAccessPage();
-	setupTerminalPage();	
+		setupAccessPage();
+		setupTerminalPage();
+	});
 });
 
-$(document).on("focus",function()
+$(window).on("focus",function()
 {
 	if(payload && ($("#accessZone").css("display") != "none"))
 	{
