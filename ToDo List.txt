@@ -5,10 +5,11 @@
 - Make it so endTimer doesn't enable the button until enough tags exist, either through payload or extra
 - Repeat
 - Make Active Actions work
-- Loading Animation
+- Loading Animation, No -> Box
 - Auto-Save Cookie
 - Add Other Category Types/States/Test Entries
 - Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
+- Brick/Rigg/Root write to json...getContentString checks for terminal["state"] and sends a different string
 
 - Incorporate Payload
  -- Adjust Text Sizes for Small Screens
@@ -26,7 +27,6 @@
 - Finish Root Device
  -- HexOS BIOS Insert Boot Media
  -- Scrolling codium ipsum animation
-- Brick/Rigg/Root write to json...getContentString checks for terminal["state"] and sends a different string
 
 - Subtab Images For:
  ✓- Log -> ">_" or bullet list?
@@ -37,17 +37,25 @@
  -- Defenses -> Better Bullseye/Crosshairs?
  -- Utilities -> Better Lightning Bolt?
  ✓- Puzzles -> Puzzle Piece
-
  ✓- Active/Passive/Items
-
 - Replace RIGGED image
 
-- CPU Disclaimer text
+-------------------------------------------------------------------------------------------------------------
+
+- Should there be CPU Disclaimer Text? If so, what should it say? (C) CPU Larp 2024?
+- Should subsequent users be able to see that a terminal is rigged?
+- Can users still use the terminal as it's being rooted (formatted)? This question applies to both the rooter and other users.
+- Which timers do the items effect?
+ -- 30s Cracking Terminal?
+ -- Regular Hacking Actions?
+ -- 30s Root Device? 5min Root Device Part II?
 
 -------------------------------------------------------------------------------------------------------------
 
 - Use POST instead of GET for term info
 - Use SQL Database for term info
+- Themes
+- Make it so that pausing the Rooting process and then refreshing does what it's supposed to. Right now, pausing doesn't update the time until it unpauses, so pausing then refreshing will keep the old time, or will skip to root if time elapses behind the scenes.
 
 -------------------------------------------------------------------------------------------------------------
 

@@ -332,7 +332,7 @@ h2
 
 #load
 {
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.8);
 	position: absolute;
 	height: 100%;
 	width: calc(100vw - 1rem);

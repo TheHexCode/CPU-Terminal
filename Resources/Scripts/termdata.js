@@ -136,6 +136,11 @@ class Terminal
 
 		return { termState: this.#termData.state, "repeats": repeats, "entries": entries };
 	}
+
+	setTerminalState(newState)
+	{
+		this.#termData.state = newState;
+	}
 	
 	setEntryState(path,state)
 	{
@@ -837,7 +842,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>RIGGED:</span>' +
-										'<button data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
+										'<button id="riggbutton" data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -984,26 +989,16 @@ $(document).ready(async function()
 	suffix = new URLSearchParams(window.location.search);
 	
 	termJSON = await fetch("Data\\"+suffix.get("id")+"\\terminal.json", {cache:"reload"});
+	
 	catalogJSON = await fetch("Resources\\Schema\\dataCatalog.json", {cache:"reload"});
+	
 	accessCSV = await fetch("Data\\"+suffix.get("id")+"\\accessLog.json", {cache:"reload"});
 
 	terminal = new Terminal(suffix.get("id"), await catalogJSON.json(), await termJSON.json(), await accessCSV.json());
 	payload = new Payload();
 
 	setupAccessPage();
-	setupTerminalPage();
-	
-	if(!(Cookies.get(terminal.getTerminalID())))
-	{
-		$("#load").addClass("hidden");
-		startTimer("CRACK",5);
-	}
-	else
-	{
-		accessTerminal(JSON.parse(Cookies.get(terminal.getTerminalID())));
-		$("#load").addClass("hidden");
-	}
-	
+	setupTerminalPage();	
 });
 
 $(document).on("focus",function()
@@ -1027,8 +1022,12 @@ function preloadImages()
 	thinBorder.src = "Resources\\Images\\Borders\\Thin_Border.png"
 	const pauseImage = new Image();
 	pauseImage.src = "Resources\\Images\\PlayPause\\Pause.png"
+	const pauseRootImage = new Image();
+	pauseRootImage.src = "Resources\\Images\\PlayPause\\Pause_Root.png"
 	const playImage = new Image();
 	playImage.src = "Resources\\Images\\PlayPause\\Play.png"
+	const playRootImage = new Image();
+	playRootImage.src = "Resources\\Images\\PlayPause\\Play_Root.png"
 	const subLog = new Image();
 	subLog.src = "Resources\\Images\\SubTabs\\log.png"
 	const subCameras = new Image();
@@ -1055,7 +1054,7 @@ function preloadImages()
 	actRigged.src = "Resources\\Images\\Actions\\Rigged.png"
 }
 
-function autoSave(handle=null)
+function autoSave({ handle=null,rigged=false })
 {
 	let saveData;
 
@@ -1069,6 +1068,7 @@ function autoSave(handle=null)
 	}
 
 	saveData["tags"] = payload.getCurrentTags();
+	saveData["rigged"] = rigged;
 	saveData["saveState"] = terminal.getTermState();
 
 	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
@@ -1193,13 +1193,13 @@ function endTimer(context,callback)
 	}
 }
 
-function pauseTimer()
+function pauseTimer(root=false)
 {
-	pause = !pause;
+	let rootSuffix = root ? "_Root" : "";
 	
-	if(pause)
+	if(pause === false)
 	{
-		$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Play.png">');
+		$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Play' + rootSuffix + '.png">');
 		
 		var mmssText = $("#mmss > .FG").html()
 		var hsecText = $("#hundsec > .FG").html()
@@ -1216,12 +1216,44 @@ function pauseTimer()
 				$("#hundsec > .FG").html(hsecText);
 			}
 		},1000);
+
+		if(root)
+		{
+			let timeUp = terminal.getTermState().termState;
+
+			pause = new Date(timeUp) - Date.now();
+		}
+		else
+		{
+			pause = true;
+		}
 	}
 	else
 	{
-		$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Pause.png">');
+		$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Pause' + rootSuffix + '.png">');
 		
 		clearInterval(timerBlink);
+
+		if(root)
+		{
+			let newTimeUp = new Date(Date.now() + pause);
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					path: "state",
+					newState: newTimeUp
+				}
+			});
+
+			terminal.setTerminalState(newTimeUp);
+		}
+
+		pause = false;
 	}
 }
 
@@ -1261,8 +1293,6 @@ function rewriteAccessPage()
 	}
 	
 	$("#payloadButton").text("EDIT PAYLOAD PROFILE");
-	
-	
 	
 	let payTags = payload.getInitialTags();
 	let payTotal = payTags.hack + payTags.rex;
@@ -1316,16 +1346,15 @@ function setupTerminalPage()
 
 	if(new Date(termState) != "Invalid Date") // Rooting
 	{
-		
+		rootingTerminal(new Date(termState));
+		$("#status").html(">> ROOTING DEVICE");
+		updateTagDisplay("ROOT",10);
 	}
 	else if(Array.isArray(termState)) // Bricked
 	{
 		brickTerminal(termState);
 	}
-	/*else if(termState === "rigged")
-	{
-
-	}*/
+	// Rigged is personal
 	else if(termState === "rooted")
 	{
 		rootTerminal();
@@ -1334,11 +1363,24 @@ function setupTerminalPage()
 	{
 		$("#termSubTabs").html(terminal.getSubTabString());
 		$("#termContentContainer").html(terminal.getContentString());
+
+		if(!(Cookies.get(terminal.getTerminalID())))
+		{
+			$("#load").addClass("hidden");
+			startTimer("CRACK",5);
+		}
+		else
+		{
+			accessTerminal(JSON.parse(Cookies.get(terminal.getTerminalID())));
+			$("#load").addClass("hidden");
+		}
 	}
 }
 
 function rewriteTerminalPage(autosave)
 {
+	$("#deckContentContainer").html(payload.getContentString());
+
 	if(!(autosave))
 	{
 		let newLogEntry = {};
@@ -1361,7 +1403,7 @@ function rewriteTerminalPage(autosave)
 									'</div>' +
 								'</li>');
 
-		autoSave(newLogEntry.handle);
+		autoSave({ handle: newLogEntry.handle });
 	}
 	else
 	{
@@ -1387,6 +1429,12 @@ function rewriteTerminalPage(autosave)
 			}
 		});
 
+		if(autosave.rigged)
+		{
+			$("#rigged").removeClass("hidden");
+			$("#riggbutton").attr("data-enabled","false");
+		}
+
 		$("button[data-enabled='false']").prop("disabled",true);
 	}
 
@@ -1410,8 +1458,6 @@ function rewriteTerminalPage(autosave)
 	{
 		$("#dwSubTab").addClass("hidden");
 	}
-	
-	$("#deckContentContainer").html(payload.getContentString());
 }
 
 function updateTagDisplay(stage,stageOne,stageTwo=stageOne,totalTags=stageTwo)
@@ -1587,6 +1633,7 @@ function accessTerminal(autosave)
 		payload.setCurrentTags(autosave.tags);
 		rewriteTerminalPage(autosave);
 		$("#status").html(">> RECONNECT SUCCESS");
+		$("#playPause").prop("disabled",true);
 	}
 	else
 	{
@@ -1623,7 +1670,7 @@ function executeCommand(path,newState,cost)
 	
 		payload.setCurrentTags(payload.getCurrentTags()-cost);
 		$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
-		autoSave();
+		autoSave({});
 	});
 	
 	$("button[data-cost]").prop("disabled",true);
@@ -1644,7 +1691,7 @@ function updateAccessLog(logIndex,action,reass)
 
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
-			autoSave();
+			autoSave({});
 		};
 	}
 	else if (action === "wipe")
@@ -1656,7 +1703,7 @@ function updateAccessLog(logIndex,action,reass)
 			
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
-			autoSave();
+			autoSave({});
 		};
 	}
 	
@@ -1695,7 +1742,36 @@ function brickTerminal(hexHandle)
 
 function rootingTerminal(timeUp)
 {
+	terminal.setTerminalState(timeUp);
 
+	$("#load").addClass("hidden");
+	$("body").addClass("rooting");
+	$("#timerLCD").removeClass("amber");
+	$("#timerLCD").addClass("red");
+	$(".zoneBox").css("display","none");
+
+	$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Pause_Root.png">');
+	$("#playPause").attr("onmouseup","pauseTimer(true)");
+
+	let secs = ((timeUp - new Date()) / 1000);
+
+	startTimer("EXECUTE",Math.ceil(secs),function () {
+		$("body").removeClass("rooting");
+
+		rootTerminal();
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+			data:
+			{
+				suffixID: terminal.getTerminalID(),
+				path: "state",
+				newState: "rooted"
+			}
+		});
+	});
 }
 
 function rootTerminal()
@@ -1735,7 +1811,7 @@ function executeAction(action)
 			brickTerminal(hexHandle);
 
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
-			autoSave();
+			autoSave({});
 
 			$.ajax({
 				type: "POST",
@@ -1759,22 +1835,11 @@ function executeAction(action)
 		timerSecs = payload.getTimerSecs();
 		callback = function() {
 			$("#rigged").removeClass("hidden");
+			$("#riggbutton").attr("data-enabled","false");
 
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
-			autoSave();
-
-			$.ajax({
-				type: "POST",
-				dataType: "json",
-				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
-				data:
-				{
-					suffixID: terminal.getSuffix(),
-					path: "state",
-					newState: "rigged"
-				}
-			});
+			autoSave({ rigged: true });
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1785,45 +1850,26 @@ function executeAction(action)
 		cost = 6;
 		timerSecs = 30;
 		callback = function() {
-			$("body").addClass("rooting");
-			$("#timerLCD").removeClass("amber");
-			$("#timerLCD").addClass("red");
-			$("#hackZone").css("display","none");
+			let timeUp = new Date(new Date().getTime() + 5 * 60 * 1000)
 
-			startTimer("EXECUTE",300,function () {
-				$("body").removeClass("rooting");
+			rootingTerminal(timeUp);
+			autoSave({});
 
-				rootTerminal();
-
-				$.ajax({
-					type: "POST",
-					dataType: "json",
-					url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
-					data:
-					{
-						suffixID: terminal.getSuffix(),
-						path: "state",
-						newState: "rooted"
-					}
-				});
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					path: "state",
+					newState: timeUp
+				}
 			});
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 		startTimer("ROOT",timerSecs,callback);
-		autoSave();
-
-		$.ajax({
-			type: "POST",
-			dataType: "json",
-			url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
-			data:
-			{
-				suffixID: terminal.getSuffix(),
-				path: "state",
-				newState: new Date(new Date().getTime() + 5 * 60 * 1000)
-			}
-		});
 	}
 		
 	$("button[data-cost]").prop("disabled",true);
