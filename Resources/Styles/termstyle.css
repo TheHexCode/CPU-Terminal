@@ -19,7 +19,7 @@
 
 :root
 {
-	--bg-color: #110;
+	--bg-color: #0A0A0A;
 	--fg-color: #FFAC00;
 }
 
@@ -56,8 +56,8 @@ body::before,
 body::after
 {
 	content:"";
-	background: linear-gradient(to bottom, #FFF, #AAA);
-    mix-blend-mode: multiply;
+	background: linear-gradient(to bottom, #666, #AAA);
+    mix-blend-mode: overlay;
     background-repeat: repeat;
 	background-size: 100% 2px;
 	pointer-events: none;
@@ -296,18 +296,21 @@ h2
 {
 	animation: reverseTV 0.5s ease-in;
 	height: 0;
+	content: "";
 }
 
 #load::before
 {
 	top: 0;
-	width: 100%
+	width: 100%;
 }
 
 #load::after
 {
 	bottom: 0;
 	width: 100%;
+	content: "LOADING...";
+	text-align: center;
 }
 
 #main
