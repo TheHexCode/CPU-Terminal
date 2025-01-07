@@ -995,13 +995,13 @@ $(document).ready(async function()
 	
 	if(!(Cookies.get(terminal.getTerminalID())))
 	{
-		$("#load").addClass("loaded");
+		$("#load").addClass("hidden");
 		startTimer("CRACK",5);
 	}
 	else
 	{
 		accessTerminal(JSON.parse(Cookies.get(terminal.getTerminalID())));
-		$("#load").addClass("loaded");
+		$("#load").addClass("hidden");
 	}
 	
 });

@@ -21,6 +21,7 @@
 {
 	--bg-color: #0A0A0A;
 	--fg-color: #FFAC00;
+	--max-main-width: 400px;
 }
 
 body
@@ -269,7 +270,7 @@ h2
 	margin-top: 0;
 	text-decoration: underline;
 }
-
+/*
 @keyframes reverseTV
 {
 	0%
@@ -312,6 +313,7 @@ h2
 	content: "LOADING...";
 	text-align: center;
 }
+*/
 
 #main
 {
@@ -319,11 +321,40 @@ h2
 	display: flex;
 	flex-direction: column;
 	row-gap: 0.25rem;
-	max-width: 400px;
+	max-width: var(--max-main-width);
 	margin: 0 auto;
 }
 
 #main.hidden
+{
+	display: none;
+}
+
+#load
+{
+	background-color: rgba(0,0,0,0.5);
+	position: absolute;
+	height: 100%;
+	width: calc(100vw - 1rem);
+	max-width: var(--max-main-width);
+	z-index: 998;
+	display: grid;
+	grid-template-rows: 1fr [start] min-content [end] 5fr;
+}
+
+#load > div
+{
+	grid-row: start / end;
+	box-sizing: border-box;
+	width: 100%;
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+	border: 0.5rem solid grey;
+	text-align: center;
+	padding: 1rem;
+}
+
+#load.hidden
 {
 	display: none;
 }
