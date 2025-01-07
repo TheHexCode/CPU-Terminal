@@ -707,6 +707,11 @@ class Payload
 		}
 		this.#writeCyberdeck();
 	}
+
+	getPayload()
+	{
+		return this.#payload;
+	}
 	
 	checkForCookie()
 	{
@@ -996,7 +1001,6 @@ $(document).ready(function()
 
 	$.when(termJSON, catalogJSON, accessLog).done(function()
 	{
-		console.log(accessLog);
 		terminal = new Terminal(suffix.get("id"), catalogJSON.responseJSON, termJSON.responseJSON, accessLog.responseJSON);
 		payload = new Payload();
 
@@ -1658,6 +1662,23 @@ function accessTerminal(autosave)
 	
 	$("#accessZone").css("display","none");
 	$("#hackZone").css("display","flex");
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+		data:
+		{
+			suffixID: terminal.getTerminalID(),
+			actionJSON:
+			{
+				timestamp: new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}),
+				handle: payload.getHandle().handle,
+				action: "Terminal Accessed",
+				details: payload.getPayload()
+			}
+		}
+	});
 }
 
 function executeCommand(path,newState,cost)
