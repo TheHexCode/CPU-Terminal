@@ -707,11 +707,6 @@ class Payload
 		}
 		this.#writeCyberdeck();
 	}
-
-	getPayload()
-	{
-		return this.#payload;
-	}
 	
 	checkForCookie()
 	{
@@ -741,6 +736,11 @@ class Payload
 	{
 		return (this.#payload != null);
 	}
+
+	getPayload()
+	{
+		return this.#payload;
+	}
 	
 	getPayloadFunction(func)
 	{
@@ -767,7 +767,7 @@ class Payload
 		this.#currTags = newTags;
 	}
 	
-	getTimerSecs()
+	getTimerSecs() //(modifier for items)
 	{
 		if(this.hasPayload())
 		{
@@ -1317,33 +1317,39 @@ function rewriteAccessPage()
 	
 	updateTagDisplay("CRACK",terminal.getReqAccess(),payTotal);
 	
+	if((payload.getPayloadFunction("priRole") === "dissimulator") || (payload.getPayloadFunction("secRole") === "dissimulator"))
+	{
+		$("#disItem").removeClass("hidden");
+	}
+
+	if((payload.getPayloadFunction("items")))
 	
-		if((payload.getCurrentTags()-terminal.getReqAccess()) >= 0)
+	if((payload.getCurrentTags()-terminal.getReqAccess()) >= 0)
+	{
+		if(timer == null)
 		{
-			if(timer == null)
-			{
-				$("#terminalButton").prop("disabled",false);
-				$("#terminalButton").html("Access Terminal");
-				$("#terminalButton").css("background-color","");
-				$("#terminalButton").css("border-color","");
-				$("#terminalButton").css("filter","");
-			}
-			else
-			{
-				$("#terminalButton").prop("disabled",true);
-				$("#terminalButton").html("Standby...");
-				$("#terminalButton").css("background-color","");
-				$("#terminalButton").css("border-color","");
-				$("#terminalButton").css("filter","");
-			}
+			$("#terminalButton").prop("disabled",false);
+			$("#terminalButton").html("Access Terminal");
+			$("#terminalButton").css("background-color","");
+			$("#terminalButton").css("border-color","");
+			$("#terminalButton").css("filter","");
 		}
 		else
 		{
-			$("#terminalButton").html("Not Enough Tags To Access Terminal");
-			$("#terminalButton").css("background-color","red");
-			$("#terminalButton").css("border-color","red");
-			$("#terminalButton").css("filter","brightness(75%)");
+			$("#terminalButton").prop("disabled",true);
+			$("#terminalButton").html("Standby...");
+			$("#terminalButton").css("background-color","");
+			$("#terminalButton").css("border-color","");
+			$("#terminalButton").css("filter","");
 		}
+	}
+	else
+	{
+		$("#terminalButton").html("Not Enough Tags To Access Terminal");
+		$("#terminalButton").css("background-color","red");
+		$("#terminalButton").css("border-color","red");
+		$("#terminalButton").css("filter","brightness(75%)");
+	}
 }
 
 function setupTerminalPage()

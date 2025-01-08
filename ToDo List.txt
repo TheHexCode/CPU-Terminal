@@ -11,6 +11,8 @@
 - Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
 - Brick/Rigg/Root write to json...getContentString checks for terminal["state"] and sends a different string
 - Create Access Log/OOC_Action_Log if it doesn't already exist
+- Track User Actions
+ -- Timestamp|User|Action|Details
 
 - Incorporate Payload
  -- Adjust Text Sizes for Small Screens
@@ -20,8 +22,6 @@
 
 -------------------------------------------------------------------------------------------------------------
 
-- Track User Actions
- -- Timestamp|User|Action|Details
 - Items
 - Make Mask editable in terminal view, and send whatever's there
 - Anonymous Mask placeholder
@@ -29,6 +29,7 @@
  -- HexOS BIOS Insert Boot Media
  -- Scrolling codium ipsum animation
 - Proper terminal.json/dataCatalog.json errors
+- CSS for checkboxes/radios
 
 - Subtab Images For:
  ✓- Log -> ">_" or bullet list?
@@ -47,10 +48,11 @@
 - Should there be CPU Disclaimer Text? If so, what should it say? (C) CPU Larp 2024?
 - Should subsequent users be able to see that a terminal is rigged?
 - Can users still use the terminal as it's being rooted (formatted)? This question applies to both the rooter and other users.
-- Which timers do the items effect?
+- Which timers do the items (Security Secret/Power Glove/Shimmerstick) effect?
  -- 30s Cracking Terminal?
  -- Regular Hacking Actions?
  -- 30s Root Device? 5min Root Device Part II?
+- Having the CMM Widow and Cocoon means you get +2 Tags after using Slip, right?
 
 -------------------------------------------------------------------------------------------------------------
 

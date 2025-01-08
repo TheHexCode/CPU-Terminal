@@ -551,6 +551,11 @@ h2
 	column-gap: 0.25rem;
 }
 
+.accessList
+{
+	list-style-type: none;
+}
+
 #terminalButton
 {
 	margin: auto 10px 10px 10px;

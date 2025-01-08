@@ -206,16 +206,18 @@ function statSubmit(event)
 				
 	let hash = 0;
 
-	for (i = 0; i < stats.length; i++)
+	let JSONstats = JSON.stringify(stats);
+
+	for (i = 0; i < JSONstats.length; i++)
 	{
-		char = stats.charCodeAt(i);
+		char = JSONstats.charCodeAt(i);
 		hash = ((hash << 5) - hash) + char;
 		hash = hash & hash;
 	}
 					
 	stats["hash"] = hash;
 	
-	//console.log(JSON.parse(stats));
+	console.log(stats);
 	
 	Cookies.set("payload",JSON.stringify(stats),{expires: 30,path: "",sameSite: "Strict"});
 
