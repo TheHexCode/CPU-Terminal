@@ -1663,6 +1663,16 @@ function accessTerminal(autosave)
 	$("#accessZone").css("display","none");
 	$("#hackZone").css("display","flex");
 
+	let initialTags = payload.getInitialTags();
+	initialTags["extra"] = (payload.getCurrentTags() + terminal.getReqAccess()) - initialTags["total"];
+
+	let actionJSON = {
+		timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+		handle: payload.getHandle().handle,
+		action: "Terminal Accessed",
+		details: { "Tags": initialTags, "AccessCost": terminal.getReqAccess() }
+	};
+
 	$.ajax({
 		type: "POST",
 		dataType: "json",
@@ -1670,13 +1680,7 @@ function accessTerminal(autosave)
 		data:
 		{
 			suffixID: terminal.getTerminalID(),
-			actionJSON:
-			{
-				timestamp: new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}),
-				handle: payload.getHandle().handle,
-				action: "Terminal Accessed",
-				details: payload.getPayload()
-			}
+			actionJSON: JSON.stringify(actionJSON)
 		}
 	});
 }
@@ -1691,11 +1695,31 @@ function executeCommand(path,newState,cost)
 		{
 			terminal.repeatCategory(path,payload.getPayloadFunction("repeat"));
 			$("#"+path.split(">")[0]+"Content .subContRepeat").removeClass("hidden");
+
+			repeatAddition = "; Repeat " + payload.getPayloadFunction("repeat");
 		}
 	
 		payload.setCurrentTags(payload.getCurrentTags()-cost);
 		$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 		autoSave({});
+
+		let actionJSON = {
+			timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+			handle: payload.getHandle().handle,
+			action: path + " changed to " + newState,
+			details: { "Cost": cost, "Repeat": payload.getPayloadFunction("repeat") }
+		};
+	
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+			data:
+			{
+				suffixID: terminal.getTerminalID(),
+				actionJSON: JSON.stringify(actionJSON)
+			}
+		});
 	});
 	
 	$("button[data-cost]").prop("disabled",true);
@@ -1706,6 +1730,8 @@ function updateAccessLog(logIndex,action,reass)
 {
 	let cost;
 	let callback;
+	
+	let oldHandle = $("#log"+logIndex+" .logName").html();
 
 	if(action === "reassign")
 	{
@@ -1717,6 +1743,24 @@ function updateAccessLog(logIndex,action,reass)
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			autoSave({});
+
+			let actionJSON = {
+				timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+				handle: payload.getHandle().handle,
+				action: "Log Entry for " + oldHandle + " reassigned to " + reass,
+				details: { "Cost": cost }
+			};
+		
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					actionJSON: JSON.stringify(actionJSON)
+				}
+			});
 		};
 	}
 	else if (action === "wipe")
@@ -1729,6 +1773,24 @@ function updateAccessLog(logIndex,action,reass)
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			autoSave({});
+
+			let actionJSON = {
+				timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+				handle: payload.getHandle().handle,
+				action: "Log Entry for " + oldHandle + " wiped",
+				details: { "Cost": cost }
+			};
+		
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					actionJSON: JSON.stringify(actionJSON)
+				}
+			});
 		};
 	}
 	
@@ -1796,6 +1858,24 @@ function rootingTerminal(timeUp)
 				newState: "rooted"
 			}
 		});
+
+		let actionJSON = {
+			timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+			handle: payload.getHandle().handle,
+			action: "Terminal Root Completed",
+			details: null
+		};
+	
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+			data:
+			{
+				suffixID: terminal.getTerminalID(),
+				actionJSON: JSON.stringify(actionJSON)
+			}
+		});
 	});
 }
 
@@ -1849,6 +1929,24 @@ function executeAction(action)
 					newState: hexHandle
 				}
 			});
+
+			let actionJSON = {
+				timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+				handle: payload.getHandle().handle,
+				action: "Terminal Bricked",
+				details: { "Cost": cost }
+			};
+		
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					actionJSON: JSON.stringify(actionJSON)
+				}
+			});
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1865,6 +1963,24 @@ function executeAction(action)
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
 			autoSave({ rigged: true });
+
+			let actionJSON = {
+				timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+				handle: payload.getHandle().handle,
+				action: "Terminal Rigged",
+				details: { "Cost": cost }
+			};
+		
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					actionJSON: JSON.stringify(actionJSON)
+				}
+			});
 		};
 
 		updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
@@ -1889,6 +2005,24 @@ function executeAction(action)
 					suffixID: terminal.getTerminalID(),
 					path: "state",
 					newState: timeUp
+				}
+			});
+
+			let actionJSON = {
+				timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
+				handle: payload.getHandle().handle,
+				action: "Terminal Root Started",
+				details: { "Cost": cost }
+			};
+		
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				data:
+				{
+					suffixID: terminal.getTerminalID(),
+					actionJSON: JSON.stringify(actionJSON)
 				}
 			});
 		};

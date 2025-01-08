@@ -4,7 +4,7 @@ $suffixID = $_GET["suffixID"];
 
 if(!file_exists("../../../Data/" . $suffixID . "/OOC_Action_Log.csv"))
 {
-    file_put_contents("../../../Data/" . $suffixID . "/OOC_Action_Log.csv","");
+    file_put_contents("../../../Data/" . $suffixID . "/OOC_Action_Log.csv","Timestamp,User,Action,Details");
 }
 
 if(file_exists("../../../Data/" . $suffixID . "/accessLog.json"))

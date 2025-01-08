@@ -56,6 +56,7 @@
 
 - Use POST instead of GET for term info
 - Use SQL Database for term info
+- Have multiplayer updates (like deleting an entry) force updates to people's pages? If someone's copying a file that gets deleted, it should break the timer and go back to standby
 - Themes
 - Make it so that pausing the Rooting process and then refreshing does what it's supposed to. Right now, pausing doesn't update the time until it unpauses, so pausing then refreshing will keep the old time, or will skip to root if time elapses behind the scenes.
 - Rename dataCatalog to sound more like the defining source of truth
