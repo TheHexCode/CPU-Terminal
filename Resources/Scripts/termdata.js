@@ -4,18 +4,18 @@ class Terminal
 	#termData;
 	#accessLog;
 	
-	#dataCatalog;
+	#iconCatalog;
 	
 	#subTabsString = "";
 	#contentString = "";
 	
-	constructor(suffix, dataCatalog,termData,accessLog)
+	constructor(suffix,iconCatalog,termData,accessLog)
 	{
 		this.#suffix = suffix;
 		this.#termData = termData;
 		this.#accessLog = accessLog;
 		
-		this.#dataCatalog = dataCatalog;
+		this.#iconCatalog = iconCatalog;
 		
 		this.#buildDataEntries();
 		this.#writeTerminal();
@@ -46,14 +46,14 @@ class Terminal
 		return this.#contentString;
 	}
 	
-	getCategory(path)
+	getIcon(path)
 	{
-		let catIndex = this.#termData.data.findIndex(function(cat)
+		let iconIndex = this.#termData.data.findIndex(function(icon)
 		{
-			return cat.type == path.split(">")[0];
+			return icon.type == path.split(">")[0];
 		});
 		
-		return this.#termData.data[catIndex];
+		return this.#termData.data[iconIndex];
 	}
 
 	getLogHandle(index)
@@ -88,7 +88,7 @@ class Terminal
 		{
 			if(i == 0)
 			{
-				searchResults = this.#termData.data.find(category => category.type === path[i]);
+				searchResults = this.#termData.data.find(icon => icon.type === path[i]);
 			}
 			else if(i == 1)
 			{
@@ -105,7 +105,7 @@ class Terminal
 	
 	getDataType(type)
 	{
-		return this.#dataCatalog[type];
+		return this.#iconCatalog[type];
 	}
 
 	getTermState()
@@ -113,11 +113,11 @@ class Terminal
 		let entries = [];
 		let repeats = [];
 
-		this.#termData.data.forEach(function(category)
+		this.#termData.data.forEach(function(icon)
 		{
 			let repeat = {
-				type: category.type,
-				repeated: category.repeated
+				type: icon.type,
+				repeated: icon.repeated
 			};
 			
 			repeats.push(repeat);
@@ -147,7 +147,7 @@ class Terminal
 		let catalogEntry = this.getEntry(path);
 		let terminalEntry = "[id='"+path+"'] "
 		
-		let category = this.getCategory(path);
+		let icon = this.getIcon(path);
 		
 		let newState = state;
 		if(state === "previous")
@@ -155,7 +155,7 @@ class Terminal
 			newState = catalogEntry.previous;
 		}
 		
-		let catalogState = this.#dataCatalog[category.type].states[newState];
+		let catalogState = this.#iconCatalog[icon.type].states[newState];
 		
 		if(catalogEntry.special)
 		{
@@ -256,7 +256,7 @@ class Terminal
 			
 			if(catalogState.access.enabled)
 			{
-				let accCost = Math.max(catalogEntry.access - category.repeated,0)
+				let accCost = Math.max(catalogEntry.access - icon.repeated,0)
 				
 				let accS = (accCost === 1) ? "" : "s"
 				
@@ -272,7 +272,7 @@ class Terminal
 			
 			if(catalogState.modify.enabled)
 			{				
-				let modCost = Math.max(catalogEntry.modify - category.repeated,0)
+				let modCost = Math.max(catalogEntry.modify - icon.repeated,0)
 				
 				let modS = (modCost === 1) ? "" : "s"
 				
@@ -308,13 +308,13 @@ class Terminal
 		}
 	}
 	
-	repeatCategory(path, rank)
+	repeatIcon(path, rank)
 	{
-		let category = this.getCategory(path)
+		let icon = this.getIcon(path)
 		
-		if(!category.repeated)
+		if(!icon.repeated)
 		{
-			$('.entry[id*="' + category.type + '"]').each(function(index,entry)
+			$('.entry[id*="' + icon.type + '"]').each(function(index,entry)
 			{
 				if($('[id="'+entry.id+'"]').hasClass("ice"))
 				{
@@ -341,7 +341,7 @@ class Terminal
 				}
 			});
 			
-			category.repeated = rank;			
+			icon.repeated = rank;			
 		}
 	}
 	
@@ -386,9 +386,9 @@ class Terminal
 		});
 	}
 	
-	#buildEntry(catType, index, entry, parentEntry=false)
+	#buildEntry(iconType, index, entry, parentEntry=false)
 	{
-		let path = catType + ">" + index;
+		let path = iconType + ">" + index;
 		let displayIndex = index;
 		
 		if(parentEntry)
@@ -402,7 +402,7 @@ class Terminal
 			if(entry.special == "trap")
 			{
 				entry["path"] = path;
-				entry["displayName"] = this.#dataCatalog[catType].unit + " " + displayIndex;
+				entry["displayName"] = this.#iconCatalog[iconType].unit + " " + displayIndex;
 				entry["title"] = "Trap!"
 				entry["contents"] = entry.effects.join("<br/>");
 				entry["state"] = "initial";
@@ -414,35 +414,35 @@ class Terminal
 				entry["contents"] = entry.effects.join("<br/>");
 				entry["state"] = "closed";
 				
-				entry.subEntries.forEach((subEntry,subIndex) => this.#buildEntry(catType,subIndex,subEntry,{path:path,index:index}));
+				entry.subEntries.forEach((subEntry,subIndex) => this.#buildEntry(iconType,subIndex,subEntry,{path:path,index:index}));
 			}
 		}
 		else
 		{
 			entry["path"] = path;
-			entry["displayName"] = this.#dataCatalog[catType].unit + " " + displayIndex;
+			entry["displayName"] = this.#iconCatalog[iconType].unit + " " + displayIndex;
 
 			entry["state"] = entry["state"] ? entry["state"] : "initial";
 			entry["previous"] = entry["previous"] ? entry["previous"] : null;
 			
-			entry["access"] = this.#dataCatalog[catType].states[entry["state"]].access.enabled ? entry.access : false;
-			entry["modify"] = this.#dataCatalog[catType].states[entry["state"]].modify.enabled ? entry.modify : false;
+			entry["access"] = this.#iconCatalog[iconType].states[entry["state"]].access.enabled ? entry.access : false;
+			entry["modify"] = this.#iconCatalog[iconType].states[entry["state"]].modify.enabled ? entry.modify : false;
 		}
 	}
 	
 	#buildDataEntries()
 	{
-		this.#termData.data.forEach(function(category)
+		this.#termData.data.forEach(function(icon)
 		{
-			category["repeated"] = 0;
+			icon["repeated"] = 0;
 			
-			if(Object.keys(this.#dataCatalog).includes(category.type))
+			if(Object.keys(this.#iconCatalog).includes(icon.type))
 			{
-				category.entries.forEach((entry,index) => this.#buildEntry(category.type,index,entry));
+				icon.entries.forEach((entry,index) => this.#buildEntry(icon.type,index,entry));
 			}
 			else
 			{
-				throw new Error("Terminal.json data category type \"" + category.type + "\" not found in dataCatalog.json. Expecting one of: [" + Object.keys(dataCatalog).join(", ") + "]");
+				throw new Error("Terminal.json data icon type \"" + icon.type + "\" not found in Icon Schema. Expecting one of: [" + Object.keys(iconCatalog).join(", ") + "]");
 			}
 		}, this);
 		
@@ -494,7 +494,7 @@ class Terminal
 					'</div>' +
 				'</div>';
 		
-		this.#termData.data.forEach(function(category)
+		this.#termData.data.forEach(function(icon)
 		{
 			function writeEntry(entry, scheme, subClass="")
 			{
@@ -616,37 +616,37 @@ class Terminal
 			
 			let subTabID = ' ';
 			
-			if(category.type == "darkweb")
+			if(icon.type == "darkweb")
 			{
 				subTabID = ' id="dwSubTab" ';
 			}
 			
-			if(category.entries.length)
+			if(icon.entries.length)
 			{
-				let catScheme = this.#dataCatalog[category.type];
+				let iconScheme = this.#iconCatalog[icon.type];
 
-				subTabs["enabled"] += 	'<button' + subTabID + 'class="subTab inactive" onclick="openSubTab(event,\'' + category.type + 'Content\')">' +
-											'<img src="resources/images/subtabs/' + category.type + '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' +
+				subTabs["enabled"] += 	'<button' + subTabID + 'class="subTab inactive" onclick="openSubTab(event,\'' + icon.type + 'Content\')">' +
+											'<img src="resources/images/subtabs/' + icon.type + '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' +
 										'</button> ';
 				
-				allContent += 	'<div id="'+ category.type + 'Content" class="subContent">' +
+				allContent += 	'<div id="'+ icon.type + 'Content" class="subContent">' +
 									'<div class="subContTitleRow">' +
 										'<span class="subContRepeat red hidden">REPEAT</span>' +
-										'<span class="subContTitle">' + catScheme.title + '</span>' +
+										'<span class="subContTitle">' + iconScheme.title + '</span>' +
 									'</div>' +
 									'<div class="subContBody">';
 
 				let entryArray = [];
 				
-				category.entries.forEach(function(entry,index)
+				icon.entries.forEach(function(entry,index)
 				{
 					if (entry.special != "ice")
 					{
-						entryArray[index] = writeEntry(entry,catScheme);
+						entryArray[index] = writeEntry(entry,iconScheme);
 					}
 					else
 					{
-						entryArray[index] = writeEntry(entry,catScheme,"ice");
+						entryArray[index] = writeEntry(entry,iconScheme,"ice");
 					}
 				},this);
 				
@@ -656,7 +656,7 @@ class Terminal
 			}
 			else
 			{
-				subTabs["disabled"] += '<button class="subTab disabled"><img src="resources/images/subtabs/' + category.type + '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/></button> ';
+				subTabs["disabled"] += '<button class="subTab disabled"><img src="resources/images/subtabs/' + icon.type + '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/></button> ';
 			}
 		},this);
 		
@@ -995,13 +995,13 @@ $(document).ready(function()
 
 	let suffix = new URLSearchParams(window.location.search);
 	
-	let catalogJSON = $.getJSON("Resources\\Schema\\dataCatalog.json");
+	let iconJSON = $.getJSON("Resources\\Schemas\\icons.json");
 	let termJSON = $.getJSON("Data\\"+suffix.get("id")+"\\terminal.json");
 	let accessLog = $.getJSON("Resources\\Scripts\\Files\\checkLogs.php",{ suffixID: suffix.get("id") });
 
-	$.when(termJSON, catalogJSON, accessLog).done(function()
+	$.when(termJSON, iconJSON, accessLog).done(function()
 	{
-		terminal = new Terminal(suffix.get("id"), catalogJSON.responseJSON, termJSON.responseJSON, accessLog.responseJSON);
+		terminal = new Terminal(suffix.get("id"), iconJSON.responseJSON, termJSON.responseJSON, accessLog.responseJSON);
 		payload = new Payload();
 
 		setupAccessPage();
@@ -1430,7 +1430,7 @@ function rewriteTerminalPage(autosave)
 		{
 			if(repeat.repeated)
 			{
-				terminal.repeatCategory(repeat.type,repeat.repeated);
+				terminal.repeatIcon(repeat.type,repeat.repeated);
 				$("#"+repeat.type+"Content .subContRepeat").removeClass("hidden");
 			}
 		});
@@ -1699,7 +1699,7 @@ function executeCommand(path,newState,cost)
 		
 		if(payload.getPayloadFunction("repeat"))
 		{
-			terminal.repeatCategory(path,payload.getPayloadFunction("repeat"));
+			terminal.repeatIcon(path,payload.getPayloadFunction("repeat"));
 			$("#"+path.split(">")[0]+"Content .subContRepeat").removeClass("hidden");
 
 			repeatAddition = "; Repeat " + payload.getPayloadFunction("repeat");
@@ -2168,7 +2168,7 @@ function payAction(action)
 function termAction(path,action)
 {
 	let entry = terminal.getEntry(path);
-	let category = terminal.getCategory(path);
+	let icon = terminal.getIcon(path);
 	let dataType = terminal.getDataType(path.split(">")[0]);
 	
 	let buttonActions = [];
@@ -2190,7 +2190,7 @@ function termAction(path,action)
 		}
 		else if(action == "break")
 		{
-			let actionCost = Math.max(entry[action]-category.repeated,0);
+			let actionCost = Math.max(entry[action]-icon.repeated,0);
 			
 			buttonActions.push({
 				text: "Confirm",
@@ -2206,7 +2206,7 @@ function termAction(path,action)
 	}
 	else
 	{		
-		let actionCost = Math.max(entry[action]-category.repeated,0);
+		let actionCost = Math.max(entry[action]-icon.repeated,0);
 		
 		dataType.states[entry.state][action].actions.forEach(function(button)
 		{
@@ -2231,7 +2231,7 @@ function termAction(path,action)
 		buttons: buttonActions,
 		open: function(event,ui)
 		{
-			let actionCost = entry[action] ? Math.max(entry[action]-category.repeated,0) : 0;
+			let actionCost = entry[action] ? Math.max(entry[action]-icon.repeated,0) : 0;
 			updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
 		},
 		close: function(event,ui)

@@ -53,6 +53,9 @@
  -- Regular Hacking Actions?
  -- 30s Root Device? 5min Root Device Part II?
 - Having the CMM Widow and Cocoon means you get +2 Tags after using Slip, right?
+- Hacking Example has Paradise Accessing a file, then spending full price to modify it. Accessing the next file is reduced by Repeat, but 
+- Is there a functional difference between the basic Cyberdeck skill "When you activate Hacking, gain one extra Tag" and the Pocket Hacker's skill "You may activate this to gain an extra Tag on a device you have already gained Tags on this Scene"?
+- What is a "Drone" according to the FKD DC-17? Is the entire Terminal a drone or is it a specific entry in the Defenses icon? "You've already gained Tags on" implies the former, but the latter makes more sense
 
 -------------------------------------------------------------------------------------------------------------
 
@@ -88,7 +91,7 @@ UTILITY
  - CipherSync Beacon > Hacking Watch > While the stopwatch is running, you may increase your Rank in Hacking by 1
  - CRD Spider Cyberdeck > Cyberdeck > 1xSim: When you active Hacking, you gain one extra Tag
  - MM Console > Cyberdeck > 2xSim: +1 Tag
- - Johnny's Special Touch > Cyberdeck > After the first Access action, every other Action action costs 1 fewer Tag, to a minimum of 0
+ - Johnny's Special Touch > Cyberdeck > After the first Access action, every other Access action costs 1 fewer Tag, to a minimum of 0
  - DigiPet > Utility > 1xScene: You can plug your DigiPet into a terminal you have hacked and leave it. It will complete a Hacking Action you have begun. Once you pick up the DigitPet, you can collect any result from it completing the Hacking Action. This does not permit you to do two Hacking Actions simultaneously on the same device.
  - FKD DC-17 > Cyberdeck > 1xScene: You gain +2 Tags on a drone you've already gained Tags on.
  - Nerd's Safety Glasses > Utility > 1xSim: When you fail a puzzle that benefits from/requries a Knowledge, you may reattempt it.
