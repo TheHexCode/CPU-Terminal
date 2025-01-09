@@ -10,6 +10,7 @@ $(document).ready(function()
 		$("select[id='secondaryRole']").val(cookie.secRole);
 		
 		cookie.checks.forEach(function(check) {
+			console.log(check);
 			$("#"+check).prop("checked",true);
 		});
 	}
@@ -175,13 +176,13 @@ function statSubmit(event)
 	
 	// LIST OF ITEMS
 	let items = [];
-	$("#itemsTab input:checked").each(function() { items.push($(this).attr("id")) });
+	$("#itemsTab input:checked").each(function() { items.push($(this).attr("data-item")) });
 
 	// LIST OF CHECKED BOXES
 	let checks = [];
 	$Checks = ($("input[data-skill]").filter(function() { if ($(this).prop("checked")) { return this } }));
 	$Checks.each(function() { checks.push($(this).attr("id")) });
-	items.forEach(function(item) { checks.push(item) });
+	$("#itemsTab input:checked").each(function() { checks.push($(this).attr("id")) });
 
 	let stats = {
 		handle: handle,
@@ -217,11 +218,56 @@ function statSubmit(event)
 					
 	stats["hash"] = hash;
 	
-	console.log(stats);
+	//console.log(stats);
 	
-	Cookies.set("payload",JSON.stringify(stats),{expires: 30,path: "",sameSite: "Strict"});
+	let itemJSON = $.getJSON("Resources\\Schemas\\items.json");
 
-	$("#saveText").removeClass("hidden");
+	$.when(itemJSON).done(function()
+	{
+		let itemCatalog = itemJSON.responseJSON;
 
-	setTimeout(function(){$("#saveText").addClass("hidden");},5000);
+		let decks = [];
+		let copycat = {
+			"max": 0,
+			"used": 0
+		};
+
+		items.forEach(function(itemName)
+		{
+			let itemDef = itemCatalog.find(item => item.id === itemName);
+
+			if(itemDef)
+			{
+				itemDef.abilities.forEach(function(ability)
+				{
+					if(ability.id === "active_deck")
+					{
+						let deck = {
+							"id": itemName,
+							"max": ability.charges,
+							"used": 0
+						}
+
+						decks.push(deck);
+					}
+					else if (ability.id === "active_copycat")
+					{
+						copycat.max += ability.charges;
+					}
+				}, this);
+			}
+		}, this);
+
+		let sim_charges = {
+			"decks": decks,
+			"active_copycat": copycat
+		}
+
+		Cookies.set("payload",JSON.stringify(stats),{expires: 7,path: "",sameSite: "Strict"});
+		Cookies.set("payload_sim",JSON.stringify(sim_charges),{expires: 7,path: "",sameSite: "Strict"});
+
+		$("#saveText").removeClass("hidden");
+		
+		setTimeout(function(){$("#saveText").addClass("hidden");},5000);
+	});
 }

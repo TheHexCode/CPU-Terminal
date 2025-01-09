@@ -7,7 +7,7 @@ class Terminal
 	#iconCatalog;
 	
 	#subTabsString = "";
-	#contentString = "";
+	#termContentString = "";
 	
 	constructor(suffix,iconCatalog,termData,accessLog)
 	{
@@ -41,9 +41,9 @@ class Terminal
 		return this.#subTabsString;
 	}
 	
-	getContentString()
+	getTerminalString()
 	{
-		return this.#contentString;
+		return this.#termContentString;
 	}
 	
 	getIcon(path)
@@ -86,11 +86,11 @@ class Terminal
 		
 		for(let i = 0; i < path.length; i++)
 		{
-			if(i == 0)
+			if(i === 0)
 			{
 				searchResults = this.#termData.data.find(icon => icon.type === path[i]);
 			}
-			else if(i == 1)
+			else if(i === 1)
 			{
 				searchResults = searchResults.entries[path[i]];
 			}
@@ -435,6 +435,7 @@ class Terminal
 		this.#termData.data.forEach(function(icon)
 		{
 			icon["repeated"] = 0;
+			icon[""]
 			
 			if(Object.keys(this.#iconCatalog).includes(icon.type))
 			{
@@ -661,7 +662,7 @@ class Terminal
 		},this);
 		
 		this.#subTabsString = subTabs["enabled"] + subTabs["disabled"];
-		this.#contentString = allContent;
+		this.#termContentString = allContent;
 	}
 }
 
@@ -687,25 +688,34 @@ class Payload
 			   '  "dwa"     : "true" }; //Passive */
 			   
 	#payload;
+	#itemCatalog;
 	
 	#payloadHash = 0;
-			   
 	#currTags = 0;
-	
-	#contentString = "";
+	#cyberdeckString = "";
 				  
-	constructor()
+	constructor(itemCatalog)
 	{
+		this.#itemCatalog = itemCatalog;
+
 		if(Cookies.get("payload"))
 		{
-			let cookie = JSON.parse(Cookies.get("payload"));
-			
-			this.#payload = cookie;
-			this.#payloadHash = cookie.hash;
-				
-			this.#currTags = this.getInitialTags()["total"];
+			this.#initPayload();
 		}
 		this.#writeCyberdeck();
+	}
+
+	#initPayload()
+	{
+		let cookie = JSON.parse(Cookies.get("payload"));
+		let sim_cookie = JSON.parse(Cookies.get("payload_sim"));
+		
+		this.#payload = cookie;
+		this.#payloadHash = cookie.hash;
+
+		this.#setItemAbilities();
+			
+		this.#currTags = this.getInitialTags()["total"];
 	}
 	
 	checkForCookie()
@@ -716,20 +726,15 @@ class Payload
 			
 			if(cookie.hash != this.#payloadHash)
 			{
-				this.#payload = cookie;
-				this.#payloadHash = cookie.hash;
-				
-				this.#currTags = this.getInitialTags()["total"];
+				this.#initPayload();
 				
 				this.#writeCyberdeck();
 				
 				return true;
 			}
 		}
-		else
-		{			
-			return false;
-		}
+
+		return false;
 	}
 	
 	hasPayload()
@@ -800,9 +805,75 @@ class Payload
 		return handle;
 	}
 	
-	getContentString()
+	getCyberdeckString()
 	{
-		return this.#contentString;
+		return this.#cyberdeckString;
+	}
+
+	#setItemAbilities()
+	{
+		// This is for all abilities aside from deck_active, which gets applied in the #writeCyberdeck function,
+		// as well as active_deck_drone, which gets applied in the termAction function
+
+		//active_deck
+		//active_deck_drone
+		//active_copycat
+		//pre_hack
+		//pre_slip
+		//passive_repeat_access
+		//passive_time
+		//passive_cost
+
+		let abilities = {
+			decks: [],
+			decks_drone: [],
+			active_copycat: 0,
+			pre_hack: 0,
+			pre_slip: 0,
+			passive_repeat_access: 0,
+			passive_time: 0,
+			passive_cost: 0
+		};
+
+		this.#payload.items.forEach(function(itemName)
+		{
+			let itemDef = this.#itemCatalog.find(item => item.id === itemName);
+
+			if(itemDef)
+			{
+				itemDef.abilities.forEach(function(ability)
+				{
+					if(ability.id === "active_deck")
+					{
+						let deck = ability;
+						deck["used"] = 0;
+
+						abilities.decks.push(deck);
+					}
+					else if(ability.id === "active_deck_drone")
+					{
+						let deck_drone = ability;
+						deck_drone["used"] = 0;
+
+						abilities.decks_drone.push(deck_drone);
+					}
+					else if(ability.id === "active_copycat")
+					{
+						abilities[ability.id] += ability.charges;
+					}
+					else if((ability.id === "passive_repeat_access") ||
+							(ability.id === "pre_slip") ||
+							(ability.id === "pre_hack") ||
+							(ability.id === "passive_time") ||
+							(ability.id === "passive_cost"))
+					{
+						abilities[ability.id] += ability.amount;
+					}
+				}, this);
+			}
+		}, this);
+
+		this.#payload["abilities"] = abilities;
 	}
 	
 	#writeCyberdeck()
@@ -812,7 +883,6 @@ class Payload
 		//ITEMS
 		
 		let contents = {};
-		
 		
 		//ACTIVE
 		
@@ -966,7 +1036,7 @@ class Payload
 		
 		contents["items"] = contentString;
 		
-		this.#contentString = contents["active"] + contents["passive"] + contents["items"];
+		this.#cyberdeckString = contents["active"] + contents["passive"] + contents["items"];
 	}
 }
 
@@ -998,11 +1068,12 @@ $(document).ready(function()
 	let iconJSON = $.getJSON("Resources\\Schemas\\icons.json");
 	let termJSON = $.getJSON("Data\\"+suffix.get("id")+"\\terminal.json");
 	let accessLog = $.getJSON("Resources\\Scripts\\Files\\checkLogs.php",{ suffixID: suffix.get("id") });
+	let itemJSON = $.getJSON("Resources\\Schemas\\items.json");
 
-	$.when(termJSON, iconJSON, accessLog).done(function()
+	$.when(termJSON, iconJSON, accessLog, itemJSON).done(function()
 	{
 		terminal = new Terminal(suffix.get("id"), iconJSON.responseJSON, termJSON.responseJSON, accessLog.responseJSON);
-		payload = new Payload();
+		payload = new Payload(itemJSON.responseJSON);
 
 		setupAccessPage();
 		setupTerminalPage();
@@ -1155,7 +1226,9 @@ function endTimer(context,callback)
 		
 		if(payload.hasPayload())
 		{
-			if((payload.getCurrentTags()-terminal.getReqAccess()) >= 0)
+			let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+
+			if((payload.getCurrentTags()-newReq) >= 0)
 			{
 				$("#terminalButton").prop("disabled",false);
 				$("#terminalButton").html("Access Terminal");
@@ -1312,19 +1385,21 @@ function rewriteAccessPage()
 	{
 		$("#rexDetails").show();
 	}
+
+	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+
+	$("#reqTags").html(tens(newReq));
 	
-	$("#remTags").html(tens(Math.max(payTotal - terminal.getReqAccess(),0)));
+	$("#remTags").html(tens(Math.max(payTotal - newReq,0)));
 	
-	updateTagDisplay("CRACK",terminal.getReqAccess(),payTotal);
+	updateTagDisplay("CRACK",newReq,payTotal);
 	
 	if((payload.getPayloadFunction("priRole") === "dissimulator") || (payload.getPayloadFunction("secRole") === "dissimulator"))
 	{
 		$("#disItem").removeClass("hidden");
 	}
-
-	if((payload.getPayloadFunction("items")))
 	
-	if((payload.getCurrentTags()-terminal.getReqAccess()) >= 0)
+	if((payload.getCurrentTags()-newReq) >= 0)
 	{
 		if(timer == null)
 		{
@@ -1376,7 +1451,7 @@ function setupTerminalPage()
 	else
 	{
 		$("#termSubTabs").html(terminal.getSubTabString());
-		$("#termContentContainer").html(terminal.getContentString());
+		$("#termContentContainer").html(terminal.getTerminalString());
 
 		if(!(Cookies.get(terminal.getTerminalID())))
 		{
@@ -1393,7 +1468,7 @@ function setupTerminalPage()
 
 function rewriteTerminalPage(autosave)
 {
-	$("#deckContentContainer").html(payload.getContentString());
+	$("#deckContentContainer").html(payload.getCyberdeckString());
 
 	if(!(autosave))
 	{
@@ -1586,10 +1661,12 @@ function extraTags(change)
 	{
 		initTags = 0;
 	}
-	let newTags = Math.min(Math.max(initTags,payload.getCurrentTags() + change),(99 + terminal.getReqAccess()));
+	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+
+	let newTags = Math.min(Math.max(initTags,payload.getCurrentTags() + change),(99 + newReq));
 	
 	$("#extTags").html(tens(newTags-initTags));
-	$("#remTags").html(tens(newTags-terminal.getReqAccess()));
+	$("#remTags").html(tens(newTags-newReq));
 	
 	if(payload.hasPayload())
 	{
@@ -1636,7 +1713,7 @@ function extraTags(change)
 		}
 	}
 	
-	updateTagDisplay("CRACK",terminal.getReqAccess(),initTags,newTags);
+	updateTagDisplay("CRACK",newReq,initTags,newTags);
 	payload.setCurrentTags(newTags);
 }
 
@@ -1651,7 +1728,9 @@ function accessTerminal(autosave)
 	}
 	else
 	{
-		payload.setCurrentTags(payload.getCurrentTags()-terminal.getReqAccess());
+		let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+
+		payload.setCurrentTags(payload.getCurrentTags()-newReq);
 		rewriteTerminalPage(null);
 		$("#status").html(">> AWAITING COMMAND");
 	}
@@ -1670,13 +1749,14 @@ function accessTerminal(autosave)
 	$("#hackZone").css("display","flex");
 
 	let initialTags = payload.getInitialTags();
-	initialTags["extra"] = (payload.getCurrentTags() + terminal.getReqAccess()) - initialTags["total"];
+	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+	initialTags["extra"] = (payload.getCurrentTags() + newReq) - initialTags["total"];
 
 	let actionJSON = {
 		timestamp: "\"" + new Date().toLocaleString("en-US",{"hourCycle":"h24","year":"numeric","month":"short","day":"2-digit","hour":"2-digit","minute":"2-digit","second":"2-digit"}) + "\"",
 		handle: payload.getHandle().handle,
 		action: "Terminal Accessed",
-		details: { "Tags": initialTags, "AccessCost": terminal.getReqAccess() }
+		details: { "Tags": initialTags, "AccessCost": newReq }
 	};
 
 	$.ajax({
