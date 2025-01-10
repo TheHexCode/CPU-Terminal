@@ -89,25 +89,25 @@
 								<span class="dseg BG">~~</span>
 								<span id="payTags" class="dseg FG">XX</span>
 							</div>
-							<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
 							<div id="rexDetails" class="payDetails">[ROOT EXP:+02]</div>
+							<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
 						</div>
 						<div class="accessBox">
 							<div class="accessHeader">
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button onMouseUp="extraTags(-1)"><b>-</b></button>
+								<button onMouseUp="extraTags(-1,'extra')"><b>-</b></button>
 								<div class="lcdBox blue">
 									<span class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">00</span>
 								</div>
-								<button onMouseUp="extraTags(1)">+</button>
+								<button onMouseUp="extraTags(1,'extra')">+</button>
 							</div>
 						</div>
 					</div>
 					<ul class="accessList">
-						<li id="disItem" class="hidden"><input type="checkbox" id="disCheck" onchange/><label for="disCheck">&nbsp;DISSIMULATOR: +1 HACKING?</label></li>
+						<li id="disItem" class="hidden"><input type="checkbox" id="disCheck" onchange="preCheck(this)"/><label for="disCheck">&nbsp;DISSIMULATOR: +1 HACKING?</label></li>
 						<li id="cmmItem" class="hidden"><input type="checkbox" id="cmmCheck"/><label for="cmmCheck">&nbsp;CMM ARMS: Used Slip this Scene?</label></li>
 						<li id="shmItem" class="hidden"><input type="checkbox" id="shmCheck"/><label for="shmCheck">&nbsp;CONSUMABLE: Using Shimmerstick?</label></li>
 					</ul>

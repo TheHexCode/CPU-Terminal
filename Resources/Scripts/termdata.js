@@ -435,7 +435,6 @@ class Terminal
 		this.#termData.data.forEach(function(icon)
 		{
 			icon["repeated"] = 0;
-			icon[""]
 			
 			if(Object.keys(this.#iconCatalog).includes(icon.type))
 			{
@@ -692,6 +691,7 @@ class Payload
 	
 	#payloadHash = 0;
 	#currTags = 0;
+	#extHack = 0;
 	#cyberdeckString = "";
 				  
 	constructor(itemCatalog)
@@ -755,11 +755,16 @@ class Payload
 	getInitialTags()
 	{
 		let initTags = {};
-		initTags["hack"] = Math.min(this.#payload.hack*2,10);
+		initTags["hack"] = Math.min((this.#payload.hack + this.#extHack)*2,10);
 		initTags["rex"] = (this.#payload.rex ? 2 : 0);
 		initTags["total"] = initTags["hack"] + initTags["rex"];
 		
 		return initTags;
+	}
+
+	setExtraHacks()
+	{
+		
 	}
 	
 	getCurrentTags()
@@ -1376,9 +1381,8 @@ function rewriteAccessPage()
 	$("#payloadButton").text("EDIT PAYLOAD PROFILE");
 	
 	let payTags = payload.getInitialTags();
-	let payTotal = payTags.hack + payTags.rex;
 	
-	$("#payTags").html(tens(payTotal));
+	$("#payTags").html(tens(payTags.total));
 	$("#hackDetails").html("[HACKING: +" + tens(payTags.hack) + "]");
 	
 	if(payTags.rex)
@@ -1390,9 +1394,9 @@ function rewriteAccessPage()
 
 	$("#reqTags").html(tens(newReq));
 	
-	$("#remTags").html(tens(Math.max(payTotal - newReq,0)));
+	$("#remTags").html(tens(Math.max(payTags.total - newReq,0)));
 	
-	updateTagDisplay("CRACK",newReq,payTotal);
+	updateTagDisplay("CRACK",newReq,payTags.total);
 	
 	if((payload.getPayloadFunction("priRole") === "dissimulator") || (payload.getPayloadFunction("secRole") === "dissimulator"))
 	{
@@ -1649,23 +1653,38 @@ function updateTagDisplay(stage,stageOne,stageTwo=stageOne,totalTags=stageTwo)
 	}
 }
 
-function extraTags(change)
+function extraTags(change,type)
 {
 	let initTags;
 	
 	if(payload.hasPayload())
 	{
-		initTags = payload.getInitialTags()["total"];
+		initTags = payload.getInitialTags();
 	}
 	else
 	{
 		initTags = 0;
 	}
-	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
 
-	let newTags = Math.min(Math.max(initTags,payload.getCurrentTags() + change),(99 + newReq));
+	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+	let newTags = payload.getCurrentTags();
+
+	if(type === "extra")
+	{
+		newTags = Math.min(Math.max(initTags.total,payload.getCurrentTags() + change),(99 + newReq));
+		
+		$("#extTags").html(tens(newTags-initTags.total));
+	}
+	else if(type === "hack")
+	{
+		let newHack= Math.min((initTags.hack + change),10);
 	
-	$("#extTags").html(tens(newTags-initTags));
+		$("#payTags").html(tens(initTags.rex + newHack));
+		$("#hackDetails").html("[HACKING: +" + tens(newHack) + "]");
+
+		newTags = payload.getCurrentTags() + change;
+	}
+
 	$("#remTags").html(tens(newTags-newReq));
 	
 	if(payload.hasPayload())
@@ -1713,8 +1732,23 @@ function extraTags(change)
 		}
 	}
 	
-	updateTagDisplay("CRACK",newReq,initTags,newTags);
+	updateTagDisplay("CRACK",newReq,initTags.total,newTags);
 	payload.setCurrentTags(newTags);
+}
+
+function preCheck(check)
+{
+	if(check.id === "disCheck")
+	{
+		if($(check).prop("checked"))
+		{
+			extraTags(2,"hack");
+		}
+		else
+		{
+			extraTags(-2,"hack");
+		}
+	}
 }
 
 function accessTerminal(autosave)
