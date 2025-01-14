@@ -142,7 +142,7 @@ class Terminal
 		this.#termData.state = newState;
 	}
 	
-	setEntryState(path,state)
+	setEntryState(path,state,extraCost)
 	{
 		let catalogEntry = this.getEntry(path);
 		let terminalEntry = "[id='"+path+"'] "
@@ -256,7 +256,7 @@ class Terminal
 			
 			if(catalogState.access.enabled)
 			{
-				let accCost = Math.max(catalogEntry.access - icon.repeated,0)
+				let accCost = Math.max(catalogEntry.access - icon.repeated + extraCost,0);
 				
 				let accS = (accCost === 1) ? "" : "s"
 				
@@ -272,7 +272,7 @@ class Terminal
 			
 			if(catalogState.modify.enabled)
 			{				
-				let modCost = Math.max(catalogEntry.modify - icon.repeated,0)
+				let modCost = Math.max(catalogEntry.modify - icon.repeated + extraCost,0)
 				
 				let modS = (modCost === 1) ? "" : "s"
 				
@@ -343,6 +343,63 @@ class Terminal
 			
 			icon.repeated = rank;			
 		}
+	}
+
+	modifyCost(change)
+	{
+		$('.logEntry').each(function(index,logEntry)
+		{
+			let newReassCost = Math.max(Number($('[id="'+logEntry.id+'"] .reassButton').attr("data-cost"))+change,0);
+			let newWipeCost = Math.max(Number($('[id="'+logEntry.id+'"] .wipeButton').attr("data-cost"))+change,0);
+			
+			let reassS = (newReassCost === 1) ? "" : "s"
+			let wipeS = (newWipeCost === 1) ? "" : "s"
+
+			$('[id="'+logEntry.id+'"] .reassButton').attr("data-cost",newReassCost);
+			$('[id="'+logEntry.id+'"] .wipeButton').attr("data-cost",newWipeCost);
+			
+			$('[id="'+logEntry.id+'"] .reassButton').text(newReassCost + " Tag" + reassS);
+			$('[id="'+logEntry.id+'"] .wipeButton').text(newWipeCost + " Tag" + wipeS);
+		});
+
+		$('.entry').each(function(index,entry)
+		{
+			if($('[id="'+entry.id+'"]').hasClass("ice"))
+			{
+				let newBrkCost = Math.max(Number($('[id="'+entry.id+'"] .breakButton').attr("data-cost"))+change,0);
+				
+				let brkS = (newBrkCost === 1) ? "" : "s";
+				
+				$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newBrkCost);
+				$('[id="'+entry.id+'"] .breakButton').text(newBrkCost + " Tag" + brkS);
+			}
+			else
+			{
+				let newAccCost = Math.max(Number($('[id="'+entry.id+'"] .accessButton').attr("data-cost"))+change,0);
+				let newModCost = Math.max(Number($('[id="'+entry.id+'"] .modifyButton').attr("data-cost"))+change,0);
+				
+				let accS = (newAccCost === 1) ? "" : "s"
+				let modS = (newModCost === 1) ? "" : "s"
+
+				$('[id="'+entry.id+'"] .accessButton').attr("data-cost",newAccCost);
+				$('[id="'+entry.id+'"] .modifyButton').attr("data-cost",newModCost);
+				
+				$('[id="'+entry.id+'"] .accessButton[data-enabled="true"]').text(newAccCost + " Tag" + accS);
+				$('[id="'+entry.id+'"] .modifyButton[data-enabled="true"]').text(newModCost + " Tag" + modS);
+			}
+		});
+
+		let newBrickCost = Math.max(Number($("#brickButton").attr("data-cost"))+change,0);
+		let newRiggCost = Math.max(Number($("#riggButton").attr("data-cost"))+change,0);
+		
+		let brickS = (newBrickCost === 1) ? "" : "s"
+		let riggS = (newRiggCost === 1) ? "" : "s"
+
+		$("#brickButton").attr("data-cost",newBrickCost);
+		$("#riggButton").attr("data-cost",newRiggCost);
+		
+		$("#brickButton").text(newBrickCost + " Tag" + brickS);
+		$("#riggButton").text(newRiggCost + " Tag" + riggS);
 	}
 	
 	appendAccessLog(newAccess)
@@ -691,7 +748,14 @@ class Payload
 	
 	#payloadHash = 0;
 	#currTags = 0;
-	#extHack = 0;
+
+	#modifiers = {
+		hack: 0,
+		extra: 0,
+		time: 0,
+		cost: 0
+	}
+
 	#cyberdeckString = "";
 				  
 	constructor(itemCatalog)
@@ -713,7 +777,7 @@ class Payload
 		this.#payload = cookie;
 		this.#payloadHash = cookie.hash;
 
-		this.#setItemAbilities();
+		//this.#setItemAbilities();
 			
 		this.#currTags = this.getInitialTags()["total"];
 	}
@@ -755,16 +819,35 @@ class Payload
 	getInitialTags()
 	{
 		let initTags = {};
-		initTags["hack"] = Math.min((this.#payload.hack + this.#extHack)*2,10);
+		initTags["hack"] = Math.min((this.#payload.hack*2) + this.#modifiers["hack"],10);
 		initTags["rex"] = (this.#payload.rex ? 2 : 0);
 		initTags["total"] = initTags["hack"] + initTags["rex"];
 		
 		return initTags;
 	}
 
-	setExtraHacks()
+	getModifier(type=null)
 	{
-		
+		if(type)
+		{
+			return this.#modifiers[type];
+		}
+		else
+		{
+			return this.#modifiers;
+		}
+	}
+
+	setModifier(type, change)
+	{
+		if(type === "all")
+		{
+			this.#modifiers = change;
+		}
+		else
+		{
+			this.#modifiers[type] += change;
+		}
 	}
 	
 	getCurrentTags()
@@ -777,26 +860,26 @@ class Payload
 		this.#currTags = newTags;
 	}
 	
-	getTimerSecs() //(modifier for items)
+	getTimerSecs()
 	{
 		if(this.hasPayload())
 		{
 			if(this.#payload.ibd)
 			{
-				return 10;
+				return Math.max(10,(10 + this.#modifiers["time"]));
 			}
 			else if(this.#payload.bd)
 			{
-				return 20;
+				return Math.max(10,(20 + this.#modifiers["time"]));
 			}
 			else
 			{
-				return 30;
+				return Math.max(10,(30 + this.#modifiers["time"]));
 			}
 		}
 		else
 		{
-			return 30;
+			return Math.max(10,(30 + this.#modifiers["time"]));
 		}
 	}
 	
@@ -815,6 +898,7 @@ class Payload
 		return this.#cyberdeckString;
 	}
 
+	/*
 	#setItemAbilities()
 	{
 		// This is for all abilities aside from deck_active, which gets applied in the #writeCyberdeck function,
@@ -880,6 +964,7 @@ class Payload
 
 		this.#payload["abilities"] = abilities;
 	}
+	*/
 	
 	#writeCyberdeck()
 	{
@@ -913,7 +998,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>BRICK:</span>' +
-										'<button data-enabled="true" data-cost="4" onclick="payAction(\'brick\')">4 Tags</span>' +
+										'<button id="brickButton" data-enabled="true" data-cost="4" onclick="payAction(\'brick\')">4 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -922,7 +1007,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>RIGGED:</span>' +
-										'<button id="riggbutton" data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
+										'<button id="riggButton" data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -931,7 +1016,7 @@ class Payload
 			{
 				contentString += 	'<li>' +
 										'<span>ROOT DEVICE:</span>' +
-										'<button data-enabled="true" data-cost="6" onclick="payAction(\'root\')">6 Tags</span>' +
+										'<button id="rootButton" data-enabled="true" data-cost="6" onclick="payAction(\'root\')">6 Tags</span>' +
 									'</li>'
 				activeCount++;
 			}
@@ -1154,6 +1239,7 @@ function autoSave({ handle=null,rigged=false })
 	saveData["tags"] = payload.getCurrentTags();
 	saveData["rigged"] = rigged;
 	saveData["saveState"] = terminal.getTermState();
+	saveData["modifiers"] = payload.getModifier();
 
 	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
 	Cookies.set(terminal.getTerminalID(),JSON.stringify(saveData),{expires: inFifteenMinutes,path: "",sameSite: "Strict"});
@@ -1231,7 +1317,7 @@ function endTimer(context,callback)
 		
 		if(payload.hasPayload())
 		{
-			let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+			let newReq = terminal.getReqAccess() + payload.getModifier("cost");
 
 			if((payload.getCurrentTags()-newReq) >= 0)
 			{
@@ -1390,7 +1476,7 @@ function rewriteAccessPage()
 		$("#rexDetails").show();
 	}
 
-	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+	let newReq = terminal.getReqAccess() + payload.getModifier("cost");
 
 	$("#reqTags").html(tens(newReq));
 	
@@ -1401,6 +1487,16 @@ function rewriteAccessPage()
 	if((payload.getPayloadFunction("priRole") === "dissimulator") || (payload.getPayloadFunction("secRole") === "dissimulator"))
 	{
 		$("#disItem").removeClass("hidden");
+	}
+
+	if((payload.getPayloadFunction("items").includes("arms_cmmwidow")) || (payload.getPayloadFunction("items").includes("arms_cmmcocoon")))
+	{
+		$("#cmmItem").removeClass("hidden");
+	}
+
+	if((payload.getPayloadFunction("items").includes("util_shimmerstick_t0")) || (payload.getPayloadFunction("items").includes("util_shimmerstick_t1")))
+	{
+		$("#shmItem").removeClass("hidden");
 	}
 	
 	if((payload.getCurrentTags()-newReq) >= 0)
@@ -1474,6 +1570,8 @@ function rewriteTerminalPage(autosave)
 {
 	$("#deckContentContainer").html(payload.getCyberdeckString());
 
+	let modifiers = payload.getModifier();
+
 	if(!(autosave))
 	{
 		let newLogEntry = {};
@@ -1500,10 +1598,21 @@ function rewriteTerminalPage(autosave)
 	}
 	else
 	{
+		modifiers = autosave.modifiers;
+		payload.setModifier("all",modifiers);
+
 		let logIndex = terminal.getLogIndex(autosave.handle);
 
 		$("#log"+logIndex).addClass("itsYou");
 		$("#log"+logIndex+">.logPerson").html("You:&nbsp;&nbsp;");
+		
+		autosave.saveState.entries.forEach(function(entry)
+		{
+			if(terminal.getEntry(entry.path).state !== entry.state)
+			{
+				terminal.setEntryState(entry.path,entry.state,0);
+			}
+		});
 
 		autosave.saveState.repeats.forEach(function(repeat)
 		{
@@ -1514,18 +1623,10 @@ function rewriteTerminalPage(autosave)
 			}
 		});
 
-		autosave.saveState.entries.forEach(function(entry)
-		{
-			if(terminal.getEntry(entry.path).state !== entry.state)
-			{
-				terminal.setEntryState(entry.path,entry.state);
-			}
-		});
-
 		if(autosave.rigged)
 		{
 			$("#rigged").removeClass("hidden");
-			$("#riggbutton").attr("data-enabled","false");
+			$("#riggButton").attr("data-enabled","false");
 		}
 
 		$("button[data-enabled='false']").prop("disabled",true);
@@ -1551,6 +1652,8 @@ function rewriteTerminalPage(autosave)
 	{
 		$("#dwSubTab").addClass("hidden");
 	}
+
+	terminal.modifyCost(modifiers.cost);
 }
 
 function updateTagDisplay(stage,stageOne,stageTwo=stageOne,totalTags=stageTwo)
@@ -1666,23 +1769,34 @@ function extraTags(change,type)
 		initTags = 0;
 	}
 
-	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+	let newReq = terminal.getReqAccess() + payload.getModifier("cost");
+
+	$("#reqTags").html(tens(newReq));
+
 	let newTags = payload.getCurrentTags();
 
-	if(type === "extra")
+	if((type === "extra") || (type === "slip"))
 	{
-		newTags = Math.min(Math.max(initTags.total,payload.getCurrentTags() + change),(99 + newReq));
+		if(type === "slip")
+		{
+			payload.setModifier("extra",change);
+		}
+
+		newTags = Math.min(Math.max((initTags.total + payload.getModifier("extra")),payload.getCurrentTags() + change),(99 + newReq));
 		
 		$("#extTags").html(tens(newTags-initTags.total));
 	}
 	else if(type === "hack")
 	{
-		let newHack= Math.min((initTags.hack + change),10);
+		payload.setModifier("hack",change);
+		
+		oldTotal = initTags.total;
+		initTags = payload.getInitialTags();
 	
-		$("#payTags").html(tens(initTags.rex + newHack));
-		$("#hackDetails").html("[HACKING: +" + tens(newHack) + "]");
+		$("#payTags").html(tens(initTags.total));
+		$("#hackDetails").html("[HACKING: +" + tens(initTags.hack) + "]");
 
-		newTags = payload.getCurrentTags() + change;
+		newTags = payload.getCurrentTags() + (initTags.total - oldTotal);
 	}
 
 	$("#remTags").html(tens(newTags-newReq));
@@ -1749,6 +1863,54 @@ function preCheck(check)
 			extraTags(-2,"hack");
 		}
 	}
+	else if(check.id === "cmmCheck")
+	{
+		let totalCMM = payload.getPayloadFunction("items").includes("arms_cmmwidow") + payload.getPayloadFunction("items").includes("arms_cmmcocoon");
+
+		if($(check).prop("checked"))
+		{
+			extraTags(totalCMM,"slip");
+		}
+		else
+		{
+			extraTags((totalCMM * -1),"slip");
+		}
+	}
+	else if(check.id === "shmCheck")
+	{
+		if($(check).prop("checked"))
+		{
+			payload.setModifier("cost",1);
+
+			if(payload.getPayloadFunction("items").includes("util_shimmerstick_t0"))
+			{
+				payload.setModifier("time",30);
+			}
+			else if(payload.getPayloadFunction("items").includes("util_shimmerstick_t1"))
+			{
+				payload.setModifier("time",15);
+			}
+
+			extraTags("extra",0);
+			
+			//synchronize animations
+		}
+		else
+		{
+			payload.setModifier("cost",-1);
+			
+			if(payload.getPayloadFunction("items").includes("util_shimmerstick_t0"))
+			{
+				payload.setModifier("time",-30);
+			}
+			else if(payload.getPayloadFunction("items").includes("util_shimmerstick_t1"))
+			{
+				payload.setModifier("time",-15);
+			}
+
+			extraTags("extra",0);
+		}
+	}
 }
 
 function accessTerminal(autosave)
@@ -1762,7 +1924,7 @@ function accessTerminal(autosave)
 	}
 	else
 	{
-		let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+		let newReq = terminal.getReqAccess() + payload.getModifier("cost");
 
 		payload.setCurrentTags(payload.getCurrentTags()-newReq);
 		rewriteTerminalPage(null);
@@ -1783,7 +1945,7 @@ function accessTerminal(autosave)
 	$("#hackZone").css("display","flex");
 
 	let initialTags = payload.getInitialTags();
-	let newReq = terminal.getReqAccess() + payload.getPayloadFunction("abilities")["passive_cost"];
+	let newReq = terminal.getReqAccess() + payload.getModifier("cost");
 	initialTags["extra"] = (payload.getCurrentTags() + newReq) - initialTags["total"];
 
 	let actionJSON = {
@@ -1809,7 +1971,7 @@ function executeCommand(path,newState,cost)
 {
 	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 	startTimer("EXECUTE",payload.getTimerSecs(),function() {
-		terminal.setEntryState(path,newState);
+		terminal.setEntryState(path,newState,payload.getModifier("cost"));
 		
 		if(payload.getPayloadFunction("repeat"))
 		{
@@ -1855,7 +2017,7 @@ function updateAccessLog(logIndex,action,reass)
 
 	if(action === "reassign")
 	{
-		cost = 2;
+		cost = Math.max(2 + payload.getModifier("cost"),0);;
 		callback = function() {
 			terminal.updateAccessLog(logIndex,"reassign",reass);
 			$("#log"+logIndex+" .logName").html(reass);
@@ -1885,7 +2047,7 @@ function updateAccessLog(logIndex,action,reass)
 	}
 	else if (action === "wipe")
 	{
-		cost = 1;
+		cost = Math.max(1 + payload.getModifier("cost"),0);;
 		callback = function() {
 			terminal.updateAccessLog(logIndex,"wipe");
 			$("#log"+logIndex).html('ERROR: LOG ENTRY NOT FOUND');
@@ -2014,7 +2176,7 @@ function executeAction(action)
 
 	if(action === "brick")
 	{
-		cost = 4;
+		cost = Math.max(4 + payload.getModifier("cost"),0);;
 		timerSecs = payload.getTimerSecs();
 		callback = function() {
 			let handle = payload.getHandle();
@@ -2074,11 +2236,11 @@ function executeAction(action)
 	}
 	else if (action === "rig")
 	{
-		cost = 6;
+		cost = Math.max(6 + payload.getModifier("cost"),0);;
 		timerSecs = payload.getTimerSecs();
 		callback = function() {
 			$("#rigged").removeClass("hidden");
-			$("#riggbutton").attr("data-enabled","false");
+			$("#riggButton").attr("data-enabled","false");
 
 			payload.setCurrentTags(payload.getCurrentTags()-cost);
 			$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
@@ -2108,7 +2270,7 @@ function executeAction(action)
 	}
 	else if(action === "root")
 	{
-		cost = 6;
+		cost = Math.max(6 + payload.getModifier("cost"),0);;
 		timerSecs = 30;
 		callback = function() {
 			let timeUp = new Date(new Date().getTime() + 5 * 60 * 1000)
@@ -2191,16 +2353,16 @@ function logAction(logIndex,action)
 	
 	if(action === "reassign")
 	{
-		actionCost = 2;
-		$("#popup").html("Reassign Log Entry of User " + logHandle + " to the below username for 2 Tags?<br/><br/>" +
+		actionCost = Math.max(2 + payload.getModifier("cost"),0);
+		$("#popup").html("Reassign Log Entry of User " + logHandle + " to the below username for " + actionCost + " Tag" + ((actionCost === 1) ? "" : "s") + "?<br/><br/>" +
 						 "<input id='newReass' placeholder='Enter New Log Entry Name Here' style='width:100%'></input><br/><br/>" +
 						 "NOTE: This Reassignment MAY be used to imitate someone else!");
 	}
 	else if (action === "wipe")
 	{
-		actionCost = 1;
+		actionCost = Math.max(1 + payload.getModifier("cost"),0);
 
-		$("#popup").html("Wipe Log Entry of User " + logHandle + " for 1 Tag?");
+		$("#popup").html("Wipe Log Entry of User " + logHandle + " for " + actionCost + " Tag" + ((actionCost === 1) ? "" : "s") + "?");
 	}
 	
 	$("#popup").dialog({
@@ -2236,23 +2398,23 @@ function payAction(action)
 
 	if(action === "brick")
 	{
-		actionCost = 4;
+		actionCost = Math.max(4 + payload.getModifier("cost"),0);
 
-		$("#popup").html("Brick Device for 4 Tags?<br/><br/>" +
+		$("#popup").html("Brick Device for " + actionCost + " Tag" + ((actionCost === 1) ? "" : "s") + "?<br/><br/>" +
 			"<span class='red'>WARNING: Bricking this Device will render it inoperable until repaired!</span>");
 	}
 	else if(action === "rig")
 	{
-		actionCost = 6;
+		actionCost = Math.max(6 + payload.getModifier("cost"),0);
 
-		$("#popup").html("Rig Device for 6 Tags?<br/><br/>" +
+		$("#popup").html("Rig Device for " + actionCost + " Tag" + ((actionCost === 1) ? "" : "s") + "?<br/><br/>" +
 			"<span class='red'>WARNING: Triggering a Rigged Device (by calling \"Room Strike Lock\") will cause all data to be deleted at the end of the Scene!</span>");
 	}
 	else if(action === "root")
 	{
-		actionCost = 6;
+		actionCost = Math.max(6 + payload.getModifier("cost"),0);
 
-		$("#popup").html("Root Device for 6 Tags?<br/><br/>" +
+		$("#popup").html("Root Device for " + actionCost + " Tag" + ((actionCost === 1) ? "" : "s") + "?<br/><br/>" +
 			"<span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>");
 	}
 
@@ -2304,7 +2466,7 @@ function termAction(path,action)
 		}
 		else if(action == "break")
 		{
-			let actionCost = Math.max(entry[action]-icon.repeated,0);
+			let actionCost = Math.max((entry[action]-icon.repeated)+payload.getModifier("cost"),0);
 			
 			buttonActions.push({
 				text: "Confirm",
@@ -2320,7 +2482,7 @@ function termAction(path,action)
 	}
 	else
 	{		
-		let actionCost = Math.max(entry[action]-icon.repeated,0);
+		let actionCost = Math.max((entry[action]-icon.repeated)+payload.getModifier("cost"),0);
 		
 		dataType.states[entry.state][action].actions.forEach(function(button)
 		{
@@ -2345,7 +2507,7 @@ function termAction(path,action)
 		buttons: buttonActions,
 		open: function(event,ui)
 		{
-			let actionCost = entry[action] ? Math.max(entry[action]-icon.repeated,0) : 0;
+			let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated)+payload.getModifier("cost"),0) : 0;
 			updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
 		},
 		close: function(event,ui)
