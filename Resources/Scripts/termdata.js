@@ -134,7 +134,7 @@ class Terminal
 			entries.push(entryState);
 		});
 
-		return { termState: this.#termData.state, "repeats": repeats, "entries": entries };
+		return { "termState": this.#termData.state, "johnnyAccess": this.#termData.johnnyAccess, "repeats": repeats, "entries": entries };
 	}
 
 	setTerminalState(newState)
@@ -341,7 +341,27 @@ class Terminal
 				}
 			});
 			
-			icon.repeated = rank;			
+			icon.repeated = rank;
+		}
+	}
+
+	touchAccess(rank)
+	{
+		if(!this.#termData.johnnyAccess)
+		{
+			this.#termData.data.forEach(function(icon)
+			{
+				$('.entry[id*="' + icon.type + '"]').each(function(index,entry)
+				{
+					let newAccCost = Math.max($('[id="'+entry.id+'"] .accessButton').attr("data-cost")-rank,0);
+					let accS = (newAccCost === 1) ? "" : "s"
+
+					$('[id="'+entry.id+'"] .accessButton').attr("data-cost",newAccCost);
+					$('[id="'+entry.id+'"] .accessButton[data-enabled="true"]').text(newAccCost + " Tag" + accS);
+				});
+			}, this);
+
+			this.#termData.johnnyAccess = rank;
 		}
 	}
 
@@ -489,6 +509,8 @@ class Terminal
 	
 	#buildDataEntries()
 	{
+		this.#termData.johnnyAccess = 0;
+
 		this.#termData.data.forEach(function(icon)
 		{
 			icon["repeated"] = 0;
@@ -689,6 +711,7 @@ class Terminal
 				allContent += 	'<div id="'+ icon.type + 'Content" class="subContent">' +
 									'<div class="subContTitleRow">' +
 										'<span class="subContRepeat red hidden">REPEAT</span>' +
+										'<span class="subContJohnny red hidden">TOUCHED</span>' +
 										'<span class="subContTitle">' + iconScheme.title + '</span>' +
 									'</div>' +
 									'<div class="subContBody">';
@@ -1149,6 +1172,8 @@ function tens(numStr)
 
 $(document).ready(function()
 {
+	$("input[type='checkbox']").prop("checked",false);
+
 	$.ajaxSetup({ cache: false });
 
 	preloadImages();
@@ -1465,6 +1490,16 @@ function rewriteAccessPage()
 	}
 	
 	$("#payloadButton").text("EDIT PAYLOAD PROFILE");
+
+	if(payload.getPayloadFunction("items").includes("util_ciphersyncbeacon"))
+	{
+		payload.setModifier("hack",2);
+	}
+
+	if(payload.getPayloadFunction("items").includes("util_powerglove_uh9k"))
+	{
+		payload.setModifier("time",-5);
+	}
 	
 	let payTags = payload.getInitialTags();
 	
@@ -1483,6 +1518,7 @@ function rewriteAccessPage()
 	$("#remTags").html(tens(Math.max(payTags.total - newReq,0)));
 	
 	updateTagDisplay("CRACK",newReq,payTags.total);
+	payload.setCurrentTags(payTags.total);
 	
 	if((payload.getPayloadFunction("priRole") === "dissimulator") || (payload.getPayloadFunction("secRole") === "dissimulator"))
 	{
@@ -1530,8 +1566,6 @@ function rewriteAccessPage()
 function setupTerminalPage()
 {
 	let termState = terminal.getTermState().termState;
-
-	console.log(termState);
 
 	if(new Date(termState) != "Invalid Date") // Rooting
 	{
@@ -1622,6 +1656,12 @@ function rewriteTerminalPage(autosave)
 				$("#"+repeat.type+"Content .subContRepeat").removeClass("hidden");
 			}
 		});
+
+		if(autosave.saveState.johnnyAccess)
+		{
+			terminal.touchAccess(autosave.saveState.johnnyAccess);
+			$(".subContJohnny").removeClass("hidden");
+		}
 
 		if(autosave.rigged)
 		{
@@ -1789,14 +1829,13 @@ function extraTags(change,type)
 	else if(type === "hack")
 	{
 		payload.setModifier("hack",change);
-		
-		oldTotal = initTags.total;
 		initTags = payload.getInitialTags();
 	
 		$("#payTags").html(tens(initTags.total));
 		$("#hackDetails").html("[HACKING: +" + tens(initTags.hack) + "]");
 
-		newTags = payload.getCurrentTags() + (initTags.total - oldTotal);
+		newTags = Math.max((initTags.total + payload.getModifier("extra")),(payload.getCurrentTags() + change));
+		console.log(newTags);
 	}
 
 	$("#remTags").html(tens(newTags-newReq));
@@ -1926,7 +1965,7 @@ function accessTerminal(autosave)
 	{
 		let newReq = terminal.getReqAccess() + payload.getModifier("cost");
 
-		payload.setCurrentTags(payload.getCurrentTags()-newReq);
+		payload.setCurrentTags((payload.getInitialTags()["total"] + payload.getModifier("extra"))-newReq);
 		rewriteTerminalPage(null);
 		$("#status").html(">> AWAITING COMMAND");
 	}
@@ -1979,6 +2018,12 @@ function executeCommand(path,newState,cost)
 			$("#"+path.split(">")[0]+"Content .subContRepeat").removeClass("hidden");
 
 			repeatAddition = "; Repeat " + payload.getPayloadFunction("repeat");
+		}
+
+		if(payload.getPayloadFunction("items").includes("deck_johnnyspecialtouch"))
+		{
+			terminal.touchAccess(1);
+			$(".subContJohnny").removeClass("hidden");
 		}
 	
 		payload.setCurrentTags(payload.getCurrentTags()-cost);
@@ -2446,6 +2491,8 @@ function termAction(path,action)
 	let entry = terminal.getEntry(path);
 	let icon = terminal.getIcon(path);
 	let dataType = terminal.getDataType(path.split(">")[0]);
+
+	let johnnyAccess = ((action === "access") && (payload.getPayloadFunction("items").includes("deck_johnnyspecialtouch")));
 	
 	let buttonActions = [];
 	
@@ -2466,7 +2513,7 @@ function termAction(path,action)
 		}
 		else if(action == "break")
 		{
-			let actionCost = Math.max((entry[action]-icon.repeated)+payload.getModifier("cost"),0);
+			let actionCost = Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0);
 			
 			buttonActions.push({
 				text: "Confirm",
@@ -2482,7 +2529,7 @@ function termAction(path,action)
 	}
 	else
 	{		
-		let actionCost = Math.max((entry[action]-icon.repeated)+payload.getModifier("cost"),0);
+		let actionCost = Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0);
 		
 		dataType.states[entry.state][action].actions.forEach(function(button)
 		{
@@ -2507,7 +2554,7 @@ function termAction(path,action)
 		buttons: buttonActions,
 		open: function(event,ui)
 		{
-			let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated)+payload.getModifier("cost"),0) : 0;
+			let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0) : 0;
 			updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
 		},
 		close: function(event,ui)
