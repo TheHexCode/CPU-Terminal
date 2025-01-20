@@ -1,0 +1,110 @@
+- Override Title/Contents (Delete File)
+- Include Payload's Name (Do this while adding Reassign/Wipe Tracks)
+- Blend Animation
+- Pause Timer Button
+- Make it so endTimer doesn't enable the button until enough tags exist, either through payload or extra
+- Repeat
+- Make Active Actions work
+- Loading Animation, No -> Box
+- Auto-Save Cookie
+- Add Other Category Types/States/Test Entries
+- Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
+- Brick/Rigg/Root write to json...getContentString checks for terminal["state"] and sends a different string
+- Create Access Log/OOC_Action_Log if it doesn't already exist
+- Track User Actions
+ -- Timestamp|User|Action|Details
+
+- Incorporate Payload
+ -- Adjust Text Sizes for Small Screens
+ -- Fix Tabs (Too Big!)
+ -- Hide Mask Until Mask Picked (Notify that Mask Name is now available?)
+ -- Make selecting a role remove it from the other role selector
+
+-------------------------------------------------------------------------------------------------------------
+
+- Items
+- Make Mask editable in terminal view, and send whatever's there
+- Anonymous Mask placeholder
+- Finish Root Device
+ -- HexOS BIOS Insert Boot Media
+ -- Scrolling codium ipsum animation
+- Proper terminal.json/dataCatalog.json/itemCatalog.json errors
+- CSS for checkboxes/radios
+
+- Subtab Images For:
+ ✓- Log -> ">_" or bullet list?
+ -- Files
+ -- DarkWeb -> Sunglasses?
+ -- Camera -> Security Camera?
+ -- Locks
+ -- Defenses -> Better Bullseye/Crosshairs?
+ -- Utilities -> Better Lightning Bolt?
+ ✓- Puzzles -> Puzzle Piece
+ ✓- Active/Passive/Items
+- Replace RIGGED image
+
+-------------------------------------------------------------------------------------------------------------
+
+- Should there be CPU Disclaimer Text? If so, what should it say? (C) CPU Larp 2024?
+- Should subsequent users be able to see that a terminal is rigged?
+- Can users still use the terminal as it's being rooted (formatted)? This question applies to both the rooter and other users.
+- Which timers do the items (Security Secret/Power Glove/Shimmerstick) effect?
+ -- 30s Cracking Terminal?
+ -- Regular Hacking Actions?
+ -- 30s Root Device? 5min Root Device Part II?
+- Having the CMM Widow and Cocoon means you get +2 Tags after using Slip, right?
+- Hacking Example has Paradise Accessing a file, then spending full price to modify it. Accessing the next file is reduced by Repeat, but 
+- Is there a functional difference between the basic Cyberdeck skill "When you activate Hacking, gain one extra Tag" and the Pocket Hacker's skill "You may activate this to gain an extra Tag on a device you have already gained Tags on this Scene"?
+- Is activating a deck for +1 Tag a Hacking action with the standard 30s timer?
+- What is a "Drone" according to the FKD DC-17? Is the entire Terminal a drone or is it a specific entry in the Defenses icon? "You've already gained Tags on" implies the former, but the latter makes more sense
+- Do Shimmerstick's increase the cost of the initial access to the Terminal? What about other purely function-based abilities, like Root Device and Brick?
+- Can one have multiple cyberdecks? A cyberdeck plus the Power Glove? The item description says yes for the cyberdeck and the Shimmerstick
+
+-------------------------------------------------------------------------------------------------------------
+
+- Use POST instead of GET for term info
+- Use SQL Database for term info
+- Have multiplayer updates (like deleting an entry) force updates to people's pages? If someone's copying a file that gets deleted, it should break the timer and go back to standby
+- Themes
+- Make it so that pausing the Rooting process and then refreshing does what it's supposed to. Right now, pausing doesn't update the time until it unpauses, so pausing then refreshing will keep the old time, or will skip to root if time elapses behind the scenes.
+- Rename dataCatalog to sound more like the defining source of truth
+
+-------------------------------------------------------------------------------------------------------------
+
+- Glitchy look to reassigned names
+- Static Glitchy Animation
+- Static Animation Fadeaway
+
+
+
+
+
+
+
+
+
+WEAPONS
+ - CMM Widow > 1HR > The first time you use Slip in a scnee, gain +1 Tags on the next device you hack
+
+SHIELDS
+ - CMM Cocoon > Small Shield > The first time you use Slip in a Scene, gain +1 Tags on the next device you hack
+
+UTILITY
+ - Budget Cyberdeck > Cyberdeck > 1xSim: When you activate Hacking, you gain one extra Tag
+ - CipherSync Beacon > Hacking Watch > While the stopwatch is running, you may increase your Rank in Hacking by 1
+ - CRD Spider Cyberdeck > Cyberdeck > 1xSim: When you active Hacking, you gain one extra Tag
+ - MM Console > Cyberdeck > 2xSim: +1 Tag
+ - Johnny's Special Touch > Cyberdeck > After the first Access action, every other Access action costs 1 fewer Tag, to a minimum of 0
+ - DigiPet > Utility > 1xScene: You can plug your DigiPet into a terminal you have hacked and leave it. It will complete a Hacking Action you have begun. Once you pick up the DigitPet, you can collect any result from it completing the Hacking Action. This does not permit you to do two Hacking Actions simultaneously on the same device.
+ - FKD DC-17 > Cyberdeck > 1xScene: You gain +2 Tags on a drone you've already gained Tags on.
+ - Nerd's Safety Glasses > Utility > 1xSim: When you fail a puzzle that benefits from/requries a Knowledge, you may reattempt it.
+ - Power Glove (Ultra-Hacking 9000) > Arm Implant > All Hacking Actions are 5 seconds faster, to a minimum of 10 seconds.
+ - Shimmerstick Tier 0 > Consumable > Hacking Actions cost 1 additional Tag and take 30 seconds longer
+ - Shimmerstick Tier 1 > Consumable > "                                 "   and take 15 seconds longer
+ - Vigil > Consumable > Use Extra Tags Feature (Max 10 Tags)
+ 
+CUSTOMIZATIONS
+ - Copycat > Cyberdeck Cust. > 1xSim: You may do an additional action in the same category as an action you've already taken on the device instantly.
+ - Pocket Hacker Tier 0 > A/S/W Cust. > 1xSim: You may gain an extra Tag on a device
+ - Pocket Hacker Tier 1 > A/S/W Cust. > 2xSim: "", these are the normal cyberdeck bonuses
+ 
