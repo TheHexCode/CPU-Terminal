@@ -1,28 +1,5 @@
-- Override Title/Contents (Delete File)
-- Include Payload's Name (Do this while adding Reassign/Wipe Tracks)
-- Blend Animation
-- Pause Timer Button
-- Make it so endTimer doesn't enable the button until enough tags exist, either through payload or extra
-- Repeat
-- Make Active Actions work
-- Loading Animation, No -> Box
-- Auto-Save Cookie
-- Add Other Category Types/States/Test Entries
-- Deletions Are Multi-User <- Write to terminal.json, then recall it in writeTerminal's getContentString
-- Brick/Rigg/Root write to json...getContentString checks for terminal["state"] and sends a different string
-- Create Access Log/OOC_Action_Log if it doesn't already exist
-- Track User Actions
- -- Timestamp|User|Action|Details
-
-- Incorporate Payload
- -- Adjust Text Sizes for Small Screens
- -- Fix Tabs (Too Big!)
- -- Hide Mask Until Mask Picked (Notify that Mask Name is now available?)
- -- Make selecting a role remove it from the other role selector
-
 -------------------------------------------------------------------------------------------------------------
 
-- Items
 - Make Mask editable in terminal view, and send whatever's there
 - Anonymous Mask placeholder
 - Finish Root Device
@@ -42,6 +19,8 @@
  ✓- Puzzles -> Puzzle Piece
  ✓- Active/Passive/Items
 - Replace RIGGED image
+
+- Change from json and cookies to database
 
 -------------------------------------------------------------------------------------------------------------
 
