@@ -28,7 +28,7 @@
 - Finish Root Device
  -- HexOS BIOS Insert Boot Media
  -- Scrolling codium ipsum animation
-- Proper terminal.json/dataCatalog.json errors
+- Proper terminal.json/dataCatalog.json/itemCatalog.json errors
 - CSS for checkboxes/radios
 
 - Subtab Images For:

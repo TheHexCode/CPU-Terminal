@@ -117,7 +117,8 @@ class Terminal
 		{
 			let repeat = {
 				type: icon.type,
-				repeated: icon.repeated
+				repeated: icon.repeated,
+				copied: icon.copied
 			};
 			
 			repeats.push(repeat);
@@ -345,6 +346,16 @@ class Terminal
 		}
 	}
 
+	copyIcon(path)
+	{
+		let icon = this.getIcon(path);
+
+		if(!icon.copied)
+		{
+			icon.copied = true;
+		}
+	}
+
 	touchAccess(rank)
 	{
 		if(!this.#termData.johnnyAccess)
@@ -514,6 +525,7 @@ class Terminal
 		this.#termData.data.forEach(function(icon)
 		{
 			icon["repeated"] = 0;
+			icon["copied"] = false;
 			
 			if(Object.keys(this.#iconCatalog).includes(icon.type))
 			{
@@ -525,7 +537,7 @@ class Terminal
 			}
 		}, this);
 		
-		console.log(this.#termData.data);
+		//console.log(this.#termData.data);
 	}
 	
 	#writeTerminal()
@@ -991,13 +1003,6 @@ class Payload
 								'<div class="subContBody">' +
 									'<ul id="actList">';
 									
-		/*
-		'  "wyt"     : "true",' + //Access Log + Active
-		'  "reass"   : "true",' + //Access Log + Active
-		'  "brick"   : "true",' + //Active
-		'  "rigg"    : "true",' + //Active
-		'  "root"    : "true",' + //Active
-	    */
 		let activeCount = 0;
 		
 		if(this.hasPayload())
@@ -1080,15 +1085,6 @@ class Payload
 								'</div>' +
 							'<div class="subContBody">' +
 								'<ul>';
-
-		/*
-		'  "hack"    : "3",' + //Passive
-		'  "bd"      : "true",' + //Passive
-		'  "ibd"     : "true",' + //Passive
-		'  "rex"     : "true",' + //Passive
-		'  "repeat"  : "2",' + //Passive
-		'  "dwa"     : "true",' + //Passive
-		*/
 		
 		let passiveCount = 0;
 		
@@ -1141,6 +1137,11 @@ class Payload
 
 		if(this.hasPayload())
 		{
+			// DECKS
+			// ARMS
+			// CUST
+			// UTIL
+
 			// DECKS
 			let payDecks = this.#payload.items.filter(function(item)
 			{
@@ -1765,6 +1766,11 @@ function rewriteTerminalPage(autosave)
 				terminal.repeatIcon(repeat.type,repeat.repeated);
 				$("#"+repeat.type+"Content .subContRepeat").removeClass("hidden");
 			}
+
+			if(repeat.copied)
+			{
+				terminal.copyIcon(repeat.type);
+			}
 		});
 
 		if(autosave.saveState.johnnyAccess)
@@ -1945,7 +1951,7 @@ function extraTags(change,type)
 		$("#hackDetails").html("[HACKING: +" + tens(initTags.hack) + "]");
 
 		newTags = Math.max((initTags.total + payload.getModifier("extra")),(payload.getCurrentTags() + change));
-		console.log(newTags);
+		//console.log(newTags);
 	}
 
 	$("#remTags").html(tens(newTags-newReq));
@@ -2116,10 +2122,10 @@ function accessTerminal(autosave)
 	});
 }
 
-function executeCommand(path,newState,cost)
+function executeCommand(path,newState,cost,copycat=false)
 {
 	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
-	startTimer("EXECUTE",payload.getTimerSecs(),function() {
+	startTimer("EXECUTE",(copycat ? 0 : payload.getTimerSecs()),function() {
 		terminal.setEntryState(path,newState,payload.getModifier("cost"));
 		
 		if(payload.getPayloadFunction("repeat"))
@@ -2130,6 +2136,11 @@ function executeCommand(path,newState,cost)
 			repeatAddition = "; Repeat " + payload.getPayloadFunction("repeat");
 		}
 
+		if(payload.getPayloadFunction("items").includes("cust_copycat"))
+		{
+			terminal.copyIcon(path);
+		}
+
 		if(payload.getPayloadFunction("items").includes("deck_johnnyspecialtouch"))
 		{
 			terminal.touchAccess(1);
@@ -2138,6 +2149,21 @@ function executeCommand(path,newState,cost)
 	
 		payload.setCurrentTags(payload.getCurrentTags()-cost);
 		$("button[data-enabled!='false']").filter(function(){return $(this).attr("data-cost") <= payload.getCurrentTags()}).prop("disabled",false);
+
+		if(copycat)
+		{
+			let payload_sim = JSON.parse(Cookies.get("payload_sim"));
+
+			let deckIndex = payload_sim.findIndex(function(payDeck)
+			{
+				return payDeck.id === "cust_copycat";
+			});
+
+			payload_sim[deckIndex].used++;
+		
+			Cookies.set("payload_sim",JSON.stringify(payload_sim),{expires: 7,path: "",sameSite: "Strict"});
+		};
+
 		autoSave({});
 
 		let actionJSON = {
@@ -2624,6 +2650,14 @@ function termAction(path,action)
 	let dataType = terminal.getDataType(path.split(">")[0]);
 
 	let johnnyAccess = ((action === "access") && (payload.getPayloadFunction("items").includes("deck_johnnyspecialtouch")));
+
+	let copyPossible = payload.getPayloadFunction("items").includes("cust_copycat") && (JSON.parse(Cookies.get("payload_sim")).find(item => item.id === "cust_copycat").used === 0);
+	let copyHTML = (copyPossible && icon.copied) ?
+					'<br/><br/><input id="copycat_check" type="checkbox"/><label for="copycat_check">&nbsp;Use Copycat to bypass timer?<br/>NOTE: This item can only be used once per Simulation.</label>' :
+					"";
+
+	console.log(copyPossible);
+	console.log(icon);
 	
 	let buttonActions = [];
 	
@@ -2636,11 +2670,11 @@ function termAction(path,action)
 				click: function()
 				{
 					$(this).dialog("close");
-					executeCommand(path,"unwrap",0);
+					executeCommand(path,"unwrap",0,$("#copycat_check").prop("checked"));
 				}
 			});
 		
-			$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for no Tags?<br/><br/>WARNING: Unwrapping will trip the ICE, incurring negative effects! Break the ICE instead to avoid these effects.");
+			$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for no Tags?<br/><br/>WARNING: Unwrapping will trip the ICE, incurring negative effects! Break the ICE instead to avoid these effects." + copyHTML);
 		}
 		else if(action == "break")
 		{
@@ -2651,11 +2685,11 @@ function termAction(path,action)
 				click: function()
 				{
 					$(this).dialog("close");
-					executeCommand(path,"break",actionCost);
+					executeCommand(path,"break",actionCost,$("#copycat_check").prop("checked"));
 				}
 			});
 			
-			$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?");
+			$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + ": " + entry.title + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?" + copyHTML);
 		}
 	}
 	else
@@ -2669,12 +2703,12 @@ function termAction(path,action)
 				click: function()
 				{
 					$(this).dialog("close");
-					executeCommand(path,(entry.special == "trap" ? action : button.state),actionCost);
+					executeCommand(path,(entry.special == "trap" ? action : button.state),actionCost,$("#copycat_check").prop("checked"));
 				}
 			});
 		});
 
-		$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?");
+		$("#popup").html((action.charAt(0).toUpperCase() + action.slice(1)) + " \"" + entry.displayName + "\" for " + actionCost + " Tag" + (actionCost == 1 ? "" : "s") + "?" + copyHTML);
 	}
 	
 	//https://jqueryui.com/dialog/#modal-confirmation

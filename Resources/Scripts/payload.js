@@ -10,13 +10,13 @@ $(document).ready(function()
 		$("select[id='secondaryRole']").val(cookie.secRole);
 		
 		cookie.checks.forEach(function(check) {
-			console.log(check);
+			//console.log(check);
 			$("#"+check).prop("checked",true);
 		});
 	}
 	else
 	{
-		console.log("No Such Cookie Exists");
+		//console.log("No Such Cookie Exists");
 	}
 	
 	roleChange();
