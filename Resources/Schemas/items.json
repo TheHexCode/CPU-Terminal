@@ -2,172 +2,63 @@
     {
         "id": "deck_budget",
         "displayName": "Budget Cyberdeck",
-        "abilities":
-        [
-            {
-                "id": "active_deck",
-                "freq": "sim",
-                "charges": 1
-            }
-        ]
+        "deck_charges": 1
     },
     {
         "id": "deck_crdspider",
         "displayName": "CRD Spider Cyberdeck",
-        "abilities":
-        [
-            {
-                "id": "active_deck",
-                "freq": "sim",
-                "charges": 1
-            }
-        ]
+        "deck_charges": 1
     },
     {
         "id": "deck_mmconsole",
         "displayName": "MM Console",
-        "abilities":
-        [
-            {
-                "id": "active_deck",
-                "freq": "sim",
-                "charges": 2
-            }
-        ]
+        "deck_charges": 2
     },
     {
         "id": "deck_johnnyspecialtouch",
-        "displayName": "Johnny's Special Touch",
-        "abilities":
-        [
-            {
-                "id": "passive_repeat",
-                "amount": 1
-            }
-        ]
+        "displayName": "Johnny's Special Touch"
     },
     {
         "id": "deck_fkddc17_t1",
-        "displayName": "FKD DC-17 [T1]",
-        "abilities":
-        [
-            {
-                "id": "active_deck_drone",
-                "freq": "scene",
-                "charges": 1
-            }
-        ]
+        "displayName": "FKD DC-17 [T1]"
     },
     {
         "id": "arms_cmmwidow",
-        "displayName": "CMM Widow",
-        "abilities":
-        [
-            {
-                "id": "pre_slip",
-                "freq": "scene",
-                "amount": 1
-            }
-        ]
+        "displayName": "CMM Widow"
     },
     {
         "id": "arms_cmmcocoon",
-        "displayName": "CMM Cocoon",
-        "abilities":
-        [
-            {
-                "id": "pre_slip",
-                "freq": "scene",
-                "amount": 1
-            }
-        ]
+        "displayName": "CMM Cocoon"
     },
     {
         "id": "cust_copycat",
         "displayName": "Copycat",
-        "abilities":
-        [
-            {
-                "id": "active_copycat",
-                "freq": "sim",
-                "charges": 1
-            }
-        ]
+        "copycat_charges": 1
     },
     {
         "id": "cust_pockethacker_t0",
         "displayName": "Pocket Hacker [T0]",
-        "abilities":
-        [
-            {
-                "id": "active_deck",
-                "freq": "sim",
-                "charges": 1
-            }
-        ]
+        "deck_charges": 1
     },
     {
         "id": "cust_pockethacker_t1",
         "displayName": "Pocket Hacker [T1]",
-        "abilities":
-        [
-            {
-                "id": "active_deck",
-                "freq": "sim",
-                "charges": 2
-            }
-        ]
+        "deck_charges": 2
     },
     {
         "id": "util_ciphersyncbeacon",
-        "displayName": "CipherSync Beacon",
-        "abilities":
-        [
-            {
-                "id": "pre_hack",
-                "amount": 1
-            }
-        ]
+        "displayName": "CipherSync Beacon"
     },
     {
         "id": "util_powerglove_uh9k",
-        "displayName": "Power Glove [Ultra-Hacking 9000]",
-        "abilities":
-        [
-            {
-                "id": "passive_time",
-                "amount": -5
-            }
-        ]
+        "displayName": "Power Glove [Ultra-Hacking 9000]"
     },
     {
         "id": "util_shimmerstick_t0",
-        "displayName": "Shimmerstick [T0]",
-        "abilities":
-        [
-            {
-                "id": "passive_cost",
-                "amount": 1
-            },
-            {
-                "id": "passive_time",
-                "amount": 30
-            }
-        ]
+        "displayName": "Shimmerstick [T0]"
     },
     {
         "id": "util_shimmerstick_t1",
-        "displayName": "Shimmerstick [T1]",
-        "abilities":
-        [
-            {
-                "id": "passive_cost",
-                "amount": 1
-            },
-            {
-                "id": "passive_time",
-                "amount": 15
-            }
-        ]
+        "displayName": "Shimmerstick [T1]"
     }
 ]

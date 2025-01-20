@@ -847,13 +847,46 @@ h2
 	flex-direction: column;
 }
 
+.itemTitle
+{
+	text-align: center;
+	text-decoration: underline;
+}
+
+.buttonLI
+{
+	list-style-type: circle;
+	display: grid;
+	grid-template-rows: min-content min-content;
+}
+
+.itemName
+{
+	grid-row: 1;
+	width: 100%;
+	text-align: left;
+}
+
+.itemInterface
+{
+	grid-row: 2;
+	width: 100%;
+	text-align: right;
+}
+
+.itemMarks img
+{
+	vertical-align: middle;
+	margin: 0 0.5rem 0 0;
+}
+
 ul
 {
 	margin: 0;
 	padding: 0 0 0 1rem;
 }
 
-#actList li
+#actList li div
 {
 	display: flex;
 	flex-direction: row;

@@ -55,6 +55,7 @@
 - Having the CMM Widow and Cocoon means you get +2 Tags after using Slip, right?
 - Hacking Example has Paradise Accessing a file, then spending full price to modify it. Accessing the next file is reduced by Repeat, but 
 - Is there a functional difference between the basic Cyberdeck skill "When you activate Hacking, gain one extra Tag" and the Pocket Hacker's skill "You may activate this to gain an extra Tag on a device you have already gained Tags on this Scene"?
+- Is activating a deck for +1 Tag a Hacking action with the standard 30s timer?
 - What is a "Drone" according to the FKD DC-17? Is the entire Terminal a drone or is it a specific entry in the Defenses icon? "You've already gained Tags on" implies the former, but the latter makes more sense
 - Do Shimmerstick's increase the cost of the initial access to the Terminal? What about other purely function-based abilities, like Root Device and Brick?
 - Can one have multiple cyberdecks? A cyberdeck plus the Power Glove? The item description says yes for the cyberdeck and the Shimmerstick

@@ -226,45 +226,22 @@ function statSubmit(event)
 	{
 		let itemCatalog = itemJSON.responseJSON;
 
-		let decks = [];
-		let copycat = {
-			"max": 0,
-			"used": 0
-		};
-
-		items.forEach(function(itemName)
-		{
-			let itemDef = itemCatalog.find(item => item.id === itemName);
-
-			if(itemDef)
-			{
-				itemDef.abilities.forEach(function(ability)
-				{
-					if(ability.id === "active_deck")
-					{
-						let deck = {
-							"id": itemName,
-							"max": ability.charges,
-							"used": 0
-						}
-
-						decks.push(deck);
-					}
-					else if (ability.id === "active_copycat")
-					{
-						copycat.max += ability.charges;
-					}
-				}, this);
-			}
-		}, this);
-
-		let sim_charges = {
-			"decks": decks,
-			"active_copycat": copycat
-		}
-
 		Cookies.set("payload",JSON.stringify(stats),{expires: 7,path: "",sameSite: "Strict"});
-		Cookies.set("payload_sim",JSON.stringify(sim_charges),{expires: 7,path: "",sameSite: "Strict"});
+
+		if(!Cookies.get("payload_sim"))
+		{
+			let chargeItems = [];
+
+			itemCatalog.forEach(function(item)
+			{
+				if(item.deck_charges || item.copycat_charges)
+				{
+					chargeItems.push({ id: item.id, used: 0 });
+				}
+			}, this);
+
+			Cookies.set("payload_sim",JSON.stringify(chargeItems),{expires: 7,path: "",sameSite: "Strict"});
+		}
 
 		$("#saveText").removeClass("hidden");
 		

@@ -799,8 +799,6 @@ class Payload
 		
 		this.#payload = cookie;
 		this.#payloadHash = cookie.hash;
-
-		//this.#setItemAbilities();
 			
 		this.#currTags = this.getInitialTags()["total"];
 	}
@@ -921,73 +919,60 @@ class Payload
 		return this.#cyberdeckString;
 	}
 
-	/*
-	#setItemAbilities()
+	rewriteItemMarks(cataItem)
 	{
-		// This is for all abilities aside from deck_active, which gets applied in the #writeCyberdeck function,
-		// as well as active_deck_drone, which gets applied in the termAction function
+		let maxCharges = this.#itemCatalog.find(item => item.id === cataItem).deck_charges;
+		let usedCharges = JSON.parse(Cookies.get("payload_sim")).find(item => item.id === cataItem).used;
 
-		//active_deck
-		//active_deck_drone
-		//active_copycat
-		//pre_hack
-		//pre_slip
-		//passive_repeat_access
-		//passive_time
-		//passive_cost
+		let itemString = ""
 
-		let abilities = {
-			decks: [],
-			decks_drone: [],
-			active_copycat: 0,
-			pre_hack: 0,
-			pre_slip: 0,
-			passive_repeat_access: 0,
-			passive_time: 0,
-			passive_cost: 0
-		};
-
-		this.#payload.items.forEach(function(itemName)
+		for(let i = maxCharges; i > usedCharges; i--)
 		{
-			let itemDef = this.#itemCatalog.find(item => item.id === itemName);
+			itemString += '<img src="Resources/Images/Actions/itemOpen.png"/>';
+		}
 
-			if(itemDef)
-			{
-				itemDef.abilities.forEach(function(ability)
-				{
-					if(ability.id === "active_deck")
-					{
-						let deck = ability;
-						deck["used"] = 0;
+		for(let i = usedCharges; i > 0; i--)
+		{
+			itemString += '<img src="Resources/Images/Actions/itemFilled.png"/>';
+		}
 
-						abilities.decks.push(deck);
-					}
-					else if(ability.id === "active_deck_drone")
-					{
-						let deck_drone = ability;
-						deck_drone["used"] = 0;
+		$("#" + cataItem + "_marks").html(itemString);
 
-						abilities.decks_drone.push(deck_drone);
-					}
-					else if(ability.id === "active_copycat")
-					{
-						abilities[ability.id] += ability.charges;
-					}
-					else if((ability.id === "passive_repeat_access") ||
-							(ability.id === "pre_slip") ||
-							(ability.id === "pre_hack") ||
-							(ability.id === "passive_time") ||
-							(ability.id === "passive_cost"))
-					{
-						abilities[ability.id] += ability.amount;
-					}
-				}, this);
-			}
-		}, this);
-
-		this.#payload["abilities"] = abilities;
+		if(usedCharges >= maxCharges)
+		{
+			$("#" + cataItem + "_button").attr("data-enabled","false");
+			$("#" + cataItem + "_button").attr("disabled",true);
+		}
 	}
-	*/
+
+	#writeItemButtonEntry(cataItem)
+	{
+		let itemString = 	'<li>' +
+								'<div class="buttonLI">' +
+									'<div class="itemName">' + cataItem.displayName + '</div>' +
+									'<div class="itemInterface">' +
+										'<span id="'+ cataItem.id +'_marks" class="itemMarks">';
+
+		let payItem = JSON.parse(Cookies.get("payload_sim")).find(item => item.id === cataItem.id);
+						
+		for(let i = cataItem.deck_charges; i > payItem.used; i--)
+		{
+			itemString += 					'<img src="Resources/Images/Actions/itemOpen.png"/>';
+		}
+
+		for(let i = payItem.used; i > 0; i--)
+		{
+			itemString += 					'<img src="Resources/Images/Actions/itemFilled.png"/>';
+		}
+
+		itemString += 					'</span>' +
+										'<button id="'+ cataItem.id +'_button" data-cost="0" data-enabled="' + ( cataItem.deck_charges > payItem.used ? 'true' : 'false' ) + '" onclick="deckAction(\''+cataItem.id+'\','+cataItem.deck_charges+')">+1 TAG</button>' +
+									'</div>' +
+								'</div>' +
+							'</li>';
+
+		return itemString;
+	}
 	
 	#writeCyberdeck()
 	{
@@ -1020,8 +1005,10 @@ class Payload
 			if(this.#payload.brick)
 			{
 				contentString += 	'<li>' +
-										'<span>BRICK:</span>' +
-										'<button id="brickButton" data-enabled="true" data-cost="4" onclick="payAction(\'brick\')">4 Tags</span>' +
+										'<div>' +
+											'<span>BRICK:</span>' +
+											'<button id="brickButton" data-enabled="true" data-cost="4" onclick="payAction(\'brick\')">4 Tags</span>' +
+										'</div>' +
 									'</li>'
 				activeCount++;
 			}
@@ -1029,8 +1016,10 @@ class Payload
 			if(this.#payload.rigg)
 			{
 				contentString += 	'<li>' +
-										'<span>RIGGED:</span>' +
-										'<button id="riggButton" data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
+										'<div>' +
+											'<span>RIGGED:</span>' +
+											'<button id="riggButton" data-enabled="true" data-cost="6" onclick="payAction(\'rig\')">6 Tags</span>' +
+										'</div>' +
 									'</li>'
 				activeCount++;
 			}
@@ -1038,8 +1027,10 @@ class Payload
 			if(this.#payload.root)
 			{
 				contentString += 	'<li>' +
-										'<span>ROOT DEVICE:</span>' +
-										'<button id="rootButton" data-enabled="true" data-cost="6" onclick="payAction(\'root\')">6 Tags</span>' +
+										'<div>' +
+											'<span>ROOT DEVICE:</span>' +
+											'<button id="rootButton" data-enabled="true" data-cost="6" onclick="payAction(\'root\')">6 Tags</span>' +
+										'</div>' +
 									'</li>'
 				activeCount++;
 			}
@@ -1047,8 +1038,10 @@ class Payload
 			if(this.#payload.reass)
 			{
 				contentString += 	'<li>' +
-										'<span>REASSIGN:</span><br/>' +
-										'<span>&nbsp;--&nbsp;CHECK ACCESS LOG</span>' +
+										'<div>' +
+											'<span>REASSIGN:</span><br/>' +
+											'<span>&nbsp;--&nbsp;CHECK ACCESS LOG</span>' +
+										'</div>' +
 									'</li>'
 				activeCount++;
 			}
@@ -1056,8 +1049,10 @@ class Payload
 			if(this.#payload.wyt)
 			{
 				contentString += 	'<li>' +
-										'<span>WIPE YOUR TRACKS:</span><br/>' +
-										'<span>&nbsp;--&nbsp;CHECK ACCESS LOG</span>' +
+										'<div>' +
+											'<span>WIPE YOUR TRACKS:</span><br/>' +
+											'<span>&nbsp;--&nbsp;CHECK ACCESS LOG</span>' +
+										'</div>' +
 									'</li>'
 				activeCount++;
 			}
@@ -1144,8 +1139,123 @@ class Payload
 								'</div>' +
 							'<div class="subContBody">';
 
+		if(this.hasPayload())
+		{
+			// DECKS
+			let payDecks = this.#payload.items.filter(function(item)
+			{
+				return item.startsWith("deck");
+			});
+
+			if(payDecks.length > 0)
+			{
+				contentString += 	'<div class="itemTitle">CYBERDECKS</div>' +
+									'<ul>';
+				
+				payDecks.forEach(function(payItem,index)
+				{
+					let cataItem = this.#itemCatalog.find(item => item.id === payItem);
+
+					if(cataItem.deck_charges)
+					{
+						contentString += this.#writeItemButtonEntry(cataItem);
+					}
+					else
+					{
+						contentString += 	'<li>' + cataItem.displayName + '</li>';
+					}
+				},this);
+
+				contentString +=	'</ul><br/>';
+			}
+
+			// ARMS
+			let payArms = this.#payload.items.filter(function(item)
+			{
+				return item.startsWith("arms");
+			});
+
+			if(payArms.length > 0)
+			{
+				contentString += 	'<div class="itemTitle">WEAPONS/ARMOR</div>' +
+									'<ul>';
+				
+				payArms.forEach(function(payItem,index)
+				{
+					let cataItem = this.#itemCatalog.find(item => item.id === payItem);
+
+					if(cataItem.deck_charges)
+					{
+						contentString += this.#writeItemButtonEntry(cataItem);
+					}
+					else
+					{
+						contentString += 	'<li>' + cataItem.displayName + '</li>';
+					}
+				},this);
+
+				contentString +=	'</ul><br/>';
+			}
+
+			// CUST
+			let payCust = this.#payload.items.filter(function(item)
+			{
+				return item.startsWith("cust");
+			});
+
+			if(payCust.length > 0)
+			{
+				contentString += 	'<div class="itemTitle">CUSTOMIZATIONS</div>' +
+									'<ul>';
+				
+				payCust.forEach(function(payItem,index)
+				{
+					let cataItem = this.#itemCatalog.find(item => item.id === payItem);
+
+					if(cataItem.deck_charges)
+					{
+						contentString += this.#writeItemButtonEntry(cataItem);
+					}
+					else
+					{
+						contentString += 	'<li>' + cataItem.displayName + '</li>';
+					}
+				},this);
+
+				contentString +=	'</ul><br/>';
+			}
+
+			// UTIL
+			let payUtil = this.#payload.items.filter(function(item)
+			{
+				return item.startsWith("util");
+			});
+
+			if(payUtil.length > 0)
+			{
+				contentString += 	'<div class="itemTitle">UTILITY</div>' +
+									'<ul>';
+				
+				payUtil.forEach(function(payItem,index)
+				{
+					let cataItem = this.#itemCatalog.find(item => item.id === payItem);
+
+					if(cataItem.deck_charges)
+					{
+						contentString += this.#writeItemButtonEntry(cataItem);
+					}
+					else
+					{
+						contentString += 	'<li>' + cataItem.displayName + '</li>';
+					}
+				},this);
+
+				contentString +=	'</ul><br/>';
+			}
+		}
+
 		contentString +=	'</div>' +
-						'</div>'
+						'</div>';
 		
 		contents["items"] = contentString;
 		
@@ -2362,6 +2472,27 @@ function executeAction(action)
 	$("#status").html(">> EXECUTING COMMAND...");
 }
 
+function activateDeck(deck)
+{
+	payload.setCurrentTags(payload.getCurrentTags()+1);
+	updateTagDisplay("STANDBY",payload.getCurrentTags());
+
+	let payload_sim = JSON.parse(Cookies.get("payload_sim"));
+
+	let deckIndex = payload_sim.findIndex(function(payDeck)
+	{
+		return payDeck.id === deck;
+	});
+
+	payload_sim[deckIndex].used++;
+
+	Cookies.set("payload_sim",JSON.stringify(payload_sim),{expires: 7,path: "",sameSite: "Strict"});
+
+	payload.rewriteItemMarks(deck);
+
+	autoSave({});
+}
+
 function openTab(evt, bodyID)
 {
 	$(".hackTab.active").removeClass("active");
@@ -2556,6 +2687,40 @@ function termAction(path,action)
 		{
 			let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0) : 0;
 			updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
+		},
+		close: function(event,ui)
+		{
+			updateTagDisplay("STANDBY",payload.getCurrentTags());
+		}
+	});
+}
+
+function deckAction(deck,max)
+{
+	let deckType = "cyberdeck";
+
+	if(deck.startsWith("cust_"))
+	{
+		deckType = "customization"
+	}
+
+	$("#popup").html("Activate Deck for +1 Tag?<br/><br/>NOTE: You only have " + max + " activation" + ( max === 1 ? "" : "s" ) + " of this " + deckType + " per Simulation.");
+
+	$("#popup").dialog({
+		title: "Confirm Deck Activation",
+		height: "auto",
+		width:$("#main").width(),
+		buttons: [{
+			text: "Confirm",
+			click: function()
+			{
+				$(this).dialog("close");
+				activateDeck(deck);
+			}
+		}],
+		open: function(event,ui)
+		{
+			updateTagDisplay("CONFIRM",payload.getCurrentTags(),payload.getCurrentTags()+1);
 		},
 		close: function(event,ui)
 		{
