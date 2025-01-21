@@ -1,10 +1,6 @@
 -------------------------------------------------------------------------------------------------------------
 
 - Make Mask editable in terminal view, and send whatever's there
-- Anonymous Mask placeholder
-- Finish Root Device
- -- HexOS BIOS Insert Boot Media
- -- Scrolling codium ipsum animation
 - Proper terminal.json/dataCatalog.json/itemCatalog.json errors
 - CSS for checkboxes/radios
 
@@ -51,6 +47,7 @@
 - Glitchy look to reassigned names
 - Static Glitchy Animation
 - Static Animation Fadeaway
+- Scrolling codium ipsum animation for Root Device
 
 
 

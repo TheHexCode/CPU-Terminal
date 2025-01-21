@@ -1720,7 +1720,9 @@ function rewriteTerminalPage(autosave)
 	{
 		let newLogEntry = {};
 		newLogEntry["handle"] = payload.getPayloadFunction("handle");
-		newLogEntry["mask"] = payload.getPayloadFunction("mask") ? payload.getPayloadFunction("maskHandle") : null;
+		newLogEntry["mask"] = payload.getPayloadFunction("mask") ?
+								((payload.getPayloadFunction("maskHandle") == "") ? "Anonymous" : payload.getPayloadFunction("maskHandle")) :
+								null;
 		newLogEntry["state"] = "present"
 		newLogEntry["reassignee"] = null;
 		
