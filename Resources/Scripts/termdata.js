@@ -1287,7 +1287,31 @@ $(document).ready(function()
 
 	$.ajaxSetup({ cache: false });
 
-	preloadImages();
+	let images = [
+		"..\\Images\\Actions\\itemFilled.png",
+		"..\\Images\\Actions\\itemOpen.png",
+		"..\\Images\\Actions\\itemRigged.png",
+		"..\\Images\\Borders\\Bracket_Border_Ice.png",
+		"..\\Images\\Borders\\Bracket_Border.png",
+		"..\\Images\\Borders\\Thin_Border.png",
+		"..\\Images\\PlayPause\\Pause_Root.png",
+		"..\\Images\\PlayPause\\Pause.png",
+		"..\\Images\\PlayPause\\Play_Root.png",
+		"..\\Images\\PlayPause\\Play_Root.png",
+		"..\\Images\\SubTabs\\Active.png",
+		"..\\Images\\SubTabs\\cameras.png",
+		"..\\Images\\SubTabs\\darkweb.png",
+		"..\\Images\\SubTabs\\defenses.png",
+		"..\\Images\\SubTabs\\files.png",
+		"..\\Images\\SubTabs\\Items.png",
+		"..\\Images\\SubTabs\\locks.png",
+		"..\\Images\\SubTabs\\log.png",
+		"..\\Images\\SubTabs\\Passive.png",
+		"..\\Images\\SubTabs\\puzzles.png",
+		"..\\Images\\SubTabs\\utilties.png"
+	]
+
+	preloadImages(images);
 
 	let suffix = new URLSearchParams(window.location.search);
 	
@@ -1317,46 +1341,21 @@ $(window).on("focus",function()
 	}
 });
 
-function preloadImages()
+function preloadImages(sources)
 {
-	const bracketBorder = new Image();
-	bracketBorder.src = "Resources\\Images\\Borders\\Bracket_Border.png"
-	const bracketBorderIce = new Image();
-	bracketBorderIce.src = "Resources\\Images\\Borders\\Bracket_Border_Ice.png"
-	const thinBorder = new Image();
-	thinBorder.src = "Resources\\Images\\Borders\\Thin_Border.png"
-	const pauseImage = new Image();
-	pauseImage.src = "Resources\\Images\\PlayPause\\Pause.png"
-	const pauseRootImage = new Image();
-	pauseRootImage.src = "Resources\\Images\\PlayPause\\Pause_Root.png"
-	const playImage = new Image();
-	playImage.src = "Resources\\Images\\PlayPause\\Play.png"
-	const playRootImage = new Image();
-	playRootImage.src = "Resources\\Images\\PlayPause\\Play_Root.png"
-	const subLog = new Image();
-	subLog.src = "Resources\\Images\\SubTabs\\log.png"
-	const subCameras = new Image();
-	subCameras.src = "Resources\\Images\\SubTabs\\cameras.png"
-	const subDarkWeb = new Image();
-	subDarkWeb.src = "Resources\\Images\\SubTabs\\darkweb.png"
-	const subDefenses = new Image();
-	subDefenses.src = "Resources\\Images\\SubTabs\\defenses.png"
-	const subFiles = new Image();
-	subFiles.src = "Resources\\Images\\SubTabs\\files.png"
-	const subLocks = new Image();
-	subLocks.src = "Resources\\Images\\SubTabs\\locks.png"
-	const subUtilties = new Image();
-	subUtilties.src = "Resources\\Images\\SubTabs\\utilities.png"
-	const subPuzzles = new Image();
-	subPuzzles.src = "Resources\\Images\\SubTabs\\puzzles.png"
-	const subActive = new Image();
-	subActive.src = "Resources\\Images\\SubTabs\\Active.png"
-	const subPassive = new Image();
-	subPassive.src = "Resources\\Images\\SubTabs\\Passive.png"
-	const subItems = new Image();
-	subItems.src = "Resources\\Images\\SubTabs\\Items.png"
-	const actRigged = new Image();
-	actRigged.src = "Resources\\Images\\Actions\\Rigged.png"
+	if(!preloadImages.cache)
+	{
+		preloadImages.cache = [];
+	}
+
+	let img;
+
+	for (let i = 0; i < sources.length; i++)
+	{
+		img = new Image();
+		img.src = sources[i];
+		preloadImages.cache.push(img);
+	}
 }
 
 function autoSave({ handle=null,rigged=false })
@@ -2282,7 +2281,7 @@ function brickTerminal(hexHandle)
 					"<p>If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use Safe Mode to remove or disable components, restart your computer, press F8 to select Advanced Startup Options, and then select Safe Mode.</p>" +
 					"<p>Technical Information:</p>" +
 					"<p>*** STOP: " + stopCode + "</p>" +
-					"<p><br/>Beginning dump of physical memory<br/>" +
+					"<p><br/>Beginning dump of physical memory...<br/>" +
 					"Physical memory dump complete.<br/>" +
 					"Contact your system administrator or technical support group for further<br/>" +
 					"assistance.</p>" +
@@ -2344,8 +2343,12 @@ function rootingTerminal(timeUp)
 
 function rootTerminal()
 {
-	$("#main").html("<p>HexOS BIOS</p>" +
-		"<!--<footer>CPU DISCLAIMER</footer>-->"
+	$("#main").html("<p>No boot device avaiable<br/>" +
+					"Current boot mode is set to BIOS.<br/>" +
+					"Please ensure compatible bootable media is available.<br/>" +
+					"Use the system setup program to change the boot mode as needed.</p>" +
+					"<p>Restart device to retry boot.</p>" +
+					"<!--<footer>CPU DISCLAIMER</footer>-->"
 	);
 }
 
