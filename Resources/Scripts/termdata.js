@@ -2081,7 +2081,7 @@ function accessTerminal(autosave)
 	{
 		let newReq = terminal.getReqAccess() + payload.getModifier("cost");
 
-		payload.setCurrentTags((payload.getInitialTags()["total"] + payload.getModifier("extra"))-newReq);
+		payload.setCurrentTags(payload.getCurrentTags()-newReq);
 		rewriteTerminalPage(null);
 		$("#status").html(">> AWAITING COMMAND");
 	}

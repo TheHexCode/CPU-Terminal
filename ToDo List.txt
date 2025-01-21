@@ -20,8 +20,6 @@
  ✓- Active/Passive/Items
 - Replace RIGGED image
 
-- Change from json and cookies to database
-
 -------------------------------------------------------------------------------------------------------------
 
 - Should there be CPU Disclaimer Text? If so, what should it say? (C) CPU Larp 2024?
