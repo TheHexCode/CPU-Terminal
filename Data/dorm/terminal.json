@@ -48,6 +48,26 @@
 							"modify": 2
 						},
 						{
+							"special": "ice",
+							"title": "SNITCHES 2B",
+							"effects":
+							[
+								"ALARM",
+								"FEAR 30s",
+								"MARKED"
+							],
+							"break": 3,
+							"subEntries":
+							[
+								{
+									"title": "Paydata",
+									"contents": "100 Credits",
+									"access": 2,
+									"modify": 3
+								}
+							]
+						},
+						{
 							"title": "Paydata",
 							"contents": "100 Credits",
 							"access": 2,

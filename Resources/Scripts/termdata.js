@@ -593,12 +593,13 @@ class Terminal
 				let modS = (entry.modify===1) ? "" : "s";
 				let brkS = (entry.break===1) ? "" : "s";
 				
-				let entryString = 	'<div id="' + entry.path + '" class="entry ' + subClass + '">' +
-										'<div class="entryTitleBar">';
+				let entryString = "";
 										
 				if (entry.special == "ice")
 				{
-					entryString += 			'<span class="entryPrefix">>> ' + entry.displayName + ':\\</span>' +
+					entryString += 	'<div id="' + entry.path + '" class="entry ice ' + subClass + '">' +
+										'<div class="entryTitleBar">' +
+											'<span class="entryPrefix">>> ' + entry.displayName + ':\\</span>' +
 											'<span>&nbsp;' + entry.title + '</span>' +
 										'</div>' +
 										'<div class="entryContentsBar">' + 
@@ -618,6 +619,9 @@ class Terminal
 				}
 				else
 				{
+					entryString += '<div id="' + entry.path + '" class="entry ' + subClass + '">' +
+										'<div class="entryTitleBar">';
+
 					let titleMask;
 					if(scheme.states[entry.state].title === true)
 					{
@@ -732,14 +736,7 @@ class Terminal
 				
 				icon.entries.forEach(function(entry,index)
 				{
-					if (entry.special != "ice")
-					{
-						entryArray[index] = writeEntry(entry,iconScheme);
-					}
-					else
-					{
-						entryArray[index] = writeEntry(entry,iconScheme,"ice");
-					}
+					entryArray[index] = writeEntry(entry,iconScheme);
 				},this);
 				
 				allContent += entryArray.join("<hr/>");

@@ -16,6 +16,7 @@
  ✓- Active/Passive/Items
 - Replace RIGGED image
 
+- Saving... (and disabled save button) before Saved! on profile page
 - Layered ICE
 - ICE and modified Traps needs to be broken/unwrapped for future players
 - Activing Dissim ability when at 5 Hacking still gave 2 tags
@@ -23,11 +24,6 @@
 - Extend Terminal Cookie to 2 hours
 - Per Scene Items Cookie
 - Add DigiSec Secret
-
--------------------------------------------------------------------------------------------------------------
-
-- Do Shimmerstick's increase the cost of the initial access to the Terminal? What about other purely function-based abilities, like Root Device and Brick?
-- Can one have multiple cyberdecks? A cyberdeck plus the Power Glove? The item description says yes for the cyberdeck and the Shimmerstick
 
 -------------------------------------------------------------------------------------------------------------
 
