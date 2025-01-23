@@ -2357,13 +2357,12 @@ function rootTerminal()
 function executeAction(action)
 {
 	let cost;
-	let timerSecs;
+	let timerSecs = payload.getTimerSecs();
 	let callback;
 
 	if(action === "brick")
 	{
-		cost = Math.max(4 + payload.getModifier("cost"),0);;
-		timerSecs = payload.getTimerSecs();
+		cost = Math.max(4 + payload.getModifier("cost"),0);
 		callback = function() {
 			let handle = payload.getHandle();
 			handle = (handle.masked) ? handle.mask : handle.handle;
@@ -2422,8 +2421,7 @@ function executeAction(action)
 	}
 	else if (action === "rig")
 	{
-		cost = Math.max(6 + payload.getModifier("cost"),0);;
-		timerSecs = payload.getTimerSecs();
+		cost = Math.max(6 + payload.getModifier("cost"),0);
 		callback = function() {
 			$("#rigged").removeClass("hidden");
 			$("#riggButton").attr("data-enabled","false");
@@ -2456,8 +2454,7 @@ function executeAction(action)
 	}
 	else if(action === "root")
 	{
-		cost = Math.max(6 + payload.getModifier("cost"),0);;
-		timerSecs = 30;
+		cost = Math.max(6 + payload.getModifier("cost"),0);
 		callback = function() {
 			let timeUp = new Date(new Date().getTime() + 5 * 60 * 1000)
 
