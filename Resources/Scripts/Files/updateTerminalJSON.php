@@ -32,7 +32,7 @@ else
     }
     
     $entry->state = $newState;
-    $entry->previous = $newPrev;   
+    $entry->previous = $newPrev;
 }
 
 file_put_contents("../../../Data/" . $suffixID . "/terminal.json", JSON_encode($terminalJSON));
