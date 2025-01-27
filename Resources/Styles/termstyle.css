@@ -934,6 +934,14 @@ ul
 	margin: 0 -0.25rem;
 }
 
+/*
+.entry.ice .entry.ice:not(.subIce)::before
+{
+	content: "";
+	background-color: #FFAC00;
+}
+*/
+
 .entryTitleBar
 {
 	display: flex;

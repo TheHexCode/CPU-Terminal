@@ -124,6 +124,9 @@ function statSubmit(event)
 {
 	event.preventDefault();
 	
+	$("#saveText").html("SAVING...");
+	$("#saveText").removeClass("hidden");
+	
 	// DEFAULT HANDLE
 	let handle = $("#handle").val();
 	let maskHandle = $("#mask").val();
@@ -242,9 +245,11 @@ function statSubmit(event)
 
 			Cookies.set("payload_sim",JSON.stringify(chargeItems),{expires: 7,path: "",sameSite: "Strict"});
 		}
-
-		$("#saveText").removeClass("hidden");
 		
-		setTimeout(function(){$("#saveText").addClass("hidden");},5000);
+		$("#saveText").html("SAVED!");
+		
+		setTimeout(function(){
+			$("#saveText").addClass("hidden");
+		},5000);
 	});
 }

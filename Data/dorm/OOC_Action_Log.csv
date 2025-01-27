@@ -12,3 +12,7 @@ Timestamp,User,Action,Details
 "Jan 23, 2025, 09:52:02",Test,files>3 changed to unwrap,"{""Cost"":0,""Repeat"":1}"
 "Jan 23, 2025, 09:53:19",Test,Terminal Accessed,"{""Tags"":{""hack"":10,""rex"":2,""total"":12,""extra"":0},""AccessCost"":2}"
 "Jan 23, 2025, 09:54:12",Test,files>3>1 changed to break,"{""Cost"":2,""Repeat"":1}"
+"Jan 26, 2025, 20:08:45",Puck,Terminal Accessed,"{""Tags"":{""hack"":6,""rex"":0,""total"":6,""extra"":0},""AccessCost"":2}"
+"Jan 26, 2025, 20:13:02",MaxTest,Terminal Accessed,"{""Tags"":{""hack"":8,""rex"":2,""total"":10,""extra"":-4},""AccessCost"":2}"
+"Jan 26, 2025, 20:13:16",MaxTest,files>3 changed to unwrap,"{""Cost"":0,""Repeat"":3}"
+"Jan 26, 2025, 20:18:39",MaxTest,Terminal Accessed,"{""Tags"":{""hack"":8,""rex"":2,""total"":10,""extra"":-4},""AccessCost"":2}"
