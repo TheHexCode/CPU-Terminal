@@ -1,20 +1,20 @@
 @font-face {
 	font-family: "DSEG14-ClassicLight";
-	src: url("../Fonts/DSEG14Classic-Light.woff2") format("woff2"),
-         url("../Fonts/DSEG14Classic-Light.woff") format("woff"),
-         url("../Fonts/DSEG14Classic-Light.ttf") format("truetype");
+	src: url("../fonts/DSEG14Classic-Light.woff2") format("woff2"),
+         url("../fonts/DSEG14Classic-Light.woff") format("woff"),
+         url("../fonts/DSEG14Classic-Light.ttf") format("truetype");
 }
 
 @font-face {
 	font-family: "DSEG14-ClassicRegular";
-	src: url("../Fonts/DSEG14Classic-Regular.woff2") format("woff2"),
-         url("../Fonts/DSEG14Classic-Regular.woff") format("woff"),
-         url("../Fonts/DSEG14Classic-Regular.ttf") format("truetype");
+	src: url("../fonts/DSEG14Classic-Regular.woff2") format("woff2"),
+         url("../fonts/DSEG14Classic-Regular.woff") format("woff"),
+         url("../fonts/DSEG14Classic-Regular.ttf") format("truetype");
 }
 
 @font-face {
 	font-family: "BigBlue-TerminalPlus";
-	src: url("../Fonts/BigBlue_TerminalPlus.TTF") format("truetype");
+	src: url("../fonts/BigBlue_TerminalPlus.TTF") format("truetype");
 }
 
 :root
@@ -493,7 +493,7 @@ h2
 	/*border: 1px solid black;/*
 	/*padding: 0.25rem;*/
 	padding: 8px;
-	border-image-source: url("../Images/Borders/Thin_Border.png");
+	border-image-source: url("../images/borders/thin_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 }
@@ -812,7 +812,7 @@ h2
 
 .subContBody
 {
-	border-image-source: url("../Images/Borders/Thin_Border.png");
+	border-image-source: url("../images/borders/thin_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 	padding: 16px;
@@ -1012,7 +1012,7 @@ ul
 	justify-content: space-between;
 	align-items: stretch;
 	text-align: center;
-	border-image-source: url("../Images/Borders/Bracket_Border.png");
+	border-image-source: url("../images/borders/bracket_border.png");
 	border-image-width: 14px;
 	border-image-slice: 14;
 	padding: 0 14px;
@@ -1020,7 +1020,7 @@ ul
 
 .ice .entryContentsBar
 {
-	border-image-source: url("../Images/Borders/Bracket_Border_Ice.png");
+	border-image-source: url("../images/borders/bracket_border_ice.png");
 }
 
 .entryContents

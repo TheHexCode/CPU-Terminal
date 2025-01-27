@@ -5,7 +5,7 @@ $path = $_POST["path"];
 $newState = $_POST["newState"];
 $newPrev = $_POST["newPrev"];
 
-$terminalJSON = JSON_decode(file_get_contents("../../../Data/" . $suffixID . "/terminal.json"));
+$terminalJSON = JSON_decode(file_get_contents("../../../data/" . $suffixID . "/terminal.json"));
 
 #echo var_dump($terminalJSON);
 
@@ -35,4 +35,4 @@ else
     $entry->previous = $newPrev;
 }
 
-file_put_contents("../../../Data/" . $suffixID . "/terminal.json", JSON_encode($terminalJSON));
+file_put_contents("../../../data/" . $suffixID . "/terminal.json", JSON_encode($terminalJSON));

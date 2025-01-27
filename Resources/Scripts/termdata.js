@@ -232,7 +232,7 @@ class Terminal
 				$.ajax({
 					type: "POST",
 					dataType: "json",
-					url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+					url: "resources\\scripts\\files\\updateterminaljson.php",
 					data:
 					{
 						suffixID: this.#suffix,
@@ -312,7 +312,7 @@ class Terminal
 				$.ajax({
 					type: "POST",
 					dataType: "json",
-					url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+					url: "resources\\scripts\\files\\updateterminaljson.php",
 					data:
 					{
 						suffixID: this.#suffix,
@@ -466,7 +466,7 @@ class Terminal
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "Resources\\Scripts\\Files\\updateAccessLog.php",
+			url: "resources\\scripts\\files\\updateaccesslog.php",
 			data:
 			{
 				suffixID: this.#suffix,
@@ -491,7 +491,7 @@ class Terminal
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "Resources\\Scripts\\Files\\updateAccessLog.php",
+			url: "resources\\scripts\\files\\updateaccesslog.php",
 			data:
 			{
 				suffixID: this.#suffix,
@@ -1050,12 +1050,12 @@ class Payload
 
 		for(let i = maxCharges; i > usedCharges; i--)
 		{
-			itemString += '<img src="Resources/Images/Actions/itemOpen.png"/>';
+			itemString += '<img src="resources/images/actions/itemopen.png"/>';
 		}
 
 		for(let i = usedCharges; i > 0; i--)
 		{
-			itemString += '<img src="Resources/Images/Actions/itemFilled.png"/>';
+			itemString += '<img src="resources/images/actions/itemfilled.png"/>';
 		}
 
 		$("#" + cataItem + "_marks").html(itemString);
@@ -1079,12 +1079,12 @@ class Payload
 						
 		for(let i = cataItem.deck_charges; i > payItem.used; i--)
 		{
-			itemString += 					'<img src="Resources/Images/Actions/itemOpen.png"/>';
+			itemString += 					'<img src="resources/images/actions/itemopen.png"/>';
 		}
 
 		for(let i = payItem.used; i > 0; i--)
 		{
-			itemString += 					'<img src="Resources/Images/Actions/itemFilled.png"/>';
+			itemString += 					'<img src="resources/images/actions/itemfilled.png"/>';
 		}
 
 		itemString += 					'</span>' +
@@ -1398,37 +1398,37 @@ $(document).ready(function()
 	$.ajaxSetup({ cache: false });
 
 	let images = [
-		"..\\Images\\Actions\\itemFilled.png",
-		"..\\Images\\Actions\\itemOpen.png",
-		"..\\Images\\Actions\\itemRigged.png",
-		"..\\Images\\Borders\\Bracket_Border_Ice.png",
-		"..\\Images\\Borders\\Bracket_Border.png",
-		"..\\Images\\Borders\\Thin_Border.png",
-		"..\\Images\\PlayPause\\Pause_Root.png",
-		"..\\Images\\PlayPause\\Pause.png",
-		"..\\Images\\PlayPause\\Play_Root.png",
-		"..\\Images\\PlayPause\\Play_Root.png",
-		"..\\Images\\SubTabs\\Active.png",
-		"..\\Images\\SubTabs\\cameras.png",
-		"..\\Images\\SubTabs\\darkweb.png",
-		"..\\Images\\SubTabs\\defenses.png",
-		"..\\Images\\SubTabs\\files.png",
-		"..\\Images\\SubTabs\\Items.png",
-		"..\\Images\\SubTabs\\locks.png",
-		"..\\Images\\SubTabs\\log.png",
-		"..\\Images\\SubTabs\\Passive.png",
-		"..\\Images\\SubTabs\\puzzles.png",
-		"..\\Images\\SubTabs\\utilties.png"
+		"..\\images\\actions\\itemfilled.png",
+		"..\\images\\actions\\itemopen.png",
+		"..\\images\\actions\\itemrigged.png",
+		"..\\images\\borders\\bracket_border_ice.png",
+		"..\\images\\borders\\bracket_border.png",
+		"..\\images\\borders\\thin_border.png",
+		"..\\images\\playpause\\pause_root.png",
+		"..\\images\\playpause\\pause.png",
+		"..\\images\\playpause\\play_root.png",
+		"..\\images\\playpause\\play.png",
+		"..\\images\\subtabs\\active.png",
+		"..\\images\\subtabs\\cameras.png",
+		"..\\images\\subtabs\\darkweb.png",
+		"..\\images\\subtabs\\defenses.png",
+		"..\\images\\subtabs\\files.png",
+		"..\\images\\subtabs\\items.png",
+		"..\\images\\subtabs\\locks.png",
+		"..\\images\\subtabs\\log.png",
+		"..\\images\\subtabs\\passive.png",
+		"..\\images\\subtabs\\puzzles.png",
+		"..\\images\\subtabs\\utilties.png"
 	]
 
 	preloadImages(images);
 
 	let suffix = new URLSearchParams(window.location.search);
 	
-	let iconJSON = $.getJSON("Resources\\Schemas\\icons.json");
-	let termJSON = $.getJSON("Data\\"+suffix.get("id")+"\\terminal.json");
-	let accessLog = $.getJSON("Resources\\Scripts\\Files\\checkLogs.php",{ suffixID: suffix.get("id") });
-	let itemJSON = $.getJSON("Resources\\Schemas\\items.json");
+	let iconJSON = $.getJSON("resources\\schemas\\icons.json");
+	let termJSON = $.getJSON("data\\"+suffix.get("id")+"\\terminal.json");
+	let accessLog = $.getJSON("resources\\scripts\\files\\checklogs.php",{ suffixID: suffix.get("id") });
+	let itemJSON = $.getJSON("resources\\schemas\\items.json");
 
 	$.when(termJSON, iconJSON, accessLog, itemJSON).done(function()
 	{
@@ -1616,7 +1616,7 @@ function pauseTimer(root=false)
 	
 	if(pause === false)
 	{
-		$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Play' + rootSuffix + '.png">');
+		$("#playPause").html('<img src="resources\\images\\playpause\\play' + rootSuffix + '.png">');
 		
 		var mmssText = $("#mmss > .FG").html()
 		var hsecText = $("#hundsec > .FG").html()
@@ -1647,7 +1647,7 @@ function pauseTimer(root=false)
 	}
 	else
 	{
-		$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Pause' + rootSuffix + '.png">');
+		$("#playPause").html('<img src="resources\\images\\playpause\\pause' + rootSuffix + '.png">');
 		
 		clearInterval(timerBlink);
 
@@ -1658,7 +1658,7 @@ function pauseTimer(root=false)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				url: "resources\\scripts\\files\\updateterminaljson.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2230,7 +2230,7 @@ function accessTerminal(autosave)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+		url: "resources\\scripts\\files\\ooclogupdate.php",
 		data:
 		{
 			suffixID: terminal.getTerminalID(),
@@ -2293,7 +2293,7 @@ function executeCommand(path,newState,cost,copycat=false)
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+			url: "resources\\scripts\\files\\ooclogupdate.php",
 			data:
 			{
 				suffixID: terminal.getTerminalID(),
@@ -2334,7 +2334,7 @@ function updateAccessLog(logIndex,action,reass)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				url: "resources\\scripts\\files\\ooclogupdate.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2364,7 +2364,7 @@ function updateAccessLog(logIndex,action,reass)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				url: "resources\\scripts\\files\\ooclogupdate.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2417,7 +2417,7 @@ function rootingTerminal(timeUp)
 	$("#timerLCD").addClass("red");
 	$(".zoneBox").css("display","none");
 
-	$("#playPause").html('<img src="Resources\\Images\\PlayPause\\Pause_Root.png">');
+	$("#playPause").html('<img src="resources\\images\\playpause\\pause_root.png">');
 	$("#playPause").attr("onmouseup","pauseTimer(true)");
 
 	let secs = ((timeUp - new Date()) / 1000);
@@ -2430,7 +2430,7 @@ function rootingTerminal(timeUp)
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+			url: "resources\\scripts\\files\\updateterminaljson.php",
 			data:
 			{
 				suffixID: terminal.getTerminalID(),
@@ -2449,7 +2449,7 @@ function rootingTerminal(timeUp)
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+			url: "resources\\scripts\\files\\ooclogupdate.php",
 			data:
 			{
 				suffixID: terminal.getTerminalID(),
@@ -2504,7 +2504,7 @@ function executeAction(action)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				url: "resources\\scripts\\files\\updateterminaljson.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2523,7 +2523,7 @@ function executeAction(action)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				url: "resources\\scripts\\files\\ooclogupdate.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2556,7 +2556,7 @@ function executeAction(action)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				url: "resources\\scripts\\files\\ooclogupdate.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2580,7 +2580,7 @@ function executeAction(action)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+				url: "resources\\scripts\\files\\updateterminaljson.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),
@@ -2599,7 +2599,7 @@ function executeAction(action)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "Resources\\Scripts\\Files\\oocLogUpdate.php",
+				url: "resources\\scripts\\files\\ooclogupdate.php",
 				data:
 				{
 					suffixID: terminal.getTerminalID(),

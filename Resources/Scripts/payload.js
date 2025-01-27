@@ -223,7 +223,7 @@ function statSubmit(event)
 	
 	//console.log(stats);
 	
-	let itemJSON = $.getJSON("Resources\\Schemas\\items.json");
+	let itemJSON = $.getJSON("resources\\schemas\\items.json");
 
 	$.when(itemJSON).done(function()
 	{
