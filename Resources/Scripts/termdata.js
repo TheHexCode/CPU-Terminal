@@ -143,7 +143,7 @@ class Terminal
 		this.#termData.state = newState;
 	}
 	
-	setEntryState(path,state,extraCost)
+	setEntryState(path,state,extraCost,context="")
 	{
 		let catalogEntry = this.getEntry(path);
 		let terminalEntry = "[id='"+path+"'] "
@@ -225,6 +225,22 @@ class Terminal
 					catalogEntry.state = "broken";
 					//console.log(catalogEntry);
 				}
+			}
+
+			if(context === "change")
+			{
+				$.ajax({
+					type: "POST",
+					dataType: "json",
+					url: "Resources\\Scripts\\Files\\updateTerminalJSON.php",
+					data:
+					{
+						suffixID: this.#suffix,
+						path: path,
+						newState: catalogEntry.state,
+						newPrev: null
+					}
+				});
 			}
 		}
 		else
@@ -319,14 +335,19 @@ class Terminal
 			{
 				if($('[id="'+entry.id+'"]').hasClass("ice"))
 				{
-					let newBrkCost = Math.max($('[id="'+entry.id+'"] .breakButton').attr("data-cost")-rank,0);
+					if(!($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("sprung")) &&
+					   !($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("broken")))
+					{
+						let newBrkCost = Math.max($('[id="'+entry.id+'"] .breakButton').attr("data-cost")-rank,0);
 					
-					let brkS = (newBrkCost === 1) ? "" : "s";
-					
-					$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newBrkCost);
-					$('[id="'+entry.id+'"] .breakButton').text(newBrkCost + " Tag" + brkS);
+						let brkS = (newBrkCost === 1) ? "" : "s";
+						
+						$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newBrkCost);
+						$('[id="'+entry.id+'"] .breakButton').text(newBrkCost + " Tag" + brkS);
+					}
 				}
-				else
+				else if (!($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("disarmed")) &&
+						 !($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("sprung")))
 				{
 					let newAccCost = Math.max($('[id="'+entry.id+'"] .accessButton').attr("data-cost")-rank,0);
 					let newModCost = Math.max($('[id="'+entry.id+'"] .modifyButton').attr("data-cost")-rank,0);
@@ -397,14 +418,19 @@ class Terminal
 		{
 			if($('[id="'+entry.id+'"]').hasClass("ice"))
 			{
-				let newBrkCost = Math.max(Number($('[id="'+entry.id+'"] .breakButton').attr("data-cost"))+change,0);
-				
-				let brkS = (newBrkCost === 1) ? "" : "s";
-				
-				$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newBrkCost);
-				$('[id="'+entry.id+'"] .breakButton').text(newBrkCost + " Tag" + brkS);
+				if(!($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("sprung")) &&
+				   !($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("broken")))
+				{
+					let newBrkCost = Math.max(Number($('[id="'+entry.id+'"] .breakButton').attr("data-cost"))+change,0);
+					
+					let brkS = (newBrkCost === 1) ? "" : "s";
+					
+					$('[id="'+entry.id+'"] .breakButton').attr("data-cost",newBrkCost);
+					$('[id="'+entry.id+'"] .breakButton').text(newBrkCost + " Tag" + brkS);
+				}
 			}
-			else
+			else if (!($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("disarmed")) &&
+					 !($('[id="'+entry.id+'"] > .entryContentsBar > .entryMaskContainer > .entrySecret').hasClass("sprung")))
 			{
 				let newAccCost = Math.max(Number($('[id="'+entry.id+'"] .accessButton').attr("data-cost"))+change,0);
 				let newModCost = Math.max(Number($('[id="'+entry.id+'"] .modifyButton').attr("data-cost"))+change,0);
@@ -493,14 +519,14 @@ class Terminal
 				entry["displayName"] = this.#iconCatalog[iconType].unit + " " + displayIndex;
 				entry["title"] = "Trap!"
 				entry["contents"] = entry.effects.join("<br/>");
-				entry["state"] = "initial";
+				entry["state"] = (entry.state ? entry.state : "initial");
 			}
 			else if(entry.special == "ice")
 			{
 				entry["path"] = path;
 				entry["displayName"] = "ICE " + " " + displayIndex;
 				entry["contents"] = entry.effects.join("<br/>");
-				entry["state"] = "closed";
+				entry["state"] = (entry.state ? entry.state : "closed");
 				
 				entry.subEntries.forEach((subEntry,subIndex) => this.#buildEntry(iconType,subIndex,subEntry,{path:path,index:index}));
 			}
@@ -593,32 +619,112 @@ class Terminal
 				let modS = (entry.modify===1) ? "" : "s";
 				let brkS = (entry.break===1) ? "" : "s";
 				
-				let entryString = 	'<div id="' + entry.path + '" class="entry ' + subClass + '">' +
-										'<div class="entryTitleBar">';
+				let entryString = "";
 										
-				if (entry.special == "ice")
+				if (entry.special === "ice")
 				{
-					entryString += 			'<span class="entryPrefix">>> ' + entry.displayName + ':\\</span>' +
+					let stateMasked = true;
+					let stateClass = "";
+					let stateUnwrap = '<button class="unwrapButton" data-enabled="true" data-cost="0" onclick="termAction(\'' + entry.path + '\',\'unwrap\')">Free!</button>';
+					let stateBreak = '<button class="breakButton" data-enabled="true" data-cost="' + entry.break + '" onclick="termAction(\'' + entry.path + '\',\'break\')">' + entry.break +' Tag' + brkS + '</button>';
+
+					if((entry.state === "broken") || (entry.state === "sprung"))
+					{
+						stateMasked = false;
+						stateClass = entry.state;
+						stateUnwrap = '<button class="unwrapButton" data-enabled="false" data-cost="0" onclick="termAction(\'files>3\',\'unwrap\')" disabled>N/A</button>';
+						stateBreak = '<button class="breakButton" data-enabled="false" data-cost="' + entry.break + '" onclick="termAction(\'files>3\',\'break\')" disabled>N/A</button>';
+					}
+
+					entryString += 	'<div id="' + entry.path + '" class="entry ice ' + subClass + '">' +
+										'<div class="entryTitleBar">' +
+											'<span class="entryPrefix">>> ' + entry.displayName + ':\\</span>' +
 											'<span>&nbsp;' + entry.title + '</span>' +
 										'</div>' +
 										'<div class="entryContentsBar">' + 
 											'<span class="entryMaskContainer">' +
-												'<span class="entryMasking"></span>' +
-												'<span class="entrySecret">' + entry.contents + '</span>' +
+												'<span class="entryMasking' + (stateMasked ? '' : ' invisible') + '"></span>' +
+												'<span class="entrySecret ' + stateClass + '">' + entry.contents + '</span>' +
 											'</span>' +
 										'</div>' +
 										'<div class="entryIntContainer">' +
 											'<div class="entryInterface">' +
-												'Unwrap:<button class="unwrapButton" data-enabled="true" data-cost="0" onclick="termAction(\'' + entry.path + '\',\'unwrap\')">Free!</button>' +
+												'Unwrap:' + stateUnwrap +
 											'</div>' +
 											'<div class="entryInterface">' +
-												'Break:<button class="breakButton" data-enabled="true" data-cost="' + entry.break + '" onclick="termAction(\'' + entry.path + '\',\'break\')">' + entry.break +' Tag' + brkS + '</button>' +
+												'Break:' + stateBreak +
 											'</div>' +
 										'</div>';
 				}
+				else if (entry.special === "trap")
+				{
+					entryString += '<div id="' + entry.path + '" class="entry ' + subClass + '">' +
+										'<div class="entryTitleBar">';
+
+					let titleMask;
+					let contentMask;
+					let aVisible;
+					let mVisible;
+
+					if((entry.state === "sprung") || (entry.state === "disarmed"))
+					{
+						titleMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entrySecret ' + entry.state + '">' + entry.title + '</span>' +
+											'</span>';
+						contentMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entrySecret ' + entry.state + '">' + entry.contents + '</span>' +
+											'</span>';
+						aVisible = {
+							disAttr: 'data-enabled="false" disabled',
+							buttonText: "N/A"
+						}
+						mVisible = {
+							disAttr: 'data-enabled="false" disabled',
+							buttonText: "N/A"
+						}
+					}
+					else
+					{
+						titleMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entryMasking"></span>' +
+												'<span class="entrySecret">' + entry.title + '</span>' +
+											'</span>';
+						contentMask = 		'<span class="entryMaskContainer">' +
+												'<span class="entryMasking"></span>' +
+												'<span class="entrySecret">' + entry.contents + '</span>' +
+											'</span>';
+						aVisible = {
+							disAttr: 'data-enabled="true" data-cost="' + entry.access + '"',
+							buttonText: entry.access + " Tag" + accS
+						}
+						mVisible = {
+							disAttr: 'data-enabled="true" data-cost="' + entry.modify + '"',
+							buttonText: entry.modify + " Tag" + modS
+						}
+					}
+					
+					entryString += 			'<span class="entryPrefix">>> ' + entry.displayName + ':\\</span>' +
+												titleMask +
+											'</div>' +
+											'<div class="entryContentsBar">' +
+												contentMask +
+											'</div>' +
+											'<div class="entryIntContainer">' +
+												'<div class="entryInterface">' +
+													'Access:<button class="accessButton" ' + aVisible.disAttr + ' onclick="termAction(\'' + entry.path + '\',\'access\')">' + aVisible.buttonText + '</button>' +
+												'</div>' +
+												'<div class="entryInterface">' +
+													'Modify:<button class="modifyButton" ' + mVisible.disAttr + ' onclick="termAction(\'' + entry.path + '\',\'modify\')">' + mVisible.buttonText + '</button>' +
+												'</div>' +
+											'</div>';
+				}
 				else
 				{
+					entryString += '<div id="' + entry.path + '" class="entry ' + subClass + '">' +
+										'<div class="entryTitleBar">';
+
 					let titleMask;
+					
 					if(scheme.states[entry.state].title === true)
 					{
 						titleMask = 		'<span class="entryMaskContainer">' +
@@ -695,10 +801,21 @@ class Terminal
 				{
 					entryString += '<hr/>';
 					
-					entry.subEntries.forEach(function(subEntry)
+					if(entry.state != "sprung" && (entry.state != "broken"))
 					{
-						entryString += writeEntry(subEntry,scheme,"subIce");
-					});
+						entry.subEntries.forEach(function(subEntry)
+						{
+							entryString += writeEntry(subEntry,scheme,"subIce");
+						});
+					}
+					else
+					{
+						entry.subEntries.forEach(function(subEntry)
+						{
+							entryString += writeEntry(subEntry,scheme);
+						});
+					}
+					
 				}
 				
 				return 	entryString +
@@ -732,14 +849,7 @@ class Terminal
 				
 				icon.entries.forEach(function(entry,index)
 				{
-					if (entry.special != "ice")
-					{
-						entryArray[index] = writeEntry(entry,iconScheme);
-					}
-					else
-					{
-						entryArray[index] = writeEntry(entry,iconScheme,"ice");
-					}
+					entryArray[index] = writeEntry(entry,iconScheme);
 				},this);
 				
 				allContent += entryArray.join("<hr/>");
@@ -1376,8 +1486,8 @@ function autoSave({ handle=null,rigged=false })
 	saveData["saveState"] = terminal.getTermState();
 	saveData["modifiers"] = payload.getModifier();
 
-	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
-	Cookies.set(terminal.getTerminalID(),JSON.stringify(saveData),{expires: inFifteenMinutes,path: "",sameSite: "Strict"});
+	var inTwoHours = new Date(new Date().getTime() + 2 * 60 * 60 * 1000);
+	Cookies.set(terminal.getTerminalID(),JSON.stringify(saveData),{expires: inTwoHours,path: "",sameSite: "Strict"});
 }
 
 function startTimer(context,seconds,callback=null)
@@ -2012,11 +2122,17 @@ function preCheck(check)
 	{
 		if($(check).prop("checked"))
 		{
-			extraTags(2,"hack");
+			if(payload.getInitialTags().hack < 10)
+			{
+				extraTags(2,"hack");
+			}
 		}
 		else
 		{
-			extraTags(-2,"hack");
+			if(payload.getInitialTags().hack < 10)
+			{
+				extraTags(-2,"hack");
+			}
 		}
 	}
 	else if(check.id === "cmmCheck")
@@ -2127,7 +2243,7 @@ function executeCommand(path,newState,cost,copycat=false)
 {
 	updateTagDisplay("EXECUTE",payload.getCurrentTags()-cost,payload.getCurrentTags());
 	startTimer("EXECUTE",(copycat ? 0 : payload.getTimerSecs()),function() {
-		terminal.setEntryState(path,newState,payload.getModifier("cost"));
+		terminal.setEntryState(path,newState,payload.getModifier("cost"),"change");
 		
 		if(payload.getPayloadFunction("repeat"))
 		{
@@ -2357,13 +2473,12 @@ function rootTerminal()
 function executeAction(action)
 {
 	let cost;
-	let timerSecs;
+	let timerSecs = payload.getTimerSecs();
 	let callback;
 
 	if(action === "brick")
 	{
-		cost = Math.max(4 + payload.getModifier("cost"),0);;
-		timerSecs = payload.getTimerSecs();
+		cost = Math.max(4 + payload.getModifier("cost"),0);
 		callback = function() {
 			let handle = payload.getHandle();
 			handle = (handle.masked) ? handle.mask : handle.handle;
@@ -2422,8 +2537,7 @@ function executeAction(action)
 	}
 	else if (action === "rig")
 	{
-		cost = Math.max(6 + payload.getModifier("cost"),0);;
-		timerSecs = payload.getTimerSecs();
+		cost = Math.max(6 + payload.getModifier("cost"),0);
 		callback = function() {
 			$("#rigged").removeClass("hidden");
 			$("#riggButton").attr("data-enabled","false");
@@ -2456,8 +2570,7 @@ function executeAction(action)
 	}
 	else if(action === "root")
 	{
-		cost = Math.max(6 + payload.getModifier("cost"),0);;
-		timerSecs = 30;
+		cost = Math.max(6 + payload.getModifier("cost"),0);
 		callback = function() {
 			let timeUp = new Date(new Date().getTime() + 5 * 60 * 1000)
 
@@ -2660,9 +2773,6 @@ function termAction(path,action)
 	let copyHTML = (copyPossible && icon.copied) ?
 					'<br/><br/><input id="copycat_check" type="checkbox"/><label for="copycat_check">&nbsp;Use Copycat to bypass timer?<br/>NOTE: This item can only be used once per Simulation.</label>' :
 					"";
-
-	console.log(copyPossible);
-	console.log(icon);
 	
 	let buttonActions = [];
 	

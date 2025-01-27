@@ -909,7 +909,7 @@ ul
 	margin: 0 -0.5rem -0.5rem -0.5rem;
 	padding: 0.25rem;
 	border: 0.5rem solid dodgerblue;
-	background-color: dimgrey;
+	background-color: #334;
 	overflow: hidden;
 }
 
@@ -926,6 +926,21 @@ ul
 	pointer-events: none;
 	user-select: none;
 }
+
+.entry.ice .entry.ice
+{
+	border: solid dodgerblue;
+	border-width: 0.5rem 0;
+	margin: 0 -0.25rem;
+}
+
+/*
+.entry.ice .entry.ice:not(.subIce)::before
+{
+	content: "";
+	background-color: #FFAC00;
+}
+*/
 
 .entryTitleBar
 {
@@ -982,6 +997,7 @@ ul
 .sprung
 {
 	color: red;
+	text-shadow: 0px 0px 2px black;
 }
 
 .disarmed, .broken
@@ -1045,7 +1061,6 @@ footer
 {
 	margin-top: auto;
 	align-self: flex-end;
-	font-size: 0.6rem;
 }
 
 .hidden
