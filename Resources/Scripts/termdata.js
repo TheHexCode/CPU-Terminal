@@ -1486,8 +1486,8 @@ function autoSave({ handle=null,rigged=false })
 	saveData["saveState"] = terminal.getTermState();
 	saveData["modifiers"] = payload.getModifier();
 
-	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
-	Cookies.set(terminal.getTerminalID(),JSON.stringify(saveData),{expires: inFifteenMinutes,path: "",sameSite: "Strict"});
+	var inTwoHours = new Date(new Date().getTime() + 2 * 60 * 60 * 1000);
+	Cookies.set(terminal.getTerminalID(),JSON.stringify(saveData),{expires: inTwoHours,path: "",sameSite: "Strict"});
 }
 
 function startTimer(context,seconds,callback=null)
@@ -2122,11 +2122,17 @@ function preCheck(check)
 	{
 		if($(check).prop("checked"))
 		{
-			extraTags(2,"hack");
+			if(payload.getInitialTags().hack < 10)
+			{
+				extraTags(2,"hack");
+			}
 		}
 		else
 		{
-			extraTags(-2,"hack");
+			if(payload.getInitialTags().hack < 10)
+			{
+				extraTags(-2,"hack");
+			}
 		}
 	}
 	else if(check.id === "cmmCheck")
