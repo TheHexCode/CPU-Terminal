@@ -1,0 +1,64 @@
+[
+    {
+        "id": "deck_budget",
+        "displayName": "Budget Cyberdeck",
+        "deck_charges": 1
+    },
+    {
+        "id": "deck_crdspider",
+        "displayName": "CRD Spider Cyberdeck",
+        "deck_charges": 1
+    },
+    {
+        "id": "deck_mmconsole",
+        "displayName": "MM Console",
+        "deck_charges": 2
+    },
+    {
+        "id": "deck_johnnyspecialtouch",
+        "displayName": "Johnny's Special Touch"
+    },
+    {
+        "id": "deck_fkddc17",
+        "displayName": "FKD DC-17"
+    },
+    {
+        "id": "arms_cmmwidow",
+        "displayName": "CMM Widow"
+    },
+    {
+        "id": "arms_cmmcocoon",
+        "displayName": "CMM Cocoon"
+    },
+    {
+        "id": "cust_copycat",
+        "displayName": "Copycat",
+        "copycat_charges": 1
+    },
+    {
+        "id": "cust_pockethacker_t0",
+        "displayName": "Pocket Hacker [T0]",
+        "deck_charges": 1
+    },
+    {
+        "id": "cust_pockethacker_t1",
+        "displayName": "Pocket Hacker [T1]",
+        "deck_charges": 2
+    },
+    {
+        "id": "util_ciphersyncbeacon",
+        "displayName": "CipherSync Beacon"
+    },
+    {
+        "id": "util_powerglove_uh9k",
+        "displayName": "Power Glove [Ultra-Hacking 9000]"
+    },
+    {
+        "id": "util_shimmerstick_t0",
+        "displayName": "Shimmerstick [T0]"
+    },
+    {
+        "id": "util_shimmerstick_t1",
+        "displayName": "Shimmerstick [T1]"
+    }
+]
