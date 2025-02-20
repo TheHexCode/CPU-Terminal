@@ -1,21 +1,19 @@
-$(document).ready(function()
+$(document).ready(async function()
 {
-	$("input[type='checkbox']").prop("checked",false);
-
-	$.ajaxSetup({ cache: false });
-
 	let suffix = new URLSearchParams(window.location.search);
+
+	const response = await fetch("resources/scripts/db/getTerm.php?id=" + suffix.get("id"),{cache: "no-store"})
+
+	let terminal = new Terminal(await response.json());
 	
-	//let iconJSON = $.getJSON("resources\\schemas\\icons.json");
-	//let termJSON = $.getJSON("data\\"+suffix.get("id")+"\\terminal.json");
-	//let accessLog = $.getJSON("resources\\scripts\\files\\checklogs.php",{ suffixID: suffix.get("id") });
-	//let itemJSON = $.getJSON("resources\\schemas\\items.json");
-
-    let termJSON = $.getJSON("resources\\scripts\\db\\getTerm.php",{ id: suffix.get("id") });
-
-	$.when(termJSON).done(function()
-	{
-		console.log(termJSON.responseJSON);
-	});
-
+	modifyAccessZone(terminal);
 });
+
+
+function modifyAccessZone(terminal)
+{
+	console.log(terminal.getTerminalID());
+	console.log(terminal.getTerminalDisplayName());
+	console.log(terminal.getTerminalAccessCost());
+	console.log(terminal.getTerminalState());
+}

@@ -72,7 +72,7 @@
 					<div class="accessHeader">TAGS REQUIRED TO ACCESS TERMINAL:</div>
 					<div class="lcdBox blend">
 						<span class="dseg BG">~~</span>
-						<span id="reqTags" class="dseg FG"></span>
+						<span id="reqTags" class="dseg FG">XX</span>
 					</div>
 				</div>
 				<div class="accessBox">
@@ -135,12 +135,92 @@
 					<div id="termBody" class="hackBody active">
 						<div class="subTabCol">
 							<div id="termSubTabs" class="subTabInset">
-								<!--Filled in by setupTerminalPage();-->
+								<button class="subTab active" onclick="openSubTab(event,'logContent')">
+									<img src="resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="filesSubTab" class="subTab disabled" onclick="openSubTab(event,'filesContent')"> 
+									<img src="resources/images/subtabs/files.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="darkwebSubTab" class="subTab disabled" onclick="openSubTab(event,'darkwebContent')"> 
+									<img src="resources/images/subtabs/darkweb.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="camerasSubTab" class="subTab disabled" onclick="openSubTab(event,'camerasContent')"> 
+									<img src="resources/images/subtabs/cameras.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="locksSubTab" class="subTab disabled" onclick="openSubTab(event,'locksContent')"> 
+									<img src="resources/images/subtabs/locks.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="defensesSubTab" class="subTab disabled" onclick="openSubTab(event,'defensesContent')"> 
+									<img src="resources/images/subtabs/defenses.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="utilitiesSubTab" class="subTab disabled" onclick="openSubTab(event,'utiltiesContent')"> 
+									<img src="resources/images/subtabs/utilities.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
+								<button id="puzzlesSubTab" class="subTab disabled" onclick="openSubTab(event,'puzzlesContent')"> 
+									<img src="resources/images/subtabs/puzzles.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+								</button>
 							</div>
 							<div id="termSubFill" class="subFill"></div>
 						</div>
 						<div id="termContentContainer" class="subContentContainer">
-							<!--Filled in by setupTerminalPage();-->
+							<div id="logContent" class="subContent active">
+								<div class="subContTitleRow">
+									<span class="subContTitle">ACCESS LOG</span>
+								</div>
+								<div class="subContBody">
+									<ul id="logList">
+									</ul>
+								</div>
+							</div>
+							<div id="filesContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">FILES</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
+							<div id="darkwebContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">DARK WEB FILES</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
+							<div id="camerasContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">CAMERAS</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
+							<div id="locksContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">LOCKS</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
+							<div id="defensesContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">AUTOMATED DEFENSIVE SYSTEMS</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
+							<div id="utilitiesContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">UTILITY SYSTEMS</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
+							<div id="puzzlesContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">PUZZLES</span>
+								</div>
+								<div class="subContBody">
+								</div>
+							</div>
 						</div>
 					</div>
 					<div id="deckBody" class="hackBody">
