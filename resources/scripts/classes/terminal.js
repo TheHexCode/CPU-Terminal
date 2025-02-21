@@ -37,4 +37,15 @@ class Terminal
     {
         return this.#termState;
     }
+
+    getActiveIcons()
+    {
+        let icons = this.#entries.map(entry => entry.icon)
+        
+        icons = icons.filter(function(value,index,array){
+            return array.indexOf(value) === index;
+        });
+
+        return icons;
+    }
 }

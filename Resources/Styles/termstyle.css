@@ -493,7 +493,7 @@ h2
 	/*border: 1px solid black;/*
 	/*padding: 0.25rem;*/
 	padding: 8px;
-	border-image-source: url("../images/borders/thin_border.png");
+	border-image-source: url("../images/borders/corner_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 }
@@ -530,6 +530,31 @@ h2
 	justify-content: center;
 	text-align: center;
 	width: fit-content;
+}
+
+.payloadBox
+{
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.25rem;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 0.5rem;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 0.5rem;
+	margin: 0 0.5rem;
+}
+
+.noPayload
+{
+	border-color: #a00;
+	background: repeating-linear-gradient(
+		-45deg,
+		#a00 0 0.75rem,
+		var(--bg-color) 0.75rem 1.5rem
+	);
+	text-shadow: 0rem 0rem 0.25rem black;
 }
 
 .payDetails
@@ -754,6 +779,11 @@ h2
 	pointer-events: none;
 }
 
+#darkwebSubTab
+{
+	display: none;
+}
+
 .entryTitleBar
 {
 	display: grid;
@@ -812,7 +842,7 @@ h2
 
 .subContBody
 {
-	border-image-source: url("../images/borders/thin_border.png");
+	border-image-source: url("../images/borders/corner_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 	padding: 16px;
