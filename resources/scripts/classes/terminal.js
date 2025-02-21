@@ -48,4 +48,17 @@ class Terminal
 
         return icons;
     }
+
+    getIconEntries(requestedIcon)
+    {
+        $filtered = this.#entries.filter(entry => entry.icon === requestedIcon)
+
+        $sorted = $filtered.toSorted((a,b) => {
+            const pathA = a.path.split(">");
+            const pathB = b.path.split(">");
+
+            //foreach with breaking
+            //if equal, move to next one, unless one of them is at the end
+        });
+    }
 }
