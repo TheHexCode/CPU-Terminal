@@ -15,6 +15,10 @@
     $entry_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.entries WHERE terminal_id={$terminal['id']}");
     $entries = $entry_query->fetchAll(PDO::FETCH_ASSOC);
 
+    $log_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.accessLogs WHERE terminal_id={$terminal['id']}");
+    $logs = $log_query->fetchAll(PDO::FETCH_ASSOC);
+
     $terminal['entries'] = $entries;
+    $terminal['logs'] = $logs;
 
     echo json_encode($terminal);
