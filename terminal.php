@@ -13,12 +13,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<!--<script type="text/javascript" src="resources/scripts/classes/terminal.js"></script>-->
 		<!--<script type="text/javascript" src="resources/scripts/classes/payload.js"></script>-->
-		<!--<script type="text/javascript" src="resources/scripts/termrun.js"></script>-->
+		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
 	</head>
 	<body>
 		<div id="main">
-			<div id="load"><div>LOADING...</div></div>
+			<!--<div id="load"><div>LOADING...</div></div>-->
 			<div id="gemBar">
 				<div id="gemContainer">
 					<div class="gemPair">
@@ -52,7 +52,9 @@
 			</div>
 			<div class="infoBox">
 				<div id="rigged" class="hidden"><img src="resources/images/actions/rigged.png"/></div>
-				<h2 id="termName">- - - - -</h2>
+				<h2 id="termName">
+					<?php echo $terminal->getTerminalName() ?>
+				</h2>
 				<div id="status">>> CRACKING TERMINAL</div> <!-- ">> " + 18 CHARS -->
 				<div id="timerContainer">
 					<div id="ppContainer">
@@ -75,7 +77,9 @@
 					<div class="accessHeader">TAGS REQUIRED TO ACCESS TERMINAL:</div>
 					<div class="lcdBox blend">
 						<span class="dseg BG">~~</span>
-						<span id="reqTags" class="dseg FG">XX</span>
+						<span id="reqTags" class="dseg FG">
+							<?php echo str_pad($terminal->getTerminalAccessCost(),2,"0",STR_PAD_LEFT) ?>
+						</span>
 					</div>
 				</div>
 				<div class="payloadBox noPayload">
@@ -126,7 +130,7 @@
 						</div>
 					</div>
 				</div>
-				<button id="terminalButton" onclick="accessTerminal(null)" disabled>Standby...</button>
+				<button id="terminalButton" onclick="accessTerminal(null)">Standby...</button>
 			</div>
 			<div id="hackZone" class="zoneBox">
 				<div id="hackTabContainer">
@@ -141,27 +145,7 @@
 								<button class="subTab active" onclick="openSubTab(event,'logContent')">
 									<img src="resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
 								</button>
-								<button id="filesSubTab" class="subTab disabled" onclick="openSubTab(event,'filesContent')"> 
-									<img src="resources/images/subtabs/files.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
-								<button id="darkwebSubTab" class="subTab disabled" onclick="openSubTab(event,'darkwebContent')"> 
-									<img src="resources/images/subtabs/darkweb.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
-								<button id="camerasSubTab" class="subTab disabled" onclick="openSubTab(event,'camerasContent')"> 
-									<img src="resources/images/subtabs/cameras.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
-								<button id="locksSubTab" class="subTab disabled" onclick="openSubTab(event,'locksContent')"> 
-									<img src="resources/images/subtabs/locks.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
-								<button id="defensesSubTab" class="subTab disabled" onclick="openSubTab(event,'defensesContent')"> 
-									<img src="resources/images/subtabs/defenses.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
-								<button id="utilitiesSubTab" class="subTab disabled" onclick="openSubTab(event,'utilitiesContent')"> 
-									<img src="resources/images/subtabs/utilities.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
-								<button id="puzzlesSubTab" class="subTab disabled" onclick="openSubTab(event,'puzzlesContent')"> 
-									<img src="resources/images/subtabs/puzzles.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
-								</button>
+								<?php echo $terminal->setupSubTabButtons() ?>
 							</div>
 							<div id="termSubFill" class="subFill"></div>
 						</div>
@@ -172,6 +156,7 @@
 								</div>
 								<div class="subContBody">
 									<ul id="logList">
+										<?php echo $terminal->setupLogEntries() ?>
 									</ul>
 								</div>
 							</div>
@@ -180,6 +165,7 @@
 									<span class="subContTitle">FILES</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("files") ?>
 								</div>
 							</div>
 							<div id="darkwebContent" class="subContent">
@@ -187,6 +173,7 @@
 									<span class="subContTitle">DARK WEB FILES</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("darkweb") ?>
 								</div>
 							</div>
 							<div id="camerasContent" class="subContent">
@@ -194,6 +181,7 @@
 									<span class="subContTitle">CAMERAS</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("cameras") ?>
 								</div>
 							</div>
 							<div id="locksContent" class="subContent">
@@ -201,6 +189,7 @@
 									<span class="subContTitle">LOCKS</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("locks") ?>
 								</div>
 							</div>
 							<div id="defensesContent" class="subContent">
@@ -208,6 +197,7 @@
 									<span class="subContTitle">AUTOMATED DEFENSIVE SYSTEMS</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("defenses") ?>
 								</div>
 							</div>
 							<div id="utilitiesContent" class="subContent">
@@ -215,6 +205,7 @@
 									<span class="subContTitle">UTILITY SYSTEMS</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("utilities") ?>
 								</div>
 							</div>
 							<div id="puzzlesContent" class="subContent">
@@ -222,6 +213,7 @@
 									<span class="subContTitle">PUZZLES</span>
 								</div>
 								<div class="subContBody">
+									<?php echo $terminal->setupIconEntries("puzzles") ?>
 								</div>
 							</div>
 						</div>

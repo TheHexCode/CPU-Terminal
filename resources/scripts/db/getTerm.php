@@ -1,5 +1,6 @@
 <?php
-    include('E:\Personal\Projects\CPU\dbConfig\dbConfig.php');
+    include('E:/Personal/Projects/CPU/dbConfig/dbConfig.php');
+    include('resources/scripts/classes/terminal.php');
 
     $idSlug = $_GET["id"];
     //$activeJob = "ABC1234";
@@ -10,15 +11,16 @@
     $activeJob = $job_query->fetch(PDO::FETCH_ASSOC);
     
     $term_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.terminals WHERE CONVERT(varchar,slug) = '$idSlug' AND CONVERT(varchar,job) = '{$activeJob['jobCode']}'");
-    $terminal = $term_query->fetch(PDO::FETCH_ASSOC);
+    $termResponse = $term_query->fetch(PDO::FETCH_ASSOC);
 
-    $entry_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.entries WHERE terminal_id={$terminal['id']}");
-    $entries = $entry_query->fetchAll(PDO::FETCH_ASSOC);
+    $entry_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.entries WHERE terminal_id={$termResponse['id']}");
+    $entryResponse = $entry_query->fetchAll(PDO::FETCH_ASSOC);
 
-    $log_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.accessLogs WHERE terminal_id={$terminal['id']}");
-    $logs = $log_query->fetchAll(PDO::FETCH_ASSOC);
+    $log_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.accessLogs WHERE terminal_id={$termResponse['id']}");
+    $logResponse = $log_query->fetchAll(PDO::FETCH_ASSOC);
 
-    $terminal['entries'] = $entries;
-    $terminal['logs'] = $logs;
+    $termResponse['entries'] = $entryResponse;
+    $termResponse['logEntries'] = $logResponse;
 
-    echo json_encode($terminal);
+    //echo json_encode($terminal);
+    $terminal = new Terminal($termResponse);
