@@ -139,7 +139,7 @@ class Terminal
             $unitCode = explode("-",$entry["path"]);
             $subClass = "";
 
-            if(count($unitCode) >= 1)
+            if(count($unitCode) > 1)
             {
                 //$newEntry["subIce"] = implode("-",array_slice($unitCode,0,count($unitCode)-1));
                 $subClass .= " subIce";
@@ -165,8 +165,8 @@ class Terminal
                                 'Unwrap: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($entry["state"] === "initial") ?
-					            '<button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'break\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
-                                '<button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+					            'Break: <button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'break\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+                                'Break: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $titleMask = $entry["title"];
 
@@ -185,12 +185,12 @@ class Terminal
                 $unit = $iconGuide["unit"] . " " . $unitCode;
 
                 $accessInt = ($stateGuide["access"]["enabled"]) ?
-                                '<button class="accessButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'access\')">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
-                                '<button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
+                                'Access: <button class="accessButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'access\')">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
+                                'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($stateGuide["modify"]["enabled"]) ?
-                                '<button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'modify\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
-                                '<button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+                                'Modify: <button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'modify\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+                                'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 if($stateGuide["title"] === false)
                 {
@@ -247,12 +247,22 @@ class Terminal
 									'<div class="entryInterface">' .
 										$modifyInt .
 									'</div>' .
-								'</div>' .
-							($entry["type"] === "ice") ? '' : '</div>';
+								'</div>';
+
+            if($entry["type"] !== "ice")
+            {
+                $entryString .= '</div>';
+            }
 
             array_push($returnArray, $entryString);
         }
 
-        return join("",$returnArray);
+        $returnString = join("",$returnArray);
+        for($i = 0; $i < count($inIce); $i++)
+        {
+            $returnString .= '</div>';
+        }
+
+        return $returnString;
     }
 }
