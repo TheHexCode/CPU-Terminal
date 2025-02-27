@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources\\scripts\\db\\getTerm.php';
+    require 'resources\\scripts\\db\\startTerm.php';
 ?>
 <html>
 	<head>

@@ -1,7 +1,7 @@
 <?php
     include('E:/Personal/Projects/CPU/dbConfig/dbConfig.php');
-    include('../classes/terminal.php');
-    
+    include('resources/scripts/classes/terminal.php');
+
     $idSlug = $_GET["id"];
     //$activeJob = "ABC1234";
 
@@ -22,7 +22,5 @@
     $termResponse['entries'] = $entryResponse;
     $termResponse['logEntries'] = $logResponse;
 
-    //echo json_encode($terminal); */
+    //echo json_encode($terminal);
     $terminal = new Terminal($termResponse);
-
-    return $terminal->getTerminalName();
