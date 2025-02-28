@@ -113,9 +113,9 @@ class Terminal
             }
 
             array_push($logArray,$logEntryString);
-
-            return implode($logArray);
         }
+        
+        return implode($logArray);
     }
 
     public function setupIconEntries($icon)
@@ -161,11 +161,11 @@ class Terminal
                 $unit = "ICE " . $unitCode;
 
                 $accessInt = ($entry["state"] === "initial") ?
-                                'Unwrap: <button class="accessButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'unwrap\')">Free!</button>' : 
+                                'Unwrap: <button class="accessButton" data-enabled="true" onclick="iceAction(event,\'unwrap\')">Free!</button>' : 
                                 'Unwrap: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($entry["state"] === "initial") ?
-					            'Break: <button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'break\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+					            'Break: <button class="modifyButton" data-enabled="true" onclick="iceAction(\'' . $entry["id"] . '\',\'break\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
                                 'Break: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $titleMask = $entry["title"];
@@ -185,11 +185,11 @@ class Terminal
                 $unit = $iconGuide["unit"] . " " . $unitCode;
 
                 $accessInt = ($stateGuide["access"]["enabled"]) ?
-                                'Access: <button class="accessButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'access\')">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
+                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id="' . $entry["id"] . '" onclick="termAction(this)">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
                                 'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($stateGuide["modify"]["enabled"]) ?
-                                'Modify: <button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $icon . '-' . $entry["path"] . '\',\'modify\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+                                'Modify: <button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $entry["id"] . '\',\'modify\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
                                 'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 if($stateGuide["title"] === false)
@@ -247,7 +247,8 @@ class Terminal
 									'<div class="entryInterface">' .
 										$modifyInt .
 									'</div>' .
-								'</div>';
+								'</div>' . 
+                                '<hr/>';
 
             if($entry["type"] !== "ice")
             {

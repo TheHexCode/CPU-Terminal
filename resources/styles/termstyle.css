@@ -932,6 +932,12 @@ ul
 	row-gap: 0.25rem;
 }
 
+.entry hr
+{
+	margin-left: 0;
+	margin-right: 0;
+}
+
 .entry.ice
 {
 	--fg-color: rgb(0,210,255);
@@ -941,12 +947,6 @@ ul
 	border: 0.5rem solid dodgerblue;
 	background-color: #334;
 	overflow: hidden;
-}
-
-.entry.ice hr
-{
-	margin-left: 0;
-	margin-right: 0;
 }
 
 .subIce

@@ -114,7 +114,7 @@
 						[
 							{
 								"button": "Access File",
-								"state": "disarmed",
+								"state": "read",
 								"global": true
 							}
 						]
@@ -126,18 +126,18 @@
 						[
 							{
 								"button": "Download Copy",
-								"state": "sprung",
+								"state": "copied",
 								"global": true
 							},
 							{
 								"button": "Delete File",
-								"state": "sprung",
+								"state": "deleted",
 								"global": true
 							}
 						]
 					}
 				},
-				"sprung":
+				"read":
 				{
 					"title": "Trap!",
 					"contents": true,
@@ -150,7 +150,20 @@
 						"enabled": false
 					}
 				},
-				"disarmed":
+				"copied":
+				{
+					"title": "Trap!",
+					"contents": true,
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
 				{
 					"title": "Trap!",
 					"contents": true,
@@ -281,7 +294,7 @@
 						[
 							{
 								"button": "Access File",
-								"state": "disarmed",
+								"state": "read",
 								"global": true
 							}
 						]
@@ -293,18 +306,18 @@
 						[
 							{
 								"button": "Download Copy",
-								"state": "sprung",
+								"state": "copied",
 								"global": true
 							},
 							{
 								"button": "Delete File",
-								"state": "sprung",
+								"state": "deleted",
 								"global": true
 							}
 						]
 					}
 				},
-				"sprung":
+				"read":
 				{
 					"title": "Trap!",
 					"contents": true,
@@ -317,7 +330,20 @@
 						"enabled": false
 					}
 				},
-				"disarmed":
+				"copied":
+				{
+					"title": "Trap!",
+					"contents": true,
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
 				{
 					"title": "Trap!",
 					"contents": true,
