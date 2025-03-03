@@ -86,6 +86,15 @@
 					<div id="payloadHeader" class="accessHeader">
 						<span class="red">ERROR:</span><span>&nbsp;NO PAYLOAD FOUND</span>
 					</div>
+					<div id="payloadCodeHeader">
+						ENTER PROFILE CODE
+					</div>
+					<div id="payloadCodeRow">
+						<span class="dseg BG">~~~~~~</span>
+						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(this)"/>
+					</div>
+					<button id="payloadCodeSubmit" disabled>SUBMIT CODE</button>
+					<span>OR</span>
 					<button id="payloadButton" onclick="window.open('./profile.html','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>
 				<div class="accessTagBox">
@@ -134,15 +143,15 @@
 			</div>
 			<div id="hackZone" class="zoneBox">
 				<div id="hackTabContainer">
-					<button class="hackTab active" onclick="openTab(event,'termBody')">TERMINAL</button>
-					<button class="hackTab" onclick="openTab(event,'deckBody')">CYBERDECK</button>
+					<button class="hackTab active" onclick="openTab(this,'termBody')">TERMINAL</button>
+					<button class="hackTab" onclick="openTab(this,'deckBody')">CYBERDECK</button>
 				</div>
 				<div id="hackBox">
 					<div class="hackSpacer"></div>
 					<div id="termBody" class="hackBody active">
 						<div class="subTabCol">
 							<div id="termSubTabs" class="subTabInset">
-								<button class="subTab active" onclick="openSubTab(event,'logContent')">
+								<button class="subTab active" onclick="openSubTab(this,'logContent')">
 									<img src="resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
 								</button>
 								<?php echo $terminal->setupSubTabButtons() ?>
@@ -224,13 +233,13 @@
 						</div>
 						<div class="subTabCol">
 							<div id="deckSubTabs" class="subTabInset">
-								<button class="subTab active" onclick="openSubTab(event,'actContent')">
+								<button class="subTab active" onclick="openSubTab(this,'actContent')">
 									<img src="resources/images/subtabs/active.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
-								<button class="subTab inactive" onclick="openSubTab(event,'passContent')">
+								<button class="subTab inactive" onclick="openSubTab(this,'passContent')">
 									<img src="resources/images/subtabs/passive.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
-								<button class="subTab inactive" onclick="openSubTab(event,'itemContent')">
+								<button class="subTab inactive" onclick="openSubTab(this,'itemContent')">
 									<img src="resources/images/subtabs/items.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
 							</div>

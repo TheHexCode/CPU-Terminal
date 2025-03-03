@@ -56,7 +56,7 @@ class Terminal
         {
             if(in_array($icon,$activeIcons,true))
             {
-                $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(event,\'' . $icon . 'Content\')">' . 
+                $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(this,\'' . $icon . 'Content\')">' . 
                                     '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                 '</button>';
 
@@ -161,11 +161,11 @@ class Terminal
                 $unit = "ICE " . $unitCode;
 
                 $accessInt = ($entry["state"] === "initial") ?
-                                'Unwrap: <button class="accessButton" data-enabled="true" onclick="iceAction(event,\'unwrap\')">Free!</button>' : 
+                                'Unwrap: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id="' . $entry["id"] . '" onclick="iceAction(this)">0 Tags</button>' : 
                                 'Unwrap: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($entry["state"] === "initial") ?
-					            'Break: <button class="modifyButton" data-enabled="true" onclick="iceAction(\'' . $entry["id"] . '\',\'break\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+					            'Break: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id="' . $entry["id"] . '" onclick="iceAction(this)">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
                                 'Break: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $titleMask = $entry["title"];
@@ -185,11 +185,11 @@ class Terminal
                 $unit = $iconGuide["unit"] . " " . $unitCode;
 
                 $accessInt = ($stateGuide["access"]["enabled"]) ?
-                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id="' . $entry["id"] . '" onclick="termAction(this)">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
+                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id="' . $entry["id"] . '" onclick="entryAction(this)">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
                                 'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($stateGuide["modify"]["enabled"]) ?
-                                'Modify: <button class="modifyButton" data-enabled="true" onclick="termAction(\'' . $entry["id"] . '\',\'modify\')">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+                                'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id="' . $entry["id"] . '" onclick="entryAction(this)">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
                                 'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 if($stateGuide["title"] === false)
