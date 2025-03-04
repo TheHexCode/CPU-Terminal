@@ -11,14 +11,12 @@
 		<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<!--<script type="text/javascript" src="resources/scripts/classes/terminal.js"></script>-->
-		<!--<script type="text/javascript" src="resources/scripts/classes/payload.js"></script>-->
 		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
 	</head>
 	<body>
 		<div id="main">
-			<!--<div id="load"><div>LOADING...</div></div>-->
+			<div id="load" class="hidden"><div id="hexLogo"></div></div>
 			<div id="gemBar">
 				<div id="gemContainer">
 					<div class="gemPair">
@@ -93,7 +91,7 @@
 						<span class="dseg BG">~~~~~~</span>
 						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(this)"/>
 					</div>
-					<button id="payloadCodeSubmit" disabled>SUBMIT CODE</button>
+					<button id="payloadCodeSubmit" onmouseUp="submitCode()" disabled>SUBMIT CODE</button>
 					<span>OR</span>
 					<button id="payloadButton" onclick="window.open('./profile.html','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>

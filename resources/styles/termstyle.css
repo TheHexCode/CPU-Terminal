@@ -332,26 +332,41 @@ h2
 
 #load
 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	background-color: rgba(0,0,0,0.8);
 	position: absolute;
 	height: 100%;
 	width: calc(100vw - 1rem);
 	max-width: var(--max-main-width);
 	z-index: 998;
-	display: grid;
-	grid-template-rows: 1fr [start] min-content [end] 5fr;
 }
 
-#load > div
+@keyframes logoSpin
+	{
+		from
+		{
+			transform: rotate(0deg);
+		}
+		to
+		{
+			transform: rotate(360deg);
+		}
+	}
+
+#hexLogo
 {
-	grid-row: start / end;
-	box-sizing: border-box;
-	width: 100%;
-	background-color: var(--bg-color);
-	color: var(--fg-color);
-	border: 0.5rem solid grey;
-	text-align: center;
-	padding: 1rem;
+	width: 142px;
+	height: 164px;
+	/*background: var(--fg-color);*/
+	background: conic-gradient(var(--bg-color),rgba(0,0,0,0));
+	clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+
+	animation-name: logoSpin;
+	animation-duration: 4000ms;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
 }
 
 #load.hidden
