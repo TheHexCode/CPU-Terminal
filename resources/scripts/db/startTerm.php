@@ -7,16 +7,20 @@ $idSlug = $_GET["id"];
 
 $pdo = new PDO('sqlsrv:Server='.DBHOST.',1433;Database='.DBNAME, DBUSER,DBPWD);
 
-$job_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.activeJob");
-$activeJob = $job_query->fetch(PDO::FETCH_ASSOC);
-
-$term_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.terminals WHERE CONVERT(varchar,slug) = '$idSlug' AND CONVERT(varchar,job) = '{$activeJob['jobCode']}'");
+$term_query = $pdo->query("SELECT id,name,access,state
+                            FROM CPU_Terminal.dbo.terminals
+                            INNER JOIN CPU_Terminal.dbo.activeJob ON terminals.job_code=activeJob.job_code
+                            WHERE terminals.slug='$idSlug' ");
 $termResponse = $term_query->fetch(PDO::FETCH_ASSOC);
 
-$entry_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.entries WHERE terminal_id={$termResponse['id']}");
+$entry_query = $pdo->query("SELECT id,icon,path,type,access,modify,title,contents,state
+                            FROM CPU_Terminal.dbo.entries
+                            WHERE entries.terminal_id={$termResponse['id']} ");
 $entryResponse = $entry_query->fetchAll(PDO::FETCH_ASSOC);
 
-$log_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.accessLogs WHERE terminal_id={$termResponse['id']}");
+$log_query = $pdo->query("SELECT id,user_id,true_name,mask,reassignee,state
+                            FROM CPU_Terminal.dbo.accessLogs
+                            WHERE terminal_id={$termResponse['id']} ");
 $logResponse = $log_query->fetchAll(PDO::FETCH_ASSOC);
 
 $termResponse['entries'] = $entryResponse;
