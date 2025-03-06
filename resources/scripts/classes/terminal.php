@@ -35,6 +35,18 @@ class Terminal
         return $this->termAccessCost;
     }
 
+    public function getAccessGem($gem)
+    {
+        if($gem <= $this->termAccessCost)
+        {
+            return "negative";
+        }
+        else
+        {
+            return "clear";
+        }
+    }
+
     public function isIconActive($icon)
     {
         return count(array_filter($this->entries,function ($entry) use ($icon)

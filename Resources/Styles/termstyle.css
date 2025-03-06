@@ -208,6 +208,25 @@ body::after
     animation-fill-mode: both;
 }
 
+@keyframes gemNegative
+{
+	0% {
+		background-color: rgb(255,0,0);
+	}
+	100% {
+		background-color: rgb(128,128,128);
+	}
+}
+
+.gem.negative
+{
+	animation: gemNegative ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
 @keyframes gemRoot
 {
 	0% {
@@ -341,8 +360,6 @@ h2
 	width: calc(100vw - 1rem);
 	max-width: var(--max-main-width);
 	z-index: 998;
-
-	/*mask: url('\\resources\\images\\logo\\logoMask.png') no-repeat;*/
 }
 
 @keyframes logoSpin
@@ -369,7 +386,6 @@ h2
 	animation-duration: 2s;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
-	/*clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);*/
 }
 
 #load.hidden
@@ -550,7 +566,7 @@ h2
 	width: fit-content;
 }
 
-.payloadBox
+#payloadBox
 {
 	display: flex;
 	flex-direction: column;

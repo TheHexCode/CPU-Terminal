@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
+		<script type="text/javascript" src="resources/scripts/classes/gems.js" defer></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
 	</head>
 	<body>
@@ -30,24 +31,24 @@
 			<div id="gemBar">
 				<div id="gemContainer">
 					<div class="gemPair">
-						<span id="gem1"  class="gem clear"></span>
-						<span id="gem2"  class="gem clear"></span>
+						<span id="gem1"  class="gem <?php echo $terminal->getAccessGem(1) ?>"></span>
+						<span id="gem2"  class="gem <?php echo $terminal->getAccessGem(2) ?>"></span>
 					</div>
 					<div class="gemPair">
-						<span id="gem3"  class="gem clear"></span>
-						<span id="gem4"  class="gem clear"></span>
+						<span id="gem3"  class="gem <?php echo $terminal->getAccessGem(3) ?>"></span>
+						<span id="gem4"  class="gem <?php echo $terminal->getAccessGem(4) ?>"></span>
 					</div>
 					<div class="gemPair">
-						<span id="gem5"  class="gem clear"></span>
-						<span id="gem6"  class="gem clear"></span>
+						<span id="gem5"  class="gem <?php echo $terminal->getAccessGem(5) ?>"></span>
+						<span id="gem6"  class="gem <?php echo $terminal->getAccessGem(6) ?>"></span>
 					</div>
 					<div class="gemPair">
-						<span id="gem7"  class="gem clear"></span>
-						<span id="gem8"  class="gem clear"></span>
+						<span id="gem7"  class="gem <?php echo $terminal->getAccessGem(7) ?>"></span>
+						<span id="gem8"  class="gem <?php echo $terminal->getAccessGem(8) ?>"></span>
 					</div>
 					<div class="gemPair">
-						<span id="gem9"  class="gem clear"></span>
-						<span id="gem10" class="gem clear"></span>
+						<span id="gem9"  class="gem <?php echo $terminal->getAccessGem(9) ?>"></span>
+						<span id="gem10" class="gem <?php echo $terminal->getAccessGem(10)?>"></span>
 					</div>
 				</div>
 				<div id="gemTens" class="dimmed">
@@ -90,7 +91,7 @@
 						</span>
 					</div>
 				</div>
-				<div class="payloadBox noPayload">
+				<div id="payloadBox" class="noPayload">
 					<div id="payloadHeader" class="accessHeader">
 						<span class="red">ERROR:</span><span>&nbsp;NO PAYLOAD FOUND</span>
 					</div>
@@ -101,7 +102,7 @@
 						<span class="dseg BG">~~~~~~</span>
 						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(this)"/>
 					</div>
-					<button id="payloadCodeSubmit" onmouseUp="submitCode()" disabled>SUBMIT CODE</button>
+					<button id="payloadCodeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
 					<span>OR</span>
 					<button id="payloadButton" onclick="window.open('./profile.html','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>

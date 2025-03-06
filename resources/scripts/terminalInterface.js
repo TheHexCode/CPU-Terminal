@@ -39,15 +39,53 @@ function submitCode(event)
 
 	$("#payloadCodeInput").prop("readonly",true);
 
-	$.ajax({
+	$("#load").removeClass("hidden");
+
+	ajaxCall = $.ajax({
 		type: "POST",
 		dataType: "json",
 		url: "resources\\scripts\\db\\getUser.php",
 		data:
 		{
-			userCode: $("payloadCodeInput").value()
+			userCode: $("#payloadCodeInput")[0].value
 		}
 	});
+	
+	ajaxCall.done(function(userData)
+	{
+		editTerminal(userData);
+	});
+}
+
+function editTerminal(userPayload)
+{
+	if(userPayload.length === 0)
+	{
+		$("#payloadCodeInput").prop("readonly",false);
+		alert("No Such User!");
+	}
+	else
+	{
+		console.log(userPayload);
+
+		//construct payload object
+
+		$("#payloadBox").removeClass("noPayload");
+
+		$("#payloadBox").html(	"<div id='payloadHeader' class='accessHeader'>" +
+									"<u>CONNECTING USER IDENTIFIED</u>" +
+								"</div>" +
+								"<span>User: Test</span>" +
+								"<span>Mask: Spooky</span>" +
+								""//"<span>PIN: 333333</span>"
+							);
+		
+		//tag management
+		Gems.updateTagGems(Gems.ACCESS, 2, Math.max(userPayload.functions.hacking * 2,10));
+		//role stuff
+	}
+
+	$("#load").addClass("hidden");
 }
 
 function extraTags(change)
