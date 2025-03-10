@@ -279,9 +279,9 @@ button:disabled
 	box-shadow: 0 0 0;
 }
 
-button:not(:disabled):not(#playPause):not(.hackTab):not(.subTab.disabled):hover
+button:not(:disabled):not(#playPause):not(.extraButton):not(.hackTab):not(.subTab.disabled):hover
 {
-	box-shadow: 0 0 15px var(--fg-color);
+	box-shadow: 0 0 1rem var(--fg-color);
 }
 
 h2
@@ -661,9 +661,10 @@ h2
 	font-size: clamp(0.72rem, 3.473vw + 0.132rem, 1rem);
 }
 
-#rexDetails
+#hackDetails
 {
-	display: none;
+	display: flex;
+	flex-direction: column;
 }
 
 .tagInterface
@@ -675,6 +676,17 @@ h2
 	column-gap: 0.25rem;
 	width: 100%;
 	margin: auto 0;
+}
+
+.extraButton
+{
+	background-color: rgb(0,210,255);
+	box-shadow: 0 0 0.5rem rgb(0,210,255);
+}
+
+.extraButton:hover
+{
+	box-shadow: 0 0 1rem rgb(0,210,255);
 }
 
 .accessList

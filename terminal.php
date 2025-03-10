@@ -11,6 +11,8 @@
 		<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<script type="text/javascript" src="resources/scripts/classes/session.js"></script>
+		<script type="text/javascript" src="resources/scripts/classes/payload.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/gems.js" defer></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
@@ -116,20 +118,21 @@
 								<span class="dseg BG">~~</span>
 								<span id="payTags" class="dseg FG">XX</span>
 							</div>
-							<div id="rexDetails" class="payDetails">[ROOT EXP:+02]</div>
-							<div id="hackDetails" class="payDetails">[HACKING: +XX]</div>
+							<div id="hackDetails" class="payDetails">
+								<span>[HACKING: +XX]</span>
+							</div>
 						</div>
 						<div class="accessBox">
 							<div class="accessHeader">
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button onMouseUp="extraTags(-1,'extra')"><b>-</b></button>
+								<button class="extraButton" onMouseUp="extraTags(-1,'extra')"><b>-</b></button>
 								<div class="lcdBox blue">
 									<span class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
-								<button onMouseUp="extraTags(1,'extra')">+</button>
+								<button class="extraButton" onMouseUp="extraTags(1,'extra')">+</button>
 							</div>
 						</div>
 					</div>

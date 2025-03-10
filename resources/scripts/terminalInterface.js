@@ -1,6 +1,13 @@
-function pauseTimer()
-{
+var session = new Session();
+var payload = new Payload();
 
+function tens(numStr)
+{
+	var tensFormat = new Intl.NumberFormat('en-US', { 
+		minimumIntegerDigits: 2
+	});
+	
+	return tensFormat.format(Number(numStr));
 }
 
 function codeLimit(event)
@@ -68,20 +75,32 @@ function editTerminal(userPayload)
 	{
 		console.log(userPayload);
 
-		//construct payload object
+		payload.setPayload(userPayload);
 
 		$("#payloadBox").removeClass("noPayload");
 
 		$("#payloadBox").html(	"<div id='payloadHeader' class='accessHeader'>" +
 									"<u>CONNECTING USER IDENTIFIED</u>" +
 								"</div>" +
-								"<span>User: Test</span>" +
-								"<span>Mask: Spooky</span>" +
+								"<span>User: " + payload.getHandle() + "</span>" +
+								( payload.getFunction("Mask") ? "<span>Mask: Spooky</span>" : "" ) +
 								""//"<span>PIN: 333333</span>"
 							);
 		
 		//tag management
-		Gems.updateTagGems(Gems.ACCESS, 2, Math.max(userPayload.functions.hacking * 2,10));
+
+		$("#hackDetails").html(
+			"<span>[HACKING: +" + tens(payload.getFunction("Hacking") * 2) + "]</span>" +
+			( payload.getFunction("Root Exploit") ? "<span>[ROOT EXP:+" + tens(payload.getFunction("Root Exploit") * 2) + "]</span>" : "" )
+		)
+		
+		currentTags = payload.getFunction("Hacking") * 2;
+		currentTags += payload.getFunction("Root Exploit") * 2;
+		currentTags = Math.min(currentTags,10);
+
+		$("#payTags").html(tens(currentTags));
+
+		Gems.updateTagGems(Gems.ACCESS, 2, currentTags);
 		//role stuff
 	}
 
