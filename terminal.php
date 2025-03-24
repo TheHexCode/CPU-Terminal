@@ -127,12 +127,12 @@
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button class="extraButton" onMouseUp="extraTags(-1,'extra')"><b>-</b></button>
+								<button class="extraButton" onMouseUp="updateExtraTags(-1)"><b>-</b></button>
 								<div class="lcdBox blue">
 									<span class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
-								<button class="extraButton" onMouseUp="extraTags(1,'extra')">+</button>
+								<button class="extraButton" onMouseUp="updateExtraTags(1)">+</button>
 							</div>
 						</div>
 					</div>

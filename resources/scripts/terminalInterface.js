@@ -48,7 +48,7 @@ function submitCode(event)
 
 	$("#load").removeClass("hidden");
 
-	ajaxCall = $.ajax({
+	$.ajax({
 		type: "POST",
 		dataType: "json",
 		url: "resources\\scripts\\db\\getUser.php",
@@ -56,15 +56,14 @@ function submitCode(event)
 		{
 			userCode: $("#payloadCodeInput")[0].value
 		}
-	});
-	
-	ajaxCall.done(function(userData)
+	})
+	.done(function(userData)
 	{
-		editTerminal(userData);
+		injectUserPayload(userData);
 	});
 }
 
-function editTerminal(userPayload)
+function injectUserPayload(userPayload)
 {
 	if(userPayload.length === 0)
 	{
@@ -83,37 +82,107 @@ function editTerminal(userPayload)
 									"<u>CONNECTING USER IDENTIFIED</u>" +
 								"</div>" +
 								"<span>User: " + payload.getHandle() + "</span>" +
-								( payload.getFunction("Mask") ? "<span>Mask: Spooky</span>" : "" ) +
+								( payload.getFunction("Mask") ? "<span>Mask: " + payload.getMask() + "</span>" : "" ) +
 								""//"<span>PIN: 333333</span>"
 							);
 		
-		//tag management
+		//// TAG MANAGEMENT
 
+		// Required Tags
+		requiredTags = parseInt($("#reqTags").html());
+
+		// Payload Tags
 		$("#hackDetails").html(
 			"<span>[HACKING: +" + tens(payload.getFunction("Hacking") * 2) + "]</span>" +
 			( payload.getFunction("Root Exploit") ? "<span>[ROOT EXP:+" + tens(payload.getFunction("Root Exploit") * 2) + "]</span>" : "" )
 		)
 		
-		currentTags = payload.getFunction("Hacking") * 2;
-		currentTags += payload.getFunction("Root Exploit") * 2;
-		currentTags = Math.min(currentTags,10);
+		payloadTags = payload.getFunction("Hacking") * 2;
+		payloadTags += payload.getFunction("Root Exploit") * 2;
+		payloadTags = Math.min(payloadTags,10);
 
-		$("#payTags").html(tens(currentTags));
+		$("#payTags").html(tens(payloadTags));
+		$("#payTags").html(tens(payloadTags));
+		$("#payTags").html(tens(payloadTags));
 
-		Gems.updateTagGems(Gems.ACCESS, 2, currentTags);
+		session.setCurrentTags(payloadTags, Session.PAYLOAD);
+
+		// Extra Tags
+
+		if($("#extTags").html() === "XX")
+		{
+			extraTags = 0;
+			$("#extTags").html(tens("00"));
+		}
+		else
+		{
+			extraTags = parseInt($("#extTags").html());
+		}
+
+		session.setCurrentTags(extraTags, Session.EXTRA);
+
+		// Gems/Remaining Tags
+
+		Gems.updateTagGems(Gems.ACCESS, requiredTags, payloadTags, session.getCurrentTags());
+
+		remainingTags = session.getCurrentTags() - requiredTags;
+
+		if(remainingTags < 0)
+		{
+			$("#remTagsBG").html("~~~");
+		}
+		else
+		{
+			$("#remTagsBG").html("~~");
+		}
+
+		$("#remTags").html(tens(remainingTags));
+
 		//role stuff
 	}
 
 	$("#load").addClass("hidden");
 }
 
-function extraTags(change)
+function updateExtraTags(change)
 {
+	let payTags = session.getCurrentTags(Session.PAYLOAD);
+	let extTags = session.getCurrentTags(Session.EXTRA);
+	let reqTags = parseInt($("#reqTags").html());
 
+	extTags = Math.min(
+		Math.max(extTags + change, 0),
+		99 - ( payTags - reqTags )
+	);
+
+	session.setCurrentTags(extTags, Session.EXTRA);
+
+	$("#extTags").html(tens(extTags));
+
+	Gems.updateTagGems(Gems.ACCESS, reqTags, payTags, session.getCurrentTags());
+
+	remTags = session.getCurrentTags() - reqTags;
+
+	if(remTags < 0)
+	{
+		$("#remTagsBG").html("~~~");
+	}
+	else
+	{
+		$("#remTagsBG").html("~~");
+	}
+
+	$("#remTags").html(tens(remTags));
 }
 
 function accessTerminal()
 {
+	let reqTags = parseInt($("#reqTags").html());
+
+	session.setCurrentTags(session.getCurrentTags() - reqTags);
+
+	Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+
     $("#accessZone").hide();
 	$("#hackZone").css("display","flex");
 }
@@ -147,41 +216,20 @@ function logAction()
 
 function entryAction(target)
 {
+	$("#load").removeClass("hidden");
+
 	let action = target.classList[0].split("Button")[0];
 	let entryID = target.dataset["id"];
 
-	let entryJSON = $.getJSON("resources\\scripts\\db\\getEntryActions.php",{ id: entryID, action: action });
+	let entryJSON = $.getJSON(
+		"resources\\scripts\\db\\getEntryActions.php",
+		{ id: entryID, action: action }
+	)
+	.done(function() {
+		let upperAction = action.charAt(0).toUpperCase() + action.slice(1);
+		let actionCost = target.dataset["cost"];
+		let entryName = $("#" + $(target).parents(".entry")[0].id + " .entryPrefix").html().slice(9,-2);
 
-	let upperAction = action.charAt(0).toUpperCase() + action.slice(1);
-	let actionCost = target.dataset["cost"];
-	let entryName = $("#" + $(target).parents(".entry")[0].id + " .entryPrefix").html().slice(9,-2);
-
-	$("#popup").html(upperAction + " \"" + entryName + "\" for " + actionCost + " Tag" + (actionCost === 1 ? "" : "s") + "?");
-	
-	$("#popup").dialog({
-		title: "Confirm " + upperAction + " Action",
-		height: "auto",
-		width: $("#main").width(),
-		modal: true,
-		show: { effect: "clip", duration: 100 },
-		hide: { effect: "clip", duration: 100 },
-		/*buttons: {
-			label: "<img src='https://miro.medium.com/v2/resize:fit:900/1*W-jrsYQmcsm7ls1KXRYIdQ.gif'>"
-		},*/
-		open: function(event,ui)
-		{
-			//let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0) : 0;
-			//updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
-
-		},
-		close: function(event,ui)
-		{
-			//updateTagDisplay("STANDBY",payload.getCurrentTags());
-		}
-	});
-
-	$.when(entryJSON).done(function()
-	{
 		let options = entryJSON.responseJSON;
 
 		let buttonActions = [];
@@ -198,7 +246,29 @@ function entryAction(target)
 			});
 		});
 
-		$("#popup").dialog("option","buttons",buttonActions);
+		$("#popup").html(upperAction + " \"" + entryName + "\" for " + actionCost + " Tag" + (actionCost === 1 ? "" : "s") + "?");
+		
+		$("#load").addClass("hidden");
+
+		$("#popup").dialog({
+			title: "Confirm " + upperAction + " Action",
+			height: "auto",
+			width: $("#main").width(),
+			modal: true,
+			show: { effect: "clip", duration: 100 },
+			hide: { effect: "clip", duration: 100 },
+			buttons: buttonActions,
+			open: function(event,ui)
+			{
+				//let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0) : 0;
+				//updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
+
+			},
+			close: function(event,ui)
+			{
+				//updateTagDisplay("STANDBY",payload.getCurrentTags());
+			}
+		});
 	});
 }
 

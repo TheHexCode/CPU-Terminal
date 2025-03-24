@@ -42,7 +42,7 @@ class Gems {
 
         let maxTen = Math.max(tenOnes,tenTwos,tenTotal);
 
-        for(let i = 10; i > Math.max(totalTags,stageOne); i--)
+        for(let i = 10; i > 0; i--)
         {
             Gems.#gems[i].removeClass();
             Gems.#gems[i].addClass("gem clear");
@@ -78,22 +78,31 @@ class Gems {
                     // stageTwo = payload
                     // totalTags = payload + extras
 
-                    for(let total = remTotal; total > remTwos; total--)
+                    if(tenTotal === maxTen)
                     {
-                        Gems.#gems[total].removeClass();
-                        Gems.#gems[total].addClass("gem " + gemStage.get("extra"));
+                        for(let total = remTotal; total > 0; total--)
+                        {
+                            Gems.#gems[total].removeClass();
+                            Gems.#gems[total].addClass("gem " + gemStage.get("extra"));
+                        }
                     }
 
-                    for(let two = remTwos; two > remOnes; two--)
+                    if(tenTwos === maxTen)
                     {
-                        Gems.#gems[two].removeClass();
-                        Gems.#gems[two].addClass("gem " + gemStage.get("payload"));
+                        for(let two = remTwos; two > 0; two--)
+                        {
+                            Gems.#gems[two].removeClass();
+                            Gems.#gems[two].addClass("gem " + gemStage.get("payload"));
+                        }
                     }
 
-                    for(let one = remOnes; one > 0; one--)
+                    if(tenOnes === maxTen)
                     {
-                        Gems.#gems[one].removeClass();
-                        Gems.#gems[one].addClass("gem " + gemStage.get("access"));
+                        for(let one = remOnes; one > 0; one--)
+                        {
+                            Gems.#gems[one].removeClass();
+                            Gems.#gems[one].addClass("gem " + gemStage.get("access"));
+                        }
                     }
                 }
 
@@ -102,16 +111,22 @@ class Gems {
             case this.CONFIRM:
             case this.EXECUTE:
             {
-                for(let two = remTwos; two > remOnes; two--)
+                if(tenTwos === maxTen)
                 {
-                    Gems.#gems[two].removeClass();
-                    Gems.#gems[two].addClass("gem " + gemStage.get("using"));
+                    for(let two = remTwos; two > 0; two--)
+                    {
+                        Gems.#gems[two].removeClass();
+                        Gems.#gems[two].addClass("gem " + gemStage.get("using"));
+                    }
                 }
 
-                for(let one = remOnes; one > 0; one--)
+                if(tenOnes === maxTen)
                 {
-                    Gems.#gems[one].removeClass();
-                    Gems.#gems[one].addClass("gem " + gemStage.get("remain"));
+                    for(let one = remOnes; one > 0; one--)
+                    {
+                        Gems.#gems[one].removeClass();
+                        Gems.#gems[one].addClass("gem " + gemStage.get("remain"));
+                    }
                 }
 
                 break;
@@ -119,16 +134,30 @@ class Gems {
             case this.STANDBY:
             case this.ROOT:
             {
-                for(let one = remOnes; one > 0; one--)
+                if(tenOnes === maxTen)
                 {
-                    Gems.#gems[one].removeClass();
-                    Gems.#gems[one].addClass("gem " + gemStage.get("all"));
+                    for(let one = remOnes; one > 0; one--)
+                    {
+                        Gems.#gems[one].removeClass();
+                        Gems.#gems[one].addClass("gem " + gemStage.get("all"));
+                    }
                 }
 
                 break;
             }
             default:
                 console.log("No Such GemStage");
+        }
+
+        if(maxTen > 0)
+        {
+            $("#gemTens").removeClass("dimmed");
+            $("#gemTenTags").html("x" + tens(maxTen));
+        }
+        else
+        {
+            $("#gemTens").addClass("dimmed");
+            $("#gemTenTags").html("");
         }
 	}
 }

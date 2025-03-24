@@ -1,19 +1,51 @@
 class Session
 {
-    #tags;
+    #totalTags;
+    #payTags;
+    #extTags;
+
+    static TOTAL = "TOTAL";
+    static PAYLOAD = "PAYLOAD";
+    static EXTRA = "EXTRA";
 
     constructor()
     {
-        this.#tags = 0;
+        this.#totalTags = 0;
+        this.#payTags = 0;
+        this.#extTags = 0;
     }
 
-    getCurrentTags()
+    getCurrentTags(tagType = Session.TOTAL)
     {
-        return this.#tags;
+        if(tagType === Session.TOTAL)
+        {
+            return this.#totalTags;
+        }
+        else if(tagType === Session.PAYLOAD)
+        {
+            return this.#payTags;
+        }
+        else if(tagType === Session.EXTRA)
+        {
+            return this.#extTags;
+        }
     }
 
-    setCurrentTags(newTags)
+    setCurrentTags(newTags, tagType = Session.TOTAL)
     {
-        this.#tags = newTags;
+        if(tagType === Session.TOTAL)
+        {
+            this.#totalTags = newTags;
+        }
+        else if(tagType === Session.PAYLOAD)
+        {
+            this.#payTags = newTags;
+            this.#totalTags = newTags + this.#extTags;
+        }
+        else if(tagType === Session.EXTRA)
+        {
+            this.#extTags = newTags;
+            this.#totalTags = this.#payTags + newTags;
+        }
     }
 }

@@ -319,7 +319,7 @@
 				},
 				"read":
 				{
-					"title": "Trap!",
+					"button": "Trap!",
 					"contents": true,
 					"access":
 					{
@@ -376,12 +376,12 @@
 						"actions":
 						[
 							{
-								"title": "View Feed",
+								"button": "View Feed",
 								"state": "viewed",
 								"global": false
 							},
 							{
-								"title": "Power Down",
+								"button": "Power Down",
 								"state": "disabled",
 								"global": true
 							}
@@ -393,12 +393,12 @@
 						"actions":
 						[
 							{
-								"title": "Download Footage",
+								"button": "Download Footage",
 								"state": "copied",
 								"global": false
 							},
 							{
-								"title": "Delete Footage",
+								"button": "Delete Footage",
 								"state": "deleted",
 								"global": true
 							}
@@ -415,7 +415,7 @@
 						"actions":
 						[
 							{
-								"title": "Power Down",
+								"button": "Power Down",
 								"state": "disabled",
 								"global": true
 							}
@@ -427,12 +427,12 @@
 						"actions":
 						[
 							{
-								"title": "Download Footage",
+								"button": "Download Footage",
 								"state": "copied",
 								"global": false
 							},
 							{
-								"title": "Delete Footage",
+								"button": "Delete Footage",
 								"state": "deleted",
 								"global": true
 							}
@@ -449,7 +449,7 @@
 						"actions":
 						[
 							{
-								"title": "Power On",
+								"button": "Power On",
 								"state": "previous",
 								"global": true
 							}
@@ -470,7 +470,7 @@
 						"actions":
 						[
 							{
-								"title": "Power Down",
+								"button": "Power Down",
 								"state": "disabled",
 								"global": true
 							}
@@ -482,7 +482,7 @@
 						"actions":
 						[
 							{
-								"title": "Delete Footage",
+								"button": "Delete Footage",
 								"state": "deleted",
 								"global": true
 							}
@@ -522,7 +522,7 @@
 						"actions":
 						[
 							{
-								"title": "Disable Lock",
+								"button": "Disable Lock",
 								"state": "disabled",
 								"global": true
 							}
@@ -534,7 +534,7 @@
 						"actions":
 						[
 							{
-								"title": "Modify ACL",
+								"button": "Modify ACL",
 								"state": "friendly",
 								"global": true
 							}
@@ -551,7 +551,7 @@
 						"actions":
 						[
 							{
-								"title": "Power On",
+								"button": "Power On",
 								"state": "previous",
 								"global": true
 							}
@@ -572,7 +572,7 @@
 						"actions":
 						[
 							{
-								"title": "Disable Lock",
+								"button": "Disable Lock",
 								"state": "disabled",
 								"global": true
 							}
@@ -603,7 +603,7 @@
 						"actions":
 						[
 							{
-								"title": "Power Down",
+								"button": "Power Down",
 								"state": "disabled",
 								"global": true
 							}
@@ -615,7 +615,7 @@
 						"actions":
 						[
 							{
-								"title": "Modify IFF",
+								"button": "Modify IFF",
 								"state": "friendly",
 								"global": true
 							}
@@ -632,7 +632,7 @@
 						"actions":
 						[
 							{
-								"title": "Power On",
+								"button": "Power On",
 								"state": "previous",
 								"global": true
 							}
@@ -653,7 +653,7 @@
 						"actions":
 						[
 							{
-								"title": "Power Down",
+								"button": "Power Down",
 								"state": "disabled",
 								"global": true
 							}
@@ -684,7 +684,7 @@
 						"actions":
 						[
 							{
-								"title": "Power Down",
+								"button": "Power Down",
 								"state": "disabled",
 								"global": true
 							}
@@ -705,7 +705,7 @@
 						"actions":
 						[
 							{
-								"title": "Power On",
+								"button": "Power On",
 								"state": "previous",
 								"global": true
 							}
