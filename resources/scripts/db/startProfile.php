@@ -1,10 +1,8 @@
 <?php
 
-include('E:/Personal/Projects/CPU/dbConfig/dbConfig.php');
+require('dbConnect.php');
 
-$pdo = new PDO('sqlsrv:Server='.DBHOST.',1433;Database='.DBNAME, DBUSER,DBPWD);
-
-$profile_query = $pdo->query("SELECT role_functions.id,role_id,roles.name AS role_name,tier,function_id,functions.name AS function_name,rank
+$profile_query = $pdo->query("SELECT role_functions.id,role_id,roles.roleName AS roleName,tier,function_id,functions.functionName AS functionName,rank
                             FROM CPU_Terminal.dbo.role_functions
                             INNER JOIN CPU_Terminal.dbo.roles ON role_functions.role_id=roles.id
                             INNER JOIN CPU_Terminal.dbo.functions ON role_functions.function_id=functions.id");
@@ -12,7 +10,7 @@ $profileResponse = $profile_query->fetchAll(PDO::FETCH_ASSOC);
 
 function fillRoleSelection($profileData)
 {
-    $roleData = array_combine(array_column($profileData,"role_id"),array_column($profileData,"role_name"));
+    $roleData = array_combine(array_column($profileData,"role_id"),array_column($profileData,"roleName"));
     asort($roleData);
 
     $selectString = "";
@@ -34,20 +32,20 @@ function fillProfileTab($tabName, $profileData)
     {
         $tabHidden = false;
         $tabData = array_filter($profileData,function($function) {
-            return (strcasecmp($function["role_name"],"Standard") === 0);
+            return (strcasecmp($function["roleName"],"Standard") === 0);
         });
     }
     else
     {
         $tabHidden = true;
         $tabData = array_filter($profileData,function($function) {
-            return (strcasecmp($function["role_name"],"Standard") !== 0);
+            return (strcasecmp($function["roleName"],"Standard") !== 0);
         });
     }
 
     echo "<script>console.log(".json_encode($tabData).")</script>";
 
-    $roleList = array_combine(array_column($tabData,"role_id"),array_column($tabData,"role_name"));
+    $roleList = array_combine(array_column($tabData,"role_id"),array_column($tabData,"roleName"));
 
     echo "<script>console.log(".json_encode($roleList).")</script>";
 
@@ -86,7 +84,7 @@ function fillProfileTab($tabName, $profileData)
                 {
                     $returnString .=    "<div class='check' data-role='" . $roleName . "'>" .
                                             "<input type='checkbox' id='check" . $function["id"] . "' form='statsForm'>&nbsp" .
-                                            "<label for='check" . $function["id"] . "'>" . $function["function_name"] . (($function["rank"]) ? (" " . $romanTiers[intval($function["rank"])]) : "") . "</label>" .
+                                            "<label for='check" . $function["id"] . "'>" . $function["functionName"] . (($function["rank"]) ? (" " . $romanTiers[intval($function["rank"])]) : "") . "</label>" .
                                         "</div>";
                 }
             }

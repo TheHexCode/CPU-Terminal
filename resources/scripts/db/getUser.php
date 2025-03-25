@@ -1,21 +1,19 @@
 <?php
 
-include('E:/Personal/Projects/CPU/dbConfig/dbConfig.php');
+require('dbConnect.php');
 
 $userCode = $_POST["userCode"];
 
-$pdo = new PDO('sqlsrv:Server='.DBHOST.',1433;Database='.DBNAME, DBUSER,DBPWD);
-
-$userQuery = 'SELECT users.id,true_name,mask,pRoles.name AS priRole,sRoles.name AS secRole
+$userQuery = 'SELECT users.id,trueName,mask,pRoles.roleName AS priRole,sRoles.roleName AS secRole
               FROM CPU_Terminal.dbo.users
               INNER JOIN CPU_Terminal.dbo.roles AS pRoles ON users.priRole=pRoles.id
 			  INNER JOIN CPU_Terminal.dbo.roles AS sRoles ON users.secRole=sRoles.id
-              WHERE user_code = :userCode';
+              WHERE userCode = :userCode';
 
-$userFuncQuery = 'SELECT functions.name, functions.ranked, rank, type
+$userFuncQuery = 'SELECT functions.functionName, functions.type, rank
                   FROM CPU_Terminal.dbo.user_functions
                   INNER JOIN CPU_Terminal.dbo.functions ON user_functions.function_id=functions.id
-                  WHERE user_code = :userCode';
+                  WHERE userCode = :userCode';
 
 $userStatement = $pdo->prepare($userQuery);
 $uFStatement = $pdo->prepare($userFuncQuery);

@@ -13,7 +13,7 @@ class Terminal
     function __construct($termResponse)
     {
         $this->termID = $termResponse["id"];
-        $this->termDisplayName = $termResponse["name"];
+        $this->termDisplayName = $termResponse["displayName"];
         $this->termAccessCost = $termResponse["access"];
         $this->termState = $termResponse["state"];
         $this->entries = $termResponse["entries"];
@@ -111,7 +111,7 @@ class Terminal
                 }
                 else
                 {
-                    $logHandle = $logEntry["true_name"];
+                    $logHandle = $logEntry["trueName"];
                 }
     
                 $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry">' .

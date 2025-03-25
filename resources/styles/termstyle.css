@@ -466,10 +466,12 @@ h2
 {
 	display: flex;
 	flex-direction: row;
-	column-gap: 0.5rem;
+	justify-content: center;
+	/*column-gap: 0.5rem;*/
+	margin-top: 0.5rem;
 }
 
-#timerLCD
+.lcdBox
 {
 	display: grid;
 	grid-template-columns: [clockstart] max-content [clockmid] 1fr [end];
@@ -481,7 +483,7 @@ h2
 	grid-row: start / end;
 	grid-column: start / clockstart;
 }
-*/
+
 #playPause
 {
 	background-color: var(--bg-color);
@@ -489,8 +491,9 @@ h2
 	box-shadow: 0 0 0px;
 	padding: 4px 0 0 0;
 }
+*/
 
-#mmss
+.lcdBox > .mmss
 {
 	grid-row: start / end;
 	grid-column: clockstart / clockmid;
@@ -498,7 +501,7 @@ h2
 	font-size: 200%;
 }
 
-#hundsec
+.lcdBox > .hundsec
 {
 	grid-row: hundstart / end;
 	grid-column: clockmid / end;
@@ -1195,6 +1198,20 @@ ul
 	border-left: 0.5rem solid grey;
 	border-right: 0.5rem solid grey;
 	height: 0.5rem;
+}
+
+#actExecute + .ui-dialog-buttonpane
+{
+	display: flex;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	justify-content: center;
+}
+
+#actExecute + .ui-dialog-buttonpane > .ui-dialog-buttonset .ui-button
+{
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;
 }
 
 footer

@@ -13,6 +13,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/session.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/payload.js"></script>
+		<script type="text/javascript" src="resources/scripts/classes/timer.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/gems.js" defer></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
@@ -66,22 +67,14 @@
 				<h2 id="termName">
 					<?php echo $terminal->getTerminalName() ?>
 				</h2>
-				<div id="status">>> CRACKING TERMINAL</div> <!-- ">> " + 18 CHARS -->
-				<div id="timerContainer">
+				<!--
+				<div id="status">>> CRACKING TERMINAL</div> <!-- ">> " + 18 CHARS --><!--
+				
 					<div id="ppContainer">
 						<button id="playPause" onMouseUp="pauseTimer()"><img src="resources\images\playpause\pause.png"></button>
 					</div>
-					<div id="timerLCD" class="lcdBox amber">
-						<div id="mmss">
-							<span class="dseg BG">~~ ~~</span>
-							<span class="dseg FG">00:30</span>
-						</div>
-						<div id="hundsec">
-							<span class="dseg BG">~~</span>
-							<span class="dseg FG">00</span>
-						</div>
-					</div>
-				</div>
+					
+				-->
 			</div>
 			<div id="accessZone" class="zoneBox">
 				<div class="accessBox">
@@ -265,6 +258,20 @@
 				<span>© CPU Larp 2025</span>
 			</footer>
 		</div>
-		<div id="popup" class="hidden"></div>
+		<div id="actConfirm" class="hidden"></div>
+		<div id="actExecute" class="hidden">
+			<div id="timerContainer">
+				<div id="timerLCD" class="lcdBox amber">
+					<div class="mmss">
+						<span class="dseg BG">~~ ~~</span>
+						<span class="dseg FG">00:30</span>
+					</div>
+					<div class="hundsec">
+						<span class="dseg BG">~~</span>
+						<span class="dseg FG">00</span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

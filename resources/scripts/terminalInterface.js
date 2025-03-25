@@ -1,5 +1,6 @@
 var session = new Session();
 var payload = new Payload();
+var timer = new Timer("#timerLCD");
 
 function tens(numStr)
 {
@@ -226,9 +227,13 @@ function entryAction(target)
 		{ id: entryID, action: action }
 	)
 	.done(function() {
-		let upperAction = action.charAt(0).toUpperCase() + action.slice(1);
-		let actionCost = target.dataset["cost"];
-		let entryName = $("#" + $(target).parents(".entry")[0].id + " .entryPrefix").html().slice(9,-2);
+		let actionMap = {
+			upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+			actionCost: target.dataset["cost"],
+			entryName: $("#" + $(target).parents(".entry")[0].id + " .entryPrefix").html().slice(9,-2)
+		};
+
+		console.log(actionMap);
 
 		let options = entryJSON.responseJSON;
 
@@ -241,32 +246,31 @@ function entryAction(target)
 				click: function()
 				{
 					$(this).dialog("close");
-					//executeCommand(path,(entry.special == "trap" ? action : button.state),actionCost,$("#copycat_check").prop("checked"));
+					executeCommand(actionMap, option.state,option.global);
 				}
 			});
 		});
 
-		$("#popup").html(upperAction + " \"" + entryName + "\" for " + actionCost + " Tag" + (actionCost === 1 ? "" : "s") + "?");
+		$("#actConfirm").html(actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?");
 		
 		$("#load").addClass("hidden");
 
-		$("#popup").dialog({
-			title: "Confirm " + upperAction + " Action",
+		$("#actConfirm").dialog({
+			title: "Confirm " + actionMap["upperAction"] + " Action",
 			height: "auto",
 			width: $("#main").width(),
 			modal: true,
+			resizeable: false,
 			show: { effect: "clip", duration: 100 },
 			hide: { effect: "clip", duration: 100 },
 			buttons: buttonActions,
 			open: function(event,ui)
 			{
-				//let actionCost = entry[action] ? Math.max((entry[action]-icon.repeated-johnnyAccess)+payload.getModifier("cost"),0) : 0;
-				//updateTagDisplay("CONFIRM",payload.getCurrentTags()-actionCost,payload.getCurrentTags());
-
+				Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 			},
 			close: function(event,ui)
 			{
-				//updateTagDisplay("STANDBY",payload.getCurrentTags());
+				Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 			}
 		});
 	});
@@ -275,4 +279,42 @@ function entryAction(target)
 function iceAction(event)
 {
 	console.log(event);
+}
+
+function executeCommand(actionMap,newState,globalAction)
+{
+	let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
+
+	$("#actExecute").dialog({
+		title: actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s"),
+		height: "auto",
+		width: $("#main").width(),
+		modal: true,
+		show: { effect: "clip", duration: 100 },
+		hide: { effect: "clip", duration: 100 },
+		resizable: false,
+		buttons: [{
+			text: "HOLD TO EXECUTE",
+			mousedown: function()
+			{
+				timer.startTimer(maxTime);
+			},
+			mouseup: function()
+			{
+				timer.pauseTimer(maxTime);
+			},
+			click: function()
+			{
+				//pass;
+			}
+		}],
+		open: function(event,ui)
+		{
+			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+		},
+		close: function(event,ui)
+		{
+			Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+		}
+	});
 }

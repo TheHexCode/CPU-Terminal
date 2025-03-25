@@ -17,7 +17,7 @@ class Payload
     setPayload(payload)
     {
         this.#userID = payload.id;
-        this.#handle = payload.true_name;
+        this.#handle = payload.trueName;
         this.#mask = payload.mask;
         this.#priRole = payload.priRole;
         this.#secRole = payload.secRole;
@@ -49,9 +49,9 @@ class Payload
 
     getFunction(funcName)
     {
-        let userFunc = this.#functions.find(func => func.name.toLowerCase() === funcName.toLowerCase());
+        let userFunc = this.#functions.find(func => func.functionName.toLowerCase() === funcName.toLowerCase());
 
-        if((userFunc.ranked === "1"))
+        if((userFunc.type === "ranked"))
         {
             return Number(userFunc.rank);
         }
