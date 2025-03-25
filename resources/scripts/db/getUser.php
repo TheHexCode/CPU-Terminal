@@ -10,7 +10,7 @@ $userQuery = 'SELECT users.id,trueName,mask,pRoles.roleName AS priRole,sRoles.ro
 			  INNER JOIN CPU_Terminal.dbo.roles AS sRoles ON users.secRole=sRoles.id
               WHERE userCode = :userCode';
 
-$userFuncQuery = 'SELECT functions.functionName, functions.type, rank
+$userFuncQuery = 'SELECT functions.functionName, functions.ranked, rank, functions.type
                   FROM CPU_Terminal.dbo.user_functions
                   INNER JOIN CPU_Terminal.dbo.functions ON user_functions.function_id=functions.id
                   WHERE userCode = :userCode';

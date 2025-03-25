@@ -286,7 +286,7 @@ button:not(:disabled):not(#playPause):not(.extraButton):not(.hackTab):not(.subTa
 
 h2
 {
-	margin-top: 0;
+	margin: 0.5rem;
 	text-decoration: underline;
 }
 /*
@@ -585,10 +585,10 @@ h2
 
 .noPayload
 {
-	border-color: #a00;
+	border-color: #900;
 	background: repeating-linear-gradient(
 		-45deg,
-		#a00 0 0.75rem,
+		#900 0 0.75rem,
 		var(--bg-color) 0.75rem 1.5rem
 	);
 	text-shadow:

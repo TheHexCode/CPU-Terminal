@@ -8,11 +8,15 @@ class Session
     static PAYLOAD = "PAYLOAD";
     static EXTRA = "EXTRA";
 
-    constructor()
+    #entryData;
+
+    constructor(initialEntries)
     {
         this.#totalTags = 0;
         this.#payTags = 0;
         this.#extTags = 0;
+
+        this.#entryData = initialEntries;
     }
 
     getCurrentTags(tagType = Session.TOTAL)
@@ -47,5 +51,19 @@ class Session
             this.#extTags = newTags;
             this.#totalTags = this.#payTags + newTags;
         }
+    }
+
+    getEntryState(entryID)
+    {
+        let searchResults = this.#entryData.find(entry => entry.id === entryID);
+
+        return searchResults.state;
+    }
+
+    getActionCost(entryID, action)
+    {
+        let searchResults = this.#entryData.find(entry => entry.id === entryID);
+
+        return Number(searchResults[action]);
     }
 }

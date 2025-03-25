@@ -7,6 +7,7 @@ class Terminal
     private $termAccessCost;
     private $termState;
     private $entries;
+    private $initialEntries;
     private $logEntries;
     private $iconSchema;
 
@@ -17,6 +18,7 @@ class Terminal
         $this->termAccessCost = $termResponse["access"];
         $this->termState = $termResponse["state"];
         $this->entries = $termResponse["entries"];
+        $this->initialEntries = array();
         $this->logEntries = $termResponse["logEntries"];
 
         $iconFilepath = "resources/schemas/icons.json";
@@ -148,6 +150,13 @@ class Terminal
 
         foreach($dbArray as $entry)
         {
+            $entryData = array(
+                "id"     => $entry["id"],
+                "state"  => $entry["state"],
+                "access" => $entry["access"],
+                "modify" => $entry["modify"]
+            );
+
             $unitCode = explode("-",$entry["path"]);
             $subClass = "";
 
@@ -173,18 +182,21 @@ class Terminal
                 $unit = "ICE " . $unitCode;
 
                 $accessInt = ($entry["state"] === "initial") ?
-                                'Unwrap: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id="' . $entry["id"] . '" onclick="iceAction(this)">0 Tags</button>' : 
+                                'Unwrap: <button class="accessButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="iceAction(this)">0 Tags</button>' : 
                                 'Unwrap: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($entry["state"] === "initial") ?
-					            'Break: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id="' . $entry["id"] . '" onclick="iceAction(this)">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+					            'Break: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="iceAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                 'Break: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $titleMask = $entry["title"];
+                $entryData["title"] = $entry["title"];
 
                 $contentsMask = ($entry["state"] === "initial") ?
                                     '<span class="entryMasking">&nbsp;</span>' :
 							  	    '<span class="entrySecret">' . $entry["contents"] . '</span>';
+
+                $entryData["contents"] = ($entry["state"] === "initial") ? null : $entry["contents"];
             }
             else
             {
@@ -197,37 +209,43 @@ class Terminal
                 $unit = $iconGuide["unit"] . " " . $unitCode;
 
                 $accessInt = ($stateGuide["access"]["enabled"]) ?
-                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id="' . $entry["id"] . '" onclick="entryAction(this)">' . $entry["access"] . ' Tag' . (($entry["access"] === 1) ? '' : 's') . '</button>' :
+                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
                                 'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($stateGuide["modify"]["enabled"]) ?
-                                'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id="' . $entry["id"] . '" onclick="entryAction(this)">' . $entry["modify"] . ' Tag' . (($entry["modify"] === 1) ? '' : 's') . '</button>' :
+                                'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                 'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 if($stateGuide["title"] === false)
                 {
                     $titleMask = '<span class="entryMasking">&nbsp;</span>';
+                    $entryData["title"] = null;
                 }
                 elseif($stateGuide["title"] === true)
                 {
                     $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
+                    $entryData["title"] = $entry["title"];
                 }
                 else
                 {
                     $titleMask = '<span class="entrySecret">' . $stateGuide["title"] . '</span>';
+                    $entryData["title"] = $stateGuide["title"];
                 }
 
                 if($stateGuide["contents"] === false)
                 {
                     $contentsMask = '<span class="entryMasking">&nbsp;</span>';
+                    $entryData["contents"] = null;
                 }
                 elseif($stateGuide["contents"] === true)
                 {
                     $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
+                    $entryData["contents"] = $entry["contents"];
                 }
                 else
                 {
                     $contentsMask = '<span class="entrySecret">' . $stateGuide["contents"] . '</span>';
+                    $entryData["contents"] = $stateGuide["contents"];
                 }
             }
 
@@ -253,10 +271,10 @@ class Terminal
 									'</span>' .
 								'</div>' .
 								'<div class="entryIntContainer">' .
-									'<div class="entryInterface">' .
+									'<div class="entryInterface accessInterface">' .
 										$accessInt .
 									'</div>' .
-									'<div class="entryInterface">' .
+									'<div class="entryInterface modifyInterface">' .
 										$modifyInt .
 									'</div>' .
 								'</div>' . 
@@ -268,6 +286,7 @@ class Terminal
             }
 
             array_push($returnArray, $entryString);
+            array_push($this->initialEntries,$entryData);
         }
 
         $returnString = join("",$returnArray);
@@ -277,5 +296,10 @@ class Terminal
         }
 
         return $returnString;
+    }
+
+    public function sendInitialEntries()
+    {
+        return "<script>var session = new Session(" . json_encode($this->initialEntries) . ");</script>";
     }
 }

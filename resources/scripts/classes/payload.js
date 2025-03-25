@@ -51,7 +51,7 @@ class Payload
     {
         let userFunc = this.#functions.find(func => func.functionName.toLowerCase() === funcName.toLowerCase());
 
-        if((userFunc.type === "ranked"))
+        if((userFunc.ranked))
         {
             return Number(userFunc.rank);
         }

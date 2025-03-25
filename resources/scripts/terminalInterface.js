@@ -1,4 +1,4 @@
-var session = new Session();
+//var session = new Session();
 var payload = new Payload();
 var timer = new Timer("#timerLCD");
 
@@ -221,19 +221,21 @@ function entryAction(target)
 
 	let action = target.classList[0].split("Button")[0];
 	let entryID = target.dataset["id"];
+	let entryPath = "#" + $(target).parents(".entry")[0].id;
+	let entryState = session.getEntryState(entryID);
 
 	let entryJSON = $.getJSON(
 		"resources\\scripts\\db\\getEntryActions.php",
-		{ id: entryID, action: action }
+		{ id: entryID, state: entryState, action: action }
 	)
 	.done(function() {
 		let actionMap = {
+			entryID: entryID,
+			entryPath: entryPath,
+			actionCost: session.getActionCost(entryID,action),
 			upperAction: action.charAt(0).toUpperCase() + action.slice(1),
-			actionCost: target.dataset["cost"],
-			entryName: $("#" + $(target).parents(".entry")[0].id + " .entryPrefix").html().slice(9,-2)
+			entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
 		};
-
-		console.log(actionMap);
 
 		let options = entryJSON.responseJSON;
 
@@ -270,15 +272,68 @@ function entryAction(target)
 			},
 			close: function(event,ui)
 			{
-				Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+				if(event.originalEvent)
+				{
+					Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+				}
 			}
 		});
 	});
 }
 
-function iceAction(event)
+function iceAction(target)
 {
-	console.log(event);
+	$("#load").removeClass("hidden");
+
+	let action = target.classList[0].split("Button")[0];
+	let entryID = target.dataset["id"];
+	let entryPath = "#" + $(target).parents(".entry")[0].id;
+	let entryState = session.getEntryState(entryID);
+
+	let actionMap = {
+		entryID: entryID,
+		entryPath: entryPath,
+		actionCost: session.getActionCost(entryID,action),
+		upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+		entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
+	};
+
+	let buttonActions = [];
+
+	buttonActions.push({
+		text: actionMap["upperAction"],
+		click: function()
+		{
+			$(this).dialog("close");
+			executeCommand(actionMap, action, true);
+		}
+	});
+
+	$("#actConfirm").html(actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?");
+	
+	$("#load").addClass("hidden");
+
+	$("#actConfirm").dialog({
+		title: "Confirm " + actionMap["upperAction"] + " Action",
+		height: "auto",
+		width: $("#main").width(),
+		modal: true,
+		resizeable: false,
+		show: { effect: "clip", duration: 100 },
+		hide: { effect: "clip", duration: 100 },
+		buttons: buttonActions,
+		open: function(event,ui)
+		{
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+		},
+		close: function(event,ui)
+		{
+			if(event.originalEvent)
+			{
+				Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+			}
+		}
+	});
 }
 
 function executeCommand(actionMap,newState,globalAction)
@@ -297,11 +352,35 @@ function executeCommand(actionMap,newState,globalAction)
 			text: "HOLD TO EXECUTE",
 			mousedown: function()
 			{
-				timer.startTimer(maxTime);
+				actionMap["newState"] = newState;
+				actionMap["global"] = globalAction;
+				actionMap["dialog"] = "#actExecute";
+
+				timer.startTimer(maxTime,completeCommand,actionMap);
+			},
+			touchstart: function()
+			{
+				actionMap["newState"] = newState;
+				actionMap["global"] = globalAction;
+				actionMap["dialog"] = "#actExecute";
+
+				timer.startTimer(maxTime,completeCommand,actionMap);
 			},
 			mouseup: function()
 			{
-				timer.pauseTimer(maxTime);
+				timer.pauseTimer();
+			},
+			mouseleave: function()
+			{
+				timer.pauseTimer();
+			},
+			touchend: function()
+			{
+				timer.pauseTimer();
+			},
+			touchcancel: function()
+			{
+				timer.pauseTimer();
 			},
 			click: function()
 			{
@@ -310,11 +389,50 @@ function executeCommand(actionMap,newState,globalAction)
 		}],
 		open: function(event,ui)
 		{
+			$("#actExecute .mmss .FG").html("00:" + tens(maxTime));
 			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 		},
 		close: function(event,ui)
 		{
+			timer.killTimer();
 			Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 		}
 	});
+}
+
+function completeCommand(actionMap)
+{
+	$(actionMap["dialog"]).dialog("close");
+
+	// if global is true, run interrupt script before anything else
+
+	//get Title/Contents/available buttons
+	//get Trap/Ice Formatting
+	//Update Gems/Tags
+
+	//actionMap:
+		// actionCost
+		// dialog (id)
+		// entryID
+		// entryName
+		// entryPath
+		// global
+		// newState
+		// results
+			// title
+			// contents
+			// access
+			// modify
+			// ice
+		// upperAction
+
+	$(actionMap["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
+	$(actionMap["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
+	$(actionMap["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
+	$(actionMap["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
+
+	if(actionMap["results"]["ice"])
+	{
+		$(actionMap["entryPath"] + " > .subIce").removeClass("subIce")
+	}
 }
