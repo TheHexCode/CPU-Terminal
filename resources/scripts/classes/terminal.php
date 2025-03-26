@@ -182,12 +182,12 @@ class Terminal
                 $unit = "ICE " . $unitCode;
 
                 $accessInt = ($entry["state"] === "initial") ?
-                                'Unwrap: <button class="accessButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="iceAction(this)">0 Tags</button>' : 
-                                'Unwrap: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
+                                'Unwrap: <button class="unwrapButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="iceAction(this)">0 Tags</button>' : 
+                                'Unwrap: <button class="unwrapButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($entry["state"] === "initial") ?
-					            'Break: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="iceAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
-                                'Break: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+					            'Break: <button class="breakButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="iceAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
+                                'Break: <button class="breakButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $titleMask = $entry["title"];
                 $entryData["title"] = $entry["title"];

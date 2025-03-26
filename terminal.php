@@ -99,7 +99,7 @@
 					</div>
 					<button id="payloadCodeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
 					<span>OR</span>
-					<button id="payloadButton" onclick="window.open('./profile.html','_blank')">SETUP PAYLOAD PROFILE</button>
+					<button id="payloadButton" onclick="window.open('./profile.php','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>
 				<div class="accessTagBox">
 					<div class="accessTagRow">

@@ -86,6 +86,9 @@ function injectUserPayload(userPayload)
 								( payload.getFunction("Mask") ? "<span>Mask: " + payload.getMask() + "</span>" : "" ) +
 								""//"<span>PIN: 333333</span>"
 							);
+
+		$("#terminalButton").html("Access Terminal");
+		$("#termainlButton").prop("disabled",false);
 		
 		//// TAG MANAGEMENT
 
@@ -350,16 +353,10 @@ function executeCommand(actionMap,newState,globalAction)
 		resizable: false,
 		buttons: [{
 			text: "HOLD TO EXECUTE",
-			mousedown: function()
+			mousedown: function(event)
 			{
-				actionMap["newState"] = newState;
-				actionMap["global"] = globalAction;
-				actionMap["dialog"] = "#actExecute";
+				console.log(event);
 
-				timer.startTimer(maxTime,completeCommand,actionMap);
-			},
-			touchstart: function()
-			{
 				actionMap["newState"] = newState;
 				actionMap["global"] = globalAction;
 				actionMap["dialog"] = "#actExecute";
@@ -374,17 +371,9 @@ function executeCommand(actionMap,newState,globalAction)
 			{
 				timer.pauseTimer();
 			},
-			touchend: function()
+			click: function(event)
 			{
-				timer.pauseTimer();
-			},
-			touchcancel: function()
-			{
-				timer.pauseTimer();
-			},
-			click: function()
-			{
-				//pass;
+				event.preventDefault();
 			}
 		}],
 		open: function(event,ui)
