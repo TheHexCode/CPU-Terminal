@@ -8,8 +8,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--content="width=271; height=695">--> <!--904x2316; 271x695-->
 		<meta charset="UTF-8">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-		<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+		<!--<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+		<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/session.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/payload.js"></script>
@@ -99,7 +100,7 @@
 					</div>
 					<button id="payloadCodeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
 					<span>OR</span>
-					<button id="payloadButton" onclick="window.open('./profile.php','_blank')">SETUP PAYLOAD PROFILE</button>
+					<button id="payloadButton" onpointerup="window.open('./profile.php','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>
 				<div class="accessTagBox">
 					<div class="accessTagRow">
@@ -144,19 +145,19 @@
 						</div>
 					</div>
 				</div>
-				<button id="terminalButton" onclick="accessTerminal(null)">Standby...</button>
+				<button id="terminalButton" onpointerup="accessTerminal(null)">Standby...</button>
 			</div>
 			<div id="hackZone" class="zoneBox">
 				<div id="hackTabContainer">
-					<button class="hackTab active" onclick="openTab(this,'termBody')">TERMINAL</button>
-					<button class="hackTab" onclick="openTab(this,'deckBody')">CYBERDECK</button>
+					<button class="hackTab active" onpointerup="openTab(this,'termBody')">TERMINAL</button>
+					<button class="hackTab" onpointerup="openTab(this,'deckBody')">CYBERDECK</button>
 				</div>
 				<div id="hackBox">
 					<div class="hackSpacer"></div>
 					<div id="termBody" class="hackBody active">
 						<div class="subTabCol">
 							<div id="termSubTabs" class="subTabInset">
-								<button class="subTab active" onclick="openSubTab(this,'logContent')">
+								<button class="subTab active" onpointerup="openSubTab(this,'logContent')">
 									<img src="resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
 								</button>
 								<?php echo $terminal->setupSubTabButtons() ?>
@@ -238,13 +239,13 @@
 						</div>
 						<div class="subTabCol">
 							<div id="deckSubTabs" class="subTabInset">
-								<button class="subTab active" onclick="openSubTab(this,'actContent')">
+								<button class="subTab active" onpointerup="openSubTab(this,'actContent')">
 									<img src="resources/images/subtabs/active.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
-								<button class="subTab inactive" onclick="openSubTab(this,'passContent')">
+								<button class="subTab inactive" onpointerup="openSubTab(this,'passContent')">
 									<img src="resources/images/subtabs/passive.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
-								<button class="subTab inactive" onclick="openSubTab(this,'itemContent')">
+								<button class="subTab inactive" onpointerup="openSubTab(this,'itemContent')">
 									<img src="resources/images/subtabs/items.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
 							</div>
@@ -259,18 +260,31 @@
 				<?php echo $terminal->sendInitialEntries(); ?>
 			</footer>
 		</div>
-		<div id="actConfirm" class="hidden"></div>
-		<div id="actExecute" class="hidden">
-			<div id="timerContainer">
-				<div id="timerLCD" class="lcdBox amber">
-					<div class="mmss">
-						<span class="dseg BG">~~ ~~</span>
-						<span class="dseg FG">00:00</span>
+		<div id="modalBG">
+			<div id="actionModal" class="modalBox">
+				<div class="modalHeaderRow">
+					<span class="modalHeaderText"></span>
+					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&times;</span>
+				</div>
+				<div class="modalBody">
+					<div class="modalBodyTimer" class="hidden">
+						<div id="timerContainer">
+							<div id="timerLCD" class="lcdBox amber">
+								<div class="mmss">
+									<span class="dseg BG">~~ ~~</span>
+									<span class="dseg FG">00:00</span>
+								</div>
+								<div class="hundsec">
+									<span class="dseg BG">~~</span>
+									<span class="dseg FG">00</span>
+								</div>
+							</div>
+						</div>
 					</div>
-					<div class="hundsec">
-						<span class="dseg BG">~~</span>
-						<span class="dseg FG">00</span>
+					<div class="modalBodyText">
 					</div>
+				</div>
+				<div class="modalButtonRow" data-mode="none">
 				</div>
 			</div>
 		</div>

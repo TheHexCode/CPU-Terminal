@@ -68,7 +68,7 @@ body::after
 	width: 100%;
 	height: 100%;
 }
-
+/*
 .ui-widget
 {
 	font-family: "BigBlue-TerminalPlus";
@@ -118,6 +118,7 @@ body::after
 {
 	background-image: url("https://code.jquery.com/ui/1.14.1/themes/black-tie/images/ui-icons_222222_256x240.png");
 }
+*/
 
 #rigged
 {
@@ -592,10 +593,10 @@ h2
 		var(--bg-color) 0.75rem 1.5rem
 	);
 	text-shadow:
-		2px 2px 0 black,
-		2px -2px 0 black,
+		 2px  2px 0 black,
+		 2px -2px 0 black,
 		-2px -2px 0 black,
-		-2px 2px 0 black;
+		-2px  2px 0 black;
 }
 
 #payloadCodeHeader
@@ -1199,7 +1200,7 @@ ul
 	border-right: 0.5rem solid grey;
 	height: 0.5rem;
 }
-
+/*
 #actExecute + .ui-dialog-buttonpane
 {
 	display: flex;
@@ -1213,11 +1214,100 @@ ul
 	margin-left: 0.5rem;
 	margin-right: 0.5rem;
 }
-
+*/
 footer
 {
 	margin-top: auto;
 	align-self: flex-end;
+}
+
+#modalBG
+{
+	display: none;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	z-index: 100;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: clip;
+	background-color: rgba(0,0,0,0.4);
+}
+
+.modalBox
+{
+	height: auto;
+	min-width: var(--max-main-width);
+	margin: 50%;
+	font-family: "BigBlue-TerminalPlus";
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+	border: 0.5rem solid dimgrey;
+}
+
+.modalHeaderRow
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem;
+}
+
+.modalHeaderText
+{
+	text-decoration: underline;
+}
+
+.modalClose {
+	color: var(--fg-color);
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+  
+.modalClose:hover,
+.modalClose:focus {
+	color: var(--bg-color);
+	text-shadow:
+		 2px  2px 5px var(--fg-color),
+		 2px -2px 5px var(--fg-color),
+		-2px -2px 5px var(--fg-color),
+		-2px  2px 5px var(--fg-color);
+	cursor: pointer;
+}
+
+.modalBody
+{
+	border-style: solid;
+	border-color: dimgrey;
+	border-width: 0.5rem 0 0.5rem 0;
+	padding: 1rem;
+}
+
+.modalButtonRow
+{
+	display: flex;
+	flex-direction: row;
+	column-gap: 1rem;
+	padding: 0.5rem;
+}
+
+.modalButtonRow[data-mode="confirm"]
+{
+	justify-content: flex-end;
+}
+
+.modalButtonRow[data-mode="execute"]
+{
+	justify-content: center;
+}
+
+.modalButtonRow button
+{
+	padding: 0.5rem;
 }
 
 .hidden

@@ -242,45 +242,34 @@ function entryAction(target)
 
 		let options = entryJSON.responseJSON;
 
-		let buttonActions = [];
-
-		options.forEach(function(option)
+		$("#actionModal .modalButtonRow").html("");
+		options.forEach(function(option, index)
 		{
-			buttonActions.push({
-				text: option.button,
-				click: function()
-				{
-					$(this).dialog("close");
-					executeCommand(actionMap, option.state,option.global);
-				}
+			let buttonID = actionMap["entryID"] + action.charAt(0) + index;
+			$("#actionModal .modalButtonRow").append("<button id='" + buttonID + "' class='modalButton'>" + option.button + "</button>");
+
+			$("#" + buttonID).bind("pointerup", function()
+			{
+				executeCommand(actionMap,option.state,option.global);
 			});
 		});
 
-		$("#actConfirm").html(actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?");
+		Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+		
+		$("#actionModal").width($("#main").width());
+
+		$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
+
+		$(".modalBodyTimer").addClass("hidden");
+		$("#actionModal .modalBodyText").html(
+			actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
+		);
+		$(".modalBodyText").removeClass("hidden");
+
+		$("#actionModal .modalButtonRow").attr("data-mode","confirm");
 		
 		$("#load").addClass("hidden");
-
-		$("#actConfirm").dialog({
-			title: "Confirm " + actionMap["upperAction"] + " Action",
-			height: "auto",
-			width: $("#main").width(),
-			modal: true,
-			resizeable: false,
-			show: { effect: "clip", duration: 100 },
-			hide: { effect: "clip", duration: 100 },
-			buttons: buttonActions,
-			open: function(event,ui)
-			{
-				Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-			},
-			close: function(event,ui)
-			{
-				if(event.originalEvent)
-				{
-					Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
-				}
-			}
-		});
+		$("#modalBG").css("display","flex");
 	});
 }
 
@@ -339,59 +328,78 @@ function iceAction(target)
 	});
 }
 
+function closeModal(event)
+{
+	if((event.type !== "keyup") || (event.key === "Escape"))
+	{
+		timer.killTimer();
+
+		$("#modalBG").css("display","none");
+		
+		$("#actionModal .modalHeaderText").html("");
+
+		$(".modalBodyTimer").addClass("hidden");
+		$("#actionModal .modalBodyText").html("");
+		$(".modalBodyText").addClass("hidden");
+
+		$("#actionModal .modalButtonRow").attr("data-mode","none");
+		$("#actionModal .modalButtonRow").html("");
+
+		Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+	}
+}
+
 function executeCommand(actionMap,newState,globalAction)
 {
 	let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
 
-	$("#actExecute").dialog({
-		title: actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s"),
-		height: "auto",
-		width: $("#main").width(),
-		modal: true,
-		show: { effect: "clip", duration: 100 },
-		hide: { effect: "clip", duration: 100 },
-		resizable: false,
-		buttons: [{
-			text: "HOLD TO EXECUTE",
-			mousedown: function(event)
-			{
-				console.log(event);
+	Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 
-				actionMap["newState"] = newState;
-				actionMap["global"] = globalAction;
-				actionMap["dialog"] = "#actExecute";
+	$("#actionModal").width($("#main").width());
 
-				timer.startTimer(maxTime,completeCommand,actionMap);
-			},
-			mouseup: function()
-			{
-				timer.pauseTimer();
-			},
-			mouseleave: function()
-			{
-				timer.pauseTimer();
-			},
-			click: function(event)
-			{
-				event.preventDefault();
-			}
-		}],
-		open: function(event,ui)
-		{
-			$("#actExecute .mmss .FG").html("00:" + tens(maxTime));
-			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-		},
-		close: function(event,ui)
-		{
-			timer.killTimer();
-			Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
-		}
+	$("#actionModal .modalButtonRow").html("");
+	$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
+
+	$("#executeButton").bind("mousedown touchstart", function(event)
+	{
+		event.preventDefault();
+
+		actionMap["newState"] = newState;
+		actionMap["global"] = globalAction;
+
+		timer.startTimer(maxTime,completeCommand,actionMap);
 	});
+	$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
+	{
+		timer.pauseTimer();
+	});
+	$("#executeButton").bind("contextmenu", function(event)
+	{
+		if(event.originalEvent.pointerType === "touch")
+		{
+			event.preventDefault();
+			$("#executeButton").trigger("touchstart");
+		}
+	})
+
+	$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s"));
+
+	$("#actionModal .modalBodyText").html(
+		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
+	);
+	$(".modalBodyText").addClass("hidden");
+	$("#actionModal > .modalBodyTimer .mmss .FG").html("00:" + tens(maxTime));
+	$(".modalBodyTimer").removeClass("hidden");
+
+	$("#actionModal .modalButtonRow").attr("data-mode","execute");
+	
+	$("#load").addClass("hidden");
+	$("#modalBG").css("display","flex");
 }
 
 function completeCommand(actionMap)
 {
-	$(actionMap["dialog"]).dialog("close");
+	closeModal("executed");
 
 	// if global is true, run interrupt script before anything else
 
