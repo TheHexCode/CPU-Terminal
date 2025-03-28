@@ -15,10 +15,10 @@ fclose($iconFile);
 
 $newEntry = array();
 
+$newEntry["terminal_id"] = $entry["terminal_id"];
+
 if($entry["type"] === "ice")
 {
-    $newEntry["ice"] = true;
-
     $newEntry["title"] = '<span class="entrySecret' . ($newState === "unwrap" ? " sprung" : " disarmed") . '">' . $entry["title"] . '</span>';
 
     if(json_decode($entry["contents"]))
@@ -38,8 +38,6 @@ if($entry["type"] === "ice")
 else
 {
     $stateGuide = $iconSchema[$entry["icon"]]["types"][$entry["type"]][$newState];
-
-    $newEntry["ice"] = false;
 
     $stateFormat = array_key_exists("formatting", $stateGuide) ? " ".$stateGuide["formatting"] : "";
 

@@ -269,7 +269,7 @@
 				<div class="modalBody">
 					<div class="modalBodyTimer" class="hidden">
 						<div id="timerContainer">
-							<div id="timerLCD" class="lcdBox amber">
+							<div id="timerLCD" class="lcdBox">
 								<div class="mmss">
 									<span class="dseg BG">~~ ~~</span>
 									<span class="dseg FG">00:00</span>

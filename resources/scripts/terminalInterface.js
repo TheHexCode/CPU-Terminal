@@ -257,6 +257,7 @@ function entryAction(target)
 		Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 		
 		$("#actionModal").width($("#main").width());
+		$("#actionModal").removeClass("ice");
 
 		$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
 
@@ -280,52 +281,48 @@ function iceAction(target)
 	let action = target.classList[0].split("Button")[0];
 	let entryID = target.dataset["id"];
 	let entryPath = "#" + $(target).parents(".entry")[0].id;
-	let entryState = session.getEntryState(entryID);
 
 	let actionMap = {
 		entryID: entryID,
 		entryPath: entryPath,
-		actionCost: session.getActionCost(entryID,action),
+		actionCost: session.getActionCost(entryID,(action === "unwrap" ? "access" : "modify")),
 		upperAction: action.charAt(0).toUpperCase() + action.slice(1),
 		entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
 	};
 
-	let buttonActions = [];
-
-	buttonActions.push({
-		text: actionMap["upperAction"],
-		click: function()
-		{
-			$(this).dialog("close");
-			executeCommand(actionMap, action, true);
-		}
-	});
-
-	$("#actConfirm").html(actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?");
+	$("#actionModal .modalButtonRow").html("");
 	
-	$("#load").addClass("hidden");
+	let buttonID = actionMap["entryID"] + action.charAt(0);
 
-	$("#actConfirm").dialog({
-		title: "Confirm " + actionMap["upperAction"] + " Action",
-		height: "auto",
-		width: $("#main").width(),
-		modal: true,
-		resizeable: false,
-		show: { effect: "clip", duration: 100 },
-		hide: { effect: "clip", duration: 100 },
-		buttons: buttonActions,
-		open: function(event,ui)
-		{
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-		},
-		close: function(event,ui)
-		{
-			if(event.originalEvent)
-			{
-				Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
-			}
-		}
+	$("#actionModal .modalButtonRow").append("<button id='" + buttonID + "' class='modalButton'>" + actionMap["upperAction"] + "</button>");
+	$("#" + buttonID).bind("pointerup", function()
+	{
+		executeCommand(actionMap,action,true);
 	});
+
+	Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+	
+	$("#actionModal").width($("#main").width());
+	$("#actionModal").addClass("ice");
+
+	$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
+
+	$(".modalBodyTimer").addClass("hidden");
+	$("#actionModal .modalBodyText").html(
+		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
+		(action === "unwrap" ?
+			"<div class='cautionTape'>" +
+				"WARNING: Unwrapping ICE means tripping it and taking any negative effects it may incur. BREAK the ICE instead to disable the security, in exchange for Tags." +
+			"</div>" :
+			""
+		)
+	);
+	$(".modalBodyText").removeClass("hidden");
+
+	$("#actionModal .modalButtonRow").attr("data-mode","confirm");
+		
+	$("#load").addClass("hidden");
+	$("#modalBG").css("display","flex");
 }
 
 function closeModal(event)
@@ -364,6 +361,8 @@ function executeCommand(actionMap,newState,globalAction)
 	{
 		event.preventDefault();
 
+		$("#executeButton").addClass("active");
+
 		actionMap["newState"] = newState;
 		actionMap["global"] = globalAction;
 
@@ -371,6 +370,8 @@ function executeCommand(actionMap,newState,globalAction)
 	});
 	$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
 	{
+		$("#executeButton").removeClass("active");
+
 		timer.pauseTimer();
 	});
 	$("#executeButton").bind("contextmenu", function(event)
@@ -401,11 +402,10 @@ function completeCommand(actionMap)
 {
 	closeModal("executed");
 
-	// if global is true, run interrupt script before anything else
-
 	//get Title/Contents/available buttons
 	//get Trap/Ice Formatting
 	//Update Gems/Tags
+	//Disable unaffordable buttons
 
 	//actionMap:
 		// actionCost
@@ -420,16 +420,14 @@ function completeCommand(actionMap)
 			// contents
 			// access
 			// modify
-			// ice
 		// upperAction
 
 	$(actionMap["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
 	$(actionMap["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
 	$(actionMap["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
 	$(actionMap["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
+	$(actionMap["entryPath"] + " > .subIce").removeClass("subIce");
 
-	if(actionMap["results"]["ice"])
-	{
-		$(actionMap["entryPath"] + " > .subIce").removeClass("subIce")
-	}
+	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
+	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 }

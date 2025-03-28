@@ -45,12 +45,25 @@ class Timer
             {
                 clearInterval(this.#timerInterval);
                 this.#timerInterval = null;
-                
-                //$("#playPause").prop("disabled",true);
-                
+
+                //if global = true, run interrupt script IMMEDIATELY
+
                 callargs["results"] = results.responseJSON;
 
-                console.log(results);
+                if(callargs["global"])
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "resources\\scripts\\db\\terminalInterrupt.php",
+                        data:
+                        {
+                            termID: callargs["results"]["terminal_id"],
+                            entryID: callargs["entryID"],
+                            newState: callargs["newState"]
+                        }
+                    });
+                }
 
                 callback(callargs);
             }
