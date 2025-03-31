@@ -393,7 +393,7 @@ h2
 	/*color: #0D1C23/*#1B1C14;*/
 }
 
-#timerContainer
+.timerContainer
 {
 	display: flex;
 	flex-direction: row;
@@ -626,6 +626,11 @@ h2
 {
 	margin: auto 10px 10px 10px;
 	height: 3rem;
+}
+
+#terminalButton.noPayload
+{
+	background-color: var(--red);
 }
 
 #hackZone

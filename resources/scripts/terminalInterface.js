@@ -1,6 +1,7 @@
-//var session = new Session();
+//var session = new Session(); <- Created by classes\terminal.php
 var payload = new Payload();
-var timer = new Timer("#timerLCD");
+var taTimer = new Timer("#termAccessTimer");
+var mbTimer = new Timer("#modalBodyTimer");
 
 function tens(numStr)
 {
@@ -87,8 +88,12 @@ function injectUserPayload(userPayload)
 								""//"<span>PIN: 333333</span>"
 							);
 
-		$("#terminalButton").html("Access Terminal");
-		$("#termainlButton").prop("disabled",false);
+		let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
+
+		$("#terminalButton").html("Cracking...");
+		$("#terminalButton").removeClass("noPayload");
+		taTimer.startTimer(maxTime,allowAccess);
+		//$("#terminalButton").prop("disabled",false);
 		
 		//// TAG MANAGEMENT
 
@@ -179,16 +184,25 @@ function updateExtraTags(change)
 	$("#remTags").html(tens(remTags));
 }
 
-function accessTerminal()
+function allowAccess()
 {
-	let reqTags = parseInt($("#reqTags").html());
+	$("#terminalButton").html("Access Terminal");
+	$("#terminalButton").attr("disabled",false);
+}
 
-	session.setCurrentTags(session.getCurrentTags() - reqTags);
+function accessTerminal(event)
+{
+	if(!event.target.disabled)
+	{
+		let reqTags = parseInt($("#reqTags").html());
 
-	Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+		session.setCurrentTags(session.getCurrentTags() - reqTags);
 
-    $("#accessZone").hide();
-	$("#hackZone").css("display","flex");
+		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+
+		$("#accessZone").hide();
+		$("#hackZone").css("display","flex");
+	}
 }
 
 function openTab(target, contentID)
@@ -261,7 +275,7 @@ function entryAction(target)
 
 		$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
 
-		$(".modalBodyTimer").addClass("hidden");
+		$("#modalBodyTimer").addClass("hidden");
 		$("#actionModal .modalBodyText").html(
 			actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
 		);
@@ -307,7 +321,7 @@ function iceAction(target)
 
 	$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
 
-	$(".modalBodyTimer").addClass("hidden");
+	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
 		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
 		(action === "unwrap" ?
@@ -329,13 +343,13 @@ function closeModal(event)
 {
 	if((event.type !== "keyup") || (event.key === "Escape"))
 	{
-		timer.killTimer();
+		mbTimer.killTimer();
 
 		$("#modalBG").css("display","none");
 		
 		$("#actionModal .modalHeaderText").html("");
 
-		$(".modalBodyTimer").addClass("hidden");
+		$("#modalBodyTimer").addClass("hidden");
 		$("#actionModal .modalBodyText").html("");
 		$(".modalBodyText").addClass("hidden");
 
@@ -366,13 +380,13 @@ function executeCommand(actionMap,newState,globalAction)
 		actionMap["newState"] = newState;
 		actionMap["global"] = globalAction;
 
-		timer.startTimer(maxTime,completeCommand,actionMap);
+		mbTimer.startTimer(maxTime,completeCommand,actionMap);
 	});
 	$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
 	{
 		$("#executeButton").removeClass("active");
 
-		timer.pauseTimer();
+		mbTimer.pauseTimer();
 	});
 	$("#executeButton").bind("contextmenu", function(event)
 	{
@@ -389,8 +403,8 @@ function executeCommand(actionMap,newState,globalAction)
 		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
 	);
 	$(".modalBodyText").addClass("hidden");
-	$("#actionModal > .modalBodyTimer .mmss .FG").html("00:" + tens(maxTime));
-	$(".modalBodyTimer").removeClass("hidden");
+	$("#modalBodyTimer .mmss .FG").html("00:" + tens(maxTime));
+	$("#modalBodyTimer").removeClass("hidden");
 
 	$("#actionModal .modalButtonRow").attr("data-mode","execute");
 	

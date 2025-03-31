@@ -1,6 +1,6 @@
 class Timer
 {
-    #lcdElement;
+    #timerContainer;
     #timerInterval = null;
     #colon = ":";
 
@@ -9,9 +9,9 @@ class Timer
 
     #pause = false;
 
-    constructor(lcdID)
+    constructor(containerID)
     {
-        this.#lcdElement = lcdID;
+        this.#timerContainer = containerID;
         setInterval(() => this.#colonBlink())
     }
 
@@ -29,7 +29,7 @@ class Timer
         }
     }
     
-    #interval(maxTime, callback, callargs, results)
+    #interval(maxTime, callback, callargs=null, results=null)
     {
         if(this.#pause === false)
         {
@@ -47,22 +47,24 @@ class Timer
                 this.#timerInterval = null;
 
                 //if global = true, run interrupt script IMMEDIATELY
-
-                callargs["results"] = results.responseJSON;
-
-                if(callargs["global"])
+                if(callargs !== null)
                 {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "resources\\scripts\\db\\terminalInterrupt.php",
-                        data:
-                        {
-                            termID: callargs["results"]["terminal_id"],
-                            entryID: callargs["entryID"],
-                            newState: callargs["newState"]
-                        }
-                    });
+                    callargs["results"] = results.responseJSON;
+
+                    if(callargs["global"])
+                    {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "resources\\scripts\\db\\terminalInterrupt.php",
+                            data:
+                            {
+                                termID: callargs["results"]["terminal_id"],
+                                entryID: callargs["entryID"],
+                                newState: callargs["newState"]
+                            }
+                        });
+                    }
                 }
 
                 callback(callargs);
@@ -77,11 +79,11 @@ class Timer
         
         let mmss = min + this.#colon + sec;
         
-        $(this.#lcdElement + " > .mmss > .FG").html(mmss);
-        $(this.#lcdElement + " > .hundsec > .FG").html(hundsec);
+        $(this.#timerContainer + " .mmss > .FG").html(mmss);
+        $(this.#timerContainer + " .hundsec > .FG").html(hundsec);
     }
 
-    startTimer(maxTime, callback, callargs)
+    startTimer(maxTime, callback, callargs=null)
     {
         this.#baseDate = Date.now();
 
@@ -89,10 +91,15 @@ class Timer
         {
             this.#elapse = 0;
 
-            let results = $.getJSON(
-                "resources\\scripts\\db\\getEntryUpdate.php",
-                { id: callargs["entryID"], newState: callargs["newState"] }
-            );
+            let results = null;
+            
+            if(callargs !== null)
+            {
+                results = $.getJSON(
+                    "resources\\scripts\\db\\getEntryUpdate.php",
+                    { id: callargs["entryID"], newState: callargs["newState"] }
+                );
+            }
 
             this.#timerInterval = setInterval(() => this.#interval(maxTime, callback, callargs, results), 10);
         }

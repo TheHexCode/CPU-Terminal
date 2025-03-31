@@ -145,7 +145,19 @@
 						</div>
 					</div>
 				</div>
-				<button id="terminalButton" onpointerup="accessTerminal(null)">Standby...</button>
+				<div id="termAccessTimer" class="timerContainer">
+					<div class="lcdBox">
+						<div class="mmss">
+							<span class="dseg BG">~~ ~~</span>
+							<span class="dseg FG">00:30</span>
+						</div>
+						<div class="hundsec">
+							<span class="dseg BG">~~</span>
+							<span class="dseg FG">00</span>
+						</div>
+					</div>
+				</div>
+				<button id="terminalButton" class="noPayload" onpointerup="accessTerminal(event)" disabled="">Please Submit Code...</button>
 			</div>
 			<div id="hackZone" class="zoneBox">
 				<div id="hackTabContainer">
@@ -267,17 +279,15 @@
 					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&times;</span>
 				</div>
 				<div class="modalBody">
-					<div class="modalBodyTimer" class="hidden">
-						<div id="timerContainer">
-							<div id="timerLCD" class="lcdBox">
-								<div class="mmss">
-									<span class="dseg BG">~~ ~~</span>
-									<span class="dseg FG">00:00</span>
-								</div>
-								<div class="hundsec">
-									<span class="dseg BG">~~</span>
-									<span class="dseg FG">00</span>
-								</div>
+					<div id="modalBodyTimer"class="timerContainer hidden">
+						<div class="lcdBox">
+							<div class="mmss">
+								<span class="dseg BG">~~ ~~</span>
+								<span class="dseg FG">00:00</span>
+							</div>
+							<div class="hundsec">
+								<span class="dseg BG">~~</span>
+								<span class="dseg FG">00</span>
 							</div>
 						</div>
 					</div>
