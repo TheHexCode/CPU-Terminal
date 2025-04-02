@@ -1059,6 +1059,7 @@ ul
 	background-image: repeating-radial-gradient(circle at 17% 18%, var(--fg-color), var(--bg-color) 0.00055px);
 	background-position: center;
 	animation: entryMaskNoise 5s linear infinite;
+	pointer-events: none;
 	z-index: 5;
 }
 

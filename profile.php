@@ -165,6 +165,7 @@
 				</form>
 			</div>
 			<div id="spacer"></div>
+			<button onclick="testML()">Test myLarp API</button>
 			<footer>
 				<span>© CPU Larp 2025</span>
 			</footer>

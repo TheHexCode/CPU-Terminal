@@ -64,3 +64,21 @@ function statSubmit(event)
 {
     event.preventDefault();
 }
+
+function testML()
+{
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "resources\\scripts\\mylarp\\myLarpLogin.php",
+		data:
+		{
+			mlEmail: "",
+			mlPass: ""
+		}
+	})
+	.done(function(responseJSON)
+	{
+		console.log(json_decode(responseJSON));
+	})
+}
