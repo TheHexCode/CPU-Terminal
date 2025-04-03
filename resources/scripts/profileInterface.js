@@ -79,6 +79,7 @@ function testML()
 	})
 	.done(function(responseJSON)
 	{
-		console.log(json_decode(responseJSON));
-	})
+		console.log("Test");
+		console.log(responseJSON);
+	});
 }

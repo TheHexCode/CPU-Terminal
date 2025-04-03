@@ -2,6 +2,7 @@
 
 $mlEmail = $_POST["mlEmail"];
 $mlPass = $_POST["mlPass"];
+$mlCharID = $_POST["mlCharID"];
 
 $curlHandle = curl_init("https://cpularp.mylarp.dev/scripts/User.login.asp");
 
