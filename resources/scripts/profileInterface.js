@@ -65,21 +65,112 @@ function statSubmit(event)
     event.preventDefault();
 }
 
-function testML()
+function mlLogin(event)
 {
+	event.preventDefault();
+
+	$("#load").removeClass("hidden");
+
+	$("#mlEmail").prop("readonly",true);
+	$("#mlPass").prop("readonly",true);
+	mlEmail = $("#mlEmail").val();
+	mlPass = $("#mlPass").val();
+
 	$.ajax({
 		type: "POST",
 		dataType: "json",
 		url: "resources\\scripts\\mylarp\\myLarpLogin.php",
 		data:
 		{
-			mlEmail: "",
-			mlPass: ""
+			mlEmail: mlEmail,
+			mlPass: mlPass
 		}
 	})
-	.done(function(responseJSON)
+	.done(function(response)
 	{
-		console.log("Test");
-		console.log(responseJSON);
+		processLogin(response);
 	});
+}
+
+function processLogin(loginData)
+{
+	console.log(loginData);
+
+	if(loginData["result"] !== "pass")
+	{
+		console.log(loginData);
+		alert("Login Failed! Please Try Again");
+	}
+	else
+	{
+		// If loginData["charList"].count > 1
+		loginData["charList"].forEach(function(character, index)
+		{
+			let buttonID = "char" + index;
+			$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
+
+			$("#" + buttonID).bind("pointerup", function()
+			{
+				selectCharacter(character["charID"]);
+			});
+		});
+		
+		$("#charSelectModal").width($("#main").width());
+
+		$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
+		
+		$("#load").addClass("hidden");
+		$("#modalBG").css("display","flex");
+	}
+}
+
+function closeModal(event)
+{
+	if((event.type !== "keyup") || (event.key === "Escape"))
+	{
+		$("#modalBG").css("display","none");
+		
+		$("#charListModal .modalHeaderText").html("");
+
+		$("#charListModal .modalBodyText").html("");
+
+		if(event !== "selected")
+		{
+			$("#mlEmail").prop("readonly",false);
+			$("#mlPass").prop("readonly",false);
+		}
+	}
+}
+
+function selectCharacter(charID)
+{
+	$("#load").removeClass("hidden");
+	closeModal("selected");
+
+	mlEmail = $("#mlEmail").val();
+	mlPass = $("#mlPass").val();
+	mlCharID = charID;
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "resources\\scripts\\mylarp\\myLarpChar.php",
+		data:
+		{
+			mlEmail: mlEmail,
+			mlPass: mlPass,
+			mlCharID: mlCharID
+		}
+	})
+	.done(function(response)
+	{
+		processCharInfo(response);
+	});
+}
+
+function processCharInfo(charData)
+{
+	console.log(charData);
+
+	$("#load").addClass("hidden");
 }

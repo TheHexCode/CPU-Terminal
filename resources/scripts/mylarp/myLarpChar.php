@@ -24,7 +24,7 @@ $loginResponse = curl_exec($curlHandle);
 curl_reset($curlHandle);
 
 $curlCharOptions = array(
-    CURLOPT_URL => "https://cpularp.mylarp.dev/api/1.0/Character/skillcard.asp?id=161",
+    CURLOPT_URL => "https://cpularp.mylarp.dev/api/1.0/Character/skillcard.asp?id=" . $mlCharID,
     CURLOPT_RETURNTRANSFER => true
 );
 

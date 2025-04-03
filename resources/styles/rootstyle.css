@@ -1,0 +1,55 @@
+@font-face {
+	font-family: "DSEG14-ClassicLight";
+	src: url("../fonts/DSEG14Classic-Light.woff2") format("woff2"),
+         url("../fonts/DSEG14Classic-Light.woff") format("woff"),
+         url("../fonts/DSEG14Classic-Light.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "DSEG14-ClassicRegular";
+	src: url("../fonts/DSEG14Classic-Regular.woff2") format("woff2"),
+         url("../fonts/DSEG14Classic-Regular.woff") format("woff"),
+         url("../fonts/DSEG14Classic-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "BigBlue-TerminalPlus";
+	src: url("../fonts/BigBlue_TerminalPlus.TTF") format("truetype");
+}
+
+:root
+{
+	/* COLORS */
+	--amber: rgb(255,172,0);
+	--blue: rgb(0,210,255);
+	--red: rgb(255,0,0);
+	--dimred: rgb(187,0,0);
+	--black: rgb(10,10,10);
+	--dk-blue: rgb(51,51,68);
+	--dk-red: rgb(17,0,0);
+	--grey: rgb(128,128,128);
+	--dimgrey: rgb(105,105,105);
+	--dodger-blue: rgb(30,144,255);
+	--maroon: rgb(128,0,0);
+	--trans-black: rgba(0,0,0,0.4);
+	--trans-clear: rgba(0,0,0,0);
+
+	--main-fg-color: var(--amber);
+	--main-bg-color: var(--black);
+	--main-border-color: var(--grey);
+	--inactive-border-color: var(--dimgrey);
+	--modal-bg-color: var(--trans-black);
+
+	--ice-fg-color: var(--blue);
+	--ice-bg-color: var(--dk-blue);
+	--ice-border-color: var(--dodger-blue);
+
+	--bricked-fg-color: var(--black);
+	--bricked-bg-color: var(--amber);
+
+	--root-fg-color: var(--red);
+	--root-bg-color: var(--dk-red);
+	--root-border-color: var(--maroon);
+
+	--max-main-width: 400px;
+}

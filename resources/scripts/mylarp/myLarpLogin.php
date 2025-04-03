@@ -18,20 +18,57 @@ $curlOptions = array(
 curl_setopt_array($curlHandle, $curlOptions);
 curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
 
-$loginResponse = curl_exec($curlHandle);
+$loginResponse = json_decode(curl_exec($curlHandle),true);
 
-curl_reset($curlHandle);
+if($loginResponse["result"] !== "pass")
+{
+    curl_close($curlHandle);
 
-$curlCharOptions = array(
-    CURLOPT_URL => "https://cpularp.mylarp.dev/api/1.0/Character/skillcard.asp?id=161",
-    CURLOPT_RETURNTRANSFER => true
-);
+    echo json_encode($loginResponse);
+}
+else
+{
+    curl_reset($curlHandle);
 
-curl_setopt_array($curlHandle,$curlCharOptions);
-curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
+    $curlCharOptions = array(
+        CURLOPT_URL => "https://cpularp.mylarp.dev/characters",
+        CURLOPT_RETURNTRANSFER => true
+    );
 
-$charResponse = curl_exec($curlHandle);
+    curl_setopt_array($curlHandle,$curlCharOptions);
+    curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
 
-curl_close($curlHandle);
+    $charListResponse = curl_exec($curlHandle);
 
-echo $charResponse;
+    curl_close($curlHandle);
+
+    $doc = new DOMDocument();
+    @$doc->loadHTML($charListResponse);
+
+    $tiles = $doc->getElementsByTagName("character-tile");
+
+    $characters = array();
+
+    for($i = 0; $i < $tiles->count(); $i++)
+    {
+        $tile = $tiles->item($i);
+
+        $charName = $tile->nextSibling->nodeValue;
+
+        $charIDNode = $tile->attributes->getNamedItem("data-id");
+
+        if($charIDNode !== null)
+        {
+            $charID = $charIDNode->nodeValue;
+
+            array_push($characters,array(
+                "charID" => $charID,
+                "charName" => $charName
+            ));
+        }
+    }
+
+    $loginResponse["charList"] = $characters;
+
+    echo json_encode($loginResponse);
+}

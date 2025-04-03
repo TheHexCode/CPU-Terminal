@@ -17,6 +17,7 @@
 		<script type="text/javascript" src="resources/scripts/classes/timer.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
 		<script type="text/javascript" src="resources/scripts/classes/gems.js" defer></script>
+		<link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
 	</head>
 	<body>

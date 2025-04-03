@@ -8,40 +8,43 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-		<!--<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">-->
+		<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="resources/scripts/profileInterface.js"></script>
-        <link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="resources/styles/prostyle.css"/>
 	</head>
 	<body>
         <div id="main">
-            <div id="load" class="hidden">
-				<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
-					<mask id="logoMask">
-						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
-					</mask>
-				
-					<foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
-						<div id="logoBG"></div>
-					</foreignObject>
-				</svg>
-			</div>
 			<h1>PAYLOAD CUSTOMIZATION</h1>
-			<div class="mlLoginBox">
-				<h2>MYLARP LOGIN</h2>
-                <form id="mlLogin" autocomplete="off" onSubmit="mlLogin(event)">
-                    <div class="mlLoginRow">
-                        <label for="mlEmail">myLarp Email:</label>
-                        <input type="email" id="mlEmail" form="mlLoginForm" required></input>
-                    </div>
-                    <div class="mlLoginRow">
-                        <label for="mlPass">myLarp Password:</label>
-                        <input type="password" id="mlPass" form="mlLoginForm" required></input>
-                    </div>
-                    <button type="submit" form="mlLogin">Log in to myLarp</button>
-                </form>
+			<div class="infoBox">
+				<h2>PAYLOAD PREVIEW</h2>
+				<div class="infoGrid">
+					<div class="infoName">
+						<label for="handle">Character Name/Handle:<span class="red">*</span></label>
+						<input type="text" id="handle" form="statsForm" maxlength="15" required></input>
+					</div>
+					<div id="maskName" class="infoName dimmed">
+						<label for="mask">Default Mask:</label>
+						<input type="text" id="mask" form="statsForm" placeholder="Leave blank for anonymous log entry" maxlength="15" disabled></input>
+					</div>
+					<div class="infoRole">
+						<label for="primaryRole">Primary Role:</label>
+						<select id="primaryRole" onchange="roleChange()">
+							<option value="none">-Select-</option>
+							<?php echo fillRoleSelection($profileResponse); ?>
+							<option value="other">Other</option>
+						</select>
+					</div>
+					<div class="infoRole">
+						<label for="secondaryRole">Secondary Role:</label>
+						<select id="secondaryRole" onchange="roleChange()">
+							<option value="none">-Select-</option>
+							<?php echo fillRoleSelection($profileResponse); ?>
+							<option value="other">Other</option>
+						</select>
+					</div>
+				</div>
 			</div>
             <div class="zoneBox">
 				<div id="profTabContainer">
@@ -162,21 +165,10 @@
 				</form>
 			</div>
 			<div id="spacer"></div>
+			<button onclick="testML()">Test myLarp API</button>
 			<footer>
 				<span>© CPU Larp 2025</span>
 			</footer>
         </div>
-        <div id="modalBG">
-			<div id="charSelectModal" class="modalBox">
-				<div class="modalHeaderRow">
-					<span class="modalHeaderText"></span>
-					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&times;</span>
-				</div>
-				<div class="modalBody">
-					<div class="modalBodyText">
-					</div>
-				</div>
-			</div>
-		</div>
     </body>
 </html>

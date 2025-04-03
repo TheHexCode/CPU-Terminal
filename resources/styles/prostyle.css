@@ -1,30 +1,9 @@
-@font-face {
-	font-family: "DSEG14-ClassicLight";
-	src: url("../fonts/DSEG14Classic-Light.woff2") format("woff2"),
-         url("../fonts/DSEG14Classic-Light.woff") format("woff"),
-         url("../fonts/DSEG14Classic-Light.ttf") format("truetype");
-}
-
-@font-face {
-	font-family: "DSEG14-ClassicRegular";
-	src: url("../fonts/DSEG14Classic-Regular.woff2") format("woff2"),
-         url("../fonts/DSEG14Classic-Regular.woff") format("woff"),
-         url("../fonts/DSEG14Classic-Regular.ttf") format("truetype");
-}
-
-@font-face {
-	font-family: "BigBlue-TerminalPlus";
-	src: url("../fonts/BigBlue_TerminalPlus.TTF") format("truetype");
-}
-
-:root
-{
-	--bg-color: #0A0A0A;
-	--fg-color: #FFAC00;
-}
-
 body
 {
+	--fg-color: var(--main-fg-color);
+	--bg-color: var(--main-bg-color);
+	--border-color: var(--main-border-color);
+
 	height: 98vh;
 	margin: 0;
 	padding: 0.5rem;
@@ -107,6 +86,51 @@ h2
 	max-width: 400px;
 	margin: 0 auto;
 }
+
+#load
+{
+	--bg-color: var(--modal-bg-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	height: 100%;
+	width: calc(100vw - 1rem);
+	max-width: var(--max-main-width);
+	z-index: 998;
+}
+
+@keyframes logoSpin
+	{
+		from
+		{
+			transform: rotate(0deg);
+		}
+		to
+		{
+			transform: rotate(360deg);
+		}
+	}
+
+#logoBG
+{
+	width: 295px;
+	height: 295px;
+	margin: -43px 0 0 -43px;
+
+	background: conic-gradient(var(--trans-clear), var(--fg-color) 90%, var(--fg-color));
+
+	animation-name: logoSpin;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+#load.hidden
+{
+	display: none;
+}
+
 h1
 {
 	margin: 0;
@@ -123,7 +147,7 @@ h2
 	font-size: 140%;
 }
 
-.infoBox
+.mlLoginBox
 {
 	display: flex;
 	flex-direction: column;
@@ -134,40 +158,28 @@ h2
 	margin-bottom: 0.5rem;
 }
 
-.infoName
+.mlLoginRow
 {
 	display: grid;
 	grid-template-columns: [start] 1rem [tab] auto [end];
 }
 
-.infoName label
+.mlLoginRow label
 {
 	grid-row: 1;
 	grid-column: start / end;
 }
 
-.infoName input
+.mlLoginRow input
 {
 	grid-row: 2;
 	grid-column: tab / end;
 }
 
-.infoRole
+.mlLoginBox button
 {
-	display: grid;
-	grid-template-columns: [start] 50% [mid] auto [end];
-}
-
-.infoRole label
-{
-	grid-row: 1;
-	grid-column: start / mid;
-}
-
-.infoRole select
-{
-	display: grid;
-	grid-column: mid / end;
+	margin-top: 1rem;
+	width: 100%;
 }
 
 .zoneBox
@@ -252,4 +264,81 @@ footer
 {
 	margin-top: auto;
 	align-self: flex-end;
+}
+
+#modalBG
+{
+	display: none;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	z-index: 100;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: clip;
+	background-color: var(--modal-bg-color);
+}
+
+.modalBox
+{
+	height: auto;
+	max-width: var(--max-main-width);
+	font-family: "BigBlue-TerminalPlus";
+	color: var(--fg-color);
+	background-color: var(--bg-color);
+	border: 0.5rem solid var(--border-color);
+}
+
+.modalHeaderRow
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem;
+	border-width: 0 0 0.5rem 0;
+	border-color: var(--border-color);
+	border-style: solid;
+}
+
+.modalHeaderText
+{
+	text-decoration: underline;
+}
+
+.modalClose {
+	color: var(--fg-color);
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+  
+.modalClose:hover,
+.modalClose:focus {
+	color: var(--bg-color);
+	text-shadow:
+		 2px  2px 5px var(--fg-color),
+		 2px -2px 5px var(--fg-color),
+		-2px -2px 5px var(--fg-color),
+		-2px  2px 5px var(--fg-color);
+	cursor: pointer;
+}
+
+.modalBody
+{
+	padding: 1rem;
+}
+
+.modalBodyText
+{
+	display: flex;
+	flex-direction: column;
+}
+
+.modalButton
+{
+	width: 100%;
+	font-size: 200%;
 }

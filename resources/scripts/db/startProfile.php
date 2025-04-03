@@ -43,24 +43,16 @@ function fillProfileTab($tabName, $profileData)
         });
     }
 
-    echo "<script>console.log(".json_encode($tabData).")</script>";
-
     $roleList = array_combine(array_column($tabData,"role_id"),array_column($tabData,"roleName"));
-
-    echo "<script>console.log(".json_encode($roleList).")</script>";
 
     $returnString = "";
 
     foreach($roleList as $roleIndex => $roleName)
     {
-        echo "<script>console.log(".$roleIndex.")</script>";
         $roleFunctions = array_filter($tabData,function($function) use ($roleIndex)
         {
             return (intval($function["role_id"]) === $roleIndex);
         });
-
-        //echo "<script>console.log(".$roleID.")</script>";
-        echo "<script>console.log(".json_encode($roleFunctions).")</script>";
 
         $romanTiers = array("1"=>"I","2"=>"II","3"=>"III","4"=>"IV","5"=>"V");
 
@@ -72,9 +64,6 @@ function fillProfileTab($tabName, $profileData)
             {
                 return (intval($function["tier"]) === $i);
             });
-
-            echo "<script>console.log(".json_encode($tierFunctions).")</script>";
-            echo "<script>console.log(".count($tierFunctions).")</script>";
 
             if(count($tierFunctions) > 0)
             {
