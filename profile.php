@@ -34,11 +34,11 @@
                 <form id="mlLogin" autocomplete="off" onSubmit="mlLogin(event)">
                     <div class="mlLoginRow">
                         <label for="mlEmail">myLarp Email:</label>
-                        <input type="email" id="mlEmail" form="mlLoginForm" required></input>
+                        <input type="email" id="mlEmail" form="mlLoginForm" onkeyup="mlEnter(event)" required></input>
                     </div>
                     <div class="mlLoginRow">
                         <label for="mlPass">myLarp Password:</label>
-                        <input type="password" id="mlPass" form="mlLoginForm" required></input>
+                        <input type="password" id="mlPass" form="mlLoginForm" onkeyup="mlEnter(event)" required></input>
                     </div>
                     <button type="submit" form="mlLogin">Log in to myLarp</button>
                 </form>

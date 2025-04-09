@@ -65,62 +65,87 @@ function statSubmit(event)
     event.preventDefault();
 }
 
+function mlEnter(event)
+{
+	event.preventDefault();
+
+	if(event.key === "Enter")
+	{
+		mlLogin(event);
+	}
+}
+
 function mlLogin(event)
 {
 	event.preventDefault();
 
-	$("#load").removeClass("hidden");
-
-	$("#mlEmail").prop("readonly",true);
-	$("#mlPass").prop("readonly",true);
-	mlEmail = $("#mlEmail").val();
-	mlPass = $("#mlPass").val();
-
-	$.ajax({
-		type: "POST",
-		dataType: "json",
-		url: "resources\\scripts\\mylarp\\myLarpLogin.php",
-		data:
-		{
-			mlEmail: mlEmail,
-			mlPass: mlPass
-		}
-	})
-	.done(function(response)
+	if(($("#mlEmail").val() === "") || ($("#mlPass").val() === ""))
 	{
-		processLogin(response);
-	});
+		alert("Please fill both fields!");
+	}
+	else
+	{
+		$("#load").removeClass("hidden");
+
+		$("#mlEmail").prop("readonly",true);
+		$("#mlPass").prop("readonly",true);
+		mlEmail = $("#mlEmail").val();
+		mlPass = $("#mlPass").val();
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "resources\\scripts\\mylarp\\myLarpLogin.php",
+			data:
+			{
+				mlEmail: mlEmail,
+				mlPass: mlPass
+			}
+		})
+		.done(function(response)
+		{
+			processLogin(response);
+		});
+	}
 }
 
 function processLogin(loginData)
 {
-	console.log(loginData);
-
 	if(loginData["result"] !== "pass")
 	{
 		console.log(loginData);
 		alert("Login Failed! Please Try Again");
+
+		$("#load").addClass("hidden");
 	}
 	else
 	{
-		// If loginData["charList"].count > 1
-		loginData["charList"].forEach(function(character, index)
+		$("#charSelectModal .modalBodyText").html("");
+
+		if(loginData["charList"].count > 1)
 		{
-			let buttonID = "char" + index;
-			$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
-
-			$("#" + buttonID).bind("pointerup", function()
+			loginData["charList"].forEach(function(character, index)
 			{
-				selectCharacter(character["charID"]);
-			});
-		});
-		
-		$("#charSelectModal").width($("#main").width());
+				let buttonID = "char" + index;
+				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
 
-		$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
-		
-		$("#load").addClass("hidden");
-		$("#modalBG").css("display","flex");
+				$("#" + buttonID).bind("pointerup", function()
+				{
+					selectCharacter(character["charID"]);
+				});
+			});
+			
+			$("#charSelectModal").width($("#main").width());
+
+			$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
+			
+			$("#load").addClass("hidden");
+			$("#modalBG").css("display","flex");
+		}
+		else
+		{
+			selectCharacter(loginData["charList"][0]["charID"]);
+		}
 	}
 }
 
@@ -138,6 +163,8 @@ function closeModal(event)
 		{
 			$("#mlEmail").prop("readonly",false);
 			$("#mlPass").prop("readonly",false);
+
+			$("#mlPass").val("");
 		}
 	}
 }
@@ -166,6 +193,8 @@ function selectCharacter(charID)
 	{
 		processCharInfo(response);
 	});
+
+
 }
 
 function processCharInfo(charData)
@@ -173,4 +202,6 @@ function processCharInfo(charData)
 	console.log(charData);
 
 	$("#load").addClass("hidden");
+
+	$("#mlPass").val("");
 }
