@@ -2,14 +2,18 @@
 
 require('dbConnect.php');
 
-$profile_query = $pdo->query("SELECT role_functions.id,role_id,roles.roleName AS roleName,tier,function_id,functions.functionName AS functionName,rank
-                            FROM CPU_Terminal.dbo.role_functions
-                            INNER JOIN CPU_Terminal.dbo.roles ON role_functions.role_id=roles.id
-                            INNER JOIN CPU_Terminal.dbo.functions ON role_functions.function_id=functions.id");
-$profileResponse = $profile_query->fetchAll(PDO::FETCH_ASSOC);
+#$profile_query = $pdo->query("SELECT role_functions.id,role_id,roles.roleName AS roleName,tier,function_id,functions.functionName AS functionName,rank
+#                            FROM CPU_Terminal.dbo.role_functions
+#                            INNER JOIN CPU_Terminal.dbo.roles ON role_functions.role_id=roles.id
+#                            INNER JOIN CPU_Terminal.dbo.functions ON role_functions.function_id=functions.id");
+#$profileResponse = $profile_query->fetchAll(PDO::FETCH_ASSOC);
+$profileResponse = "Placeholder";
 
 function fillRoleSelection($profileData)
 {
+    return "Old Function";
+
+    /*
     $roleData = array_combine(array_column($profileData,"role_id"),array_column($profileData,"roleName"));
     asort($roleData);
 
@@ -24,10 +28,14 @@ function fillRoleSelection($profileData)
     }
 
     return $selectString;
+    */
 }
 
 function fillProfileTab($tabName, $profileData)
 {
+    return "Old Function";
+
+    /*
     if(strcasecmp($tabName,"STANDARD") === 0)
     {
         $tabHidden = false;
@@ -83,4 +91,5 @@ function fillProfileTab($tabName, $profileData)
     }
 
     return $returnString;
+    */
 }
