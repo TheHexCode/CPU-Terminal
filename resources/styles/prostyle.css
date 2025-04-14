@@ -35,16 +35,6 @@ body::after
 	color: red;
 }
 
-.hidden
-{
-	display: none;
-}
-
-.invisible
-{
-	visibility: hidden;
-}
-
 .dimmed
 {
 	filter: brightness(50%);
@@ -85,50 +75,6 @@ h2
 	row-gap: 0.25rem;
 	max-width: 400px;
 	margin: 0 auto;
-}
-
-#load
-{
-	--bg-color: var(--modal-bg-color);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: absolute;
-	height: 100%;
-	width: calc(100vw - 1rem);
-	max-width: var(--max-main-width);
-	z-index: 998;
-}
-
-@keyframes logoSpin
-	{
-		from
-		{
-			transform: rotate(0deg);
-		}
-		to
-		{
-			transform: rotate(360deg);
-		}
-	}
-
-#logoBG
-{
-	width: 295px;
-	height: 295px;
-	margin: -43px 0 0 -43px;
-
-	background: conic-gradient(var(--trans-clear), var(--fg-color) 90%, var(--fg-color));
-
-	animation-name: logoSpin;
-	animation-duration: 2s;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
-}
-
-#load.hidden
-{
-	display: none;
 }
 
 h1
@@ -188,6 +134,37 @@ h2
 	flex-direction: column;
 }
 
+#payloadCodeRow
+{
+	display: grid;
+	/*
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	column-gap: 0.25rem;
+	*/
+	background-color: var(--bg-color);
+	border: 2px solid var(--fg-color);
+	border-radius: 0.5rem;
+	padding: 0.5rem;
+}
+
+#payloadCodeRow .BG
+{
+	pointer-events: none;
+	font-size: 200%;
+}
+
+#payloadCodeRow .FG
+{
+	background-color: var(--trans-clear);
+	color: var(--fg-color);
+	text-shadow: none;
+	border: none;
+	font-size: 200%;
+	padding: 0;
+}
+
 #profTabContainer
 {
 	display: flex;
@@ -239,12 +216,17 @@ h2
 	margin: 0.5rem 0 0 -0.5rem;
 }
 
-
 .profContent
 {
     border: 0.5rem solid grey;
     padding: 0.5rem;
     margin-top: -0.5rem;
+}
+
+.codeBox
+{
+	display: flex;
+	justify-content: center;
 }
 
 #saveBar
@@ -253,11 +235,6 @@ h2
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: flex-end;
-}
-
-.spacer
-{
-	flex-grow: 1;
 }
 
 footer
@@ -341,4 +318,14 @@ footer
 {
 	width: 100%;
 	font-size: 200%;
+}
+
+.hidden
+{
+	display: none;
+}
+
+.invisible
+{
+	visibility: hidden;
 }

@@ -193,8 +193,6 @@ function selectCharacter(charID)
 	{
 		processCharInfo(response);
 	});
-
-
 }
 
 function processCharInfo(charData)
@@ -204,4 +202,7 @@ function processCharInfo(charData)
 	$("#load").addClass("hidden");
 
 	$("#mlPass").val("");
+
+	$(".postLogon").removeClass("hidden");
+	$(".mlLoginBox").addClass("hidden");
 }

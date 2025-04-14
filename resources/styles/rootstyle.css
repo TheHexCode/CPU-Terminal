@@ -53,3 +53,68 @@
 
 	--max-main-width: 400px;
 }
+
+#load
+{
+	--bg-color: var(--modal-bg-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	background: var(--bg-color);
+	z-index: 998;
+}
+
+@keyframes logoSpin
+	{
+		from
+		{
+			transform: rotate(0deg);
+		}
+		to
+		{
+			transform: rotate(360deg);
+		}
+	}
+
+#logoBG
+{
+	width: 295px;
+	height: 295px;
+	margin: -43px 0 0 -43px;
+
+	background: conic-gradient(var(--trans-clear), var(--fg-color) 90%, var(--fg-color));
+
+	animation-name: logoSpin;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+#load.hidden
+{
+	display: none;
+}
+
+.dseg
+{
+	font-family: "DSEG14-ClassicRegular";
+}
+
+.BG
+{
+	grid-row: 1;
+	grid-column: 1;
+	opacity: 0.2;
+	text-shadow: none;
+}
+
+.FG
+{
+	grid-row: 1;
+	grid-column: 1;
+}
