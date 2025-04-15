@@ -199,6 +199,51 @@ function processCharInfo(charData)
 {
 	console.log(charData);
 
+	$("#payloadCharName").html(charData.name);
+	setClamp($("#payloadCharName"),"100%","200%");
+
+	let funcStrings = {
+		initial: "",
+		active: "",
+		passive: ""
+	};
+
+	charData.functions.forEach(function(func)
+	{
+		let romanRank = "";
+
+		if(func.type === "ranked")
+		{
+			switch(func.rank)
+			{
+				case("1"):
+					romanRank = " I";
+					break;
+				case("2"):
+					romanRank = " II";
+					break;
+				case("3"):
+					romanRank = " III";
+					break;
+				case("4"):
+					romanRank = " IV";
+					break;
+				default: //5+
+					romanRank = " V";
+			}
+		}
+
+		funcStrings[func.hacking_cat] += "<li>" + func.name + romanRank +"</li>"
+	});
+
+	Object.keys(funcStrings).forEach(function(category)
+	{
+		$("#" + category + "List").html(funcStrings[category]);
+
+		$("#" + category + "Header").removeClass("hidden");
+		$("#" + category + "List").removeClass("hidden");
+	});
+
 	$("#load").addClass("hidden");
 
 	$("#mlPass").val("");

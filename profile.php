@@ -11,6 +11,7 @@
 		<!--<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">-->
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<script type="text/javascript" src="resources/scripts/font/fontManip.js"></script>
 		<script type="text/javascript" src="resources/scripts/profileInterface.js"></script>
         <link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="resources/styles/prostyle.css"/>
@@ -29,7 +30,7 @@
 				</svg>
 			</div>
 			<h1>PAYLOAD CUSTOMIZATION</h1>
-			<div class="mlLoginBox hidden">
+			<div class="mlLoginBox">
 				<h2>MYLARP LOGIN</h2>
                 <form id="mlLogin" autocomplete="off" onSubmit="mlLogin(event)">
                     <div class="mlLoginRow">
@@ -43,17 +44,43 @@
                     <button type="submit" form="mlLogin">Log in to myLarp</button>
                 </form>
 			</div>
-			<div class="postLogon"> <!--hidden-->
+			<div class="postLogon hidden"> <!--hidden-->
 				<div class="zoneBox">
-					<div class="profContent codeBox">
-						<div id="payloadCharName">
-							
-						</div>
-						<div id="payloadCodeRow">
-							<span class="dseg BG">~~~~~~</span>
-							<span class="dseg FG">123456</span>
-						</div>
+					<div id="payloadCharHeader">
+						SELECTED CHARACTER:
 					</div>
+					<div id="payloadCharName">
+					</div>
+					<div id="payloadCodeHeader">
+						PAYLOAD CODE:
+					</div>
+					<div id="payloadCodeRow">
+						<span class="dseg BG">~~~~~~</span>
+						<span class="dseg FG">123456</span>
+					</div>
+				</div>
+				<div class="zoneBox">
+					<div id="skillBoxHeader">
+						FUNCTIONS FROM MYLARP PROFILE:
+					</div>
+					<div id="skillTypes">
+						<div id="initialHeader" class="skillTypeHeader hidden">
+							>> INITIAL FUNCTIONS
+						</div>
+						<ul id="initialList" class="skillTypeList hidden">
+						</ul>
+						<div id="activeHeader" class="skillTypeHeader hidden">
+							>> ACTIVE FUNCTIONS
+						</div>
+						<ul id="activeList" class="skillTypeList hidden">
+						</ul>
+						<div id="passiveHeader" class="skillTypeHeader hidden">
+							>> PASSIVE FUNCTIONS
+						</div>
+						<ul id="passiveList" class="skillTypeList hidden">
+						</ul>
+					</div>
+				</div>
 					<!--
 					<div id="profTabContainer">
 						<div class="tabSubContainer frontRow">
@@ -89,8 +116,8 @@
 							<p>Your <em>Secondary_Role</em> is not one which provides any hacking benefits. You'll have to rely on your <em>Primary_Role</em> or the <em>Standard_Role</em> for your payload.</p>
 						</section>
 						<?php //echo fillProfileTab("SECONDARY", $profileResponse); ?>
-					</div>
-					<div id="itemsTab" class="profContent hidden"><!--  ITEMS  ->
+					</div>-->
+					<div id="itemsTab" class="profContent"><!--  ITEMS  -->
 						<section class="check">
 							<h2>CYBERDECKS</h2>
 							<div class="radio">
@@ -149,7 +176,7 @@
 							<!--<div class="check">
 								<input type="checkbox" id="item_util_nerdsg_check" form="statsForm"> <!--data-item="util_nerdsafetyglasses">--><!--
 								<label for="item_util_nerdsg_check">Nerd's Safety Glasses</label>
-							</div>->
+							</div>-->
 							<div class="check">
 								<input type="checkbox" id="item_util_pguh9k_check" form="statsForm" data-item="util_powerglove_uh9k">
 								<label for="item_util_pguh9k_check">Power Glove [Ultra-Hacking 9000]</label>
@@ -163,8 +190,7 @@
 								<label for="item_util_shimstck_1_radio">Shimmerstick [Tier 1]</label>
 							</div>
 						</section>
-					</div>-->
-				</div>
+					</div>
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>
 					<div class="spacer"></div>

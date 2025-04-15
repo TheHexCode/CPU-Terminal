@@ -40,14 +40,21 @@ $skill_names = "'" . implode( "', '", array_column(json_decode($charResponse)->s
 
 #####################################################################################################################################################
 
+#'Alarm Sense -DT1-', 'Craft (Choose one) -OT1-', 'Escape Binds I -DT1-', 'Hacking I -DT1-', 'Hacking I -DT2-', 'Knowledge (choose one)', 'Knowledge (choose one) -T1St-', 'Pick Locks I', 'Repair I', 'Repeat I', 'Resist', 'Scavenge I -DT1-', 'Strength I', 'Weapon Prof (all)&Armor Prof (all)', 'Wipe Your Tracks -DT3-'
+
 $function_query = $pdo->query(" SELECT DISTINCT functions.name,
-                                                SUM(ml_functions.rank) AS 'rank'
+                                                SUM(ml_functions.rank) AS 'rank',
+                                                functions.type,
+                                                functions.hacking_cat
                                 FROM CPU_Terminal.dbo.ml_functions
                                 INNER JOIN CPU_Terminal.dbo.functions ON ml_functions.function_id=functions.id
                                 WHERE ml_name IN ( $skill_names )
-                                  AND functions.is_hacking=1
-                                GROUP BY functions.name;");
+                                  AND functions.hacking_cat IS NOT NULL
+                                GROUP BY functions.name,
+                                         functions.type,
+                                         functions.hacking_cat;");
 
 $functionResponse = $function_query->fetchAll(PDO::FETCH_ASSOC);
 
-echo json_encode($functionResponse);
+echo json_encode(array(  "name" => json_decode($charResponse)->name,
+                                "functions" => $functionResponse ));
