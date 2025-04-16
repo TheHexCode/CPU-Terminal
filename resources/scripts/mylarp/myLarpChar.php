@@ -36,9 +36,33 @@ $charResponse = curl_exec($curlHandle);
 
 curl_close($curlHandle);
 
+$character_name = json_decode($charResponse)->name;
+
 $skill_names = "'" . implode( "', '", array_column(json_decode($charResponse)->skills,"name")) . "'";
 
 #####################################################################################################################################################
+
+$char_query = $pdo->query(" SELECT * FROM CPU_Terminal.dbo.users
+                            WHERE charName = $character_name");
+
+$characterResponse = $char_query->fetch(PDO::FETCH_ASSOC);
+
+if($characterResponse === false)
+{
+    //get all userCodes
+    //generate new userCode
+    //enter new user (id, userCode, charName)
+    //insert all functions into user_functions under new id
+}
+else
+{
+    //get user id + userCode
+    //get all user_functions under that id
+    //compare user_functions to what was pulled by the myLarp login
+    //if (different):
+        // delete all user_functions under that id
+        // insert all functions into user_functions under same id
+}
 
 #'Alarm Sense -DT1-', 'Craft (Choose one) -OT1-', 'Escape Binds I -DT1-', 'Hacking I -DT1-', 'Hacking I -DT2-', 'Knowledge (choose one)', 'Knowledge (choose one) -T1St-', 'Pick Locks I', 'Repair I', 'Repeat I', 'Resist', 'Scavenge I -DT1-', 'Strength I', 'Weapon Prof (all)&Armor Prof (all)', 'Wipe Your Tracks -DT3-'
 
@@ -56,5 +80,5 @@ $function_query = $pdo->query(" SELECT DISTINCT functions.name,
 
 $functionResponse = $function_query->fetchAll(PDO::FETCH_ASSOC);
 
-echo json_encode(array(  "name" => json_decode($charResponse)->name,
+echo json_encode(array(  "name" => $character_name,
                                 "functions" => $functionResponse ));
