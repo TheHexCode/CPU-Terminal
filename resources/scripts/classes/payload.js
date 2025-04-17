@@ -44,6 +44,11 @@ class Payload
         //        (this.#secRole.toLowerCase() === roleName.toLowerCase()));
     }
 
+    getFunctionList()
+    {
+        return this.#functions;
+    }
+
     getFunction(funcName)
     {
         let userFunc = this.#functions.find(func => func.name.toLowerCase() === funcName.toLowerCase());

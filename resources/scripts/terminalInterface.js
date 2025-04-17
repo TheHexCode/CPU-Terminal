@@ -147,7 +147,99 @@ function injectUserPayload(userPayload)
 
 		$("#remTags").html(tens(remainingTags));
 
+		// Disable Expensive Buttons
+		expensiveButtons = $("button[data-enabled!='false']").filter(function() {
+			return $(this).attr("data-cost") > session.getCurrentTags()
+		});
+	
+		$(expensiveButtons).prop("disabled",true);
+		$(expensiveButtons).attr("data-enabled","false");
+
 		//role stuff
+
+		// FUNCTIONS / INVENTORY
+
+		let romanTiers = {
+			1: " I",
+			2: " II",
+			3: " III",
+			4: " IV",
+			5: " V"
+		}
+
+		///////////// ACTIVE
+
+		if(payload.getFunction("BRICK"))
+		{
+			$("#brickItem").removeClass("hidden");
+		}
+
+		if(payload.getFunction("REASSIGN") || payload.getFunction("WIPE YOUR TRACKS"))
+		{
+			$(".logActions").removeClass("hidden");
+
+			if(payload.getFunction("REASSIGN"))
+			{
+				$(".reassAction").removeClass("hidden");
+			}
+
+			if(payload.getFunction("WIPE YOUR TRACKS"))
+			{
+				$(".wipeAction").removeClass("hidden");
+			}
+		}
+
+		if(payload.getFunction("RIGGED"))
+		{
+			$("#riggItem").removeClass("hidden");
+		}
+
+		if(payload.getFunction("ROOT DEVICE"))
+		{
+			$("#rootItem").removeClass("hidden");
+		}
+
+		///////////// PASSIVE
+
+		if(payload.getFunction("ALARM SENSE"))
+		{
+			$("#alarmItem").removeClass("hidden");
+		}
+
+		if(payload.getFunction("BACKDOOR"))
+		{
+			let bdRoman = romanTiers[payload.getFunction("BACKDOOR")];
+
+			$("#bdItem").append(bdRoman);
+
+			$("#bdItem").removeClass("hidden");
+		}
+
+		if(payload.getFunction("DARK WEB MERCHANT") || payload.getFunction("DARK WEB OPERATOR"))
+		{
+			if(payload.getFunction("DARK WEB MERCHANT"))
+			{
+				$("#dwmItem").removeClass("hidden");
+			}
+
+			if(payload.getFunction("DARK WEB OPERATOR"))
+			{
+				$("#dwoItem").removeClass("hidden");
+			}
+		}
+		else
+		{
+			$("#darkwebSubTab").addClass("hidden");
+		}
+
+		if(payload.getFunction("REPEAT"))
+		{
+			let repeatRoman = romanTiers[payload.getFunction("REPEAT")];
+
+			$("#repeatItem").append(repeatRoman);
+
+			$("#repeatItem").removeClass("hidden");
+		}
 	}
 
 	$("#load").addClass("hidden");
@@ -299,7 +391,7 @@ function iceAction(target)
 	let actionMap = {
 		entryID: entryID,
 		entryPath: entryPath,
-		actionCost: session.getActionCost(entryID,(action === "unwrap" ? "access" : "modify")),
+		actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
 		upperAction: action.charAt(0).toUpperCase() + action.slice(1),
 		entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
 	};
@@ -324,9 +416,9 @@ function iceAction(target)
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
 		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
-		(action === "unwrap" ?
+		(action === "break" ?
 			"<div class='cautionTape'>" +
-				"WARNING: Unwrapping ICE means tripping it and taking any negative effects it may incur. BREAK the ICE instead to disable the security, in exchange for Tags." +
+				"WARNING: Breaking ICE means tripping it and taking any negative effects it may incur. <em>Sleaze</em> the ICE instead to disable the security, in exchange for Tags." +
 			"</div>" :
 			""
 		)
@@ -444,4 +536,11 @@ function completeCommand(actionMap)
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+
+	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
+		return $(this).attr("data-cost") > session.getCurrentTags()
+	});
+
+	$(expensiveButtons).prop("disabled",true);
+	$(expensiveButtons).attr("data-enabled","false");
 }

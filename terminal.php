@@ -248,7 +248,56 @@
 					</div>
 					<div id="deckBody" class="hackBody">
 						<div id="deckContentContainer" class="subContentContainer">
-							<!--Filled in by setupTerminalPage();-->
+							<div id="actContent" class="subContent active">
+								<div class="subContTitleRow">
+									<span class="subContTitle">ACTIVE FUNCTIONS</span>
+								</div>
+								<div class="subContBody">
+									<ul id="actList">
+										<li id="brickItem" class="hidden">
+											BRICK
+										</li>
+										<li id="riggItem" class="hidden">
+											RIGGED
+										</li>
+										<li id="rootItem" class="hidden">
+											ROOT DEVICE
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div id="passContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">PASSIVE FUNCTIONS</span>
+								</div>
+								<div class="subContBody">
+									<ul id="passList">
+										<li id="alarmItem" class="hidden">
+											ALARM SENSE
+										</li>
+										<li id="bdItem" class="hidden">
+											BACK DOOR
+										</li>
+										<li id="dwmItem" class="hidden">
+											DARK WEB MERCHANT
+										</li>
+										<li id="dwoItem" class="hidden">
+											DARK WEB OPERATOR
+										</li>
+										<li id="repeatItem" class="hidden">
+											REPEAT
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div id="itemContent" class="subContent">
+								<div class="subContTitleRow">
+									<span class="subContTitle">INVENTORY</span>
+								</div>
+								<div class="subContBody">
+									
+								</div>
+							</div>
 						</div>
 						<div class="subTabCol">
 							<div id="deckSubTabs" class="subTabInset">

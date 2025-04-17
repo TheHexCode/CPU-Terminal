@@ -164,6 +164,7 @@ button
 	border-radius: 0.25rem;
 	border-width: 2px;
 	box-shadow: 0 0 0.5rem var(--fg-color);
+	font-size: 0.9rem;
 }
 
 button:disabled
@@ -701,11 +702,6 @@ h2
 	pointer-events: none;
 }
 
-#darkwebSubTab
-{
-	display: none;
-}
-
 .entryTitleBar
 {
 	display: grid;
@@ -796,6 +792,13 @@ h2
 {
 	display: flex;
 	flex-direction: column;
+}
+
+.buttonItem
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .itemTitle

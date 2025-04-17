@@ -19,7 +19,7 @@ $newEntry["terminal_id"] = $entry["terminal_id"];
 
 if($entry["type"] === "ice")
 {
-    $newEntry["title"] = '<span class="entrySecret' . ($newState === "unwrap" ? " sprung" : " disarmed") . '">' . $entry["title"] . '</span>';
+    $newEntry["title"] = '<span class="entrySecret' . ($newState === "break" ? " sprung" : " disarmed") . '">' . $entry["title"] . '</span>';
 
     if(json_decode($entry["contents"]))
     {
@@ -30,10 +30,10 @@ if($entry["type"] === "ice")
         $implodedContents = $entry["contents"];
     }
 
-    $newEntry["contents"] = '<span class="entrySecret' . ($newState === "unwrap" ? " sprung" : " disarmed") . '">' . $implodedContents . '</span>';
+    $newEntry["contents"] = '<span class="entrySecret' . ($newState === "break" ? " sprung" : " disarmed") . '">' . $implodedContents . '</span>';
 
-    $newEntry["access"] = 'Unwrap: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
-    $newEntry["modify"] = 'Break: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+    $newEntry["access"] = 'Break: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
+    $newEntry["modify"] = 'Sleaze: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 }
 else
 {
