@@ -65,7 +65,7 @@
 					</div>
 					<div id="skillTypes">
 						<div id="initialHeader" class="skillTypeHeader hidden">
-							>> INITIAL FUNCTIONS
+							>> PRE-ACCESS FUNCTIONS
 						</div>
 						<ul id="initialList" class="skillTypeList hidden">
 						</ul>

@@ -1,5 +1,6 @@
 <?php
 require('../db/dbConnect.php');
+require('../db/setUser.php');
 
 $mlEmail = $_POST["mlEmail"];
 $mlPass = $_POST["mlPass"];
@@ -32,27 +33,28 @@ $curlCharOptions = array(
 curl_setopt_array($curlHandle,$curlCharOptions);
 curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
 
-$charResponse = curl_exec($curlHandle);
+$mlCharResponse = json_decode(curl_exec($curlHandle));
 
 curl_close($curlHandle);
 
-$character_name = json_decode($charResponse)->name;
-
-$skill_names = "'" . implode( "', '", array_column(json_decode($charResponse)->skills,"name")) . "'";
-
 #####################################################################################################################################################
 
-$char_query = $pdo->query(" SELECT * FROM CPU_Terminal.dbo.users
-                            WHERE charName = $character_name");
+$dbCharQuery = "SELECT * FROM CPU_Terminal.dbo.users
+                WHERE charName = :charName";
 
-$characterResponse = $char_query->fetch(PDO::FETCH_ASSOC);
+$dbCharStatement = $pdo->prepare($dbCharQuery);
+$dbCharStatement->execute([':charName' => $mlCharResponse->name]);
 
-if($characterResponse === false)
+$dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
+
+#'Alarm Sense -DT1-', 'Craft (Choose one) -OT1-', 'Escape Binds I -DT1-', 'Hacking I -DT1-', 'Hacking I -DT2-', 'Knowledge (choose one)', 'Knowledge (choose one) -T1St-', 'Pick Locks I', 'Repair I', 'Repeat I', 'Resist', 'Scavenge I -DT1-', 'Strength I', 'Weapon Prof (all)&Armor Prof (all)', 'Wipe Your Tracks -DT3-'
+$skillString = "'" . implode( "', '", array_column($mlCharResponse->skills,"name")) . "'";
+
+if($dbCharResponse === false)
 {
-    //get all userCodes
-    //generate new userCode
-    //enter new user (id, userCode, charName)
-    //insert all functions into user_functions under new id
+    $userCode = generateCode($pdo);
+
+    addUser($pdo,$userCode,$mlCharResponse->name,array_column($mlCharResponse->skills,"name"));
 }
 else
 {
@@ -62,9 +64,11 @@ else
     //if (different):
         // delete all user_functions under that id
         // insert all functions into user_functions under same id
-}
+    
+    $userCode = $dbCharResponse["userCode"];
 
-#'Alarm Sense -DT1-', 'Craft (Choose one) -OT1-', 'Escape Binds I -DT1-', 'Hacking I -DT1-', 'Hacking I -DT2-', 'Knowledge (choose one)', 'Knowledge (choose one) -T1St-', 'Pick Locks I', 'Repair I', 'Repeat I', 'Resist', 'Scavenge I -DT1-', 'Strength I', 'Weapon Prof (all)&Armor Prof (all)', 'Wipe Your Tracks -DT3-'
+    updateUser($pdo,$dbCharResponse["id"],array_column($mlCharResponse->skills,"name"));
+}
 
 $function_query = $pdo->query(" SELECT DISTINCT functions.name,
                                                 SUM(ml_functions.rank) AS 'rank',
@@ -72,7 +76,7 @@ $function_query = $pdo->query(" SELECT DISTINCT functions.name,
                                                 functions.hacking_cat
                                 FROM CPU_Terminal.dbo.ml_functions
                                 INNER JOIN CPU_Terminal.dbo.functions ON ml_functions.function_id=functions.id
-                                WHERE ml_name IN ( $skill_names )
+                                WHERE ml_name IN ( $skillString )
                                   AND functions.hacking_cat IS NOT NULL
                                 GROUP BY functions.name,
                                          functions.type,
@@ -80,5 +84,6 @@ $function_query = $pdo->query(" SELECT DISTINCT functions.name,
 
 $functionResponse = $function_query->fetchAll(PDO::FETCH_ASSOC);
 
-echo json_encode(array(  "name" => $character_name,
+echo json_encode(array(  "name" => $mlCharResponse->name,
+                                "userCode" => $userCode,
                                 "functions" => $functionResponse ));

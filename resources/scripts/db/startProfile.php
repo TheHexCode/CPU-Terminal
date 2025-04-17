@@ -1,6 +1,7 @@
 <?php
 
 require('dbConnect.php');
+//require('codeGen.php');
 
 #$profile_query = $pdo->query("SELECT role_functions.id,role_id,roles.roleName AS roleName,tier,function_id,functions.functionName AS functionName,rank
 #                            FROM CPU_Terminal.dbo.role_functions
@@ -8,6 +9,25 @@ require('dbConnect.php');
 #                            INNER JOIN CPU_Terminal.dbo.functions ON role_functions.function_id=functions.id");
 #$profileResponse = $profile_query->fetchAll(PDO::FETCH_ASSOC);
 $profileResponse = "Placeholder";
+
+/*
+echo generateCode($pdo) . "<br/>";
+
+echo "333333: " . testCode($pdo,array(3,3,3,3,3,3)) . "<br/>"; // in $codeList
+echo "222222: " . testCode($pdo,array(2,2,2,2,2,2)) . "<br/>"; // same number
+echo "123456: " . testCode($pdo,array(1,2,3,4,5,6)) . "<br/>"; // increment
+echo "765432: " . testCode($pdo,array(7,6,5,4,3,2)) . "<br/>"; // decrement
+echo "890123: " . testCode($pdo,array(8,9,0,1,2,3)) . "<br/>"; // increment
+echo "109876: " . testCode($pdo,array(1,0,9,8,7,6)) . "<br/>"; // decrement
+echo "123123: " . testCode($pdo,array(1,2,3,1,2,3)) . "<br/>"; // repeated 3
+echo "876876: " . testCode($pdo,array(8,7,6,8,7,6)) . "<br/>"; // repeated 3
+echo "121212: " . testCode($pdo,array(1,2,1,2,1,2)) . "<br/>"; // repeated 2
+echo "484848: " . testCode($pdo,array(4,8,4,8,4,8)) . "<br/>"; // repeated 2
+echo "792297: " . testCode($pdo,array(7,9,2,2,9,7)) . "<br/>"; // palendrome
+echo "123321: " . testCode($pdo,array(1,2,3,3,2,1)) . "<br/>"; // palendrome
+echo "264172: " . testCode($pdo,array(2,6,4,1,7,2)) . "<br/>"; // Valid
+echo "672899: " . testCode($pdo,array(6,7,2,8,9,9)) . "<br/>"; // Valid
+*/
 
 function fillRoleSelection($profileData)
 {

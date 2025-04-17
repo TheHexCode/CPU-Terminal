@@ -202,6 +202,8 @@ function processCharInfo(charData)
 	$("#payloadCharName").html(charData.name);
 	setClamp($("#payloadCharName"),"100%","200%");
 
+	$("#payloadCodeRow .FG").html(charData.userCode);
+
 	let funcStrings = {
 		initial: "",
 		active: "",
