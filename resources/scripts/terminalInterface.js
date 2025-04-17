@@ -84,13 +84,13 @@ function injectUserPayload(userPayload)
 									"<u>CONNECTING USER IDENTIFIED</u>" +
 								"</div>" +
 								"<span>User: " + payload.getHandle() + "</span>" +
-								( payload.getFunction("Mask") ? "<span>Mask: " + payload.getMask() + "</span>" : "" ) +
+								//( payload.getFunction("Mask") ? "<span>Mask: " + payload.getMask() + "</span>" : "" ) +
 								""//"<span>PIN: 333333</span>"
 							);
 
 		let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
 
-		$("#terminalButton").html("Cracking...");
+		$("#terminalButton").html("Cracking Terminal...");
 		$("#terminalButton").removeClass("noPayload");
 		taTimer.startTimer(maxTime,allowAccess);
 		//$("#terminalButton").prop("disabled",false);

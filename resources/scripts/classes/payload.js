@@ -5,9 +5,8 @@ class Payload
     #userID;
     #handle;
     #mask;
-    #priRole;
-    #secRole;
     #functions;
+    #roles;
 
     constructor()
     {
@@ -17,11 +16,9 @@ class Payload
     setPayload(payload)
     {
         this.#userID = payload.id;
-        this.#handle = payload.trueName;
-        this.#mask = payload.mask;
-        this.#priRole = payload.priRole;
-        this.#secRole = payload.secRole;
+        this.#handle = payload.name;
         this.#functions = payload.functions;
+        this.#roles = payload.roles;
 
         this.#payloadSet = true;
     }
@@ -43,21 +40,28 @@ class Payload
 
     hasRole(roleName)
     {
-        return ((this.#priRole.toLowerCase() === roleName.toLowerCase()) ||
-                (this.#secRole.toLowerCase() === roleName.toLowerCase()));
+        //return ((this.#priRole.toLowerCase() === roleName.toLowerCase()) ||
+        //        (this.#secRole.toLowerCase() === roleName.toLowerCase()));
     }
 
     getFunction(funcName)
     {
-        let userFunc = this.#functions.find(func => func.functionName.toLowerCase() === funcName.toLowerCase());
+        let userFunc = this.#functions.find(func => func.name.toLowerCase() === funcName.toLowerCase());
 
-        if((userFunc.ranked))
+        if(userFunc !== undefined)
         {
-            return Number(userFunc.rank);
+            if((userFunc.type === "ranked"))
+            {
+                return Number(userFunc.rank);
+            }
+            else
+            {
+                return Boolean(Number(userFunc.rank));
+            }
         }
         else
         {
-            return Boolean(Number(userFunc.rank));
+            return 0;
         }
     }
 }

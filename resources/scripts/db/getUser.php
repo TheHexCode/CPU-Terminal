@@ -4,20 +4,13 @@ require('dbConnect.php');
 
 $userCode = $_POST["userCode"];
 
-$userQuery = 'SELECT users.id,trueName,mask,pRoles.roleName AS priRole,sRoles.roleName AS secRole
-              FROM CPU_Terminal.dbo.users
-              INNER JOIN CPU_Terminal.dbo.roles AS pRoles ON users.priRole=pRoles.id
-			  INNER JOIN CPU_Terminal.dbo.roles AS sRoles ON users.secRole=sRoles.id
-              WHERE userCode = :userCode';
+###############################################################################################################################
 
-$userFuncQuery = 'SELECT functions.functionName, functions.ranked, rank, functions.type
-                  FROM CPU_Terminal.dbo.user_functions
-                  INNER JOIN CPU_Terminal.dbo.functions ON user_functions.function_id=functions.id
-                  WHERE userCode = :userCode';
+$userQuery = '  SELECT id,charName
+                FROM CPU_Terminal.dbo.users
+                WHERE userCode = :userCode';
 
 $userStatement = $pdo->prepare($userQuery);
-$uFStatement = $pdo->prepare($userFuncQuery);
-
 $userStatement->execute([':userCode' => $userCode]);
 $userResponse = $userStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -27,10 +20,36 @@ if($userResponse === false)
 }
 else
 {
-    $uFStatement->execute([':userCode' => $userCode]);
-    $uFResponse = $uFStatement->fetchAll(PDO::FETCH_ASSOC);
+    $functionQuery = "  SELECT DISTINCT functions.name,
+                                        SUM(ml_functions.rank) AS 'rank',
+                                        functions.type,
+                                        functions.hacking_cat
+                        FROM CPU_Terminal.dbo.user_functions
+                        INNER JOIN CPU_Terminal.dbo.ml_functions ON ml_functions.ml_id=user_functions.mlFunction_id
+                        INNER JOIN CPU_Terminal.dbo.functions ON ml_functions.function_id=functions.id
+                        WHERE user_id = :userID
+                            AND functions.hacking_cat IS NOT NULL
+                        GROUP BY functions.name,
+                                functions.type,
+                                functions.hacking_cat";
 
-    $userResponse["functions"] = $uFResponse;
+    $functionStatement = $pdo->prepare($functionQuery);
+    $functionStatement->execute([':userID' => $userResponse["id"]]);
+    $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($userResponse);
+    $roleQuery = "  SELECT DISTINCT roles.name
+                    FROM CPU_Terminal.dbo.ml_functions
+                    INNER JOIN CPU_Terminal.dbo.user_functions ON ml_functions.ml_id=user_functions.mlFunction_id
+                    INNER JOIN CPU_Terminal.dbo.roles ON ml_functions.role_id=roles.id
+                    WHERE user_id = :userID";
+
+    $roleStatement = $pdo->prepare($roleQuery);
+    $roleStatement->execute([':userID' => $userResponse["id"]]);
+    $roleResponse = $roleStatement->fetchAll(PDO::FETCH_FUNC,function($roleName){return $roleName;});
+
+    echo json_encode(array(  "id" => $userResponse["id"],
+                                    "name" => $userResponse["charName"],
+                                    "userCode" => $userCode,
+                                    "functions" => $functionResponse,
+                                    "roles" => $roleResponse ));
 }
