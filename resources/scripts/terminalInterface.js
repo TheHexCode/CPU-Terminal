@@ -237,8 +237,10 @@ function injectUserPayload(userPayload)
 			let repeatRoman = romanTiers[payload.getFunction("REPEAT")];
 
 			$("#repeatItem").append(repeatRoman);
-
 			$("#repeatItem").removeClass("hidden");
+
+			$(".subContRepeatTitle").append(repeatRoman);
+			$(".subContRepeatBox").removeClass("hidden");
 		}
 	}
 

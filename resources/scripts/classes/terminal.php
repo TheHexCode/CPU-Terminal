@@ -113,7 +113,7 @@ class Terminal
                 }
                 else
                 {
-                    $logHandle = $logEntry["trueName"];
+                    $logHandle = $logEntry["charName"];
                 }
     
                 $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry">' .

@@ -244,7 +244,7 @@ h2
 	align-items: center;
 }
 
-#gemTens.dimmed
+.dimmed
 {
 	filter: brightness(50%);
 	text-shadow: none;
@@ -735,6 +735,22 @@ h2
 	margin: 0 0 0.25rem 0;
 }
 
+.subContRepeatBox
+{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.subContRepeatAM
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+
+/*
 .subContRepeat
 {
 	grid-column: start / titlestart;
@@ -748,6 +764,7 @@ h2
 	grid-row: 2;
 	text-align: center;
 }
+*/
 
 .subContTitle
 {

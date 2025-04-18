@@ -192,6 +192,13 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">FILES</span>
 								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatAccess dimmed">ACCESS</span>
+										<span class="subContRepeatModify dimmed">MODIFY</span>
+									</div>
+								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("files") ?>
 								</div>
