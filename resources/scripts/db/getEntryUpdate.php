@@ -32,8 +32,8 @@ if($entry["type"] === "ice")
 
     $newEntry["contents"] = '<span class="entrySecret' . ($newState === "break" ? " sprung" : " disarmed") . '">' . $implodedContents . '</span>';
 
-    $newEntry["access"] = 'Break: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
-    $newEntry["modify"] = 'Sleaze: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+    $newEntry["access"] = 'Break: <button class="accessButton" data-enabled="false" disabled="">N/A</button>';
+    $newEntry["modify"] = 'Sleaze: <button class="modifyButton" data-enabled="false" disabled="">N/A</button>';
 }
 else
 {
@@ -78,11 +78,11 @@ else
 
     $newEntry["access"] = ($stateGuide["access"]["enabled"]) ?
                             'Access: <button class="accessButton" data-enabled="true" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
-                            'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
+                            'Access: <button class="accessButton" data-enabled="false" disabled="">N/A</button>';
 
     $newEntry["modify"] = ($stateGuide["modify"]["enabled"]) ?
                             'Modify: <button class="modifyButton" data-enabled="true" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
-                            'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+                            'Modify: <button class="modifyButton" data-enabled="false" disabled="">N/A</button>';
 }
 
 echo json_encode($newEntry);

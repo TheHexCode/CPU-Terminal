@@ -761,11 +761,17 @@ h2
 	justify-content: space-around;
 }
 
-.subContRepeatAccess,
-.subContRepeatModify
+.subContRepeatIndicator
 {
 	border: 1px solid var(--fg-color);
 	padding: 0.25rem 0.2rem 0 0.25rem;
+	pointer-events: none;
+	box-shadow: 0 0 0.5rem var(--fg-color);
+}
+
+.subContRepeatIndicator.dimmed
+{
+	box-shadow: 0 0 0;
 }
 
 /*

@@ -541,8 +541,28 @@ function completeCommand(actionMap)
 
 	if(payload.getFunction("REPEAT"))
 	{
-		session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"],payload.getFunction("REPEAT"));
+		session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
+		updateEntryCosts(actionMap["entryPath"],actionMap["upperAction"]);
 	}
 
 	disableExpensiveButtons();
+}
+
+function updateEntryCosts(entryPath, entryAction)
+{
+	if((entryAction === "Access") || (entryAction === "Modify"))
+	{
+		let iconID = entryPath.split("-")[0] + "Content";
+
+		$(iconID + " ." + entryAction.toLowerCase() + "Button").each(function(index,entryButton){
+			if($(entryButton).html() !== "N/A")
+			{
+				let newCost = session.getActionCost($(entryButton).attr("data-id"), entryAction.toLowerCase());
+				$(entryButton).attr("data-cost",newCost);
+				$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
+			};
+		});
+
+		$(iconID + " .repeatIndicator" + entryAction).removeClass("dimmed");
+	}
 }

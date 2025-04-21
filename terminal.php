@@ -195,8 +195,8 @@
 								<div class="subContRepeatBox hidden">
 									<span class="subContRepeatTitle">REPEAT</span>
 									<div class="subContRepeatAM">
-										<span class="subContRepeatAccess dimmed">ACCESS</span>
-										<span class="subContRepeatModify dimmed">MODIFY</span>
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -207,6 +207,13 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">DARK WEB FILES</span>
 								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+									</div>
+								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("darkweb") ?>
 								</div>
@@ -214,6 +221,13 @@
 							<div id="camerasContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">CAMERAS</span>
+								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+									</div>
 								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("cameras") ?>
@@ -223,6 +237,13 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">LOCKS</span>
 								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+									</div>
+								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("locks") ?>
 								</div>
@@ -230,6 +251,13 @@
 							<div id="defensesContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">AUTOMATED DEFENSIVE SYSTEMS</span>
+								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+									</div>
 								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("defenses") ?>
@@ -239,6 +267,13 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">UTILITY SYSTEMS</span>
 								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+									</div>
+								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("utilities") ?>
 								</div>
@@ -246,6 +281,13 @@
 							<div id="puzzlesContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">PUZZLES</span>
+								</div>
+								<div class="subContRepeatBox hidden">
+									<span class="subContRepeatTitle">REPEAT</span>
+									<div class="subContRepeatAM">
+										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+									</div>
 								</div>
 								<div class="subContBody">
 									<?php echo $terminal->setupIconEntries("puzzles") ?>

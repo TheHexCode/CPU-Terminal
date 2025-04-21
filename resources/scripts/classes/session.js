@@ -26,6 +26,10 @@ class Session
         return this.#entryData;
     }
     */
+    getRepeatIcons()
+    {
+        return this.#repeatIcons;
+    }
 
     getCurrentTags(tagType = Session.TOTAL)
     {
@@ -74,9 +78,12 @@ class Session
 
         let actionCost = Number(searchResults[action]);
 
-        actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
+        if(Object.keys(this.#repeatIcons).includes(searchResults["icon"]))
+        {
+            actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
+        }
 
-        return Number(searchResults[action]);
+        return actionCost;
     }
 
     setFunctionState(functionName, entryID, entryAction, functionRank)
@@ -88,20 +95,20 @@ class Session
             case "REPEAT":
                 let icon = entry["icon"];
 
-                if((entryAction.toLowerCase() === "access") || (entryAction.toLowerCase() === "modify"))
+                if((entryAction === "access") || (entryAction === "modify"))
                 {
                     if(Object.keys(this.#repeatIcons).includes(icon))
                     {
-                        if(this.#repeatIcons[icon][entryAction.toLowerCase()] === 0)
+                        if(this.#repeatIcons[icon][entryAction] === 0)
                         {
-                            this.#repeatIcons[icon][entryAction.toLowerCase()] = functionRank;
+                            this.#repeatIcons[icon][entryAction] = functionRank;
                         }
                     }
                     else
                     {
                         let newIcon = {};
-                        newIcon["access"] = (entryAction.toLowerCase() === "access") ? functionRank : 0;
-                        newIcon["modify"] = (entryAction.toLowerCase() === "modify") ? functionRank : 0;
+                        newIcon["access"] = (entryAction === "access") ? functionRank : 0;
+                        newIcon["modify"] = (entryAction === "modify") ? functionRank : 0;
                         this.#repeatIcons[icon] = newIcon;
                     }
                 }

@@ -25,6 +25,7 @@
     - Help Popup to say what functions do what (Low Priority)
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
+    - Fix Extra Tags not blending the negative gems
 
 > INVENTORY
 
