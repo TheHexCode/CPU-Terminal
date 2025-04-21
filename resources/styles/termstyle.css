@@ -901,12 +901,13 @@ ul
 	padding: 0 0 0 1rem;
 }
 
-#actList li div
+#actList li
 {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: space-between;
+	align-items: center;
 	margin: 0.25rem 0 0.25rem 0;
 }
 
