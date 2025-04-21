@@ -1,7 +1,8 @@
 USE [CPU_Terminal]
 GO
 
-DELETE FROM [dbo].[terminals];
+DELETE FROM [dbo].[terminals]
+WHERE [slug]='test';
 DELETE FROM [dbo].[accessLogs];
 DELETE FROM [dbo].[entries];
 

@@ -722,6 +722,51 @@
 						"enabled": false
 					}
 				}
+			},
+			"alarm":
+			{
+				"initial":
+				{
+					"title": true,
+					"contents": "ACTIVE",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"disabled":
+				{
+					"title": true,
+					"contents": "ALARM DISABLED",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power On",
+								"state": "previous",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				}
 			}
 		}
 	},

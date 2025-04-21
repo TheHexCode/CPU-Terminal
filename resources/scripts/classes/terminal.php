@@ -151,6 +151,7 @@ class Terminal
         foreach($dbArray as $entry)
         {
             $entryData = array(
+                "icon"   => $entry["icon"],
                 "id"     => $entry["id"],
                 "state"  => $entry["state"],
                 "access" => $entry["access"],

@@ -65,6 +65,16 @@ function submitCode(event)
 	});
 }
 
+function disableExpensiveButtons()
+{
+	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
+		return $(this).attr("data-cost") > session.getCurrentTags()
+	});
+
+	$(expensiveButtons).prop("disabled",true);
+	$(expensiveButtons).attr("data-enabled","false");
+}
+
 function injectUserPayload(userPayload)
 {
 	if(userPayload.length === 0)
@@ -148,12 +158,7 @@ function injectUserPayload(userPayload)
 		$("#remTags").html(tens(remainingTags));
 
 		// Disable Expensive Buttons
-		expensiveButtons = $("button[data-enabled!='false']").filter(function() {
-			return $(this).attr("data-cost") > session.getCurrentTags()
-		});
-	
-		$(expensiveButtons).prop("disabled",true);
-		$(expensiveButtons).attr("data-enabled","false");
+		disableExpensiveButtons();
 
 		//role stuff
 
@@ -510,11 +515,6 @@ function completeCommand(actionMap)
 {
 	closeModal("executed");
 
-	//get Title/Contents/available buttons
-	//get Trap/Ice Formatting
-	//Update Gems/Tags
-	//Disable unaffordable buttons
-
 	//actionMap:
 		// actionCost
 		// dialog (id)
@@ -539,10 +539,10 @@ function completeCommand(actionMap)
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 
-	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
-		return $(this).attr("data-cost") > session.getCurrentTags()
-	});
+	if(payload.getFunction("REPEAT"))
+	{
+		session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"],payload.getFunction("REPEAT"));
+	}
 
-	$(expensiveButtons).prop("disabled",true);
-	$(expensiveButtons).attr("data-enabled","false");
+	disableExpensiveButtons();
 }

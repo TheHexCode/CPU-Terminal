@@ -739,7 +739,19 @@ h2
 {
 	display: flex;
 	flex-direction: column;
+	row-gap: 0.25rem;
 	justify-content: center;
+	border-image-source: url("../images/borders/corner_border.png");
+	border-image-width: 16px;
+	border-image-slice: 16;
+	padding: 0.5rem 0 0.5rem 0;
+}
+
+.subContRepeatTitle
+{
+	display: flex;
+	justify-content: center;
+	text-decoration: underline;
 }
 
 .subContRepeatAM
@@ -749,6 +761,12 @@ h2
 	justify-content: space-around;
 }
 
+.subContRepeatAccess,
+.subContRepeatModify
+{
+	border: 1px solid var(--fg-color);
+	padding: 0.25rem 0.2rem 0 0.25rem;
+}
 
 /*
 .subContRepeat
@@ -875,8 +893,7 @@ ul
 
 .entry hr
 {
-	margin-left: 0;
-	margin-right: 0;
+	margin: 0 0 1rem 0;
 }
 
 .ice
