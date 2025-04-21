@@ -1,7 +1,5 @@
 > FUNCTION FUNCTIONALITY
     >> INITIAL
-        - MASK
-            - Need field at start to type a Mask into
     >> ACTIVE
         - BRICK
             - Button to Brick terminal
@@ -16,10 +14,10 @@
 
 > GENERAL
     - Write message for empty active/passive
-    - Help Popup to say what functions do what (Low Priority)
-    - Sync the blend of the reqTags and Gems
-    - Fix ugly "buttonItem" class when window is thin
-    - Fix Extra Tags not blending the negative gems
+    v Help Popup to say what functions do what (Low Priority)
+    v Sync the blend of the reqTags and Gems
+    v Fix ugly "buttonItem" class when window is thin
+    v Fix Extra Tags not blending the negative gems
 
 > INVENTORY
 
@@ -38,3 +36,5 @@
     ✓ Display Active/Passive functions on Deck page
     ✓ Disable buttons that are too expensive
     ✓ REPEAT
+    ✓ MASK
+        - Need field at start to type a Mask into

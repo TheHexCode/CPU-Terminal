@@ -97,7 +97,7 @@ class Terminal
         {
             if($logEntry["state"] === "wiped")
             {
-                $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry">' .
+                $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry" data-user="' . $logEntry["user_id"] . '">' .
                                         'ERROR: LOG ENTRY NOT FOUND' .
                                     '</li>';
             }
@@ -116,7 +116,7 @@ class Terminal
                     $logHandle = $logEntry["charName"];
                 }
     
-                $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry">' .
+                $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry" data-user="' . $logEntry["user_id"] . '">' .
                                         '<span class="logPerson">User:&nbsp;</span><span class="logName">' . $logHandle . '</span>' .
                                         '<div class="logActions hidden">' .
                                             '<hr/>' .
@@ -301,6 +301,6 @@ class Terminal
 
     public function sendInitialEntries()
     {
-        return "<script>var session = new Session(" . json_encode($this->initialEntries) . ");</script>";
+        return "<script>var session = new Session(" . $this->termID . ", " . json_encode($this->initialEntries) . ");</script>";
     }
 }

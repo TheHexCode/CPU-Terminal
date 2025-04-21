@@ -184,6 +184,16 @@ function injectUserPayload(userPayload)
 			$("#brickItem").removeClass("hidden");
 		}
 
+		if(payload.getFunction("RIGGED"))
+		{
+			$("#riggItem").removeClass("hidden");
+		}
+
+		if(payload.getFunction("ROOT DEVICE"))
+		{
+			$("#rootItem").removeClass("hidden");
+		}
+
 		if(payload.getFunction("REASSIGN") || payload.getFunction("WIPE YOUR TRACKS"))
 		{
 			$(".logActions").removeClass("hidden");
@@ -197,16 +207,6 @@ function injectUserPayload(userPayload)
 			{
 				$(".wipeAction").removeClass("hidden");
 			}
-		}
-
-		if(payload.getFunction("RIGGED"))
-		{
-			$("#riggItem").removeClass("hidden");
-		}
-
-		if(payload.getFunction("ROOT DEVICE"))
-		{
-			$("#rootItem").removeClass("hidden");
 		}
 
 		///////////// PASSIVE
@@ -304,22 +304,57 @@ function accessTerminal(event)
 
 		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
 
-		let logHandle = payload.getHandle();
-
-		if(payload.getFunction("MASK"))
+		if($(".logEntry[data-user='" + payload.getUserID() + "']").length === 0)
 		{
-			if($("#payloadMask").val() === "")
-			{
-				logHandle = "Anonymous User";
-			}
-			else
-			{
-				logHandle = $("#payloadMask").val();
-			}
-		}
+			let logMask = false;
 
-		$("#accessZone").hide();
-		$("#hackZone").css("display","flex");
+			if(payload.getFunction("MASK"))
+			{
+				if($("#payloadMask").val() === "")
+				{
+					logMask = "Anonymous User";
+				}
+				else
+				{
+					logMask = $("#payloadMask").val();
+				}
+			}
+			
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\addLogEntry.php",
+				data:
+				{
+					termID: session.getTerminalID(),
+					userID: payload.getUserID(),
+					userMask: logMask
+				}
+			})
+			.done(function(logID)
+			{
+				$("#logList").append(	'<li id="log' + logID + '" class="logEntry itsYou" data-user="' + payload.getUserID() + '">' +
+											'<span class="logPerson">You:&nbsp;&nbsp;</span><span class="logName">' + (logMask === false ? payload.getHandle() : logMask) + '</span>' +
+											(((payload.getFunction("REASSIGN")) || (payload.getFunction("WIPE YOUR TRACKS"))) ? 
+											'<div class="logActions">' +
+												'<hr/>' +
+												(payload.getFunction("REASSIGN") ? '<span class="reassAction buttonItem">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" data-id="' + logID + '" onclick="logAction(this)">2 Tags</button></span>' : "") +
+												(payload.getFunction("WIPE YOUR TRACKS") ? '<span class="wipeAction buttonItem">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" data-id="' + logID + '" onclick="logAction(this)">1 Tag</button></span>' : "") +
+											'</div>' : "") +
+										'</li>');
+
+				$("#accessZone").hide();
+				$("#hackZone").css("display","flex");
+			});
+		}
+		else
+		{
+			$(".logEntry[data-user='" + payload.getUserID() + "']").addClass("itsYou");
+			$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html("You:&nbsp;&nbsp;");
+
+			$("#accessZone").hide();
+			$("#hackZone").css("display","flex");
+		}
 	}
 }
 

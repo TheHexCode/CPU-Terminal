@@ -8,15 +8,17 @@ class Session
     static PAYLOAD = "PAYLOAD";
     static EXTRA = "EXTRA";
 
+    #termID;
     #entryData;
     #repeatIcons = new Object();
 
-    constructor(initialEntries)
+    constructor(termInfo, initialEntries)
     {
         this.#totalTags = 0;
         this.#payTags = 0;
         this.#extTags = 0;
 
+        this.#termID = termInfo;
         this.#entryData = initialEntries;
     }
 
@@ -25,10 +27,15 @@ class Session
     {
         return this.#entryData;
     }
-    */
     getRepeatIcons()
     {
         return this.#repeatIcons;
+    }
+    */
+
+    getTerminalID()
+    {
+        return this.#termID;
     }
 
     getCurrentTags(tagType = Session.TOTAL)
