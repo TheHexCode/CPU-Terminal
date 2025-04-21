@@ -94,7 +94,12 @@ function injectUserPayload(userPayload)
 									"<u>CONNECTING USER IDENTIFIED</u>" +
 								"</div>" +
 								"<span>User: " + payload.getHandle() + "</span>" +
-								//( payload.getFunction("Mask") ? "<span>Mask: " + payload.getMask() + "</span>" : "" ) +
+								( payload.getFunction("Mask") ?
+									"<div id='maskName' class='payloadTextInput'>" +
+										"<label for='payloadMask'>Mask:</label>" +
+										"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
+									"</div>" :
+									"" ) +
 								""//"<span>PIN: 333333</span>"
 							);
 
@@ -298,6 +303,20 @@ function accessTerminal(event)
 		session.setCurrentTags(session.getCurrentTags() - reqTags);
 
 		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+
+		let logHandle = payload.getHandle();
+
+		if(payload.getFunction("MASK"))
+		{
+			if($("#payloadMask").val() === "")
+			{
+				logHandle = "Anonymous User";
+			}
+			else
+			{
+				logHandle = $("#payloadMask").val();
+			}
+		}
 
 		$("#accessZone").hide();
 		$("#hackZone").css("display","flex");

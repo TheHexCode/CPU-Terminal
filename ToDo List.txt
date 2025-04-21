@@ -13,12 +13,6 @@
             - Button to Root terminal
     >> PASSIVE
         - ALARM SENSE
-        - REPEAT
-            - Repeat only A OR M, per icon
-            - Line under Title with Access/Modify lit up:
-                        FILES
-                      REPEAT II
-                *ACCESS*      xMODIFYx
 
 > GENERAL
     - Write message for empty active/passive
@@ -43,3 +37,4 @@
         - Reveals Dark Web category
     ✓ Display Active/Passive functions on Deck page
     ✓ Disable buttons that are too expensive
+    ✓ REPEAT

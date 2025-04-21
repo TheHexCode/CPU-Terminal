@@ -469,6 +469,25 @@ h2
 	outline: none;
 }
 
+.payloadTextInput
+{
+	display: grid;
+	grid-template-columns: [start] 1rem [tab] auto [end];
+	width: 100%;
+}
+
+.payloadTextInput label
+{
+	grid-row: 1;
+	grid-column: start / end;
+}
+
+.payloadTextInput input
+{
+	grid-row: 2;
+	grid-column: tab / end;
+}
+
 .payDetails
 {
 	/* 271px/0.72rem -> 400px/1rem */

@@ -4,7 +4,6 @@ class Payload
 
     #userID;
     #handle;
-    #mask;
     #functions;
     #roles;
 
@@ -27,15 +26,15 @@ class Payload
     {
         return this.#payloadSet;
     }
+    
+    getUserID()
+    {
+        return this.#userID;
+    }
 
     getHandle()
     {
         return this.#handle;
-    }
-
-    getMask()
-    {
-        return this.#mask;
     }
 
     hasRole(roleName)
