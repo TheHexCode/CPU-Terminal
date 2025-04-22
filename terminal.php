@@ -305,15 +305,15 @@
 									<ul id="actList">
 										<li id="brickItem" class="hidden">
 											<span class="actionName">BRICK</span>
-											<button class="brickButton" data-enabled="true" data-cost="6" onclick="activeAction(this)">4 Tags</button>
+											<button class="brickButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">4 Tags</button>
 										</li>
 										<li id="riggItem" class="hidden">
 											<span class="actionName">RIGGED</span>
-											<button class="riggButton" data-enabled="true" data-cost="6" onclick="activeAction(this)">6 Tags</button>
+											<button class="riggButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>
 										<li id="rootItem" class="hidden">
 											<span class="actionName">ROOT DEVICE</span>
-											<button class="rootButton" data-enabled="true" data-cost="6" onclick="activeAction(this)">6 Tags</button>
+											<button class="rootButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>
 									</ul>
 								</div>

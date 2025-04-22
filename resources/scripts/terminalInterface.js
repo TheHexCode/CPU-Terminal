@@ -95,8 +95,9 @@ function injectUserPayload(userPayload)
 								"</div>" +
 								"<span>User: " + payload.getHandle() + "</span>" +
 								( payload.getFunction("Mask") ?
-									"<div id='maskName' class='payloadTextInput'>" +
+									"<div id='maskName' class='multiLineTextInput'>" +
 										"<label for='payloadMask'>Mask:</label>" +
+										"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
 										"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
 									"</div>" :
 									"" ) +
@@ -350,7 +351,9 @@ function accessTerminal(event)
 		else
 		{
 			$(".logEntry[data-user='" + payload.getUserID() + "']").addClass("itsYou");
-			$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html("You:&nbsp;&nbsp;");
+			$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html(
+				$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html().replace("User:","You:&nbsp;")
+			);
 
 			$("#accessZone").hide();
 			$("#hackZone").css("display","flex");
@@ -380,115 +383,204 @@ function openSubTab(target, contentID)
 	$("#" + contentID).addClass("active");
 }
 
-function logAction()
+function takeAction(target)
 {
-
-}
-
-function entryAction(target)
-{
-	$("#load").removeClass("hidden");
-
 	let action = target.classList[0].split("Button")[0];
+	let upperAction = action.charAt(0).toUpperCase() + action.slice(1);
 	let entryID = target.dataset["id"];
-	let entryPath = "#" + $(target).parents(".entry")[0].id;
-	let entryState = session.getEntryState(entryID);
 
-	let entryJSON = $.getJSON(
-		"resources\\scripts\\db\\getEntryActions.php",
-		{ id: entryID, state: entryState, action: action }
-	)
-	.done(function() {
-		let actionMap = {
-			entryID: entryID,
-			entryPath: entryPath,
-			actionCost: session.getActionCost(entryID,action),
-			upperAction: action.charAt(0).toUpperCase() + action.slice(1),
-			entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
-		};
-
-		let options = entryJSON.responseJSON;
-
-		$("#actionModal .modalButtonRow").html("");
-		options.forEach(function(option, index)
-		{
-			let buttonID = actionMap["entryID"] + action.charAt(0) + index;
-			$("#actionModal .modalButtonRow").append("<button id='" + buttonID + "' class='modalButton'>" + option.button + "</button>");
-
-			$("#" + buttonID).bind("pointerup", function()
-			{
-				executeCommand(actionMap,option.state,option.global);
-			});
-		});
-
-		Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-		
-		$("#actionModal").width($("#main").width());
-		$("#actionModal").removeClass("ice");
-
-		$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
-
-		$("#modalBodyTimer").addClass("hidden");
-		$("#actionModal .modalBodyText").html(
-			actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
-		);
-		$(".modalBodyText").removeClass("hidden");
-
-		$("#actionModal .modalButtonRow").attr("data-mode","confirm");
-		
-		$("#load").addClass("hidden");
-		$("#modalBG").css("display","flex");
-	});
-}
-
-function iceAction(target)
-{
-	$("#load").removeClass("hidden");
-
-	let action = target.classList[0].split("Button")[0];
-	let entryID = target.dataset["id"];
-	let entryPath = "#" + $(target).parents(".entry")[0].id;
-
-	let actionMap = {
-		entryID: entryID,
-		entryPath: entryPath,
-		actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
-		upperAction: action.charAt(0).toUpperCase() + action.slice(1),
-		entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
-	};
-
-	$("#actionModal .modalButtonRow").html("");
-	
-	let buttonID = actionMap["entryID"] + action.charAt(0);
-
-	$("#actionModal .modalButtonRow").append("<button id='" + buttonID + "' class='modalButton'>" + actionMap["upperAction"] + "</button>");
-	$("#" + buttonID).bind("pointerup", function()
+	switch (action)
 	{
-		executeCommand(actionMap,action,true);
+		// Standard Entry
+		case "access":
+		case "modify":
+		{
+			$("#load").removeClass("hidden");
+
+			let entryPath = "#" + $(target).parents(".entry")[0].id;
+			let entryState = session.getEntryState(entryID);
+
+			let entryJSON = $.getJSON(
+				"resources\\scripts\\db\\getEntryActions.php",
+				{ id: entryID, state: entryState, action: action }
+			)
+			.done(function() {
+				let actionMap = {
+					actionType: "entry",
+					entryID: entryID,
+					entryPath: entryPath,
+					actionCost: session.getActionCost(entryID,action),
+					upperAction: upperAction,
+					entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
+				};
+
+				Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+				
+				// MODAL BUTTONS
+				let options = entryJSON.responseJSON;
+				let buttons = [];
+		
+				$("#actionModal .modalButtonRow").html("");
+				options.forEach(function(option, index)
+				{
+					let buttonID = actionMap["actionType"] + actionMap["entryID"] + action.charAt(0) + index;
+					
+					buttons.push({
+						id: buttonID,
+						text: option.button,
+						data: option.state,
+						global: option.global
+					});
+				});
+
+				setupConfirmModal(actionMap,buttons);
+				
+				$("#load").addClass("hidden");
+			});
+
+			break;
+		}
+		// ICE Entry
+		case "unwrap":
+		case "break":
+		{
+			let entryPath = "#" + $(target).parents(".entry")[0].id;
+
+			let actionMap = {
+				actionType: "ice",
+				entryID: entryID,
+				entryPath: entryPath,
+				actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
+				upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+				entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+				text: "Confirm",
+				data: action,
+				global: true
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+			
+			break;
+		}
+		// Log Entry
+		case "reass":
+		case "wipe":
+		{
+			let entryPath = "#" + $(target).parents('.logEntry')[0].id;
+
+			let actionMap = {
+				actionType: "log",
+				entryID: entryID,
+				actionCost: session.getActionCost("log",action),
+				upperAction: (action === "reass" ? "Reassign" : "Wipe Tracks"),
+				entryName: $(entryPath + " .logName").html()
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+				text: "Confirm",
+				data: null,
+				global: true
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
+			break;
+		}
+		// Active Functions
+		case "break":
+		case "rigg":
+		case "root":
+		{
+			break;
+		}
+		// Item Activation
+	}
+}
+
+function setupConfirmModal(actionMap,buttons)
+{
+	// ACTIONMAP REQUIRES:
+	//	- upperAction
+	//	- entryName
+	//	- actionCost
+
+	// BUTTON ARRAY ITEMS REQUIRE:
+	//	- id
+	//	- text
+	//	- state
+	//	- global
+
+	buttons.forEach(function(button)
+	{
+		$("#actionModal .modalButtonRow").append("<button id='" + button.id + "' class='modalButton'>" + button.text + "</button>");
+			
+		$("#" + button.id).bind("pointerup", function()
+		{
+			executeAction(actionMap,button.data,button.global);
+		});
 	});
 
-	Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-	
 	$("#actionModal").width($("#main").width());
-	$("#actionModal").addClass("ice");
+	if(actionMap["actionType"] === "ice")
+	{
+		$("#actionModal").addClass("ice");
+	}
+	else
+	{
+		$("#actionModal").removeClass("ice");
+	}
 
 	$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
 
+	let extraBeforeText = "";
+	let extraAfterText = "";
+
+	switch(actionMap["upperAction"])
+	{
+		case("Break"):
+		{
+			extraAfterText = 	"<div class='cautionTape'>" +
+									"WARNING: Breaking ICE means tripping it and taking any negative effects it may incur. <em>Sleaze</em> the ICE instead to disable the security, in exchange for Tags." +
+								"</div>"
+			break;
+		}
+		case("Reassign"):
+		{
+			extraBeforeText = " Log Entry for";
+			extraAfterText =	"<br/>" +
+								"<div id='reassName' class='multiLineTextInput'>" +
+									"<label for='reassInput'>New Name to Reassign Log Entry to:</label>" +
+									"<span class='middleText'>(This MAY be used to imitate someone else!)</span>" +
+									"<input type='text' id='reassInput' placeholder='Anonymous User' maxlength='15'></input>" +
+								"</div>";
+			break;
+		}
+		case("Wipe Tracks"):
+		{
+			extraBeforeText = " for";
+			break;
+		}
+	}
+
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
-		(action === "break" ?
-			"<div class='cautionTape'>" +
-				"WARNING: Breaking ICE means tripping it and taking any negative effects it may incur. <em>Sleaze</em> the ICE instead to disable the security, in exchange for Tags." +
-			"</div>" :
-			""
-		)
+		actionMap["upperAction"] + extraBeforeText + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
+		extraAfterText
 	);
+
 	$(".modalBodyText").removeClass("hidden");
 
 	$("#actionModal .modalButtonRow").attr("data-mode","confirm");
-		
-	$("#load").addClass("hidden");
+	
 	$("#modalBG").css("display","flex");
 }
 
@@ -513,7 +605,7 @@ function closeModal(event)
 	}
 }
 
-function executeCommand(actionMap,newState,globalAction)
+function executeAction(actionMap,newData,globalAction)
 {
 	let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
 
@@ -530,10 +622,18 @@ function executeCommand(actionMap,newState,globalAction)
 
 		$("#executeButton").addClass("active");
 
-		actionMap["newState"] = newState;
+		if(actionMap["upperAction"] === "Reassign")
+		{
+			actionMap["newData"] = ($("#payloadMask").val() === "" ? "Anonymous User" : ("#payloadMask").val());
+		}
+		else
+		{
+			actionMap["newData"] = newData;
+		}
+
 		actionMap["global"] = globalAction;
 
-		mbTimer.startTimer(maxTime,completeCommand,actionMap);
+		mbTimer.startTimer(maxTime,completeAction,actionMap);
 	});
 	$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
 	{
@@ -565,40 +665,61 @@ function executeCommand(actionMap,newState,globalAction)
 	$("#modalBG").css("display","flex");
 }
 
-function completeCommand(actionMap)
+function completeAction(actionMap)
 {
 	closeModal("executed");
 
 	//actionMap:
+		// actionType
 		// actionCost
 		// dialog (id)
 		// entryID
 		// entryName
-		// entryPath
+		// entryPath (entry/ice)
 		// global
-		// newState
+		// newData
 		// results
 			// title
 			// contents
 			// access
 			// modify
 		// upperAction
+	
+	switch(actionMap["actionType"])
+	{
+		case("entry"):
+		case("ice"):
+		{
+			$(actionMap["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
+			$(actionMap["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
+			$(actionMap["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
+			$(actionMap["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
+			$(actionMap["entryPath"] + " > .subIce").removeClass("subIce");
 
-	$(actionMap["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
-	$(actionMap["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
-	$(actionMap["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
-	$(actionMap["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
-	$(actionMap["entryPath"] + " > .subIce").removeClass("subIce");
+			if(payload.getFunction("REPEAT"))
+			{
+				session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
+				updateEntryCosts(actionMap["entryPath"],actionMap["upperAction"]);
+			}
+			break;
+		}
+		case("log"):
+		{
+			if(actionMap["upperAction"] === "Reassign")
+			{
+				$("#log" + actionMap["entryID"] + " > .logName").html(actionMap["results"]["title"]);
+			}
+			else //WIPE TRACKS
+			{
+				$("#log" + actionMap["entryID"] + " > .logPerson").html("[ERROR:&nbsp;");
+				$("#log" + actionMap["entryID"] + " > .logName").html("ENTRY NOT FOUND]");
+				$("#log" + actionMap["entryID"] + " > .logActions").html("");
+			}
+		}
+	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
-
-	if(payload.getFunction("REPEAT"))
-	{
-		session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
-		updateEntryCosts(actionMap["entryPath"],actionMap["upperAction"]);
-	}
-
 	disableExpensiveButtons();
 }
 

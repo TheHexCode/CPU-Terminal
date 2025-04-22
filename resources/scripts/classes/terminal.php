@@ -98,7 +98,7 @@ class Terminal
             if($logEntry["state"] === "wiped")
             {
                 $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry" data-user="' . $logEntry["user_id"] . '">' .
-                                        'ERROR: LOG ENTRY NOT FOUND' .
+                                        '<span class="logPerson">[ERROR:&nbsp;</span><span class="logName">ENTRY NOT FOUND]</span>' .
                                     '</li>';
             }
             else if($logEntry["state"] === "initial")
@@ -120,8 +120,8 @@ class Terminal
                                         '<span class="logPerson">User:&nbsp;</span><span class="logName">' . $logHandle . '</span>' .
                                         '<div class="logActions hidden">' .
                                             '<hr/>' .
-                                            '<span class="reassAction buttonItem hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" data-id="' . $logEntry["id"] . '" onclick="logAction(this)">2 Tags</button></span>' .
-                                            '<span class="wipeAction buttonItem hidden">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" data-id="' . $logEntry["id"] . '" onclick="logAction(this)">1 Tag</button></span>' .
+                                            '<span class="reassAction buttonItem hidden">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" data-id="' . $logEntry["id"] . '" onclick="takeAction(this)">2 Tags</button></span>' .
+                                            '<span class="wipeAction buttonItem hidden">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" data-id="' . $logEntry["id"] . '" onclick="takeAction(this)">1 Tag</button></span>' .
                                         '</div>' .
                                     '</li>';
             }
@@ -183,11 +183,11 @@ class Terminal
                 $unit = "ICE " . $unitCode;
 
                 $accessInt = ($entry["state"] === "initial") ?
-                                'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="iceAction(this)">0 Tags</button>' : 
+                                'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' : 
                                 'Break: <button class="breakButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($entry["state"] === "initial") ?
-					            'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="iceAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
+					            'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                 'Sleaze: <button class="sleazeButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $titleMask = $entry["title"];
@@ -210,11 +210,11 @@ class Terminal
                 $unit = $iconGuide["unit"] . " " . $unitCode;
 
                 $accessInt = ($stateGuide["access"]["enabled"]) ?
-                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
+                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
                                 'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 $modifyInt = ($stateGuide["modify"]["enabled"]) ?
-                                'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
+                                'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                 'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
                 if($stateGuide["title"] === false)

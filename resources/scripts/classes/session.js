@@ -81,16 +81,30 @@ class Session
 
     getActionCost(entryID, action)
     {
-        let searchResults = this.#entryData.find(entry => entry.id === entryID);
-
-        let actionCost = Number(searchResults[action]);
-
-        if(Object.keys(this.#repeatIcons).includes(searchResults["icon"]))
+        if(entryID === "log")
         {
-            actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
+            if(action === "reass")
+            {
+                return 2;
+            }
+            else // Wipe
+            {
+                return 1;
+            }
         }
+        else
+        {
+            let searchResults = this.#entryData.find(entry => entry.id === entryID);
 
-        return actionCost;
+            let actionCost = Number(searchResults[action]);
+
+            if(Object.keys(this.#repeatIcons).includes(searchResults["icon"]))
+            {
+                actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
+            }
+
+            return actionCost;
+        }
     }
 
     setFunctionState(functionName, entryID, entryAction, functionRank)

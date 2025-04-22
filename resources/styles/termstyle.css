@@ -469,22 +469,28 @@ h2
 	outline: none;
 }
 
-.payloadTextInput
+.multiLineTextInput
 {
 	display: grid;
 	grid-template-columns: [start] 1rem [tab] auto [end];
 	width: 100%;
 }
 
-.payloadTextInput label
+.multiLineTextInput label
 {
 	grid-row: 1;
 	grid-column: start / end;
 }
 
-.payloadTextInput input
+.multiLineTextInput .middleText
 {
 	grid-row: 2;
+	grid-column: tab / end;
+}
+
+.multiLineTextInput input
+{
+	grid-row: 3;
 	grid-column: tab / end;
 }
 

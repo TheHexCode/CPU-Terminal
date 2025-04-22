@@ -46,25 +46,24 @@ class Timer
                 clearInterval(this.#timerInterval);
                 this.#timerInterval = null;
 
-                //if global = true, run interrupt script IMMEDIATELY
                 if(callargs !== null)
                 {
-                    callargs["results"] = results.responseJSON;
-
                     if(callargs["global"])
                     {
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            url: "resources\\scripts\\db\\terminalInterrupt.php",
+                            url: "resources\\scripts\\db\\updateTerminal.php",
                             data:
                             {
-                                termID: callargs["results"]["terminal_id"],
+                                actionType: callargs["actionType"],
                                 entryID: callargs["entryID"],
-                                newState: callargs["newState"]
+                                newData: callargs["newData"]
                             }
                         });
                     }
+
+                    callargs["results"] = results.responseJSON;
                 }
 
                 callback(callargs);
@@ -95,10 +94,18 @@ class Timer
             
             if(callargs !== null)
             {
-                results = $.getJSON(
-                    "resources\\scripts\\db\\getEntryUpdate.php",
-                    { id: callargs["entryID"], newState: callargs["newState"] }
-                );
+                switch(callargs["actionType"])
+                {
+                    case("entry"):
+                    case("ice"):
+                    {
+                        results = $.getJSON(
+                            "resources\\scripts\\db\\getEntryUpdate.php",
+                            { id: callargs["entryID"], newState: callargs["newData"] }
+                        );
+                        break;
+                    }
+                }
             }
 
             this.#timerInterval = setInterval(() => this.#interval(maxTime, callback, callargs, results), 10);
