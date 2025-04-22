@@ -63,7 +63,10 @@ class Timer
                         });
                     }
 
-                    callargs["results"] = results.responseJSON;
+                    if(results !== null)
+                    {
+                        callargs["results"] = results.responseJSON;
+                    }
                 }
 
                 callback(callargs);

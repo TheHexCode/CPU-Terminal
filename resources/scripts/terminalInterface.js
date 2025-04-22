@@ -516,7 +516,7 @@ function setupConfirmModal(actionMap,buttons)
 	// BUTTON ARRAY ITEMS REQUIRE:
 	//	- id
 	//	- text
-	//	- state
+	//	- data
 	//	- global
 
 	buttons.forEach(function(button)
@@ -525,7 +525,14 @@ function setupConfirmModal(actionMap,buttons)
 			
 		$("#" + button.id).bind("pointerup", function()
 		{
-			executeAction(actionMap,button.data,button.global);
+			let buttonData = button.data;
+
+			if(actionMap["upperAction"] === "Reassign")
+			{
+				buttonData = ($("#reassInput").val() === "" ? "Anonymous User" : $("#reassInput").val());
+			};
+
+			executeAction(actionMap,buttonData,button.global);
 		});
 	});
 
@@ -556,7 +563,7 @@ function setupConfirmModal(actionMap,buttons)
 		case("Reassign"):
 		{
 			extraBeforeText = " Log Entry for";
-			extraAfterText =	"<br/>" +
+			extraAfterText =	"<br/><br/>" +
 								"<div id='reassName' class='multiLineTextInput'>" +
 									"<label for='reassInput'>New Name to Reassign Log Entry to:</label>" +
 									"<span class='middleText'>(This MAY be used to imitate someone else!)</span>" +
@@ -622,15 +629,7 @@ function executeAction(actionMap,newData,globalAction)
 
 		$("#executeButton").addClass("active");
 
-		if(actionMap["upperAction"] === "Reassign")
-		{
-			actionMap["newData"] = ($("#payloadMask").val() === "" ? "Anonymous User" : ("#payloadMask").val());
-		}
-		else
-		{
-			actionMap["newData"] = newData;
-		}
-
+		actionMap["newData"] = newData;
 		actionMap["global"] = globalAction;
 
 		mbTimer.startTimer(maxTime,completeAction,actionMap);
@@ -678,7 +677,7 @@ function completeAction(actionMap)
 		// entryPath (entry/ice)
 		// global
 		// newData
-		// results
+		// results (entry/ice)
 			// title
 			// contents
 			// access
@@ -707,7 +706,7 @@ function completeAction(actionMap)
 		{
 			if(actionMap["upperAction"] === "Reassign")
 			{
-				$("#log" + actionMap["entryID"] + " > .logName").html(actionMap["results"]["title"]);
+				$("#log" + actionMap["entryID"] + " > .logName").html(actionMap["newData"]);
 			}
 			else //WIPE TRACKS
 			{
