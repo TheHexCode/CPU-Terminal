@@ -2,16 +2,16 @@ USE [CPU_Terminal]
 GO
 
 DELETE FROM [dbo].[terminals]
-WHERE [slug]='test';
+	WHERE [slug]='test';
 DELETE FROM [dbo].[accessLogs];
 DELETE FROM [dbo].[entries];
 
 GO
 
 INSERT INTO [dbo].[terminals]
-           ([slug],[jobCode],[displayName],[access],[state])
+           ([slug],[jobCode],[displayName],[access],[state],[stateData])
      VALUES
-           ('test','ABC1234','Test Terminal',2,'active');
+           ('test','ABC1234','Test Terminal',2,'active',NULL);
 
 GO
 

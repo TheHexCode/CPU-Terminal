@@ -97,17 +97,12 @@ class Timer
             
             if(callargs !== null)
             {
-                switch(callargs["actionType"])
+                if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))
                 {
-                    case("entry"):
-                    case("ice"):
-                    {
-                        results = $.getJSON(
-                            "resources\\scripts\\db\\getEntryUpdate.php",
-                            { id: callargs["entryID"], newState: callargs["newData"] }
-                        );
-                        break;
-                    }
+                    results = $.getJSON(
+                        "resources\\scripts\\db\\getEntryUpdate.php",
+                        { id: callargs["entryID"], newState: callargs["newData"] }
+                    );
                 }
             }
 

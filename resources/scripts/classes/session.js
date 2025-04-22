@@ -81,15 +81,19 @@ class Session
 
     getActionCost(entryID, action)
     {
-        if(entryID === "log")
+        if(entryID === "nonEntry")
         {
-            if(action === "reass")
+            switch(action)
             {
-                return 2;
-            }
-            else // Wipe
-            {
-                return 1;
+                case("reass"):
+                    return 2;
+                case("wipe"):
+                    return 1;
+                case("brick"):
+                    return 4;
+                case("rig"):
+                case("root"):
+                    return 6;
             }
         }
         else

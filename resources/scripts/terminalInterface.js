@@ -187,7 +187,7 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("RIGGED"))
 		{
-			$("#riggItem").removeClass("hidden");
+			$("#rigItem").removeClass("hidden");
 		}
 
 		if(payload.getFunction("ROOT DEVICE"))
@@ -477,7 +477,7 @@ function takeAction(target)
 			let actionMap = {
 				actionType: "log",
 				entryID: entryID,
-				actionCost: session.getActionCost("log",action),
+				actionCost: session.getActionCost("nonEntry",action),
 				upperAction: (action === "reass" ? "Reassign" : "Wipe Tracks"),
 				entryName: $(entryPath + " .logName").html()
 			};
@@ -496,10 +496,29 @@ function takeAction(target)
 			break;
 		}
 		// Active Functions
-		case "break":
-		case "rigg":
+		case "brick":
+		case "rig":
 		case "root":
 		{
+			let actionMap = {
+				actionType: action,
+				entryID: session.getTerminalID(),
+				actionCost: session.getActionCost("nonEntry",action),
+				upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+				entryName: "Device"
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+				text: "Confirm",
+				data: payload.getUserID(),
+				global: true
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
 			break;
 		}
 		// Item Activation
@@ -550,6 +569,7 @@ function setupConfirmModal(actionMap,buttons)
 
 	let extraBeforeText = "";
 	let extraAfterText = "";
+	let quote = "\"";
 
 	switch(actionMap["upperAction"])
 	{
@@ -576,11 +596,29 @@ function setupConfirmModal(actionMap,buttons)
 			extraBeforeText = " for";
 			break;
 		}
+		case("Brick"):
+		{
+			quote = "";
+			extraAfterText = "<br/><br/><span class='red'>WARNING: Bricking this Device will render it inoperable until repaired!</span>";
+			break;
+		}
+		case("Rig"):
+		{
+			quote = "";
+			extraAfterText = "<br/><br/><span class='red'>WARNING: Triggering a Rigged Device (by calling \"Room Strike Lock\") will cause all data to be deleted at the end of the Scene!</span>";
+			break;
+		}
+		case("Root"):
+		{
+			quote = "";
+			extraAfterText = "<br/><br/><span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>"
+			break;
+		}
 	}
 
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + extraBeforeText + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
+		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
 		extraAfterText
 	);
 
@@ -714,7 +752,61 @@ function completeAction(actionMap)
 				$("#log" + actionMap["entryID"] + " > .logName").html("ENTRY NOT FOUND]");
 				$("#log" + actionMap["entryID"] + " > .logActions").html("");
 			}
+			break;
 		}
+		case("brick"):
+			let handle = payload.getHandle();
+
+			let hexHandle = [];
+
+			for(let i = 0; i < handle.length; i++)
+			{
+				hexHandle.push(handle.charCodeAt(i).toString(16).padStart(2,0));
+			}
+
+			for(let j = handle.length; j < 15; j++)
+			{
+				hexHandle.push("00");
+			}
+
+			$("body").addClass("bricked");
+
+			let stopCode =  "0x000000" + hexHandle[0] + "<br/>" +
+							"(0x" + hexHandle[1] + hexHandle[2] + hexHandle[3] + hexHandle[4] + "," +
+							"0x" + hexHandle[5] + hexHandle[6] + hexHandle[7] + hexHandle[8] + ",<br/>" +
+							"&nbsp;0x" + hexHandle[9] + hexHandle[10] + hexHandle[11] + hexHandle[12] + "," +
+							"0x" + hexHandle[13] + hexHandle[14] + "0000)"
+
+			/*
+			<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
+				<mask id="logoMask">
+					<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
+				</mask>
+			
+				<foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
+					<div id="logoBG"></div>
+				</foreignObject>
+			</svg>
+			*/
+
+			$("#main").html("<p>A problem has been detected and HexOS has been shut down to prevent damage to your device.</p>" +
+							"<p>UNMOUNTABLE_BOOT_VOLUME</p>" +
+							"<p>If this is the first time you've seen this error screen, restart your computer. If this screen appears again, follow these steps:" +
+							"<p>Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer for any HexOS updates you might need.</p>" +
+							"<p>If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use Safe Mode to remove or disable components, restart your computer, press F8 to select Advanced Startup Options, and then select Safe Mode.</p>" +
+							"<p>Technical Information:</p>" +
+							"<p>*** STOP: " + stopCode + "</p>" +
+							"<p><br/>Beginning dump of physical memory...<br/>" +
+							"Physical memory dump complete.<br/>" +
+							"Contact your system administrator or technical support group for further<br/>" +
+							"assistance.</p>" +
+							"<!--<footer>CPU DISCLAIMER</footer>-->")
+
+			break;
+		case("rig"):
+			break;
+		case("root"):
+			break;
 	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);

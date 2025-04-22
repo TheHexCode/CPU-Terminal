@@ -2,19 +2,18 @@
     >> INITIAL
     >> ACTIVE
         - BRICK
-            - Button to Brick terminal
-        - REASSIGN / WIPE YOUR TRACKS
-            - Action Log function
+            - Functionality
         - RIGGED
-            - Button to Rig terminal
+            - Functionality
         - ROOT DEVICE
-            - Button to Root terminal
+            - Functionality
+            - Rooting vs. Rooted
     >> PASSIVE
         - ALARM SENSE
 
 > GENERAL
-    - Write message for empty active/passive
-    v Help Popup to say what functions do what (Low Priority)
+    v Write message for empty active/passive
+    v Help Popup to say what functions do what
     v Sync the blend of the reqTags and Gems
     v Fix ugly "buttonItem" class when window is thin
     v Fix Extra Tags not blending the negative gems
@@ -22,6 +21,7 @@
 > INVENTORY
 
 > COOKIE / DB UPDATES
+ - OOC Action Log
 
 > MULTIPLAYER INTERRUPT
 
@@ -38,3 +38,4 @@
     ✓ REPEAT
     ✓ MASK
         - Need field at start to type a Mask into
+    ✓ REASSIGN / WIPE YOUR TRACKS

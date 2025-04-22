@@ -41,6 +41,34 @@ switch($actionType)
             $updateStatement->execute([':newData' => $newData, ':entryID' => $entryID]);
         }
         break;
-    //Active Actions
+    case "brick":
+        $updateQuery = "UPDATE CPU_Terminal.dbo.terminals
+                        SET state = 'bricked',
+                            stateData = :newData
+                        WHERE id = :entryID";
+
+        $updateStatement = $pdo->prepare($updateQuery);
+
+        $updateStatement->execute([':newData' => $newData, ':entryID' => $entryID]);
+        break;
+    case "rig":
+        $updateQuery = "UPDATE CPU_Terminal.dbo.terminals
+                        SET state = 'rigged'
+                        WHERE id = :entryID";
+
+        $updateStatement = $pdo->prepare($updateQuery);
+
+        $updateStatement->execute([':entryID' => $entryID]);
+        break;
+    case "root":
+        $updateQuery = "UPDATE CPU_Terminal.dbo.terminals
+                        SET state = 'rooting',
+                            stateData = :newData
+                        WHERE id = :entryID";
+
+        $updateStatement = $pdo->prepare($updateQuery);
+
+        $updateStatement->execute([':newData' => time(), ':entryID' => $entryID]);
+        break;
     //Items?
 }

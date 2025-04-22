@@ -309,7 +309,7 @@
 										</li>
 										<li id="riggItem" class="hidden">
 											<span class="actionName">RIGGED</span>
-											<button class="riggButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
+											<button class="rigButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>
 										<li id="rootItem" class="hidden">
 											<span class="actionName">ROOT DEVICE</span>
@@ -370,7 +370,7 @@
 				</div>
 			</div>
 			<footer>
-				<span>© CPU Larp 2025</span>
+				<span>&copy; CPU Larp <?php echo date("Y"); ?></span>
 				<?php echo $terminal->sendInitialEntries(); ?>
 			</footer>
 		</div>
