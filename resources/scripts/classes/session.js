@@ -211,14 +211,17 @@ class Session
                         "<!--<footer>CPU DISCLAIMER</footer>-->");
     }
 
-    rigTerminal(userID)
+    rigTerminal(testState)
     {
-
+        if((!testState) || (this.#termState === "rigged"))
+        {
+            $("#rigged").removeClass("hidden");
+        }
     }
 
     rootTerminal(rootStart)
     {
-        
+
     }
 
     terminalRooted()
