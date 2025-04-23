@@ -5,7 +5,7 @@ $termID = $_POST["termID"];
 $userID = $_POST["userID"];
 $userMask = $_POST["userMask"];
 
-$newLogQuery = "INSERT INTO CPU_Terminal.dbo.accessLogs
+$newLogQuery = "INSERT INTO cpu_term.accessLogs
                     (terminal_id, user_id, mask, state)
                 VALUES (:termID, :userID, :mask, 'initial')";
 

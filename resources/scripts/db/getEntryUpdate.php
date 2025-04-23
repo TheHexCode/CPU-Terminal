@@ -5,7 +5,7 @@ require('dbConnect.php');
 $entryID = $_GET["id"];
 $newState = $_GET["newState"];
 
-$entry_query = $pdo->query("SELECT * FROM CPU_Terminal.dbo.entries WHERE id={$entryID}");
+$entry_query = $pdo->query("SELECT * FROM cpu_term.entries WHERE id={$entryID}");
 $entry = ($entry_query->fetchAll(PDO::FETCH_ASSOC))[0];
 
 $iconFilepath = "../../schemas/icons.json";

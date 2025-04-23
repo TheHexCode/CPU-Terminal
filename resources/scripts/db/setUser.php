@@ -2,7 +2,7 @@
 
 function generateCode(PDO $pdo)
 {
-    $code_query = $pdo->query("SELECT userCode FROM CPU_Terminal.dbo.users");
+    $code_query = $pdo->query("SELECT userCode FROM cpu_term.users");
 
     $codeList = $code_query->fetchAll(PDO::FETCH_NUM)[0];
 
@@ -73,7 +73,7 @@ function generateCode(PDO $pdo)
 
 function addUser(PDO $pdo, string $newCode, string $newCharName, array $charSkills)
 {
-    $newCharQuery = "   INSERT INTO CPU_Terminal.dbo.users
+    $newCharQuery = "   INSERT INTO cpu_term.users
                             (userCode, charName)
                         VALUES (:userCode, :charName)";
 
@@ -82,34 +82,34 @@ function addUser(PDO $pdo, string $newCode, string $newCharName, array $charSkil
     $newCharStatement->execute([':userCode' => $newCode, ':charName' => $newCharName]);
     $newCharID = $pdo->lastInsertId();
 
-    $newMLFuncIDQuery = "   SELECT ml_id
-                            FROM CPU_Terminal.dbo.ml_functions
-                            WHERE ml_name IN ( ?" . str_repeat(', ?', count($charSkills)-1) . " )";
+    $newMLIDQuery = "   SELECT id
+                        FROM cpu_term.ml_functions
+                        WHERE ml_name IN ( ?" . str_repeat(', ?', count($charSkills)-1) . " )";
 
-    $newMLFuncIDStatement = $pdo->prepare($newMLFuncIDQuery);
-    $newMLFuncIDStatement->execute($charSkills);
-    $newMLFuncIDs = $newMLFuncIDStatement->fetchAll(PDO::FETCH_FUNC,function($mlFuncID){return $mlFuncID;});
+    $newMLIDStatement = $pdo->prepare($newMLIDQuery);
+    $newMLIDStatement->execute($charSkills);
+    $newMLIDs = $newMLIDStatement->fetchAll(PDO::FETCH_FUNC,function($mlID){return $mlID;});
 
     $userFuncArray = array();
 
-    foreach($newMLFuncIDs as $mlfID)
+    foreach($newMLIDs as $mlID)
     {
-        array_push($userFuncArray,$newCharID,$mlfID);
+        array_push($userFuncArray,$newCharID,$mlID);
     }
 
-    $userFuncQuery = "  INSERT INTO CPU_Terminal.dbo.user_functions
+    $userFuncQuery = "  INSERT INTO cpu_term.user_functions
                             (user_id, mlFunction_id)
-                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($newMLFuncIDs)-1) .")";
+                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($newMLIDs)-1) .")";
 
     $userFuncStatement = $pdo->prepare($userFuncQuery);
     $userFuncStatement->execute($userFuncArray);
 }
 
-function updateUser(PDO $pdo, string $userID, array $mlFuncs)
+function updateUser(PDO $pdo, string $userID, array $mlIDs)
 {
     $dbFuncQuery = "SELECT DISTINCT ml_name
-                    FROM CPU_Terminal.dbo.user_functions
-                    INNER JOIN CPU_Terminal.dbo.ml_functions ON user_functions.mlFunction_id=ml_functions.ml_id
+                    FROM cpu_term.user_functions
+                    INNER JOIN cpu_term.ml_functions ON user_functions.mlFunction_id=ml_functions.id
                     WHERE user_id = :userID
                     GROUP BY ml_name";
 
@@ -117,32 +117,32 @@ function updateUser(PDO $pdo, string $userID, array $mlFuncs)
     $dbFuncStatement->execute([':userID' => $userID]);
     $dbFuncs = $dbFuncStatement->fetchAll(PDO::FETCH_FUNC,function($dbName){return $dbName;});
 
-    if(count(array_intersect($dbFuncs,$mlFuncs)) !== count($mlFuncs))
+    if(count(array_intersect($dbFuncs,$mlIDs)) !== count($mlIDs))
     {
-        $deleteQuery = "DELETE FROM CPU_Terminal.dbo.user_functions
+        $deleteQuery = "DELETE FROM cpu_term.user_functions
                         WHERE user_id = :userID";
 
         $deleteStatement = $pdo->prepare($deleteQuery);
         $deleteStatement->execute([':userID' => $userID]);
 
-        $newMLFuncIDQuery = "   SELECT ml_id
-                                FROM CPU_Terminal.dbo.ml_functions
-                                WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncs)-1) . " )";
+        $newMLIDQuery = "   SELECT id
+                                FROM cpu_term.ml_functions
+                                WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlIDs)-1) . " )";
 
-        $newMLFuncIDStatement = $pdo->prepare($newMLFuncIDQuery);
-        $newMLFuncIDStatement->execute($mlFuncs);
-        $newMLFuncIDs = $newMLFuncIDStatement->fetchAll(PDO::FETCH_FUNC,function($mlFuncID){return $mlFuncID;});
+        $newMLIDStatement = $pdo->prepare($newMLIDQuery);
+        $newMLIDStatement->execute($mlIDs);
+        $newMLIDs = $newMLIDStatement->fetchAll(PDO::FETCH_FUNC,function($mlID){return $mlID;});
 
         $userFuncArray = array();
 
-        foreach($newMLFuncIDs as $mlfID)
+        foreach($newMLIDs as $mlID)
         {
-            array_push($userFuncArray,$userID,$mlfID);
+            array_push($userFuncArray,$userID,$mlID);
         }
 
-        $userFuncQuery = "  INSERT INTO CPU_Terminal.dbo.user_functions
+        $userFuncQuery = "  INSERT INTO cpu_term.user_functions
                                 (user_id, mlFunction_id)
-                            VALUES ( ?,? " . str_repeat('), ( ?,? ',count($newMLFuncIDs)-1) .")";
+                            VALUES ( ?,? " . str_repeat('), ( ?,? ',count($newMLIDs)-1) .")";
 
         $userFuncStatement = $pdo->prepare($userFuncQuery);
         $userFuncStatement->execute($userFuncArray);

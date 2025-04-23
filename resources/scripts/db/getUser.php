@@ -7,7 +7,7 @@ $userCode = $_POST["userCode"];
 ###############################################################################################################################
 
 $userQuery = '  SELECT id,charName
-                FROM CPU_Terminal.dbo.users
+                FROM cpu_term.users
                 WHERE userCode = :userCode';
 
 $userStatement = $pdo->prepare($userQuery);
@@ -24,9 +24,9 @@ else
                                         SUM(ml_functions.rank) AS 'rank',
                                         functions.type,
                                         functions.hacking_cat
-                        FROM CPU_Terminal.dbo.user_functions
-                        INNER JOIN CPU_Terminal.dbo.ml_functions ON ml_functions.ml_id=user_functions.mlFunction_id
-                        INNER JOIN CPU_Terminal.dbo.functions ON ml_functions.function_id=functions.id
+                        FROM cpu_term.user_functions
+                        INNER JOIN cpu_term.ml_functions ON ml_functions.id=user_functions.mlFunction_id
+                        INNER JOIN cpu_term.functions ON ml_functions.function_id=functions.id
                         WHERE user_id = :userID
                             AND functions.hacking_cat IS NOT NULL
                         GROUP BY functions.name,
@@ -38,9 +38,9 @@ else
     $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $roleQuery = "  SELECT DISTINCT roles.name
-                    FROM CPU_Terminal.dbo.ml_functions
-                    INNER JOIN CPU_Terminal.dbo.user_functions ON ml_functions.ml_id=user_functions.mlFunction_id
-                    INNER JOIN CPU_Terminal.dbo.roles ON ml_functions.role_id=roles.id
+                    FROM cpu_term.ml_functions
+                    INNER JOIN cpu_term.user_functions ON ml_functions.id=user_functions.mlFunction_id
+                    INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
                     WHERE user_id = :userID";
 
     $roleStatement = $pdo->prepare($roleQuery);

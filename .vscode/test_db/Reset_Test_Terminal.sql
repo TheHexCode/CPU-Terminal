@@ -1,32 +1,28 @@
-USE [CPU_Terminal]
-GO
+USE cpu_term;
 
-DELETE FROM [dbo].[terminals]
-	WHERE [slug]='test';
-DELETE FROM [dbo].[accessLogs];
-DELETE FROM [dbo].[entries];
+DELETE FROM terminals
+	WHERE slug='test';
+DELETE FROM accessLogs;
+DELETE FROM entries;
 
-GO
+UPDATE activeJob
+	SET jobCode = 'ABC1234';
 
-INSERT INTO [dbo].[terminals]
-           ([slug],[jobCode],[displayName],[access],[state],[stateData])
+INSERT INTO terminals
+           (slug, jobCode, displayName, access, state, stateData)
      VALUES
-           ('test','ABC1234','Test Terminal',2,'active',NULL);
+           ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL);
 
-GO
+SET @TermID = LAST_INSERT_ID();
 
-DECLARE @TermID INT;
-
-SET @TermID = SCOPE_IDENTITY();
-
-INSERT INTO [dbo].[accessLogs]
-           ([terminal_id],[user_id],[mask],[reassignee],[state])
+INSERT INTO accessLogs
+           (terminal_id, user_id, mask, reassignee, state)
      VALUES
-           (@TermID,NULL,'WYV3RN',NULL,'initial'),
-		   (@TermID,NULL,'Z1GZ4G',NULL,'initial');
+           (@TermID, NULL, 'WYV3RN', NULL, 'initial'),
+		   (@TermID, NULL, 'Z1GZ4G', NULL, 'initial');
 
-INSERT INTO [dbo].[entries]
-           ([terminal_id],[icon],[path],[type],[access],[modify],[title],[contents],[state])
+INSERT INTO entries
+           (terminal_id, icon, path, type, access, modify, title, contents, state)
      VALUES
 		   (@TermID,'files','0','entry',0,1,'Paydata','10 Credits','initial'),
 		   (@TermID,'files','1','trap',1,2,NULL,'["3 Strikes to Torso!"]','initial'),
@@ -43,5 +39,3 @@ INSERT INTO [dbo].[entries]
 		   (@TermID,'defenses','0','entry',0,1,'Test ADS',NULL,'initial'),
 		   (@TermID,'utilities','0','power',0,1,'Test Power',NULL,'initial'),
 		   (@TermID,'utilities','1','alarm',0,1,'Test Alarm',NULL,'initial');
-
-GO

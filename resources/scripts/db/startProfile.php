@@ -4,9 +4,9 @@ require('dbConnect.php');
 //require('codeGen.php');
 
 #$profile_query = $pdo->query("SELECT role_functions.id,role_id,roles.roleName AS roleName,tier,function_id,functions.functionName AS functionName,rank
-#                            FROM CPU_Terminal.dbo.role_functions
-#                            INNER JOIN CPU_Terminal.dbo.roles ON role_functions.role_id=roles.id
-#                            INNER JOIN CPU_Terminal.dbo.functions ON role_functions.function_id=functions.id");
+#                            FROM cpu_term.role_functions
+#                            INNER JOIN cpu_term.roles ON role_functions.role_id=roles.id
+#                            INNER JOIN cpu_term.functions ON role_functions.function_id=functions.id");
 #$profileResponse = $profile_query->fetchAll(PDO::FETCH_ASSOC);
 $profileResponse = "Placeholder";
 

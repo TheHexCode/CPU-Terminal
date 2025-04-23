@@ -39,8 +39,8 @@ curl_close($curlHandle);
 
 #####################################################################################################################################################
 
-$dbCharQuery = "SELECT * FROM CPU_Terminal.dbo.users
-                WHERE charName = :charName";
+$dbCharQuery = "SELECT * FROM cpu_term.users
+                WHERE charName = :charName;";
 
 $dbCharStatement = $pdo->prepare($dbCharQuery);
 $dbCharStatement->execute([':charName' => $mlCharResponse->name]);
@@ -67,8 +67,8 @@ $functionQuery = "  SELECT DISTINCT functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
                                     functions.type,
                                     functions.hacking_cat
-                    FROM CPU_Terminal.dbo.ml_functions
-                    INNER JOIN CPU_Terminal.dbo.functions ON ml_functions.function_id=functions.id
+                    FROM cpu_term.ml_functions
+                    INNER JOIN cpu_term.functions ON ml_functions.function_id=functions.id
                     WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )
                         AND functions.hacking_cat IS NOT NULL
                     GROUP BY functions.name,
@@ -80,8 +80,8 @@ $functionStatement->execute($mlFuncArray);
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
 $roleQuery = "  SELECT DISTINCT roles.name
-                FROM CPU_Terminal.dbo.ml_functions
-                INNER JOIN CPU_Terminal.dbo.roles ON ml_functions.role_id=roles.id
+                FROM cpu_term.ml_functions
+                INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
                 WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )";
 
 $roleStatement = $pdo->prepare($roleQuery);
