@@ -6,6 +6,7 @@ class Terminal
     private $termDisplayName;
     private $termAccessCost;
     private $termState;
+    private $stateData;
     private $entries;
     private $initialEntries;
     private $logEntries;
@@ -17,6 +18,7 @@ class Terminal
         $this->termDisplayName = $termResponse["displayName"];
         $this->termAccessCost = $termResponse["access"];
         $this->termState = $termResponse["state"];
+        $this->stateData = $termResponse["stateData"];
         $this->entries = $termResponse["entries"];
         $this->initialEntries = array();
         $this->logEntries = $termResponse["logEntries"];
@@ -301,6 +303,12 @@ class Terminal
 
     public function sendInitialEntries()
     {
-        return "<script>var session = new Session(" . $this->termID . ", " . json_encode($this->initialEntries) . ");</script>";
+        $termInfo = array(
+            "termID" => $this->termID,
+            "termState" => $this->termState,
+            "stateData" => $this->stateData
+        );
+
+        return "<script>console.log(".json_encode($termInfo)."); var session = new Session(" . json_encode($termInfo) . ", " . json_encode($this->initialEntries) . ");</script>";
     }
 }

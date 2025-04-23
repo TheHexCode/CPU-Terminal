@@ -755,57 +755,13 @@ function completeAction(actionMap)
 			break;
 		}
 		case("brick"):
-			let handle = payload.getHandle();
-
-			let hexHandle = [];
-
-			for(let i = 0; i < handle.length; i++)
-			{
-				hexHandle.push(handle.charCodeAt(i).toString(16).padStart(2,0));
-			}
-
-			for(let j = handle.length; j < 15; j++)
-			{
-				hexHandle.push("00");
-			}
-
-			$("body").addClass("bricked");
-
-			let stopCode =  "0x000000" + hexHandle[0] + "<br/>" +
-							"(0x" + hexHandle[1] + hexHandle[2] + hexHandle[3] + hexHandle[4] + "," +
-							"0x" + hexHandle[5] + hexHandle[6] + hexHandle[7] + hexHandle[8] + ",<br/>" +
-							"&nbsp;0x" + hexHandle[9] + hexHandle[10] + hexHandle[11] + hexHandle[12] + "," +
-							"0x" + hexHandle[13] + hexHandle[14] + "0000)"
-
-			/*
-			<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
-				<mask id="logoMask">
-					<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
-				</mask>
-			
-				<foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
-					<div id="logoBG"></div>
-				</foreignObject>
-			</svg>
-			*/
-
-			$("#main").html("<p>A problem has been detected and HexOS has been shut down to prevent damage to your device.</p>" +
-							"<p>UNMOUNTABLE_BOOT_VOLUME</p>" +
-							"<p>If this is the first time you've seen this error screen, restart your computer. If this screen appears again, follow these steps:" +
-							"<p>Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer for any HexOS updates you might need.</p>" +
-							"<p>If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use Safe Mode to remove or disable components, restart your computer, press F8 to select Advanced Startup Options, and then select Safe Mode.</p>" +
-							"<p>Technical Information:</p>" +
-							"<p>*** STOP: " + stopCode + "</p>" +
-							"<p><br/>Beginning dump of physical memory...<br/>" +
-							"Physical memory dump complete.<br/>" +
-							"Contact your system administrator or technical support group for further<br/>" +
-							"assistance.</p>" +
-							"<!--<footer>CPU DISCLAIMER</footer>-->")
-
+			session.brickTerminal(payload.getHandle());
 			break;
 		case("rig"):
+			session.rigTerminal(payload.getUserID());
 			break;
 		case("root"):
+			session.rootTerminal(Date.now()/1000);
 			break;
 	}
 

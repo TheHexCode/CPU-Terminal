@@ -1,8 +1,6 @@
 > FUNCTION FUNCTIONALITY
     >> INITIAL
     >> ACTIVE
-        - BRICK
-            - Functionality
         - RIGGED
             - Functionality
         - ROOT DEVICE
@@ -11,20 +9,19 @@
     >> PASSIVE
         - ALARM SENSE
 
-> GENERAL
-    v Write message for empty active/passive
-    v Help Popup to say what functions do what
-    v Sync the blend of the reqTags and Gems
-    v Fix ugly "buttonItem" class when window is thin
-    v Fix Extra Tags not blending the negative gems
-
 > INVENTORY
 
 > COOKIE / DB UPDATES
- - OOC Action Log
+    - OOC Action Log
 
 > MULTIPLAYER INTERRUPT
 
+> LOW PRIORITY
+    - Write message for empty active/passive
+    - Help Popup to say what functions do what
+    - Sync the blend of the reqTags and Gems
+    - Fix ugly "buttonItem" class when window is thin
+    - Fix Extra Tags not blending the negative gems
 
 >> COMPLETED
     ✓ HACKING
