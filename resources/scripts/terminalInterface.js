@@ -188,7 +188,7 @@ function injectUserPayload(userPayload)
 		if(payload.getFunction("RIGGED"))
 		{
 			$("#rigItem").removeClass("hidden");
-			payload.rigTerminal(payload.getUserID());
+			session.rigTerminal(payload.getUserID());
 		}
 
 		if(payload.getFunction("ROOT DEVICE"))
@@ -759,7 +759,7 @@ function completeAction(actionMap)
 			session.brickTerminal(payload.getHandle());
 			break;
 		case("rig"):
-			session.rigTerminal(false);
+			session.rigTerminal();
 			break;
 		case("root"):
 			session.rootTerminal(Date.now()/1000);

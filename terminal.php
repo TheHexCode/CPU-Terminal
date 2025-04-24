@@ -64,8 +64,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="infoBox">
-				<div id="rigged" class="hidden"><img src="resources/images/actions/rigged.png"/></div>
+			<div class="infoTitle">
+				<img id="rigged" class="hidden" src="resources/images/actions/rigged.png"/>
 				<h2 id="termName">
 					<?php echo $terminal->getTerminalName() ?>
 				</h2>

@@ -1,8 +1,6 @@
 > FUNCTION FUNCTIONALITY
     >> INITIAL
     >> ACTIVE
-        - RIGGED
-            - Functionality
         - ROOT DEVICE
             - Functionality
             - Rooting vs. Rooted
@@ -36,3 +34,5 @@
     ✓ MASK
         - Need field at start to type a Mask into
     ✓ REASSIGN / WIPE YOUR TRACKS
+    ✓ BRICK
+    ✓ RIGGED

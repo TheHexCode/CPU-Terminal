@@ -68,12 +68,4 @@ class Payload
             return 0;
         }
     }
-
-    rigTerminal(userID)
-    {
-        if(userID === this.#userID)
-        {
-            session.rigTerminal(true);
-        }
-    }
 }

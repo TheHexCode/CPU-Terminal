@@ -45,16 +45,8 @@ body::after
 
 #rigged
 {
-	align-self: flex-start;
-}
-
-#rigged img
-{
-	position: absolute;
-	z-index: 90;
 	max-height: 100px;
 	max-width: 100px;
-	pointer-events: none;
 }
 
 .red
@@ -248,6 +240,17 @@ h2
 {
 	filter: brightness(50%);
 	text-shadow: none;
+}
+
+.infoTitle
+{
+	display: flex;
+	flex-direction: row;
+	border: 0.5rem solid var(--border-color);
+	align-items: center;
+	text-align: center;
+	justify-content: space-around;
+	padding: 0.25rem;
 }
 
 .infoBox

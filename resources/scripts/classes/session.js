@@ -211,9 +211,13 @@ class Session
                         "<!--<footer>CPU DISCLAIMER</footer>-->");
     }
 
-    rigTerminal(testState)
+    rigTerminal(userID = -1)
     {
-        if((!testState) || (this.#termState === "rigged"))
+        if(this.userID === -1)
+        {
+            $("#rigged").removeClass("hidden");
+        }
+        else if ((this.#termState === "rigged") && (this.#stateData === userID))
         {
             $("#rigged").removeClass("hidden");
         }
