@@ -345,8 +345,8 @@ function accessTerminal(event)
 											'</div>' : "") +
 										'</li>');
 
-				$("#accessZone").hide();
-				$("#hackZone").css("display","flex");
+				$("#accessZone").addClass("hidden");
+				$("#hackZone").removeClass("hidden");
 			});
 		}
 		else
@@ -356,8 +356,8 @@ function accessTerminal(event)
 				$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html().replace("User:","You:&nbsp;")
 			);
 
-			$("#accessZone").hide();
-			$("#hackZone").css("display","flex");
+			$("#accessZone").addClass("hidden");
+			$("#hackZone").removeClass("hidden");
 		}
 	}
 }
@@ -762,7 +762,7 @@ function completeAction(actionMap)
 			session.rigTerminal();
 			break;
 		case("root"):
-			session.rootTerminal(Date.now()/1000);
+			session.rootTerminal(new Date());
 			break;
 	}
 

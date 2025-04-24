@@ -64,19 +64,26 @@
 					</div>
 				</div>
 			</div>
-			<div class="infoTitle">
-				<img id="rigged" class="hidden" src="resources/images/actions/rigged.png"/>
-				<h2 id="termName">
-					<?php echo $terminal->getTerminalName() ?>
-				</h2>
-				<!--
-				<div id="status">>> CRACKING TERMINAL</div> <!-- ">> " + 18 CHARS --><!--
-				
-					<div id="ppContainer">
-						<button id="playPause" onMouseUp="pauseTimer()"><img src="resources\images\playpause\pause.png"></button>
+			<div class="infoBox">
+				<div class="infoTitle">
+					<img id="rigged" class="hidden" src="resources/images/actions/rigged.png"/>
+					<h2 id="termName">
+						<?php echo $terminal->getTerminalName() ?>
+					</h2>
+				</div>
+				<div id="rootStatus" class="hidden">>> ROOTING TERMINAL</div>
+				<div id="rootingTimer" class="timerContainer hidden">
+					<div class="lcdBox">
+						<div class="mmss">
+							<span class="dseg BG">~~ ~~</span>
+							<span class="dseg FG"></span>
+						</div>
+						<div class="hundsec">
+							<span class="dseg BG">~~</span>
+							<span class="dseg FG">00</span>
+						</div>
 					</div>
-					
-				-->
+				</div>
 			</div>
 			<div id="accessZone" class="zoneBox">
 				<div class="accessBox">
@@ -160,7 +167,7 @@
 				</div>
 				<button id="terminalButton" class="noPayload" onpointerup="accessTerminal(event)" disabled="">Please Submit Code...</button>
 			</div>
-			<div id="hackZone" class="zoneBox">
+			<div id="hackZone" class="zoneBox hidden">
 				<div id="hackTabContainer">
 					<button class="hackTab active" onpointerup="openTab(this,'termBody')">TERMINAL</button>
 					<button class="hackTab" onpointerup="openTab(this,'deckBody')">CYBERDECK</button>

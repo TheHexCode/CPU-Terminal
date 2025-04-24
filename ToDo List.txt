@@ -1,9 +1,6 @@
 > FUNCTION FUNCTIONALITY
     >> INITIAL
     >> ACTIVE
-        - ROOT DEVICE
-            - Functionality
-            - Rooting vs. Rooted
     >> PASSIVE
         - ALARM SENSE
 
@@ -36,3 +33,5 @@
     ✓ REASSIGN / WIPE YOUR TRACKS
     ✓ BRICK
     ✓ RIGGED
+    ✓ ROOT DEVICE
+            - Rooting vs. Rooted

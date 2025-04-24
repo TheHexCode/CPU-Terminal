@@ -194,6 +194,7 @@ class Session
         </svg>
         */
 
+        $("#main").css("max-width","100%");
         $("#main").html("<div id='logoParagraph'>" +
                             "<img id='hexImg' src=''/>" +
                             "<p>A problem has been detected and HexOS has been shut down to prevent damage to your device.</p>" +
@@ -207,8 +208,7 @@ class Session
                         "<p><br/>Beginning dump of physical memory...<br/>" +
                         "Physical memory dump complete.<br/>" +
                         "Contact your system administrator or technical support group for further<br/>" +
-                        "assistance.</p>" +
-                        "<!--<footer>CPU DISCLAIMER</footer>-->");
+                        "assistance.</p>");
     }
 
     rigTerminal(userID = -1)
@@ -223,13 +223,56 @@ class Session
         }
     }
 
-    rootTerminal(rootStart)
+    rootTerminal(rootStart = null)
     {
 
+        if(rootStart === null)
+        {
+            rootStart = new Date(this.#stateData * 1000); //PHP Time() is in seconds, not milliseconds
+        }
+
+        let rootEnd = new Date(rootStart.getTime() + (5*60000));
+
+        let rootDiff = Math.ceil((rootEnd - Date.now()) / 1000); // Timer needs seconds
+
+        let rootTimer = new Timer("#rootingTimer");
+        rootTimer.startTimer(rootDiff,this.terminalRooted,{
+            actionType:"rooted",
+            global: true,
+            entryID: this.#termID,
+            newData: null
+        });
+
+        $("body").addClass("rooting");
+        Gems.updateTagGems(Gems.ROOT,10);
+
+        $("#rootStatus").removeClass("hidden");
+        $("#rootingTimer").removeClass("hidden");
+
+        $(".zoneBox").addClass("hidden");
     }
 
     terminalRooted()
     {
+        $("body").removeClass("rooting");
 
+        /*
+        $("#main").html("<p>HexOS PXE-2.1 (build 083)<br/>Copyright &copy; 2XX5 -<br/>&nbsp;&nbsp;Hexadecachoron Corporation</p>" +
+                        "<p>This Product is covered by one or more of the following patents:<br/>US6,570,884, US6,115,776 and US6,327,625</p>" +
+                        "<p>Realtek PCIe GBE Family Controller Series v2.58 (10/08/13)</p>" +
+                        "<p>PXE-E61: Media test failure, check cable</p>" +
+                        "<p>PXE-M0F: Exiting PXE ROM</p>" +
+                        "<p>No Bootable Device Found -- Insert Boot Disk and press any key</p>" +
+                        "<p>_</p>");
+        */
+        $("#main").css("max-width","100%");
+        $("#main").html("<p>No boot device available or Operating System detected<br/>" +
+                        "Current boot mode is set to UEFI<br/>" +
+                        "Please ensure a compatible bootable media is available</p>" +
+                    /*    "<p>Available Actions<br/><ul>" +
+                        "<li>No Available Actions</li>" +
+                        "</ul></p>" +
+                    */    "<p>Booting from Hard Drive C:\\<br/>" +
+                        "ERROR: Missing OS");
     }
 }

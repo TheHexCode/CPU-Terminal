@@ -70,5 +70,15 @@ switch($actionType)
 
         $updateStatement->execute([':newData' => time(), ':entryID' => $entryID]);
         break;
+    case "rooted":
+        $updateQuery = "UPDATE cpu_term.terminals
+                        SET state = 'rooted',
+                            stateData = NULL
+                        WHERE id = :entryID";
+
+        $updateStatement = $pdo->prepare($updateQuery);
+
+        $updateStatement->execute([':entryID' => $entryID]);
+        break;
     //Items?
 }
