@@ -42,27 +42,18 @@ function roleChange()
 	//maskChange();
 }
 
-function openTab(target,tabName)
+function toggleRadio(radio)
 {
-    $(".profContent").addClass("hidden");
-	$(".profTab").removeClass("active");
-	
-	if($(target).parent().hasClass("backRow"))
+	if($(radio).prop("data-active"))
 	{
-		$("#profTabContainer").css("flex-direction","column");
+		$(radio).prop("data-active",false);
+		$(radio).prop("checked",false);
 	}
 	else
 	{
-		$("#profTabContainer").css("flex-direction","column-reverse");
+		$("input[name='"+$(radio).prop("name")+"']").prop("data-active",false);
+		$(radio).prop("data-active",true);
 	}
-	
-	$("#"+tabName).removeClass("hidden");
-	$(target).addClass("active");
-}
-
-function statSubmit(event)
-{
-    event.preventDefault();
 }
 
 function mlEnter(event)
@@ -252,4 +243,37 @@ function processCharInfo(charData)
 
 	$(".postLogon").removeClass("hidden");
 	$(".mlLoginBox").addClass("hidden");
+}
+
+function statSubmit(event)
+{
+    event.preventDefault();
+
+	$("#saveText").html("SAVING...");
+	$("#saveText").removeClass("hidden");
+	
+	// LIST OF ITEMS
+	let items = [];
+	$("#itemBox input:checked").each(function() {
+		items.push(Number($(this).attr("data-id")));
+	});
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "resources\\scripts\\db\\updateUser.php",
+		data:
+		{
+			userCode: $("#payloadCodeRow .FG").html(),
+			items: items
+		}
+	})
+	.done(function()
+	{
+		$("#saveText").html("SAVED!");
+	
+		setTimeout(function(){
+			$("#saveText").addClass("hidden");
+		},5000);
+	});
 }

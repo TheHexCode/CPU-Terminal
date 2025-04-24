@@ -108,6 +108,57 @@ CREATE TABLE user_functions (
         ON DELETE CASCADE
 );
 
+CREATE TABLE items (
+    id      INT     AUTO_INCREMENT,
+    name    TEXT    NOT NULL,
+    tier    INT,
+    type    TEXT    NOT NULL,
+    radio   TEXT,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE item_effects (
+    id          INT AUTO_INCREMENT,
+    item_id     INT NOT NULL,
+    charges     INT,
+    per_type    TEXT,
+    effect      TEXT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (item_id)
+        REFERENCES items(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE user_items (
+    id      INT AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (item_id)
+        REFERENCES items(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE item_uses (
+    user_id     INT     NOT NULL,
+    effect_id   INT     NOT NULL,
+    jobCode     TEXT    NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (effect_id)
+        REFERENCES item_effects(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 ####################################################################################################
 
 INSERT INTO activejob
@@ -912,3 +963,54 @@ INSERT INTO ml_functions
             (602, 'Rage (5s) -S5-', 1, 52, '5s', 16),
             (603, 'Unstoppable -S5-', 1, 145, NULL, 16),
             (604, 'skill_category_access_required', -1, 1, NULL, NULL);
+
+INSERT INTO items
+            (name, tier, type, radio)
+    VALUES  ('CMM Widow', 2, 'arms', NULL),
+            ('Winton Wit', 0, 'arms', NULL),
+            ('CMM Cocoon', 2, 'arms', NULL),
+            ('Copycat', 0, 'cust', NULL),
+            ('Pocket Hacker', 0, 'cust', 'ph'),
+            ('Pocket Hacker', 1, 'cust', 'ph'),
+            ('Budget Cyberdeck', 0, 'deck', 'deck'),
+            ('Budget Remote Access Drive', 0, 'util', NULL),
+            ('CipherSync Beacon', 0, 'util', NULL),
+            ('CRD Spider Cyberdeck', 0, 'deck', 'deck'),
+            ('CRD Spider Cyberdeck', 1, 'deck', 'deck'),
+            ('DigiPet', 0, 'util', NULL),
+            ('FKD DC-17', 1, 'deck', 'deck'),
+            ('Johnny&#39;s Special Touch', 1, 'deck', 'deck'),
+            ('MM Console', 0, 'deck', 'deck'),
+            ('Nerd&#39;s Safety Glasses', 0, 'util', NULL),
+            ('Power Glove [Ultra-Hacking 9000]', 1, 'impl', 'deck'),
+            ('Shimmerstick', 0, 'cons', 'shimstick'),
+            ('Shimmerstick', 1, 'cons', 'shimstick'),
+            ('Vigil', NULL, 'cons', NULL),
+            ('CLEC Fingers', 0, 'impl', NULL),
+            ('Canopic Jar [MagSweep]', 0, 'impl', NULL);
+
+INSERT INTO item_effects
+            (item_id, charges, per_type, effect)
+    VALUES  (1, 1, 'scene', 'If used Slip this scene, gain +1 Tag'),
+            (2, 1, 'scene', 'Activated Embolden? -1 Tag'),
+            (2, 1, 'scene', 'Activated Inspire? -1 Tag'),
+            (3, 1, 'scene', 'If used Slip this scene, gain +1 Tag'),
+            (4, 1, 'sim', 'Activate same action type already done this Device for No Timer'),
+            (5, 1, 'sim', 'Gain +1 Tag'),
+            (6, 2, 'sim', 'Gain +1 Tag'),
+            (7, 1, 'sim', 'Gain +1 Tag'),
+            (8, NULL, NULL, 'Enable Remote Hacking'),
+            (9, NULL, NULL, 'Gain +1 Hacking'),
+            (10, 1, 'sim', 'Gain +1 Tag'),
+            (11, 2, 'sim', 'Gain +2 Tags'),
+            (12, 1, 'scene', 'Allow Action Timer to continue without holding button'),
+            (13, 1, 'scene', 'Gain +2 Tags on Drone'),
+            (14, NULL, NULL, 'All Access Actions, after the first, are -1 Tag Cost'),
+            (15, 2, 'sim', 'Gain +1 Tag'),
+            (16, 1, 'sim', 'Can retry puzzle which requires Knowledge'),
+            (17, NULL, NULL, 'All Actions -5s'),
+            (18, 10, 'item', 'All Actions: +1 Tag Cost & +30s Timer'),
+            (19, 10, 'item', 'All Actions: +1 Tag Cost & +15s Timer'),
+            (20, NULL, NULL, 'Can consume Function Charges to increase Tags, up to +10'),
+            (21, 1, 'sim', 'Gain +1 Hacking'),
+            (22, 1, 'sim', 'Instantly Brick Device');

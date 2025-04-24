@@ -309,6 +309,6 @@ class Terminal
             "stateData" => $this->stateData
         );
 
-        return "<script>console.log(".json_encode($termInfo)."); var session = new Session(" . json_encode($termInfo) . ", " . json_encode($this->initialEntries) . ");</script>";
+        return "<script>var session = new Session(" . json_encode($termInfo) . ", " . json_encode($this->initialEntries) . ");</script>";
     }
 }

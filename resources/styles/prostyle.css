@@ -56,9 +56,9 @@ button:not(:disabled):not(.profTab):hover
 	box-shadow: 0 0 15px var(--fg-color);
 }
 
-input[type="checkbox"]
+input
 {
-	background-color: var(--bg-color);
+	margin-right: 0.5rem;
 }
 
 h2
@@ -178,88 +178,17 @@ h2
 	padding: 0;
 }
 
-#classTypes
+.itemSection
 {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	margin: 0 auto 0 auto;
+	width: 100%;
 }
 
-.skillTypeHeader
+.itemSection h2
 {
-	margin-top: 1rem;
-}
-
-.skillTypeList
-{
-	margin-top: 0.5rem;
-	margin-bottom: 0;
-	padding-left: 1.5rem;
-}
-
-#profTabContainer
-{
-	display: flex;
-	flex-direction: column-reverse;
-}
-
-.tabSubContainer
-{
-	flex-grow: 1;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	margin-top: -0.5rem;
-}
-
-.profTab
-{
-    flex-grow: 1;
-	background-color: var(--bg-color);
-	color: var(--fg-color);
-	box-shadow: 0 0 0;
-	cursor: pointer;
-	padding: 0.25rem 0.25rem 0.5rem 0.25rem;
-	border-radius: 0;
-}
-
-.profTab.active
-{
-	z-index: 75;
-	border-image: linear-gradient(to bottom, var(--fg-color) 30%, grey 100%) 1;
-	border-width: 0.5rem;
-	border-bottom: none;
-}
-
-.profTab:not(.active)
-{
-	border-image: linear-gradient(to bottom, dimgrey 30%, transparent 100%) 1;
-	border-width: 0.5rem;
-	border-style: solid;
-}
-
-.tabSubContainer .profTab:first-of-type:not(.active)
-{
-	margin: 0.5rem -0.5rem 0 0;
-}
-
-.tabSubContainer .profTab:last-of-type:not(.active)
-{
-	margin: 0.5rem 0 0 -0.5rem;
-}
-
-.profContent
-{
-    border: 0.5rem solid grey;
-    padding: 0.5rem;
-    margin-top: -0.5rem;
-}
-
-.codeBox
-{
-	display: flex;
-	justify-content: center;
+	align-self: center;
 }
 
 #saveBar
