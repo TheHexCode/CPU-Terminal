@@ -88,7 +88,7 @@ function addUser(PDO $pdo, string $newCode, string $newCharName, array $charSkil
 
     $newMLIDStatement = $pdo->prepare($newMLIDQuery);
     $newMLIDStatement->execute($charSkills);
-    $newMLIDs = $newMLIDStatement->fetchAll(PDO::FETCH_FUNC,function($mlID){return $mlID;});
+    $newMLIDs = $newMLIDStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $userFuncArray = array();
 
@@ -115,7 +115,7 @@ function updateUser(PDO $pdo, string $userID, array $mlIDs)
 
     $dbFuncStatement = $pdo->prepare($dbFuncQuery);
     $dbFuncStatement->execute([':userID' => $userID]);
-    $dbFuncs = $dbFuncStatement->fetchAll(PDO::FETCH_FUNC,function($dbName){return $dbName;});
+    $dbFuncs = $dbFuncStatement->fetchAll(PDO::FETCH_COLUMN);
 
     if(count(array_intersect($dbFuncs,$mlIDs)) !== count($mlIDs))
     {
@@ -131,7 +131,7 @@ function updateUser(PDO $pdo, string $userID, array $mlIDs)
 
         $newMLIDStatement = $pdo->prepare($newMLIDQuery);
         $newMLIDStatement->execute($mlIDs);
-        $newMLIDs = $newMLIDStatement->fetchAll(PDO::FETCH_FUNC,function($mlID){return $mlID;});
+        $newMLIDs = $newMLIDStatement->fetchAll(PDO::FETCH_COLUMN);
 
         $userFuncArray = array();
 

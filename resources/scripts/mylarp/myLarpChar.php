@@ -86,10 +86,19 @@ $roleQuery = "  SELECT DISTINCT roles.name
 
 $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute($mlFuncArray);
-$roleResponse = $roleStatement->fetchAll(PDO::FETCH_ASSOC);
+$roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
+
+$itemQuery = "  SELECT item_id
+                FROM cpu_term.user_items
+                WHERE user_id = :userID";
+
+$itemStatement = $pdo->prepare($itemQuery);
+$itemStatement->execute([':userID' => $dbCharResponse["id"]]);
+$itemResponse = $itemStatement->fetchAll(PDO::FETCH_COLUMN);
 
 echo json_encode(array(  "id" => $dbCharResponse["id"],
                                 "name" => $mlCharResponse->name,
                                 "userCode" => $userCode,
                                 "functions" => $functionResponse,
-                                "roles" => $roleResponse ));
+                                "roles" => $roleResponse,
+                                "items" => $itemResponse ));

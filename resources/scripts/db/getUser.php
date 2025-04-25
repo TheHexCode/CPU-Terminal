@@ -45,7 +45,7 @@ else
 
     $roleStatement = $pdo->prepare($roleQuery);
     $roleStatement->execute([':userID' => $userResponse["id"]]);
-    $roleResponse = $roleStatement->fetchAll(PDO::FETCH_FUNC,function($roleName){return $roleName;});
+    $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
     echo json_encode(array(  "id" => $userResponse["id"],
                                     "name" => $userResponse["charName"],
