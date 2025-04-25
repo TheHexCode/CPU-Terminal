@@ -58,7 +58,7 @@ button:not(:disabled):not(.profTab):hover
 
 input
 {
-	margin-right: 0.5rem;
+	margin: 0 0.5rem;
 }
 
 h2
@@ -183,12 +183,19 @@ h2
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
+	row-gap: 0.25rem;
 	width: 100%;
 }
 
 .itemSection h2
 {
 	align-self: center;
+}
+
+.itemSelect
+{
+	display: grid;
+	grid-template-columns: min-content auto;
 }
 
 #saveBar

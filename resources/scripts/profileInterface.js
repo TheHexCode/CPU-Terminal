@@ -191,6 +191,7 @@ function processCharInfo(charData)
 	console.log(charData);
 
 	$("#payloadCharName").html(charData.name);
+	$("#payloadCharName").attr("data-id", charData.id);
 	setClamp($("#payloadCharName"),"100%","200%");
 
 	$("#payloadCodeRow .FG").html(charData.userCode);
@@ -261,10 +262,10 @@ function statSubmit(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources\\scripts\\db\\updateUser.php",
+		url: "resources\\scripts\\db\\updateInventory.php",
 		data:
 		{
-			userCode: $("#payloadCodeRow .FG").html(),
+			userID: $("#payloadCharName").attr("data-id"),
 			items: items
 		}
 	})

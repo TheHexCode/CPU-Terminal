@@ -54,7 +54,7 @@ foreach($itemArray as $itemCat)
 
     foreach($itemCat["items"] as $item)
     {
-        $itemString .=  "<div class='" . ($item["radio"] !== null ? "radio" : "check") . "'>" .
+        $itemString .=  "<div class='itemSelect " . ($item["radio"] !== null ? "radio" : "check") . "'>" .
                             "<input type='" . ($item["radio"] !== null ? "radio" : "checkbox") . "' id='item_" . $item["id"] . "' " . ($item["radio"] !== null ? "name='" . $item["radio"] . "' " : "") . "data-id='" . $item["id"] . "' form='itemForm' onclick='toggleRadio(this)'>" .
                             "<label for='item_" . $item["id"] . "'>" . $item["name"] . "</label>" .
                         "</div>";

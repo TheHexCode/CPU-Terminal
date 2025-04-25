@@ -88,7 +88,8 @@ $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute($mlFuncArray);
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_ASSOC);
 
-echo json_encode(array(  "name" => $mlCharResponse->name,
+echo json_encode(array(  "id" => $dbCharResponse["id"],
+                                "name" => $mlCharResponse->name,
                                 "userCode" => $userCode,
                                 "functions" => $functionResponse,
                                 "roles" => $roleResponse ));

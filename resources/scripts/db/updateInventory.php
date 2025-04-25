@@ -1,22 +1,20 @@
 <?php
 require('dbConnect.php');
 
-$userCode = $_POST["userCode"];
+$userID = $_POST["userID"];
 $itemIDArray = $_POST["items"];
 
-$deleteQuery = "DELETE cpu_term.user_items
-                FROM cpu_term.user_items JOIN cpu_term.users
-                ON user_id=users.id
-                WHERE users.userCode = :userCode";
+$deleteQuery = "DELETE FROM cpu_term.user_items
+                WHERE user_id = :userID";
 
 $deleteStatement = $pdo->prepare($deleteQuery);
-$deleteStatement->execute([':userCode' => $userCode]);
+$deleteStatement->execute([':userID' => $userID]);
 
 $userItemArray = array();
 
 foreach($itemIDArray as $itemID)
 {
-    array_push($userItemArray,$userCode,$itemID);
+    array_push($userItemArray,$userID,$itemID);
 }
 
 $userItemQuery = "  INSERT INTO cpu_term.user_items
@@ -25,3 +23,5 @@ $userItemQuery = "  INSERT INTO cpu_term.user_items
 
 $userItemStatement = $pdo->prepare($userItemQuery);
 $userItemStatement->execute($userItemArray);
+
+echo json_encode("Success!");
