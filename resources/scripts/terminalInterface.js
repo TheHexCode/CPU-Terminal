@@ -118,7 +118,7 @@ function injectUserPayload(userPayload)
 
 		// Payload Tags
 		$("#hackDetails").html(
-			"<span>[HACKING: +" + tens(payload.getFunction("Hacking") * 2) + "]</span>" +
+			"<span>[HACKING:&nbsp;+" + tens(payload.getFunction("Hacking") * 2) + "]</span>" +
 			( payload.getFunction("Root Exploit") ? "<span>[ROOT EXP:+" + tens(payload.getFunction("Root Exploit") * 2) + "]</span>" : "" )
 		)
 		
@@ -126,8 +126,6 @@ function injectUserPayload(userPayload)
 		payloadTags += payload.getFunction("Root Exploit") * 2;
 		payloadTags = Math.min(payloadTags,10);
 
-		$("#payTags").html(tens(payloadTags));
-		$("#payTags").html(tens(payloadTags));
 		$("#payTags").html(tens(payloadTags));
 
 		session.setCurrentTags(payloadTags, Session.PAYLOAD);
@@ -166,7 +164,11 @@ function injectUserPayload(userPayload)
 		// Disable Expensive Buttons
 		disableExpensiveButtons();
 
-		//role stuff
+		// ROLE
+		if(payload.hasRole("DISSIMULATOR"))
+		{
+			$("#disInit").removeClass("hidden");
+		}
 
 		// FUNCTIONS / INVENTORY
 
@@ -254,6 +256,84 @@ function injectUserPayload(userPayload)
 			$(".subContRepeatTitle").append(repeatRoman);
 			$(".subContRepeatBox").removeClass("hidden");
 		}
+
+		///////////// ITEMS
+
+		/*
+		SELECT items.id, name, tier, type, item_effects.id AS effect_id, charges, per_type, use_loc, effect
+		FROM cpu_term.items
+		INNER JOIN cpu_term.item_effects
+			ON items.id = item_effects.item_id
+		-- WHERE use_loc='autoinit';
+		-- arms, cust, deck, util, cons, impl
+		-- initial, action, item, puzzle, autoinit, autoact
+		*/
+
+		payload.getInventory().forEach(function(item)
+		{
+			let effectString = "<hr/>";
+
+			item.effects.forEach(function(effect)
+			{
+				switch(effect.use_loc)
+				{
+					case("item"):
+					{
+						$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
+
+						let remCharges = effect.charges - effect.uses;
+
+						effectString += "<span class='itemActionRow'>" +
+											"<span class='itemMarks'>";
+
+						for(let i = 0; i < remCharges; i++)
+						{
+							effectString += "<img src='resources/images/actions/itemopen.png' />";
+						}
+
+						for(let j = 0; j < effect.uses; j++)
+						{
+							effectString += "<img src='resources/images/actions/itemfilled.png' />";
+						}
+						
+						effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
+									"</span>" +
+									"<button class='itemButton' data-effect='" + effect.id + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">" + effect.effect + "</button>" +
+								"</span>";
+						break;
+					}
+					case("initial"):
+					{
+						$(".initItem[data-id='" + item.item_id + "']").removeClass("hidden");
+					}
+					case("autoinit"):
+					{
+						switch(effect.id)
+						{
+							case(10): //CIPHERSYNC BEACON
+								$("#hackDetails").append("<span>[BEACON:&nbsp;&nbsp;+02]</span>");
+
+								newPayloadTags = Math.min(session.getCurrentTags(Session.PAYLOAD) + 2,10);
+
+								$("#payTags").html(tens(newPayloadTags));
+
+								session.setCurrentTags(newPayloadTags, Session.PAYLOAD);
+								Gems.updateTagGems(Gems.ACCESS, requiredTags, session.getCurrentTags(Session.PAYLOAD), session.getCurrentTags());
+								break;
+							case(18): //POWER GLOVE [UH9K]
+								break;
+						}
+					}
+				}
+			});
+
+			$(".itemCat[data-cat='" + item.type + "'] > .itemList").append(
+				"<li id='item_" + item.item_id + "' class='itemItem'>" +
+					"<span class='itemName'>" + item.name + (item.tier !== null ? " [T" + item.tier + "]" : "") + "</span>" +
+					(effectString.length > 5 ? effectString : "") +
+				"</li>"
+			);
+		});
 	}
 
 	$("#load").addClass("hidden");

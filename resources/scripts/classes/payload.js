@@ -6,6 +6,7 @@ class Payload
     #handle;
     #functions;
     #roles;
+    #items;
 
     constructor()
     {
@@ -18,6 +19,7 @@ class Payload
         this.#handle = payload.name;
         this.#functions = payload.functions;
         this.#roles = payload.roles;
+        this.#items = payload.items;
 
         this.#payloadSet = true;
     }
@@ -39,8 +41,7 @@ class Payload
 
     hasRole(roleName)
     {
-        //return ((this.#priRole.toLowerCase() === roleName.toLowerCase()) ||
-        //        (this.#secRole.toLowerCase() === roleName.toLowerCase()));
+        return this.#roles.find(role => role.toLowerCase() === roleName.toLowerCase());
     }
 
     getFunctionList()
@@ -67,5 +68,18 @@ class Payload
         {
             return 0;
         }
+    }
+
+    getInventory()
+    {
+        return this.#items;
+    }
+
+    getActionTime()
+    {
+        let bd = (this.getFunction("BACKDOOR") * 10);
+        let pgUK9K;
+        let ssT0;
+        let ssT1;
     }
 }

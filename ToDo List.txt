@@ -5,6 +5,28 @@
         - ALARM SENSE
 
 > INVENTORY
+    > 1 - CMM Widow (1)
+    > 2 - Winton Wit (2,3)
+    > 3 - CMM Cocoon (id+1)
+    - 4 - Copycat
+    > 5 - Pocket Hacker T0
+    > 6 - Pocket Hacker T1
+    > 7 - Budget Cyberdeck
+    > 8 - Budget Remote Access Drive
+    - 9 - CipherSync Beacon
+    > 10 - CRD Spider Cyberdeck T0
+    > 11 - CRD Spider Cyberdeck T1
+    - 12 - DigiPet
+   -> 13 - FKD DC-17
+    - 14 - Johnny's Special Touch
+    > 15 - MM Console
+    - 16 - Nerd's Safety Console
+    - 17 - Power Glove [UH9K]
+    > 18 - Shimmerstick T0
+    > 19 - Shimmerstick T1
+    > 20 - Vigil
+    > 21 - CLEC Fingers
+    > 22 - Canopic Jar [Magsweep]
 
 > COOKIE / DB UPDATES
     - OOC Action Log

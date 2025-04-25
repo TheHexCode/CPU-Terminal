@@ -182,6 +182,18 @@ h2
 	text-decoration: underline;
 }
 
+h4
+{
+	margin: 0.25rem;
+	text-decoration: underline;
+}
+
+ul
+{
+	margin: 0;
+	padding: 0 0 0 1rem;
+}
+
 #main
 {
 	height: 100%;
@@ -523,10 +535,29 @@ h2
 	--fg-color: var(--blue);
 }
 
-.accessList
+.initItemList
 {
 	list-style-type: none;
 	padding: 0 0 0 0.25rem;
+}
+
+.initItem
+{
+	display: grid;
+	grid-template-columns: min-content auto;
+	margin: 1rem 0;
+}
+
+.initItem input
+{
+	margin: 0 1rem;
+}
+
+.initItem label
+{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 }
 
 #terminalButton
@@ -881,33 +912,38 @@ h2
 	grid-template-rows: min-content min-content;
 }
 
-.itemName
+.itemCat
 {
-	grid-row: 1;
-	width: 100%;
-	text-align: left;
+	margin-bottom: 2rem;
 }
 
-.itemInterface
+.itemItem
 {
-	grid-row: 2;
-	width: 100%;
-	text-align: right;
+	margin: 0 0 0.5rem 0;
 }
 
-.itemMarks img
+.itemItem hr
 {
-	vertical-align: middle;
-	margin: 0 0.5rem 0 0;
+	margin: 0.25rem 0;
 }
 
-ul
+.itemActionRow
 {
-	margin: 0;
-	padding: 0 0 0 1rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }
 
-#actList li
+.itemMarks
+{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	column-gap: 0.25rem;
+}
+
+.actItem
 {
 	display: flex;
 	flex-direction: row;

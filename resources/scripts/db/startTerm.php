@@ -4,7 +4,6 @@ require('dbConnect.php');
 include('resources/scripts/classes/terminal.php');
 
 $idSlug = $_GET["id"];
-//$activeJob = "ABC1234";
 
 $term_query = $pdo->query(" SELECT id,displayName,access,state,stateData
                             FROM cpu_term.terminals

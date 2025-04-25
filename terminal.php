@@ -121,7 +121,7 @@
 								<span id="payTags" class="dseg FG">XX</span>
 							</div>
 							<div id="hackDetails" class="payDetails">
-								<span>[HACKING: +XX]</span>
+								<span>[HACKING:&nbsp;+XX]</span>
 							</div>
 						</div>
 						<div class="accessBox">
@@ -138,10 +138,77 @@
 							</div>
 						</div>
 					</div>
-					<ul class="accessList">
-						<li id="disItem" class="hidden"><input type="checkbox" id="disCheck" onchange="preCheck(this)"/><label for="disCheck">&nbsp;DISSIMULATOR: +1 HACKING?</label></li>
-						<li id="cmmItem" class="hidden"><input type="checkbox" id="cmmCheck" onchange="preCheck(this)"/><label for="cmmCheck">&nbsp;CMM ARMS: Used Slip this Scene?</label></li>
-						<li id="shmItem" class="hidden"><input type="checkbox" id="shmCheck" onchange="preCheck(this)"/><label for="shmCheck">&nbsp;CONSUMABLE: Using Shimmerstick?</label></li>
+					<ul class="initItemList">
+						<li id="disInit" class="initItem hidden">
+							<input type="checkbox" id="disCheck" data-effect="dis" onchange="initCheck(this)"/>
+							<label for="disCheck">
+								<span class="initName">DISSIMULATOR:</span>
+								<span class="initAbil">&nbsp;+1 HACKING?</span>
+							</label>
+						</li>
+						<li id="cmmInit" data-id="1" class="initItem hidden">
+							<input type="checkbox" id="cmmCheck" data-effect="[1,4]" onchange="initCheck(this)"/>
+							<label for="cmmCheck">
+								<span class="initName">CMM ARMS:</span>
+								<span class="initAbil">&nbsp;Used Slip this Scene?</span>
+							</label>
+						</li>
+						<li id="witEInit" data-id="2" class="initItem hidden">
+							<input type="checkbox" id="witECheck" data-effect="2" onchange="initCheck(this)"/>
+							<label for="witECheck">
+								<span class="initName">WINTON WIT:</span>
+								<span class="initAbil">&nbsp;Activated Embolden?</span>
+							</label>
+						</li>
+						<li id="witIInit" data-id="2" class="initItem hidden">
+							<input type="checkbox" id="witICheck" data-effect="3" onchange="initCheck(this)"/>
+							<label for="witICheck">
+								<span class="initName">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;</span>
+								<span class="initAbil">&nbsp;Activated Inspire?</span>
+							</label>
+						</li>
+						<li id="bradInit" data-id="8" class="initItem hidden">
+							<input type="checkbox" id="bradCheck" data-effect="9" onchange="initCheck(this)"/>
+							<label for="bradCheck">
+								<span class="initName">REMOTE ACCESS DRIVE:</span>
+								<span class="initAbil">&nbsp;Enable Remote Hacking?</span>
+							</label>
+						</li>
+						<li id="shm0Init" data-id="18" class="initItem hidden">
+							<input type="checkbox" id="shm0Check" data-effect="19" onchange="initCheck(this)"/>
+							<label for="shm0Check">
+								<span class="initName">CONSUMABLE:</span>
+								<span class="initAbil">&nbsp;Using Shimmerstick T0?</span>
+							</label>
+						</li>
+						<li id="shm1Init" data-id="19" class="initItem hidden">
+							<input type="checkbox" id="shm1Check" data-effect="20" onchange="initCheck(this)"/>
+							<label for="shm1Check">
+								<span class="initName">CONSUMABLE:</span>
+								<span class="initAbil">&nbsp;Using Shimmerstick T1?</span>
+							</label>
+						</li>
+						<li id="viglInit" data-id="20" class="initItem hidden">
+							<input type="checkbox" id="viglCheck" data-effect="21" onchange="initCheck(this)"/>
+							<label for="viglCheck">
+								<span class="initName">CONSUMABLE:</span>
+								<span class="initAbil">&nbsp;Using Vigil?</span>
+							</label>
+						</li>
+						<li id="clecInit" data-id="21" class="initItem hidden">
+							<input type="checkbox" id="clecCheck" data-effect="22" onchange="initCheck(this)"/>
+							<label for="clecCheck">
+								<span class="initName">CLEC FINGERS:</span>
+								<span class="initAbil">&nbsp;+1 Hacking (1/Sim)?</span>
+							</label>
+						</li>
+						<li id="magInit" data-id="22" class="initItem hidden">
+							<input type="checkbox" id="magCheck" data-effect="23" onchange="initCheck(this)"/>
+							<label for="magCheck">
+								<span class="initName">MAGSWEEP:</span>
+								<span class="initAbil">&nbsp;Brick Device (1/Sim)?</span>
+							</label>
+						</li>
 					</ul>
 					<div class="accessBox">
 						<div class="accessHeader">
@@ -310,15 +377,15 @@
 								</div>
 								<div class="subContBody">
 									<ul id="actList">
-										<li id="brickItem" class="hidden">
+										<li id="brickItem" class="actItem hidden">
 											<span class="actionName">BRICK</span>
 											<button class="brickButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">4 Tags</button>
 										</li>
-										<li id="riggItem" class="hidden">
+										<li id="riggItem" class="actItem hidden">
 											<span class="actionName">RIGGED</span>
 											<button class="rigButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>
-										<li id="rootItem" class="hidden">
+										<li id="rootItem" class="actItem hidden">
 											<span class="actionName">ROOT DEVICE</span>
 											<button class="rootButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>
@@ -354,7 +421,36 @@
 									<span class="subContTitle">INVENTORY</span>
 								</div>
 								<div class="subContBody">
-									
+									<div class="itemCat hidden" data-cat="deck">
+										<h4>CYBERDECK</h4>
+										<ul class="itemList">
+										</ul>
+									</div>
+									<div class="itemCat hidden" data-cat="arms">
+										<h4>WEAPONS / SHIELDS</h4>
+										<ul class="itemList">
+										</ul>
+									</div>
+									<div class="itemCat hidden" data-cat="cust">
+										<h4>CUSTOMIZATIONS</h4>
+										<ul class="itemList">
+										</ul>
+									</div>
+									<div class="itemCat hidden" data-cat="util">
+										<h4>UTILITY ITEMS</h4>
+										<ul class="itemList">
+										</ul>
+									</div>
+									<div class="itemCat hidden" data-cat="cons">
+										<h4>CONSUMABLES</h4>
+										<ul class="itemList">
+										</ul>
+									</div>
+									<div class="itemCat hidden" data-cat="impl">
+										<h4>IMPLANTS</h4>
+										<ul class="itemList">
+										</ul>
+									</div>
 								</div>
 							</div>
 						</div>

@@ -6,6 +6,13 @@ $userCode = $_POST["userCode"];
 
 ###############################################################################################################################
 
+$activeQuery = "SELECT simCode,jobCode
+                FROM cpu_term.activejob";
+
+$activeStatement = $pdo->prepare($activeQuery);
+$activeStatement->execute();
+$activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
+
 $userQuery = '  SELECT id,charName
                 FROM cpu_term.users
                 WHERE userCode = :userCode';
@@ -47,9 +54,86 @@ else
     $roleStatement->execute([':userID' => $userResponse["id"]]);
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
+    $itemQuery = "  SELECT item_id, items.name, items.tier, items.type
+                    FROM cpu_term.user_items
+                    INNER JOIN cpu_term.items ON user_items.item_id=items.id
+                    WHERE user_id = :userID";
+
+    $itemStatement = $pdo->prepare($itemQuery);
+    $itemStatement->execute([':userID' => $userResponse["id"]]);
+    $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $effectQuery = "    SELECT id, charges, per_type, use_loc, effect
+                        FROM cpu_term.item_effects
+                        WHERE item_id = :itemID";
+
+    $effectStatement = $pdo->prepare($effectQuery);
+
+    $simUseQuery = "SELECT COUNT(*)
+                    FROM cpu_term.item_uses
+                    WHERE 	user_id = :userID
+                        AND effect_id = :effectID
+                        AND simCode = :simCode";
+
+    $simUseStatement = $pdo->prepare($simUseQuery);
+
+    $sceneUseQuery = "  SELECT COUNT(*)
+                        FROM cpu_term.item_uses
+                        WHERE 	user_id = :userID
+                            AND effect_id = :effectID
+                            AND jobCode = :jobCode
+                            AND simCode = :simCode";
+
+    $sceneUseStatement = $pdo->prepare($sceneUseQuery);
+
+    $newItems = array();
+
+    foreach($itemResponse as $item)
+    {
+        $effectStatement->execute([':itemID' => $item["item_id"]]);
+        $effectResponse = $effectStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        $newEffects = array();
+
+        foreach($effectResponse as $effect)
+        {
+            switch($effect["per_type"])
+            {
+                case ("sim"):
+                    $simUseStatement->execute([
+                        ':userID' => $userResponse["id"],
+                        ':effectID' => $effect["id"],
+                        ':simCode' => $activeCodes["simCode"]
+                    ]);
+                    $useResponse = $simUseStatement->fetch(PDO::FETCH_COLUMN);
+                    break;
+                case ("scene"):
+                    $sceneUseStatement->execute([
+                        ':userID' => $userResponse["id"],
+                        ':effectID' => $effect["id"],
+                        ':jobCode' => $activeCodes["jobCode"],
+                        ':simCode' => $activeCodes["simCode"]
+                    ]);
+                    $useResponse = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
+                    break;
+                //case ("item"):
+                default:
+                    $useResponse = 0;
+                    break;
+            }
+
+            $effect["uses"] = $useResponse;
+            array_push($newEffects, $effect);
+        }
+
+        $item["effects"] = $newEffects;
+        array_push($newItems, $item);
+    }
+
     echo json_encode(array(  "id" => $userResponse["id"],
                                     "name" => $userResponse["charName"],
                                     "userCode" => $userCode,
                                     "functions" => $functionResponse,
-                                    "roles" => $roleResponse ));
+                                    "roles" => $roleResponse,
+                                    "items" => $newItems ));
 }

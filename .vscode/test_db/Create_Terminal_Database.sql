@@ -2,7 +2,8 @@
 -- CREATE DATABASE cpu_term;
 
 CREATE TABLE activeJob (
-	jobCode varchar(50) NOT NULL
+    simCode TEXT    NOT NULL,
+	jobCode TEXT    NOT NULL
 );
 
 CREATE TABLE terminals (
@@ -122,6 +123,7 @@ CREATE TABLE item_effects (
     item_id     INT NOT NULL,
     charges     INT,
     per_type    TEXT,
+    use_loc     TEXT,
     effect      TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (item_id)
@@ -131,10 +133,8 @@ CREATE TABLE item_effects (
 );
 
 CREATE TABLE user_items (
-    id      INT AUTO_INCREMENT,
     user_id INT NOT NULL,
     item_id INT NOT NULL,
-    PRIMARY KEY (id),
     FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON UPDATE CASCADE
@@ -148,6 +148,7 @@ CREATE TABLE user_items (
 CREATE TABLE item_uses (
     user_id     INT     NOT NULL,
     effect_id   INT     NOT NULL,
+    simCode     TEXT    NOT NULL,
     jobCode     TEXT    NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users(id)
@@ -162,8 +163,8 @@ CREATE TABLE item_uses (
 ####################################################################################################
 
 INSERT INTO activejob
-            (jobCode)
-    VALUES ('ABC1234');
+            (simCode, jobCode)
+    VALUES  ('MAY25', 'ABC1234');
 
 INSERT INTO functions
             (name, type, hacking_cat)
@@ -990,27 +991,27 @@ INSERT INTO items
             ('Canopic Jar [MagSweep]', 0, 'impl', NULL);
 
 INSERT INTO item_effects
-            (item_id, charges, per_type, effect)
-    VALUES  (1, 1, 'scene', 'If used Slip this scene, gain +1 Tag'),
-            (2, 1, 'scene', 'Activated Embolden? -1 Tag'),
-            (2, 1, 'scene', 'Activated Inspire? -1 Tag'),
-            (3, 1, 'scene', 'If used Slip this scene, gain +1 Tag'),
-            (4, 1, 'sim', 'Activate same action type already done this Device for No Timer'),
-            (5, 1, 'sim', 'Gain +1 Tag'),
-            (6, 2, 'sim', 'Gain +1 Tag'),
-            (7, 1, 'sim', 'Gain +1 Tag'),
-            (8, NULL, NULL, 'Enable Remote Hacking'),
-            (9, NULL, NULL, 'Gain +1 Hacking'),
-            (10, 1, 'sim', 'Gain +1 Tag'),
-            (11, 2, 'sim', 'Gain +2 Tags'),
-            (12, 1, 'scene', 'Allow Action Timer to continue without holding button'),
-            (13, 1, 'scene', 'Gain +2 Tags on Drone'),
-            (14, NULL, NULL, 'All Access Actions, after the first, are -1 Tag Cost'),
-            (15, 2, 'sim', 'Gain +1 Tag'),
-            (16, 1, 'sim', 'Can retry puzzle which requires Knowledge'),
-            (17, NULL, NULL, 'All Actions -5s'),
-            (18, 10, 'item', 'All Actions: +1 Tag Cost & +30s Timer'),
-            (19, 10, 'item', 'All Actions: +1 Tag Cost & +15s Timer'),
-            (20, NULL, NULL, 'Can consume Function Charges to increase Tags, up to +10'),
-            (21, 1, 'sim', 'Gain +1 Hacking'),
-            (22, 1, 'sim', 'Instantly Brick Device');
+            (item_id, charges, per_type, use_loc, effect)
+    VALUES  (1, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
+            (2, 1, 'scene', 'initial', 'Activated Embolden? -1 Tag'),
+            (2, 1, 'scene', 'initial', 'Activated Inspire? -1 Tag'),
+            (3, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
+            (4, 1, 'sim', 'action', 'Activate same action type already done this Device for No Timer'),
+            (5, 1, 'sim', 'item', '+1 Tag'),
+            (6, 2, 'sim', 'item', '+1 Tag'),
+            (7, 1, 'sim', 'item', '+1 Tag'),
+            (8, NULL, NULL, 'initial', 'Enable Remote Hacking'),
+            (9, NULL, NULL, 'autoinit', 'Gain +1 Hacking'),
+            (10, 1, 'sim', 'item', '+1 Tag'),
+            (11, 2, 'sim', 'item', '+2 Tags'),
+            (12, 1, 'scene', 'action', 'Allow Action Timer to continue without holding button'),
+            (13, 1, 'scene', 'item', '+2 Tags'),
+            (14, NULL, NULL, 'autoact', 'All Access Actions, after the first, are -1 Tag Cost'),
+            (15, 2, 'sim', 'item', '+1 Tag'),
+            (16, 1, 'sim', 'puzzle', 'Can retry puzzle which requires Knowledge'),
+            (17, NULL, NULL, 'autoinit', 'All Actions -5s'),
+            (18, 10, 'item', 'initial', 'All Actions: +1 Tag Cost & +30s Timer'),
+            (19, 10, 'item', 'initial', 'All Actions: +1 Tag Cost & +15s Timer'),
+            (20, NULL, NULL, 'initial', 'Can consume Function Charges to increase Tags, up to +10'),
+            (21, 1, 'sim', 'initial', 'Gain +1 Hacking'),
+            (22, 1, 'sim', 'initial', 'Instantly Brick Device');
