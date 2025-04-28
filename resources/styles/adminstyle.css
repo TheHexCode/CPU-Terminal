@@ -1,0 +1,138 @@
+.entry
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 1rem;
+    border: 1px solid black;
+    padding: 1rem;
+    margin-left: 1rem;
+    width: min-content;
+}
+
+/*
+.entryControls
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 0.25rem;
+}
+
+.upControls,
+.downControls
+{
+    display: flex;
+    flex-direction: column;
+}
+*/
+
+.entryControls
+{
+    display: grid;
+    grid-template-columns: min-content min-content min-content;
+    grid-template-rows: [top] min-content [mid-start] min-content [mid-end] min-content [bottom];
+    column-gap: 0.25rem;
+    row-gap: 0.25rem;
+}
+
+.upControls
+{
+    grid-column: 1;
+    grid-row: top / mid-end;
+    display: grid;
+    grid-template-rows: subgrid;
+}
+
+.delButton
+{
+    grid-column: 2;
+    grid-row: mid-start / mid-end;
+}
+
+.downControls
+{
+    grid-column: 3;
+    grid-row: mid-start / bottom;
+    display: grid;
+    grid-template-rows: subgrid;
+}
+
+.entryGrid
+{
+    display: grid;
+    grid-template-rows: min-content 1rem min-content min-content;
+    grid-template-columns: [access] min-content [modify] min-content [title] 1fr [contents] 1fr [end];
+    column-gap: 0.25rem;
+}
+
+.entryTypeRow
+{
+    grid-row: 1;
+    grid-column: access / title;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+.entryLabelRow
+{
+    grid-row: 3;
+    grid-column: access / end;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+.entryInputRow
+{
+    grid-row: 4;
+    grid-column: access / end;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+.entryLabel
+{
+    text-align: center;
+}
+
+.entryTypeLabel
+{
+    grid-column: access / modify;
+    text-align: center;
+    align-self: center;
+}
+
+.entryType
+{
+    grid-column: modify / title;
+}
+
+.entryID
+{
+    /*grid-column: id / access;*/
+}
+
+.entryAccess
+{
+    grid-column: access / modify;
+}
+
+.entryModify
+{
+    grid-column: modify / title;
+}
+
+.entryTitle
+{
+    grid-column: title / contents;
+}
+
+.entryContents
+{
+    grid-column: contents / end;
+}
+
+.addEntryButton
+{
+    margin: 1rem;
+}
