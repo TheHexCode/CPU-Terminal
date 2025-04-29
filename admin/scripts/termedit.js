@@ -1,15 +1,19 @@
-var entryCount = {
-    files: [],
-    darkweb: [],
-    cameras: [],
-    locks: [],
-    defenses: [],
-    utilities: []
+function tens(numStr)
+{
+	var tensFormat = new Intl.NumberFormat('en-US', { 
+		minimumIntegerDigits: 2
+	});
+	
+	return tensFormat.format(Number(numStr));
 }
 
 function addEntry(event)
 {
     event.preventDefault();
+
+    let entryList = $(event.target).parent();
+
+    let newID = $entryList.children(".entry").length;
 
     $(event.target).before('<div class="entry">'+
                                 '<div class="entryControls">' +
@@ -24,7 +28,7 @@ function addEntry(event)
                                     '</div>' +
                                 '</div>' +
                                 '<div class="entryID">' +
-                                    '01' +
+                                    tens(newID) +
                                 '</div>' +
                                 '<div class="entryGrid">' +
                                     '<div class="entryTypeRow">' +
