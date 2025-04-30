@@ -13,7 +13,7 @@ function addEntry(event)
 
     let entryList = $(event.target).parent();
 
-    let newID = $entryList.children(".entry").length;
+    let newID = entryList.children(".entry").length;
 
     $(event.target).before('<div class="entry">'+
                                 '<div class="entryControls">' +
@@ -28,7 +28,7 @@ function addEntry(event)
                                     '</div>' +
                                 '</div>' +
                                 '<div class="entryID">' +
-                                    tens(newID) +
+                                    newID +
                                 '</div>' +
                                 '<div class="entryGrid">' +
                                     '<div class="entryTypeRow">' +

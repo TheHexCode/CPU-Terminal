@@ -44,8 +44,6 @@ class adminTerminal
         $terminalStatement->execute([':jobCode' => $this->jobCode, ':slug' => $this->slug]);
         $terminalInfo = $terminalStatement->fetch(PDO::FETCH_ASSOC);
 
-        echo var_dump($terminalInfo);
-
         $this->termID = $terminalInfo["id"];
         $this->displayName = $terminalInfo["displayName"];
         $this->termAccess = $terminalInfo["access"];
@@ -58,8 +56,6 @@ class adminTerminal
         $entryStatement = $pdo->prepare($entryQuery);
         $entryStatement->execute([':termID' => $this->termID]);
         $this->entries = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
-
-        echo var_dump($this->entries);
     }
 
     function getPageTitle()
@@ -96,48 +92,163 @@ class adminTerminal
 
         $entryString = "";
 
+        $iceLayers = array();
+
         foreach($iconEntries as $entry)
         {
-            $entryString .= '<div class="entry">'+
-                                '<div class="entryControls">' +
-                                    '<div class="upControls">' +
-                                        '<button>&barwedge;</button>' +
-                                        '<button>&wedge;</button>' +
-                                    '</div>' +
-                                    '<button class="delButton">&times;</button>' +
-                                    '<div class="downControls">' +
-                                        '<button>&vee;</button>' +
-                                        '<button>&veebar;</button>' +
-                                    '</div>' +
-                                '</div>' +
-                                '<div class="entryID">' +
-                                    tens(newID) +
-                                '</div>' +
-                                '<div class="entryGrid">' +
-                                    '<div class="entryTypeRow">' +
-                                        '<span class="entryTypeLabel">ENTRY TYPE:</span>' +
-                                        '<select class="entryType">' +
-                                            '<option>ENTRY</option>' +
-                                            '<option>TRAP</option>' +
-                                            '<option>ICE</option>' +
-                                        '</select>' +
-                                    '</div>' +
-                                    '<div class="entryLabelRow">' +
-                                        '<span class="entryLabel entryAccess">ACCESS COST</span>' +
-                                        '<span class="entryLabel entryModify">MODIFY COST</span>' +
-                                        '<span class="entryLabel entryTitle">TITLE</span>' +
-                                        '<span class="entryLabel entryContents">CONTENTS</span>' +
-                                    '</div>' +
-                                    '<div class="entryInputRow">' +
-                                        '<input class="entryAccess" type="number" value="0" />' +
-                                        '<input class="entryModify" type="number" value="0" />' +
-                                        '<input class="entryTitle" type="text" />' +
-                                        '<input class="entryContents" type="text" />' +
-                                    '</div>' +
-                                '</div>' +
-                            '</div>'
+            $iceStatus =    count($iceLayers) === 0 ?
+                                null :
+                                str_starts_with($entry["path"], $iceLayers[array_key_last($iceLayers)]);
+
+            if($iceStatus === false) // ICE LAYER IS ENDING
+            {
+                do
+                {
+                    array_pop($iceLayers);
+
+                    $entryString .= "</div>";
+                } while((count($iceLayers) !== 0) && (str_starts_with($entry["path"], $iceLayers[array_key_last($iceLayers)]) === false));
+            }
+
+            $accessLabel = "ACCESS";
+            $modifyLabel = "MODIFY";
+            $contentsLabel = "CONTENTS";
+
+            $entry["access"] = '"' . $entry["access"] . '"';
+            $entry["title"] = '"' . $entry["title"] . '"';
+
+            if($entry["type"] === "trap")
+            {
+                $contentsLabel = "EFFECTS";
+
+                $entry["title"] = '"Trap!" disabled';
+                $entry["contents"] = $this->getEntryEffects($entry["contents"]);
+            }
+            elseif($entry["type"] === "ice")
+            {
+                array_push($iceLayers, $entry["path"]);
+
+                $accessLabel = "BREAK";
+                $modifyLabel = "SLEAZE";
+                $contentsLabel = "EFFECTS";
+
+                $entry["access"] = '"0" disabled';
+                $entry["contents"] = $this->getEntryEffects($entry["contents"]);
+            }
+            elseif(($entry["icon"] !== "files") && ($entry["icon"] !== "darkweb"))
+            {
+                $entry["contents"] = '"No Contents" disabled />';
+            }
+            else
+            {
+                $entry["contents"] = '"' . $entry["contents"] . '" />';
+            }
+
+            $entryString .= ($entry["type"] === "ice" ? '<div class="iceBox">' : "") .
+                            '<div class="entry">' .
+                                '<div class="entryControls">' .
+                                    '<div class="upControls">' .
+                                        '<button>&barwedge;</button>' .
+                                        '<button>&wedge;</button>' .
+                                    '</div>' .
+                                    '<button class="delButton">&times;</button>' .
+                                    '<div class="downControls">' .
+                                        '<button>&vee;</button>' .
+                                        '<button>&veebar;</button>' .
+                                    '</div>' .
+                                '</div>' .
+                                '<div class="entryID">' .
+                                    $entry["path"] .
+                                '</div>' .
+                                '<div class="entryGrid">' .
+                                    '<div class="entryTypeRow">' .
+                                        '<span class="entryTypeLabel">ENTRY TYPE:</span>' .
+                                        '<select class="entryType">' .
+                                            $this->getEntryTypes($entry["icon"], $entry["type"]) .
+                                        '</select>' .
+                                    '</div>' .
+                                    '<div class="entryLabelRow">' .
+                                        '<span class="entryLabel entryAccess">' . $accessLabel . ' COST</span>' .
+                                        '<span class="entryLabel entryModify">' . $modifyLabel . ' COST</span>' .
+                                        '<span class="entryLabel entryTitle">TITLE</span>' .
+                                        '<span class="entryLabel entryContents">' . $contentsLabel . '</span>' .
+                                    '</div>' .
+                                    '<div class="entryInputRow">' .
+                                        '<input class="entryAccess" type="number" value=' . $entry["access"] . ' />' .
+                                        '<input class="entryModify" type="number" value="' . $entry["modify"] . '" />' .
+                                        '<input class="entryTitle" type="text" value=' . $entry["title"] . ' />' .
+                                        '<input class="entryContents" type="text" value=' . $entry["contents"] .
+                                    '</div>' .
+                                '</div>' .
+                            '</div>';
         }
 
-        return var_dump($iconEntries);
+        for($i = 0; $i < count($iceLayers); $i++)
+        {
+            $entryString .= "</div>";
+        }
+
+        return $entryString;
+    }
+
+    private function getEntryTypes($icon, $type)
+    {
+        $typeArray = array(
+            "files" => array(
+                "ENTRY",
+                "TRAP"
+            ),
+            "darkweb" => array(
+                "ENTRY"
+            ),
+            "cameras" => array(
+                "ENTRY"
+            ),
+            "locks" => array(
+                "ENTRY"
+            ),
+            "defenses" => array(
+                "ENTRY"
+            ),
+            "utilities" => array(
+                "POWER",
+                "ALARM"
+            )
+        );
+
+        $typeListString = "";
+
+        foreach($typeArray[$icon] as $entryType)
+        {
+            $typeListString .= "<option" . (strtoupper($type) === $entryType ? " selected" : "") . ">$entryType</option>";
+        }
+
+        $typeListString .= "<option" . (strtoupper($type) === "ICE" ? " selected" : "") . ">ICE</option>";
+
+        return $typeListString;
+    }
+
+    private function getEntryEffects($contents)
+    {
+        $effects = json_decode($contents);
+
+        $effectString = '"' . $effects[0] . '" /></div>';
+
+        for($i = 1; $i < count($effects); $i++)
+        {
+            $effectCount = $i + 4;
+
+            $effectString .=    '<div class="entryInputRow" data-row="' . $effectCount . '" style="grid-row: ' . $effectCount . '">' .
+                                    '<input class="entryContents" type="text" value="' . $effects[$i] . '" />' .
+                                    '<button class="delEffectButton" onclick="delEffect(' . $effectCount . ')">&minus;</button>' .
+                                '</div>';
+        }
+
+        $effectMax = count($effects) + 4;
+
+        $effectString .=    '<div class="entryInputRow" data-row="' . $effectMax . '" style="grid-row: ' . $effectMax . '">' .
+                                '<button class="addEffectButton" onclick="addEffect(' . $effectMax . ')">&plus;</button>';
+
+        return  $effectString;
     }
 }

@@ -74,11 +74,11 @@
                 <label for="slugSelect">Terminal:</label>
                 <select id="slugSelect" name="slug" disabled required onchange="slugChange(this)">
                     <?php
-                        $termsString = "";
+                        $termsString = "<optgroup data-code='default' hidden><option selected></option></optgroup>";
 
                         foreach(array_keys($termsList) as $jobCode)
                         {
-                            $termsString .= "<optgroup data-code='" . $jobCode . "' disabled>";
+                            $termsString .= "<optgroup data-code='" . $jobCode . "' hidden>";
 
                             foreach($termsList[$jobCode] as $termSlug)
                             {

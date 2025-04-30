@@ -52,7 +52,7 @@ h1
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    column-gap: 10rem;
+    column-gap: 2rem;
 }
 
 .safeZone
@@ -76,6 +76,22 @@ h1
     align-content: center;
 }
 
+.entryList
+{
+    width: max-content;
+}
+
+
+.iceBox
+{
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(100,200,255,0.2);
+    border: 1px solid black;
+    margin-left: 1rem;
+    padding: 0 1rem 1rem 0;
+}
+
 .entry
 {
     display: flex;
@@ -85,7 +101,13 @@ h1
     border: 1px solid black;
     padding: 1rem;
     margin-left: 1rem;
-    width: min-content;
+    width: auto;
+}
+
+.iceBox .entry:first-of-type
+{
+    margin-left: 0;
+    border: none;
 }
 
 .entryControls
@@ -123,7 +145,8 @@ h1
 {
     display: grid;
     grid-template-rows: min-content 1rem min-content min-content;
-    grid-template-columns: [access] min-content [modify] min-content [title] 1fr [contents] 1fr [end];
+    grid-auto-rows: min-content;
+    grid-template-columns: [access] min-content [modify] min-content [title] 1fr [contents] 1fr [buttons] min-content [end];
     column-gap: 0.25rem;
 }
 
@@ -190,7 +213,13 @@ h1
 
 .entryContents
 {
-    grid-column: contents / end;
+    grid-column: contents / buttons;
+}
+
+.delEffectButton,
+.addEffectButton
+{
+    grid-column: buttons / end;
 }
 
 .addEntryButton

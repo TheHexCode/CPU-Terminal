@@ -22,7 +22,7 @@
                 <div>
                     <div>
                         <label>JOB CODE: </label>
-                        <input type="text"><?php echo $terminal->getJobCode(); ?></input>
+                        <input type="text" value="<?php echo $terminal->getJobCode(); ?>" />
                     </div>
                     <div>
                         <label>TERMINAL CODE: </label>
@@ -35,7 +35,7 @@
                     <hr/>
                     <div>
                         <label>TERMINAL DISPLAY NAME: </label>
-                        <input type="text"><?php echo $terminal->getTermDisplayName(); ?></input>
+                        <input type="text" value="<?php echo $terminal->getTermDisplayName(); ?>" />
                     </div>
                     <div>
                         <label>TERMINAL ACCESS COST: </label>
