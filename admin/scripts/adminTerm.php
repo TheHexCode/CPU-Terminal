@@ -5,6 +5,7 @@ class adminTerminal
     private $pageTitle;
     private $jobCode;
     private $slug;
+    private $takenSlugs;
     private $termID;
     private $displayName;
     private $termAccess;
@@ -20,6 +21,7 @@ class adminTerminal
             $this->termID = -1;
             $this->jobCode = "";
             $this->slug = null;
+            $this->takenSlugs = array();
             $this->displayName = "";
             $this->termAccess = "";
             $this->entries = array();
@@ -56,6 +58,13 @@ class adminTerminal
         $entryStatement = $pdo->prepare($entryQuery);
         $entryStatement->execute([':termID' => $this->termID]);
         $this->entries = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        $slugQuery = "  SELECT slug
+                        FROM cpu_term.terminals
+                        WHERE jobCode=:jobCode";
+        $slugStatement = $pdo->prepare($slugQuery);
+        $slugStatement->execute([':jobCode' => $this->jobCode]);
+        $this->takenSlugs = $slugStatement->fetchAll(PDO::FETCH_COLUMN);
     }
 
     function getPageTitle()
@@ -81,6 +90,26 @@ class adminTerminal
     function getTermAccessCost()
     {
         return $this->termAccess;
+    }
+
+    function getAvailableSlugs()
+    {
+        $allSlugs = array(
+            "communist",
+            "dorm",
+            "map",
+            "slab",
+            "squeeze"
+        );
+
+        $slugString = "<option>" . $this->slug . "</option>";
+
+        foreach(array_diff($allSlugs,$this->takenSlugs) as $avaiSlug)
+        {
+            $slugString .= "<option>" . $avaiSlug . "</option>";
+        }
+
+        return $slugString;
     }
 
     function getEntries($icon)
@@ -250,5 +279,10 @@ class adminTerminal
                                 '<button class="addEffectButton" onclick="addEffect(' . $effectMax . ')">&plus;</button>';
 
         return  $effectString;
+    }
+
+    function displayTerminal()
+    {
+        return "<script>var admTerm = new AdminTerminal(" . json_encode($this->entries) . ");</script>";
     }
 }

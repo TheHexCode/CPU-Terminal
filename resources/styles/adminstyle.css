@@ -226,3 +226,8 @@ h1
 {
     margin: 1rem;
 }
+
+.iceBox .addEntryButton
+{
+    margin: 1rem 0 0 1rem;
+}

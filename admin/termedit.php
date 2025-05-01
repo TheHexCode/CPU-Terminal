@@ -27,9 +27,7 @@
                     <div>
                         <label>TERMINAL CODE: </label>
                         <select>
-                            <option><?php echo $terminal->getTerminalSlug(); ?></option>
-                            <option>dorm</option>
-                            <option>communist</option>
+                            <?php echo $terminal->getAvailableSlugs(); ?>
                         </select>
                     </div>
                     <hr/>
@@ -54,37 +52,38 @@
             <hr/>
             <div>
                 <h2>ENTRY LIST:</h2>
-                <div class="entryList" data-icon="files">
+                <div>
                     <h3>FILES:</h3>
-                    <?php echo $terminal->getEntries("files"); ?>
+                    <div class="entryList" data-icon="files"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
-                <div class="entryList" data-icon="darkweb">
+                <div>
                     <h3>DARK WEB:</h3>
-                    <?php echo $terminal->getEntries("darkweb"); ?>
+                    <div class="entryList" data-icon="darkweb"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
-                <div class="entryList" data-icon="cameras">
+                <div>
                     <h3>CAMERAS:</h3>
-                    <?php echo $terminal->getEntries("cameras"); ?>
+                    <div class="entryList" data-icon="cameras"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
-                <div class="entryList" data-icon="locks">
+                <div>
                     <h3>LOCKS:</h3>
-                    <?php echo $terminal->getEntries("locks"); ?>
+                    <div class="entryList" data-icon="locks"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
-                <div class="entryList" data-icon="defenses">
-                    <h3>AUTOMATED DEFENSE SYSTEMS:</h3>
-                    <?php echo $terminal->getEntries("defenses"); ?>
+                <div>
+                    <h3>AUTOMATIVE DEFENSIVE SYSTEMS:</h3>
+                    <div class="entryList" data-icon="defenses"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
-                <div class="entryList" data-icon="utilities">
+                <div>
                     <h3>UTILITY SYSTEMS:</h3>
-                    <?php echo $terminal->getEntries("utilities"); ?>
+                    <div class="entryList" data-icon="utilities"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
             </div>
         </form>
+        <?php echo $terminal->displayTerminal(); ?>
     </body>
 </html>
