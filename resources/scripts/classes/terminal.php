@@ -197,9 +197,9 @@ class Terminal
 
                 $contentsMask = ($entry["state"] === "initial") ?
                                     '<span class="entryMasking">&nbsp;</span>' :
-							  	    '<span class="entrySecret">' . $entry["contents"] . '</span>';
+							  	    '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) . '</span>';
 
-                $entryData["contents"] = ($entry["state"] === "initial") ? null : $entry["contents"];
+                $entryData["contents"] = ($entry["state"] === "initial") ? null : implode("<br/>",json_decode($entry["contents"]));
             }
             else
             {

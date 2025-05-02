@@ -92,7 +92,7 @@ class Session
 
     getEntryState(entryID)
     {
-        let searchResults = this.#entryData.find(entry => entry.id === entryID);
+        let searchResults = this.#entryData.find(entry => entry.id === Number(entryID));
 
         return searchResults.state;
     }
@@ -116,7 +116,7 @@ class Session
         }
         else
         {
-            let searchResults = this.#entryData.find(entry => entry.id === entryID);
+            let searchResults = this.#entryData.find(entry => entry.id === Number(entryID));
 
             let actionCost = Number(searchResults[action]);
 
@@ -131,7 +131,7 @@ class Session
 
     setFunctionState(functionName, entryID, entryAction, functionRank)
     {
-        let entry = this.#entryData.find(entry => entry.id === entryID);
+        let entry = this.#entryData.find(entry => entry.id === Number(entryID));
 
         switch (functionName)
         {

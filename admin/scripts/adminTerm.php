@@ -283,6 +283,6 @@ class adminTerminal
 
     function displayTerminal()
     {
-        return "<script>var admTerm = new AdminTerminal(" . json_encode($this->entries) . ");</script>";
+        return "<script>var admTerm = new AdminTerminal(" . $this->termID . ", " . json_encode($this->entries) . ");</script>";
     }
 }

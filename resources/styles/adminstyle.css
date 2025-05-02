@@ -153,7 +153,7 @@ h1
 .entryTypeRow
 {
     grid-row: 1;
-    grid-column: access / title;
+    grid-column: access / buttons;
     display: grid;
     grid-template-columns: subgrid;
 }
@@ -191,6 +191,18 @@ h1
     grid-column: modify / title;
 }
 
+.entryStateLabel
+{
+    grid-column: title / contents;
+    text-align: center;
+    align-self: center;
+}
+
+.entryState
+{
+    grid-column: contents / buttons;
+}
+
 .entryID
 {
     /*grid-column: id / access;*/
@@ -214,6 +226,12 @@ h1
 .entryContents
 {
     grid-column: contents / buttons;
+}
+
+.delEntryButton
+{
+    background-color: red;
+    color: white;
 }
 
 .delEffectButton,

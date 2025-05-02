@@ -22,30 +22,30 @@
                 <div>
                     <div>
                         <label>JOB CODE: </label>
-                        <input type="text" value="<?php echo $terminal->getJobCode(); ?>" />
+                        <input id="jobCode" type="text" value="<?php echo $terminal->getJobCode(); ?>" onchange="admTerm.setMasterChanges()" />
                     </div>
                     <div>
                         <label>TERMINAL CODE: </label>
-                        <select>
+                        <select id="termSlug" onselect="admTerm.setMasterChanges()">
                             <?php echo $terminal->getAvailableSlugs(); ?>
                         </select>
                     </div>
                     <hr/>
                     <div>
                         <label>TERMINAL DISPLAY NAME: </label>
-                        <input type="text" value="<?php echo $terminal->getTermDisplayName(); ?>" />
+                        <input id="termDisplayName" type="text" value="<?php echo $terminal->getTermDisplayName(); ?>" onchange="admTerm.setMasterChanges()" />
                     </div>
                     <div>
                         <label>TERMINAL ACCESS COST: </label>
-                        <input type="number" value="<?php echo $terminal->getTermAccessCost(); ?>" />
+                        <input id="termAccess" type="number" value="<?php echo $terminal->getTermAccessCost(); ?>" onchange="admTerm.setMasterChanges()" />
                     </div>
                 </div>
                 <div id="termControls">
                     <div class="safeZone">
-                        <button>SAVE TERMINAL</button>
+                        <button onclick="saveTerminal(event)">SAVE TERMINAL</button>
                     </div>
                     <div class="dangerZone">
-                        <button>DELETE TERMINAL</button>
+                        <button onclick="deleteTerminal(event)">DELETE TERMINAL</button>
                     </div>
                 </div>
             </div>
