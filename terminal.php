@@ -210,6 +210,7 @@
 							</label>
 						</li>
 					</ul>
+					<div class="accessSpacer"></div>
 					<div class="accessBox">
 						<div class="accessHeader">
 							TAGS REMAINING AFTER ACCESS:

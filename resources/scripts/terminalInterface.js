@@ -3,6 +3,11 @@ var payload = new Payload();
 var taTimer = new Timer("#termAccessTimer");
 var mbTimer = new Timer("#modalBodyTimer");
 
+$(document).ready(function()
+{
+	$("#terminalButton").attr("disabled",true);
+});
+
 function tens(numStr)
 {
 	var tensFormat = new Intl.NumberFormat('en-US', { 
@@ -56,7 +61,8 @@ function submitCode(event)
 		url: "resources\\scripts\\db\\getUser.php",
 		data:
 		{
-			userCode: $("#payloadCodeInput")[0].value
+			userCode: $("#payloadCodeInput")[0].value,
+			termID: session.getTerminalID()
 		}
 	})
 	.done(function(userData)
@@ -487,6 +493,7 @@ function takeAction(target)
 			)
 			.done(function() {
 				let actionMap = {
+					userID: payload.getUserID(),
 					actionType: "entry",
 					entryID: entryID,
 					entryPath: entryPath,
@@ -522,17 +529,18 @@ function takeAction(target)
 			break;
 		}
 		// ICE Entry
-		case "unwrap":
 		case "break":
+		case "sleaze":
 		{
 			let entryPath = "#" + $(target).parents(".entry")[0].id;
 
 			let actionMap = {
+				userID: payload.getUserID(),
 				actionType: "ice",
 				entryID: entryID,
 				entryPath: entryPath,
 				actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
-				upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+				upperAction: upperAction,
 				entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
 			};
 
@@ -556,6 +564,7 @@ function takeAction(target)
 			let entryPath = "#" + $(target).parents('.logEntry')[0].id;
 
 			let actionMap = {
+				userID: payload.getUserID(),
 				actionType: "log",
 				entryID: entryID,
 				actionCost: session.getActionCost("nonEntry",action),
@@ -582,10 +591,11 @@ function takeAction(target)
 		case "root":
 		{
 			let actionMap = {
+				userID: payload.getUserID(),
 				actionType: action,
 				entryID: session.getTerminalID(),
 				actionCost: session.getActionCost("nonEntry",action),
-				upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+				upperAction: upperAction,
 				entryName: "Device"
 			};
 

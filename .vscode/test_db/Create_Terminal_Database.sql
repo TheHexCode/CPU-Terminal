@@ -176,6 +176,23 @@ CREATE TABLE item_uses (
         ON DELETE CASCADE
 );
 
+CREATE TABLE user_actions (
+    id          INT         AUTO_INCREMENT,
+    time        TIMESTAMP   NOT NULL,
+    user_id     INT         NOT NULL,
+    target_type TEXT        NOT NULL,
+    target_id   INT         NOT NULL,
+    action      TEXT        NOT NULL,
+    newState    TEXT        NOT NULL,
+    cost        INT         NOT NULL,
+    global      BOOLEAN     NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)
+
 ####################################################################################################
 
 INSERT INTO activejob

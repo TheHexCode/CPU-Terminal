@@ -165,8 +165,13 @@ class Terminal
 
             if(count($unitCode) > 1)
             {
-                //$newEntry["subIce"] = implode("-",array_slice($unitCode,0,count($unitCode)-1));
-                $subClass .= " subIce";
+                $parentPath = implode("-",array_splice($unitCode, 0,count($unitCode)-1));
+                $parent = current(array_filter($this->entries,function ($entry) use ($icon, $parentPath)
+                {
+                    return (($entry["icon"] === $icon) && ($entry["path"] === $parentPath));
+                }));
+
+                $subClass .= ($parent["state"] === "initial" ? " subIce" : "");
 
                 for($i = 1; $i < count($unitCode); $i++)
                 {

@@ -116,26 +116,29 @@
 					<?php echo getFunctionTab("STANDARD"); ?>
 				</div>
 				<div id="priTab" class="profContent hidden"><!-- PRIMARY -->
-					<div class="checkGroup" data-role="none">
+					<section class="checkGroup" data-role="none">
 						<h2>NO PRIMARY ROLE SELECTED</h2>
 						<p>Please select a <em>Primary_Role</em> in the dropdown above, even if it's <em>Other</em>.</p>
-					</div>
-					<div class="checkGroup hidden" data-role="other">
+					</section>
+					<section class="checkGroup hidden" data-role="other">
 						<h2>OTHER PRIMARY ROLE SELECTED</h2>
 						<p>Your <em>Primary_Role</em> is not one which provides any hacking benefits. If you have a <em>Secondary_Role</em>, make sure to select them in the dropdown above, or utilize the <em>Standard_Role</em> for your payload.</p>
-					</div>
+					</section>
 					<?php echo getFunctionTab("PRIMARY"); ?>
 				</div>
 				<div id="secTab" class="profContent hidden"><!-- SECONDARY -->
-					<div class="checkGroup" data-role="none">
+					<section class="checkGroup" data-role="none">
 						<h2>NO SECONDARY ROLE SELECTED</h2>
 						<p>If you have a <em>Secondary_Role</em>, please select it in the dropdown above. Otherwise, if you do not have a <em>Secondary_Role</em>, this text is what you should expect to see.</p>
-					</div>
-					<div class="checkGroup hidden" data-role="other">
+					</section>
+					<section class="checkGroup hidden" data-role="other">
 						<h2>OTHER SECONDARY ROLE SELECTED</h2>
 						<p>Your <em>Secondary_Role</em> is not one which provides any hacking benefits. You'll have to rely on your <em>Primary_Role</em> or the <em>Standard_Role</em> for your payload.</p>
-					</div>
+					</sectio>
 					<?php echo getFunctionTab("SECONDARY"); ?>
+				</div>
+				<div id="itemsTab" class="profContent hidden"><!-- ITEMS -->
+					<?php echo getItemTab(); ?>
 				</div>
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>

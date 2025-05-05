@@ -560,6 +560,11 @@ ul
 	flex-wrap: wrap;
 }
 
+.accessSpacer
+{
+	height: 100%;
+}
+
 #terminalButton
 {
 	margin: auto 10px 10px 10px;

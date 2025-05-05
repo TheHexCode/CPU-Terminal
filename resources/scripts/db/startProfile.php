@@ -113,7 +113,7 @@ function getFunctionTab($tabName)
 
 //** END NEW FUNCTION STUFF **//
 
-/*
+
 $itemArray = array(
     "deck" => array(
         "title" => "CYBERDECKS",
@@ -141,10 +141,13 @@ $itemArray = array(
     )
 );
 
-$item_query = $pdo->query(" SELECT id,name,tier,type,radio
-                                FROM cpu_term.items");
+$itemQuery = "  SELECT id,name,tier,type,radio
+                FROM cpu_term.items";
 
-$itemResponse = $item_query->fetchAll(PDO::FETCH_ASSOC);
+$itemStatement = $pdo->prepare($itemQuery);
+$itemStatement->execute();
+
+$itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
 foreach($itemResponse as $item)
 {
@@ -175,5 +178,9 @@ foreach($itemArray as $itemCat)
     $itemString .= "</section>";
 }
 
-echo $itemString;
-*/
+function getItemTab()
+{
+    global $itemString;
+
+    return $itemString;
+}

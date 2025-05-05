@@ -3,6 +3,7 @@
 require('dbConnect.php');
 
 $userCode = $_POST["userCode"];
+$termID = $_POST["termID"];
 
 ###############################################################################################################################
 
@@ -152,10 +153,32 @@ else
         array_push($newItems, $item);
     }
 
+    $actionQuery = "SELECT entries.id, entries.path, entries.icon, newState FROM cpu_term.user_actions AS UA1
+                    INNER JOIN cpu_term.entries ON target_id=entries.id
+                    INNER JOIN (
+                        SELECT entries.id, MAX(time) as maxTime FROM cpu_term.user_actions
+                            INNER JOIN cpu_term.entries ON target_id=entries.id
+                            WHERE entries.terminal_id = :termID
+                                AND (user_id = :userID
+                                    OR global = true)
+                                AND target_type = 'entry'
+                            GROUP BY entries.id
+                    ) AS UA2 ON time=maxTime
+                    WHERE entries.terminal_id = :termID
+                        AND (user_id = :userID
+                            OR global = true)
+                        AND target_type = 'entry'";
+
+    $actionStatement = $pdo->prepare($actionQuery);
+    $actionStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
+
+    $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
+
     echo json_encode(array(  "id" => $userResponse["id"],
                                     "name" => $userResponse["charName"],
                                     "userCode" => $userCode,
                                     "functions" => $functionResponse,
                                     "roles" => $roleResponse,
-                                    "items" => $newItems ));
+                                    "items" => $newItems,
+                                    "prevActions" => $actionResponse ));
 }
