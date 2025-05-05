@@ -27,6 +27,7 @@ if($userResponse === false)
 }
 else
 {
+    /*
     $functionQuery = "  SELECT DISTINCT functions.name,
                                         SUM(ml_functions.rank) AS 'rank',
                                         functions.type,
@@ -39,14 +40,35 @@ else
                         GROUP BY functions.name,
                                 functions.type,
                                 functions.hacking_cat";
+    */
+    $functionQuery = "  SELECT DISTINCT functions.name,
+                                        SUM(ml_functions.rank) AS 'rank',
+                                        functions.type,
+                                        functions.hacking_cat
+                        FROM cpu_term.user_selfreport
+                        INNER JOIN cpu_term.ml_functions ON ml_functions.id=user_selfreport.mlFunction_id
+                        INNER JOIN cpu_term.functions ON ml_functions.function_id=functions.id
+                        WHERE user_id = :userID
+                            AND functions.hacking_cat IS NOT NULL
+                        GROUP BY functions.name,
+                                functions.type,
+                                functions.hacking_cat";
 
     $functionStatement = $pdo->prepare($functionQuery);
     $functionStatement->execute([':userID' => $userResponse["id"]]);
     $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
+    /*
     $roleQuery = "  SELECT DISTINCT roles.name
                     FROM cpu_term.ml_functions
                     INNER JOIN cpu_term.user_functions ON ml_functions.id=user_functions.mlFunction_id
+                    INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
+                    WHERE user_id = :userID";
+    */
+
+    $roleQuery = "  SELECT DISTINCT roles.name
+                    FROM cpu_term.ml_functions
+                    INNER JOIN cpu_term.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
                     INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
                     WHERE user_id = :userID";
 

@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<?php
+    require 'resources\\scripts\\db\\startProfile.php';
+?>
 <html>
 	<head>
 		<title>PAYLOAD PROFILE</title>
@@ -55,7 +58,25 @@
 						<span class="dseg BG">~~~~~~</span>
 						<span class="dseg FG"></span>
 					</div>
+					<hr/>
+					<div class="infoRole">
+						<label for="primaryRole">Primary Role:</label>
+						<select id="primaryRole" onchange="roleChange()">
+							<option value="none">-Select-</option>
+							<?php echo getRoleSelect(); ?>
+							<option value="other">Other</option>
+						</select>
+					</div>
+					<div class="infoRole">
+						<label for="secondaryRole">Secondary Role:</label>
+						<select id="secondaryRole" onchange="roleChange()">
+							<option value="none">-Select-</option>
+							<?php echo getRoleSelect(); ?>
+							<option value="other">Other</option>
+						</select>
+					</div>
 				</div>
+				<!--
 				<div class="zoneBox">
 					<h2 id="skillBoxHeader">
 						FUNCTIONS FROM MYLARP PROFILE:
@@ -78,8 +99,43 @@
 						</ul>
 					</div>
 				</div>
-				<div id="itemBox" class="zoneBox"><!--  ITEMS  -->
-					<?php require 'resources\\scripts\\db\\startProfile.php' ?>
+				<div id="itemBox" class="zoneBox">
+					<?php //require 'resources\\scripts\\db\\startProfile.php' ?>
+				</div>-->
+				<div id="profTabContainer">
+					<div class="tabSubContainer frontRow">
+						<button class="profTab active" onclick="openTab(event,'stndTab')">STANDARD</button>
+						<button id="priButton" class="profTab" onclick="openTab(event,'priTab')">PRIMARY</button>
+					</div>
+					<div class="tabSubContainer backRow">
+						<button id="secButton" class="profTab" onclick="openTab(event,'secTab')">SECONDARY</button>
+						<button class="profTab" onclick="openTab(event,'itemsTab')">ITEMS</button>
+					</div>
+				</div>
+				<div id="stndTab" class="profContent"><!-- STANDARD-->
+					<?php echo getFunctionTab("STANDARD"); ?>
+				</div>
+				<div id="priTab" class="profContent hidden"><!-- PRIMARY -->
+					<div class="checkGroup" data-role="none">
+						<h2>NO PRIMARY ROLE SELECTED</h2>
+						<p>Please select a <em>Primary_Role</em> in the dropdown above, even if it's <em>Other</em>.</p>
+					</div>
+					<div class="checkGroup hidden" data-role="other">
+						<h2>OTHER PRIMARY ROLE SELECTED</h2>
+						<p>Your <em>Primary_Role</em> is not one which provides any hacking benefits. If you have a <em>Secondary_Role</em>, make sure to select them in the dropdown above, or utilize the <em>Standard_Role</em> for your payload.</p>
+					</div>
+					<?php echo getFunctionTab("PRIMARY"); ?>
+				</div>
+				<div id="secTab" class="profContent hidden"><!-- SECONDARY -->
+					<div class="checkGroup" data-role="none">
+						<h2>NO SECONDARY ROLE SELECTED</h2>
+						<p>If you have a <em>Secondary_Role</em>, please select it in the dropdown above. Otherwise, if you do not have a <em>Secondary_Role</em>, this text is what you should expect to see.</p>
+					</div>
+					<div class="checkGroup hidden" data-role="other">
+						<h2>OTHER SECONDARY ROLE SELECTED</h2>
+						<p>Your <em>Secondary_Role</em> is not one which provides any hacking benefits. You'll have to rely on your <em>Primary_Role</em> or the <em>Standard_Role</em> for your payload.</p>
+					</div>
+					<?php echo getFunctionTab("SECONDARY"); ?>
 				</div>
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>

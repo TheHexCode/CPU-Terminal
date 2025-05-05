@@ -88,6 +88,19 @@ $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute($mlFuncArray);
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
+///////////////////////////////////////////////////////////////////////////////
+
+$selfReportQuery = "SELECT ml_functions.id, roles.name AS role_name FROM cpu_term.ml_functions
+                    INNER JOIN cpu_term.roles ON role_id=roles.id
+                    INNER JOIN cpu_term.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
+                    WHERE user_selfreport.user_id=:userID";
+
+$selfReportStatement = $pdo->prepare($selfReportQuery);
+$selfReportStatement->execute([':userID' => $dbCharResponse["id"]]);
+$selfReportResponse = $selfReportStatement->fetchAll(PDO::FETCH_ASSOC);
+
+///////////////////////////////////////////////////////////////////////////////
+
 $itemQuery = "  SELECT item_id
                 FROM cpu_term.user_items
                 WHERE user_id = :userID";
@@ -101,4 +114,5 @@ echo json_encode(array(  "id" => $dbCharResponse["id"],
                                 "userCode" => $userCode,
                                 "functions" => $functionResponse,
                                 "roles" => $roleResponse,
+                                "selfReport" => $selfReportResponse,
                                 "items" => $itemResponse ));
