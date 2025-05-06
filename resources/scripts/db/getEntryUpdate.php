@@ -2,8 +2,12 @@
 
 require('dbConnect.php');
 
+
 $entryID = $_GET["id"];
 $newState = $_GET["newState"];
+// OPTIONAL
+$userID = $_GET["userID"] ?? null;
+$action = $_GET["action"] ?? null;
 
 $entryQuery = " SELECT * FROM cpu_term.entries 
                 WHERE id=:entryID";
@@ -19,7 +23,11 @@ fclose($iconFile);
 
 $newEntry = array();
 
-$newEntry["terminal_id"] = $entry["terminal_id"];
+//$newEntry["terminal_id"] = $entry["terminal_id"];
+$newEntry["userID"] = intval($userID);
+$newEntry["entryID"] = intval($entryID);
+$newEntry["action"] = $action;
+$newEntry["entryPath"] = "#" . $entry["icon"] . "-" . $entry["path"];
 
 if($entry["type"] === "ice")
 {

@@ -153,7 +153,17 @@ else
         array_push($newItems, $item);
     }
 
-    $actionQuery = "SELECT entries.id, entries.path, entries.icon, newState FROM cpu_term.user_actions AS UA1
+    //////////////////////////////////////////////////////////////////////////////
+
+    $accessQuery = "SELECT COUNT(user_id) FROM cpu_term.accesslogs
+                    WHERE user_id=:userID
+                        AND terminal_id=:termID";
+
+    $accessStatement = $pdo->prepare($accessQuery);
+    $accessStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
+    $hasAccessed = intval($accessStatement->fetch(PDO::FETCH_COLUMN)) > 0;
+
+    $actionQuery = "SELECT entries.id, user_id, entries.path, entries.icon, action, newState FROM cpu_term.user_actions AS UA1
                     INNER JOIN cpu_term.entries ON target_id=entries.id
                     INNER JOIN (
                         SELECT entries.id, MAX(time) as maxTime FROM cpu_term.user_actions
@@ -174,11 +184,43 @@ else
 
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
 
+    $remTagsQuery = "   SELECT SUM(tags) AS remTags FROM (
+                            SELECT tags FROM cpu_term.accessLogs
+                                WHERE user_id=:userID
+                           UNION 
+                            SELECT SUM(sumCost * -1) FROM (
+                                SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Entries
+                                INNER JOIN cpu_term.entries ON UA_Entries.target_id=entries.id
+                                WHERE UA_Entries.target_type='entry'
+                                    AND entries.terminal_id=:termID
+                                    AND UA_Entries.user_id=:userID
+                               UNION
+                                SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Logs
+                                INNER JOIN cpu_term.accesslogs ON UA_Logs.target_id=accesslogs.id
+                                WHERE UA_Logs.target_type='log'
+                                    AND accesslogs.terminal_id=:termID
+                                    AND UA_Logs.user_id=:userID
+                               UNION
+                                SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Other
+                                WHERE UA_Other.target_type='terminal'
+                                    AND UA_Other.target_id=:termID
+                                    AND UA_Other.user_id=:userID
+                            ) AS tC
+                        ) AS rT";
+
+    $remTagsStatement = $pdo->prepare($remTagsQuery);
+    $remTagsStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
+
+    $remTagsResponse = intval($remTagsStatement->fetch(PDO::FETCH_COLUMN));
+
     echo json_encode(array(  "id" => $userResponse["id"],
                                     "name" => $userResponse["charName"],
                                     "userCode" => $userCode,
                                     "functions" => $functionResponse,
                                     "roles" => $roleResponse,
                                     "items" => $newItems,
-                                    "prevActions" => $actionResponse ));
+                                    "hasAccessed" => $hasAccessed,
+                                    "prevActions" => $actionResponse,
+                                    "remTags" => max($remTagsResponse,0)
+                                ));
 }

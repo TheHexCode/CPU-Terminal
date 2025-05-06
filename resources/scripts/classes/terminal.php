@@ -231,6 +231,7 @@ class Terminal
                 }
                 elseif($stateGuide["title"] === true)
                 {
+                    
                     $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
                     $entryData["title"] = $entry["title"];
                 }
@@ -247,8 +248,16 @@ class Terminal
                 }
                 elseif($stateGuide["contents"] === true)
                 {
-                    $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
-                    $entryData["contents"] = $entry["contents"];
+                    if($entry["type"] === "trap")
+                    {
+                        $contentsMask = '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) .  '</span>';
+                        $entryData["contents"] = implode("<br/>",json_decode($entry["contents"]));
+                    }
+                    else
+                    {
+                        $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
+                        $entryData["contents"] = $entry["contents"];
+                    }
                 }
                 else
                 {

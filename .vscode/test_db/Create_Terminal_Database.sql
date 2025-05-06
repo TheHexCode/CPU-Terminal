@@ -50,6 +50,7 @@ CREATE TABLE accessLogs (
     mask        TEXT,
     reassignee  TEXT,
     state       TEXT    NOT NULL,
+    tags        INT,
     PRIMARY KEY (id),
     FOREIGN KEY (terminal_id)
         REFERENCES terminals(id)

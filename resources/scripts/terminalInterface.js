@@ -340,6 +340,56 @@ function injectUserPayload(userPayload)
 				"</li>"
 			);
 		});
+
+		if(userPayload["hasAccessed"])
+		{
+			actionResults = [];
+
+			userPayload["prevActions"].forEach(function(entry)
+			{
+				results = $.getJSON(
+					"resources\\scripts\\db\\getEntryUpdate.php",
+					{
+						id: entry["id"],
+						newState: entry["newState"],
+						action: entry["action"],
+						userID: entry["user_id"]
+					}
+				);
+
+				actionResults.push(results);
+			});
+
+			$.when(...actionResults).done(function()
+			{
+				let results = arguments;
+
+				Object.entries(results).forEach(function(result)
+				{
+					resultJSON = result[1][0];
+
+					if(resultJSON["userID"] === payload.getUserID())
+					{
+						$(resultJSON["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(resultJSON["title"]);
+						$(resultJSON["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(resultJSON["contents"]);
+						$(resultJSON["entryPath"] + " > .entryIntContainer > .accessInterface").html(resultJSON["access"]);
+						$(resultJSON["entryPath"] + " > .entryIntContainer > .modifyInterface").html(resultJSON["modify"]);
+						$(resultJSON["entryPath"] + " > .subIce").removeClass("subIce");
+
+						if(payload.getFunction("REPEAT"))
+						{
+							session.setFunctionState("REPEAT",resultJSON["entryID"],resultJSON["action"].toLowerCase(),payload.getFunction("REPEAT"));
+							updateEntryCosts(resultJSON["entryPath"],resultJSON["action"]);
+						}
+					}
+				});
+			});
+
+			session.setCurrentTags(userPayload["remTags"] + requiredTags);
+
+			accessTerminal("hasAccessed");
+		}
+
 	}
 
 	$("#load").addClass("hidden");
@@ -384,7 +434,7 @@ function allowAccess()
 
 function accessTerminal(event)
 {
-	if(!event.target.disabled)
+	if((event === "hasAccessed") || (!event.target.disabled))
 	{
 		let reqTags = parseInt($("#reqTags").html());
 
@@ -416,7 +466,8 @@ function accessTerminal(event)
 				{
 					termID: session.getTerminalID(),
 					userID: payload.getUserID(),
-					userMask: logMask
+					userMask: logMask,
+					userTags: session.getCurrentTags()
 				}
 			})
 			.done(function(logID)
@@ -496,7 +547,6 @@ function takeAction(target)
 					userID: payload.getUserID(),
 					actionType: "entry",
 					entryID: entryID,
-					entryPath: entryPath,
 					actionCost: session.getActionCost(entryID,action),
 					upperAction: upperAction,
 					entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
@@ -538,7 +588,6 @@ function takeAction(target)
 				userID: payload.getUserID(),
 				actionType: "ice",
 				entryID: entryID,
-				entryPath: entryPath,
 				actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
 				upperAction: upperAction,
 				entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
@@ -818,16 +867,16 @@ function completeAction(actionMap)
 		case("entry"):
 		case("ice"):
 		{
-			$(actionMap["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
-			$(actionMap["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
-			$(actionMap["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
-			$(actionMap["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
-			$(actionMap["entryPath"] + " > .subIce").removeClass("subIce");
+			$(actionMap["results"]["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
+			$(actionMap["results"]["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
+			$(actionMap["results"]["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
+			$(actionMap["results"]["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
+			$(actionMap["results"]["entryPath"] + " > .subIce").removeClass("subIce");
 
 			if(payload.getFunction("REPEAT"))
 			{
 				session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
-				updateEntryCosts(actionMap["entryPath"],actionMap["upperAction"]);
+				updateEntryCosts(actionMap["results"]["entryPath"],actionMap["upperAction"]);
 			}
 			break;
 		}

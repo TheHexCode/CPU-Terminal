@@ -380,9 +380,9 @@
 									<ul id="actList">
 										<li id="brickItem" class="actItem hidden">
 											<span class="actionName">BRICK</span>
-											<button class="brickButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">4 Tags</button>
+											<button class="brickButton" data-enabled="true" data-cost="4" onclick="takeAction(this)">4 Tags</button>
 										</li>
-										<li id="riggItem" class="actItem hidden">
+										<li id="rigItem" class="actItem hidden">
 											<span class="actionName">RIGGED</span>
 											<button class="rigButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>
