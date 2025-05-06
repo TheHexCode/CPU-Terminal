@@ -345,7 +345,7 @@ function statSubmit(event)
 	
 	// LIST OF ITEMS
 	let items = [];
-	$("#itemBox input:checked").each(function() {
+	$(".itemSelect input:checked").each(function() {
 		items.push(Number($(this).attr("data-id")));
 	});
 

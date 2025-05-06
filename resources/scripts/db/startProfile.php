@@ -142,7 +142,8 @@ $itemArray = array(
 );
 
 $itemQuery = "  SELECT id,name,tier,type,radio
-                FROM cpu_term.items";
+                FROM cpu_term.items
+                WHERE enabled=1";
 
 $itemStatement = $pdo->prepare($itemQuery);
 $itemStatement->execute();
@@ -178,7 +179,7 @@ foreach($itemArray as $itemCat)
     $itemString .= "</section>";
 }
 
-function getItemTab()
+function getItemsTab()
 {
     global $itemString;
 

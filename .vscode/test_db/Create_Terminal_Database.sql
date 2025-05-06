@@ -132,6 +132,7 @@ CREATE TABLE items (
     tier    INT,
     type    TEXT    NOT NULL,
     radio   TEXT,
+    enabled BOOL    NOT NULL,
     PRIMARY KEY (id)
 );
 

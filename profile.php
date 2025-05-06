@@ -138,7 +138,7 @@
 					<?php echo getFunctionTab("SECONDARY"); ?>
 				</div>
 				<div id="itemsTab" class="profContent hidden"><!-- ITEMS -->
-					<?php echo getItemTab(); ?>
+					<?php echo getItemsTab(); ?>
 				</div>
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>

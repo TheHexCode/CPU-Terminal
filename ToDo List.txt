@@ -16,16 +16,16 @@
     > 10 - CRD Spider Cyberdeck T0
     > 11 - CRD Spider Cyberdeck T1
     - 12 - DigiPet
-   -> 13 - FKD DC-17
+    X 13 - FKD DC-17
     - 14 - Johnny's Special Touch
     > 15 - MM Console
     - 16 - Nerd's Safety Console
     - 17 - Power Glove [UH9K]
     > 18 - Shimmerstick T0
     > 19 - Shimmerstick T1
-    > 20 - Vigil
+    X 20 - Vigil
     > 21 - CLEC Fingers
-    > 22 - Canopic Jar [Magsweep]
+    X 22 - Canopic Jar [Magsweep]
 
 > MULTIPLAYER INTERRUPT
 
@@ -35,6 +35,7 @@
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
+    - DigiPet animation when activated
 
 >> COMPLETED
     ✓ HACKING

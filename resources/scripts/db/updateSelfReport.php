@@ -2,8 +2,8 @@
 require('dbConnect.php');
 
 $userID = $_POST["userID"];
-$funcIDArray = $_POST["funcs"];
-$itemIDArray = $_POST["items"];
+$funcIDArray = $_POST["funcs"] ?? array();
+$itemIDArray = $_POST["items"] ?? array();
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -20,35 +20,39 @@ foreach($funcIDArray as $funcID)
     array_push($srFuncArray,$userID, $funcID);
 }
 
-$srFuncQuery = "  INSERT INTO cpu_term.user_selfreport
+if(count($funcIDArray) > 0)
+{
+    $srFuncQuery = "INSERT INTO cpu_term.user_selfreport
                                 (user_id, mlFunction_id)
-                    VALUES ( ?,? " . str_repeat('), ( ?,? ',count($funcIDArray)-1) .")";
+                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($funcIDArray)-1) .")";
 
-echo var_dump($srFuncQuery);
-
-$srFuncStatement = $pdo->prepare($srFuncQuery);
-$srFuncStatement->execute($srFuncArray);
+    $srFuncStatement = $pdo->prepare($srFuncQuery);
+    $srFuncStatement->execute($srFuncArray);
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 
-$deleteQuery = "DELETE FROM cpu_term.user_items
-                WHERE user_id = :userID";
+$delItemQuery = "   DELETE FROM cpu_term.user_items
+                    WHERE user_id = :userID";
 
-$deleteStatement = $pdo->prepare($deleteQuery);
-$deleteStatement->execute([':userID' => $userID]);
+$delItemStatement = $pdo->prepare($delItemQuery);
+$delItemStatement->execute([':userID' => $userID]);
 
-$userItemArray = array();
+$srItemArray = array();
 
 foreach($itemIDArray as $itemID)
 {
-    array_push($userItemArray,$userID,$itemID);
+    array_push($srItemArray,$userID,$itemID);
 }
 
-$userItemQuery = "  INSERT INTO cpu_term.user_items
+if(count($itemIDArray) > 0)
+{
+    $srItemQuery = "INSERT INTO cpu_term.user_items
                                 (user_id, item_id)
-                    VALUES ( ?,? " . str_repeat('), ( ?,? ',count($itemIDArray)-1) .")";
+                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($itemIDArray)-1) .")";
 
-$userItemStatement = $pdo->prepare($userItemQuery);
-$userItemStatement->execute($userItemArray);
+    $srItemStatement = $pdo->prepare($srItemQuery);
+    $srItemStatement->execute($srItemArray);
+}
 
 echo json_encode("Success!");

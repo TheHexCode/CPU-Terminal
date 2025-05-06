@@ -110,7 +110,7 @@ function injectUserPayload(userPayload)
 								""//"<span>PIN: 333333</span>"
 							);
 
-		let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
+		let maxTime = payload.getActionTime();
 
 		$("#terminalButton").html("Cracking Terminal...");
 		$("#terminalButton").removeClass("noPayload");
@@ -311,6 +311,7 @@ function injectUserPayload(userPayload)
 					case("initial"):
 					{
 						$(".initItem[data-id='" + item.item_id + "']").removeClass("hidden");
+						break;
 					}
 					case("autoinit"):
 					{
@@ -327,8 +328,10 @@ function injectUserPayload(userPayload)
 								Gems.updateTagGems(Gems.ACCESS, requiredTags, session.getCurrentTags(Session.PAYLOAD), session.getCurrentTags());
 								break;
 							case(18): //POWER GLOVE [UH9K]
+								payload.setActiveEffect(effect.id);
 								break;
 						}
+						break;
 					}
 				}
 			});
@@ -393,6 +396,56 @@ function injectUserPayload(userPayload)
 	}
 
 	$("#load").addClass("hidden");
+}
+
+function initCheck(target)
+{
+	let effectID = $(target).attr("data-effect");
+
+	if(effectID === "dis")
+	{
+		
+	}
+	else
+	{
+		effectID = JSON.parse(effectID);
+
+		if(typeof effectID === "number")
+		{
+			effectID = [effectID];
+		}
+
+		effectID.forEach(function(eID)
+		{
+			switch (eID)
+			{
+				case(1): //CMM Widow
+
+					break;
+				case(2): //Winton Wit (Embolden)
+
+					break;
+				case(3): //Winton Wit (Inspire)
+					
+					break;
+				case(4): //CMM Cocoon
+
+					break;
+				case(9): //BRAD
+
+					break;
+				case(19): //Shimmerstick T0
+					
+					break;
+				case(20): //Shimmerstick T1
+
+					break;
+				case(22): //CLEC Fingers (+Hack)
+
+					break;
+			}
+		}, this);
+	}
 }
 
 function updateExtraTags(change)
@@ -792,7 +845,7 @@ function closeModal(event)
 
 function executeAction(actionMap,newData,globalAction)
 {
-	let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
+	let maxTime = payload.getActionTime();
 
 	Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 
