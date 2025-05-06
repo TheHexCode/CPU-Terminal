@@ -1,9 +1,8 @@
 > FUNCTION FUNCTIONALITY
-    >> INITIAL
-    >> ACTIVE
     >> PASSIVE
         - ALARM SENSE
 
+> ITEMS FROM OLD PROFILE PAGE
 > INVENTORY
     > 1 - CMM Widow (1)
     > 2 - Winton Wit (2,3)
@@ -27,9 +26,6 @@
     > 20 - Vigil
     > 21 - CLEC Fingers
     > 22 - Canopic Jar [Magsweep]
-
-> COOKIE / DB UPDATES
-    - OOC Action Log
 
 > MULTIPLAYER INTERRUPT
 
@@ -57,3 +53,4 @@
     ✓ RIGGED
     ✓ ROOT DEVICE
             - Rooting vs. Rooted
+    ✓ ALLOW STAFF TO UPDATE JOB CODE
