@@ -1,5 +1,6 @@
--- Active: 1745412174410@@127.0.0.1@3306@cpu_term
--- CREATE DATABASE cpu_term;
+CREATE DATABASE cpu_term;
+
+USE cpu_term;
 
 CREATE TABLE activeJob (
     simCode TEXT    NOT NULL,
@@ -1001,29 +1002,29 @@ INSERT INTO ml_functions
             (604, 'skill_category_access_required', -1, 1, NULL, NULL, NULL);
 
 INSERT INTO items
-            (name, tier, type, radio)
-    VALUES  ('CMM Widow', 2, 'arms', NULL),
-            ('Winton Wit', 0, 'arms', NULL),
-            ('CMM Cocoon', 2, 'arms', NULL),
-            ('Copycat', 0, 'cust', NULL),
-            ('Pocket Hacker', 0, 'cust', 'ph'),
-            ('Pocket Hacker', 1, 'cust', 'ph'),
-            ('Budget Cyberdeck', 0, 'deck', 'deck'),
-            ('Budget Remote Access Drive', 0, 'util', NULL),
-            ('CipherSync Beacon', 0, 'util', NULL),
-            ('CRD Spider Cyberdeck', 0, 'deck', 'deck'),
-            ('CRD Spider Cyberdeck', 1, 'deck', 'deck'),
-            ('DigiPet', 0, 'util', NULL),
-            ('FKD DC-17', 1, 'deck', 'deck'),
-            ('Johnny&#39;s Special Touch', 1, 'deck', 'deck'),
-            ('MM Console', 0, 'deck', 'deck'),
-            ('Nerd&#39;s Safety Glasses', 0, 'util', NULL),
-            ('Power Glove [Ultra-Hacking 9000]', 1, 'impl', 'deck'),
-            ('Shimmerstick', 0, 'cons', 'shimstick'),
-            ('Shimmerstick', 1, 'cons', 'shimstick'),
-            ('Vigil', NULL, 'cons', NULL),
-            ('CLEC Fingers', 0, 'impl', NULL),
-            ('Canopic Jar [MagSweep]', 0, 'impl', NULL);
+            (name, tier, type, radio, enabled)
+    VALUES  ('CMM Widow', 2, 'arms', NULL, 1),
+            ('Winton Wit', 0, 'arms', NULL, 1),
+            ('CMM Cocoon', 2, 'arms', NULL, 1),
+            ('Copycat', 0, 'cust', NULL, 1),
+            ('Pocket Hacker', 0, 'cust', 'ph', 1),
+            ('Pocket Hacker', 1, 'cust', 'ph', 1),
+            ('Budget Cyberdeck', 0, 'deck', 'deck', 1),
+            ('Budget Remote Access Drive', 0, 'util', NULL, 1),
+            ('CipherSync Beacon', 0, 'util', NULL, 1),
+            ('CRD Spider Cyberdeck', 0, 'deck', 'deck', 1),
+            ('CRD Spider Cyberdeck', 1, 'deck', 'deck', 1),
+            ('DigiPet', 0, 'util', NULL, 1),
+            ('FKD DC-17', 1, 'deck', 'deck', 0),
+            ('Johnny&#39;s Special Touch', 1, 'deck', 'deck', 1),
+            ('MM Console', 0, 'deck', 'deck', 1),
+            ('Nerd&#39;s Safety Glasses', 0, 'util', NULL, 0),
+            ('Power Glove [Ultra-Hacking 9000]', 1, 'impl', 'deck', 1),
+            ('Shimmerstick', 0, 'cons', 'shimstick', 1),
+            ('Shimmerstick', 1, 'cons', 'shimstick', 1),
+            ('Vigil', NULL, 'cons', NULL, 0),
+            ('CLEC Fingers', 0, 'impl', NULL, 1),
+            ('Canopic Jar [MagSweep]', 0, 'impl', NULL, 0);
 
 INSERT INTO item_effects
             (item_id, charges, per_type, use_loc, effect)

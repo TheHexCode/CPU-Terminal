@@ -13,7 +13,7 @@ INSERT INTO terminals
      VALUES
            ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL);
 
-SET @TermID = 1;
+ -- SET @TermID = 1;
 SET @TermID = LAST_INSERT_ID();
 
 INSERT INTO accessLogs

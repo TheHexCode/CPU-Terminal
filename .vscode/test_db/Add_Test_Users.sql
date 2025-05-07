@@ -2,6 +2,7 @@ USE cpu_term;
 
 DELETE FROM users;
 DELETE FROM user_functions;
+DELETE FROM user_selfreport;
 
 INSERT INTO users
             (userCode, charName)
@@ -9,6 +10,40 @@ INSERT INTO users
             ('123456', 'Puck');
 
 INSERT INTO user_functions
+            (user_id, mlFunction_id)
+    VALUES  (1, 181),
+            (1, 191),
+            (1, 177),
+            (1, 200),
+            (1, 369),
+            (1, 371),
+            (1, 377),
+            (1, 378),
+            (1, 381),
+            (1, 390),
+            (1, 392),
+            (1, 393),
+            (1, 395),
+            (1, 399),
+            (1, 400),
+            (2, 2),
+            (2, 4),
+            (2, 5),
+            (2, 6),
+            (2, 7),
+            (2, 12),
+            (2, 13),
+            (2, 26),
+            (2, 272),
+            (2, 369),
+            (2, 370),
+            (2, 371),
+            (2, 374),
+            (2, 378),
+            (2, 381),
+            (2, 390);
+
+INSERT INTO user_selfreport
             (user_id, mlFunction_id)
     VALUES  (1, 181),
             (1, 191),
