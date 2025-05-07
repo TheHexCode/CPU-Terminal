@@ -76,9 +76,47 @@ class Payload
         return this.#items;
     }
 
-    setActiveEffect(effectID)
+    getItem(itemID)
     {
-        this.#activeEffects.push(effectID);
+        return this.#items.find(function(item)
+        {
+            return item.item_id === itemID
+        });
+    }
+
+    getEffect(effectID)
+    {
+        let targetItem = this.#items.find(function(item)
+        {
+            return item.effects.find(function(effect)
+            {
+                return effect.id === effectID;
+            });
+        });
+
+        return targetItem.effects.find(function(effect)
+        {
+            return effect.id === effectID;
+        });
+    }
+
+    setActiveEffect(effectID, state)
+    {
+        if(state)
+        {
+            if(!this.#activeEffects.includes(effectID))
+            {
+                this.#activeEffects.push(effectID);
+            }
+        }
+        else
+        {
+            if(this.#activeEffects.includes(effectID))
+            {
+                let effectIndex = this.#activeEffects.findIndex((eID) => eID === effectID);
+                this.#activeEffects.splice(effectIndex,1);
+            }
+        }
     }
 
     getActiveEffect(effectID)
@@ -86,13 +124,18 @@ class Payload
         return this.#activeEffects.includes(effectID);
     }
 
+    getAllActiveEffects()
+    {
+        return this.#activeEffects;
+    }
+
     getActionTime()
     {
         // POSITIVE IS A BUFF; NEGATIVE IS A DEBUFF
         let bd = (this.getFunction("BACKDOOR") * 10);
-        let pgUK9K = (this.getActiveEffect(17) ? 5 : 0);
-        let ssT0 = (this.getActiveEffect(18) ? -30 : 0);
-        let ssT1 = (this.getActiveEffect(19) ? -15 : 0);
+        let pgUK9K = (this.getActiveEffect(18) ? 5 : 0);
+        let ssT0 = (this.getActiveEffect(19) ? -30 : 0);
+        let ssT1 = (this.getActiveEffect(20) ? -15 : 0);
 
         let actionTime = Math.max(10, 30 - (bd + pgUK9K + ssT0 + ssT1));
 

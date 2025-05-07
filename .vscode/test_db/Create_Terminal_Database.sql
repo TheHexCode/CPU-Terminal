@@ -169,12 +169,17 @@ CREATE TABLE item_uses (
     effect_id   INT     NOT NULL,
     simCode     TEXT    NOT NULL,
     jobCode     TEXT    NOT NULL,
+    terminal_id INT     NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (effect_id)
         REFERENCES item_effects(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (terminal_id)
+        REFERENCES terminals(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -1029,8 +1034,8 @@ INSERT INTO items
 INSERT INTO item_effects
             (item_id, charges, per_type, use_loc, effect)
     VALUES  (1, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
-            (2, 1, 'scene', 'initial', 'Activated Embolden? -1 Tag'),
-            (2, 1, 'scene', 'initial', 'Activated Inspire? -1 Tag'),
+            (2, NULL, 'scene', 'initial', 'Activated Embolden? -1 Tag'),
+            (2, NULL, 'scene', 'initial', 'Activated Inspire? -1 Tag'),
             (3, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
             (4, 1, 'sim', 'action', 'Activate same action type already done this Device for No Timer'),
             (5, 1, 'sim', 'item', '+1 Tag'),

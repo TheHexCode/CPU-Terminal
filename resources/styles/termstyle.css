@@ -1175,6 +1175,7 @@ footer
 	float: right;
 	font-size: 28px;
 	font-weight: bold;
+	margin-left: 0.5rem;
 }
   
 .modalClose:hover,

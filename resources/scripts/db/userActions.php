@@ -9,7 +9,7 @@ $actionCost = $_POST["actionCost"];
 $global = $_POST["global"];
 
 $actionQuery = "INSERT INTO cpu_term.user_actions
-                    (time, user_id, target_type, target_id, action, newState, cost, global)
+                            (time, user_id, target_type, target_id, action, newState, cost, global)
                 VALUES ( UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ? )";
 
 switch($action)
@@ -28,6 +28,10 @@ switch($action)
     case("Rig"):
     case("Root"):
         $targetType = "terminal";
+        break;
+    case("Activate"):
+        $targetType = "item";
+        $action = "Item";
         break;
 }
 

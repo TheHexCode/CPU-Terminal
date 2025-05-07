@@ -6,6 +6,7 @@ var mbTimer = new Timer("#modalBodyTimer");
 $(document).ready(function()
 {
 	$("#terminalButton").attr("disabled",true);
+	$(".initItem input").prop("checked",false);
 });
 
 function tens(numStr)
@@ -110,13 +111,12 @@ function injectUserPayload(userPayload)
 								""//"<span>PIN: 333333</span>"
 							);
 
-		let maxTime = payload.getActionTime();
+		let maxTime = 30; // Functions and Items should not affect this
 
 		$("#terminalButton").html("Cracking Terminal...");
 		$("#terminalButton").removeClass("noPayload");
 		taTimer.startTimer(maxTime,allowAccess);
-		//$("#terminalButton").prop("disabled",false);
-		
+				
 		//// TAG MANAGEMENT
 
 		// Required Tags
@@ -130,42 +130,12 @@ function injectUserPayload(userPayload)
 		
 		payloadTags = payload.getFunction("Hacking") * 2;
 		payloadTags += payload.getFunction("Root Exploit") * 2;
-		payloadTags = Math.min(payloadTags,10);
 
-		$("#payTags").html(tens(payloadTags));
+		updateTags(payloadTags,Session.HACK);
 
-		session.setCurrentTags(payloadTags, Session.PAYLOAD);
+		// Extra Tags + Gems/Remaining Tags
 
-		// Extra Tags
-
-		if($("#extTags").html() === "XX")
-		{
-			extraTags = 0;
-			$("#extTags").html(tens("00"));
-		}
-		else
-		{
-			extraTags = parseInt($("#extTags").html());
-		}
-
-		session.setCurrentTags(extraTags, Session.EXTRA);
-
-		// Gems/Remaining Tags
-
-		Gems.updateTagGems(Gems.ACCESS, requiredTags, payloadTags, session.getCurrentTags());
-
-		remainingTags = session.getCurrentTags() - requiredTags;
-
-		if(remainingTags < 0)
-		{
-			$("#remTagsBG").html("~~~");
-		}
-		else
-		{
-			$("#remTagsBG").html("~~");
-		}
-
-		$("#remTags").html(tens(remainingTags));
+		updateTags(0,Session.EXTRA);
 
 		// Disable Expensive Buttons
 		disableExpensiveButtons();
@@ -310,7 +280,37 @@ function injectUserPayload(userPayload)
 					}
 					case("initial"):
 					{
+						let disabled = false;
+
+						let target = $(
+								".initItem > input[data-effect='" + effect.id + "'], " +
+								".initItem > input[data-effect*='[" + effect.id + ",'], " + 
+								".initItem > input[data-effect*='," + effect.id + ",'], " +
+								".initItem > input[data-effect*='," + effect.id + "]']"
+							)[0];
+
+						if((effect.charges === null) && (effect.uses > 0))
+						{
+							disabled = true;
+
+							$(target).prop("checked", true);
+							initCheck(target);
+						}
+						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						{
+							disabled = true;
+						}
+
+						if(effect.termUses > 0)
+						{
+							payload.setActiveEffect(effect.id, true);
+						}
+
+						$(target).prop("disabled", disabled);
+						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
+
 						$(".initItem[data-id='" + item.item_id + "']").removeClass("hidden");
+						
 						break;
 					}
 					case("autoinit"):
@@ -320,12 +320,7 @@ function injectUserPayload(userPayload)
 							case(10): //CIPHERSYNC BEACON
 								$("#hackDetails").append("<span>[BEACON:&nbsp;&nbsp;+02]</span>");
 
-								newPayloadTags = Math.min(session.getCurrentTags(Session.PAYLOAD) + 2,10);
-
-								$("#payTags").html(tens(newPayloadTags));
-
-								session.setCurrentTags(newPayloadTags, Session.PAYLOAD);
-								Gems.updateTagGems(Gems.ACCESS, requiredTags, session.getCurrentTags(Session.PAYLOAD), session.getCurrentTags());
+								updateTags(2,Session.BEACON);
 								break;
 							case(18): //POWER GLOVE [UH9K]
 								payload.setActiveEffect(effect.id);
@@ -392,7 +387,6 @@ function injectUserPayload(userPayload)
 
 			accessTerminal("hasAccessed");
 		}
-
 	}
 
 	$("#load").addClass("hidden");
@@ -402,9 +396,20 @@ function initCheck(target)
 {
 	let effectID = $(target).attr("data-effect");
 
-	if(effectID === "dis")
+	if(effectID === "dis") //Dissimulator Role Ability (+Hack)
 	{
-		
+		if($(target).prop("checked"))
+		{
+			$("#hackDetails").append("<span id='disDetails'>[DISSIM:&nbsp;&nbsp;+02]</span>");
+
+			updateTags(2,Session.DISSIM);
+		}
+		else
+		{
+			$("#hackDetails #disDetails").remove();
+
+			updateTags(-2,Session.DISSIM);
+		}
 	}
 	else
 	{
@@ -420,50 +425,116 @@ function initCheck(target)
 			switch (eID)
 			{
 				case(1): //CMM Widow
-
+					if(payload.getItem(1))
+					{
+						session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+						updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+						payload.setActiveEffect(eID, $(target).prop("checked"));
+					}
 					break;
 				case(2): //Winton Wit (Embolden)
-
+					session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
+					updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+					// Carries Over Through Scene
 					break;
 				case(3): //Winton Wit (Inspire)
-					
+					session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
+					updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+					// Carries Over Through Scene
 					break;
 				case(4): //CMM Cocoon
-
+					if(payload.getItem(3))
+					{
+						session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+						updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+						payload.setActiveEffect(eID, $(target).prop("checked"));
+					}
 					break;
 				case(9): //BRAD
-
+					if($(target).prop("checked"))
+					{
+						
+					}
+					else
+					{
+						
+					}
 					break;
 				case(19): //Shimmerstick T0
-					
-					break;
 				case(20): //Shimmerstick T1
-
+					payload.setActiveEffect(eID, $(target).prop("checked"));
 					break;
 				case(22): //CLEC Fingers (+Hack)
+					if($(target).prop("checked"))
+					{
+						$("#hackDetails").append("<span id='clecDetails'>[CLEC FRS:+02]</span>");
+						updateTags(2,Session.CLEC);
+					}
+					else
+					{
+						$("#hackDetails #clecDetails").remove();
+						updateTags(-2,Session.CLEC);
+					}
 
+					payload.setActiveEffect(eID, $(target).prop("checked"));
 					break;
 			}
 		}, this);
 	}
 }
 
-function updateExtraTags(change)
+function updateTags(change, tagType)
 {
 	let payTags = session.getCurrentTags(Session.PAYLOAD);
 	let extTags = session.getCurrentTags(Session.EXTRA);
 	let reqTags = parseInt($("#reqTags").html());
+	let newTags = 0;
 
-	extTags = Math.min(
-		Math.max(extTags + change, 0),
-		99 - ( payTags - reqTags )
-	);
+	switch(tagType)
+	{
+		case(Session.HACK):
+		case(Session.BEACON):
+		case(Session.DISSIM):
+		case(Session.CLEC):
+			newTags = payTags + change;
 
-	session.setCurrentTags(extTags, Session.EXTRA);
+			if((newTags >= 10) && ($("#hackMax").length === 0))
+			{
+				$("#hackDetails").after("<span id='hackMax'>(MAX: 10)</span>");
+			}
+	
+			session.setCurrentTags(change, tagType);
+
+			payTags = session.getCurrentTags(Session.PAYLOAD);
+			break;
+		case(Session.EXTRA):
+			newTags = Math.min(
+				Math.max(extTags + change, session.getExtraTagMin()),
+				99 - ( payTags - reqTags )
+			);
+
+			if(newTags < 0)
+			{
+				$("#extTagsBG").html("~~~");
+			}
+			else
+			{
+				$("#extTagsBG").html("~~");
+			}
+
+			session.setCurrentTags(newTags, Session.EXTRA);
+
+			extTags = session.getCurrentTags(Session.EXTRA);
+			break;
+	}
 
 	$("#extTags").html(tens(extTags));
 
-	Gems.updateTagGems(Gems.ACCESS, reqTags, payTags, session.getCurrentTags());
+	$("#payTags").html(tens(session.getCurrentTags(Session.PAYLOAD)));
+
+	Gems.updateTagGems(Gems.ACCESS, reqTags, (extTags < 0 ? payTags + extTags : payTags), session.getCurrentTags());
 
 	remTags = session.getCurrentTags() - reqTags;
 
@@ -510,6 +581,18 @@ function accessTerminal(event)
 					logMask = $("#payloadMask").val();
 				}
 			}
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: payload.getAllActiveEffects(),
+					termID: session.getTerminalID()
+				}
+			});
 			
 			$.ajax({
 				type: "POST",
@@ -715,6 +798,33 @@ function takeAction(target)
 			break;
 		}
 		// Item Activation
+		case ("item"):
+			let effect = payload.getEffect(Number(target.dataset["effect"]));
+			let effectCost = effect["effect"].substring(effect["effect"].indexOf("+"), effect["effect"].indexOf(" "));
+
+			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
+
+			let actionMap = {
+				userID: payload.getUserID(),
+				actionType: action,
+				entryID: Number(target.dataset["effect"]),
+				actionCost: Number(effectCost) * -1,
+				upperAction: "Activate",
+				entryName: $(entryPath + " .itemName").html()
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"],
+				text: "Confirm",
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
+			break;
 	}
 }
 
@@ -763,6 +873,7 @@ function setupConfirmModal(actionMap,buttons)
 	let extraBeforeText = "";
 	let extraAfterText = "";
 	let quote = "\"";
+	let costText = " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s");
 
 	switch(actionMap["upperAction"])
 	{
@@ -807,11 +918,26 @@ function setupConfirmModal(actionMap,buttons)
 			extraAfterText = "<br/><br/><span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>"
 			break;
 		}
+		case("Activate"):
+		{
+			let effect = payload.getEffect(actionMap["entryID"]);
+
+			let charges = effect["charges"];
+			let charge_S = (charges === 1 ? "" : "s");
+			let remUses = effect["charges"] - effect["uses"];
+			let remUse_S = (remUses === 1 ? "" : "s");
+			let upperPer = effect["per_type"].charAt(0).toUpperCase() + effect["per_type"].slice(1);
+
+			costText = " to gain " + effect["effect"];
+
+			extraAfterText = "<br/><br/>This item may be used <b>" + charges + "</b> time" + charge_S + " per " + upperPer + ". You have <b>" + remUses + "</b> use" + remUse_S + " left.";
+			break;
+		}
 	}
 
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
+		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + costText + "?" +
 		extraAfterText
 	);
 
@@ -847,7 +973,14 @@ function executeAction(actionMap,newData,globalAction)
 {
 	let maxTime = payload.getActionTime();
 
-	Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+	if(actionMap["actionType"] === "item")
+	{
+		Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+	}
+	else
+	{
+		Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+	}
 
 	$("#actionModal").width($("#main").width());
 
@@ -880,11 +1013,8 @@ function executeAction(actionMap,newData,globalAction)
 		}
 	})
 
-	$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s"));
+	$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + (actionMap["actionCost"] < 0 ? "+" + (actionMap["actionCost"] * -1) : actionMap["actionCost"]) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s"));
 
-	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
-	);
 	$(".modalBodyText").addClass("hidden");
 	$("#modalBodyTimer .mmss .FG").html("00:" + tens(maxTime));
 	$("#modalBodyTimer").removeClass("hidden");

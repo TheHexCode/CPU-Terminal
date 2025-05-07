@@ -78,6 +78,21 @@ class Timer
                         }
                     });
 
+                    if(callargs["actionType"] === "item")
+                    {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "resources\\scripts\\db\\useItems.php",
+                            data:
+                            {
+                                userID: callargs["userID"],
+                                effectIDs: callargs["entryID"],
+                                termID: callargs["newData"]
+                            }
+                        })
+                    }
+
                     if(results !== null)
                     {
                         callargs["results"] = results.responseJSON;

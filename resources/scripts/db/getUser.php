@@ -124,28 +124,47 @@ else
             {
                 case ("sim"):
                     $simUseStatement->execute([
-                        ':userID' => $userResponse["id"],
-                        ':effectID' => $effect["id"],
-                        ':simCode' => $activeCodes["simCode"]
-                    ]);
+                            ':userID' => $userResponse["id"],
+                            ':effectID' => $effect["id"],
+                            ':simCode' => $activeCodes["simCode"]
+                        ]);
                     $useResponse = $simUseStatement->fetch(PDO::FETCH_COLUMN);
                     break;
                 case ("scene"):
                     $sceneUseStatement->execute([
-                        ':userID' => $userResponse["id"],
-                        ':effectID' => $effect["id"],
-                        ':jobCode' => $activeCodes["jobCode"],
-                        ':simCode' => $activeCodes["simCode"]
-                    ]);
+                            ':userID' => $userResponse["id"],
+                            ':effectID' => $effect["id"],
+                            ':jobCode' => $activeCodes["jobCode"],
+                            ':simCode' => $activeCodes["simCode"]
+                        ]);
                     $useResponse = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
                     break;
-                //case ("item"):
                 default:
                     $useResponse = 0;
                     break;
             }
 
             $effect["uses"] = $useResponse;
+
+            $termUseQuery = "   SELECT COUNT(*)
+                                FROM cpu_term.item_uses
+                                WHERE 	user_id = :userID
+                                    AND effect_id = :effectID
+                                    AND jobCode = :jobCode
+                                    AND simCode = :simCode
+                                    AND terminal_id = :termID";
+
+            $termUseStatement = $pdo->prepare($termUseQuery);
+            $termUseStatement->execute([
+                    ':userID' => $userResponse["id"],
+                    ':effectID' => $effect["id"],
+                    ':jobCode' => $activeCodes["jobCode"],
+                    ':simCode' => $activeCodes["simCode"],
+                    ':termID' => $termID
+                ]);
+            $termUseResponse = $termUseStatement->fetch(PDO::FETCH_COLUMN);
+
+            $effect["termUses"] = $termUseResponse;
             array_push($newEffects, $effect);
         }
 
@@ -185,28 +204,38 @@ else
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $remTagsQuery = "   SELECT SUM(tags) AS remTags FROM (
-                            SELECT tags FROM cpu_term.accessLogs
-                                WHERE user_id=:userID
-                           UNION 
-                            SELECT SUM(sumCost * -1) FROM (
-                                SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Entries
-                                INNER JOIN cpu_term.entries ON UA_Entries.target_id=entries.id
-                                WHERE UA_Entries.target_type='entry'
-                                    AND entries.terminal_id=:termID
-                                    AND UA_Entries.user_id=:userID
-                               UNION
-                                SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Logs
-                                INNER JOIN cpu_term.accesslogs ON UA_Logs.target_id=accesslogs.id
-                                WHERE UA_Logs.target_type='log'
-                                    AND accesslogs.terminal_id=:termID
-                                    AND UA_Logs.user_id=:userID
-                               UNION
-                                SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Other
-                                WHERE UA_Other.target_type='terminal'
-                                    AND UA_Other.target_id=:termID
-                                    AND UA_Other.user_id=:userID
-                            ) AS tC
-                        ) AS rT";
+                                SELECT tags FROM cpu_term.accessLogs
+                                    WHERE user_id=:userID
+                                   UNION 
+                                SELECT SUM(sumCost * -1) FROM (
+                                    SELECT SUM(cost) AS sumCost
+                                    FROM cpu_term.user_actions AS UA_Entries
+                                    INNER JOIN cpu_term.entries ON UA_Entries.target_id=entries.id
+                                    WHERE UA_Entries.target_type='entry'
+                                        AND entries.terminal_id=:termID
+                                        AND UA_Entries.user_id=:userID
+                                   UNION
+                                    SELECT SUM(cost) AS sumCost
+                                    FROM cpu_term.user_actions AS UA_Logs
+                                    INNER JOIN cpu_term.accesslogs ON UA_Logs.target_id=accesslogs.id
+                                    WHERE UA_Logs.target_type='log'
+                                        AND accesslogs.terminal_id=:termID
+                                        AND UA_Logs.user_id=:userID
+                                   UNION
+                                    SELECT SUM(cost) AS sumCost
+                                    FROM cpu_term.user_actions AS UA_Term
+                                    WHERE UA_Term.target_type='terminal'
+                                        AND UA_Term.target_id=:termID
+                                        AND UA_Term.user_id=:userID
+                                   UNION
+                                    SELECT SUM(cost) AS sumCost
+                                    FROM cpu_term.user_actions AS UA_Items
+                                    INNER JOIN cpu_term.accesslogs ON UA_Items.target_id=accesslogs.id
+                                    WHERE UA_Items.target_type='item'
+                                        AND UA_Items.newState=:termID
+                                        AND UA_Items.user_id=:userID
+                                ) AS tC
+                            ) AS rT";
 
     $remTagsStatement = $pdo->prepare($remTagsQuery);
     $remTagsStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);

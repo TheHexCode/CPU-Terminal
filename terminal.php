@@ -129,12 +129,12 @@
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button class="extraButton" onMouseUp="updateExtraTags(-1)"><b>-</b></button>
+								<button class="extraButton" onMouseUp="updateTags(-1, Session.EXTRA)"><b>-</b></button>
 								<div class="lcdBox blue">
-									<span class="dseg BG">~~</span>
+									<span id="extTagsBG" class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
-								<button class="extraButton" onMouseUp="updateExtraTags(1)">+</button>
+								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">+</button>
 							</div>
 						</div>
 					</div>
