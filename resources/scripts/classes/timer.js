@@ -144,6 +144,126 @@ class Timer
         }
     }
 
+    skipTimer(callback, callargs=null)
+    {
+        let results = null;
+            
+        if(callargs !== null)
+        {
+            if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))
+            {
+                results = $.getJSON(
+                    "resources\\scripts\\db\\getEntryUpdate.php",
+                    { id: callargs["entryID"], newState: callargs["newData"] }
+                )
+                .done(function()
+                {
+                    if(callargs["global"])
+                    {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "resources\\scripts\\db\\updateTerminal.php",
+                            data:
+                            {
+                                actionType: callargs["actionType"],
+                                entryID: callargs["entryID"],
+                                newData: callargs["newData"]
+                            }
+                        });
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "resources\\scripts\\db\\userActions.php",
+                        data:
+                        {
+                            userID: callargs["userID"],
+                            targetID: callargs["entryID"],
+                            action: callargs["upperAction"],
+                            newState: callargs["newData"],
+                            actionCost: callargs["actionCost"],
+                            global: callargs["global"]
+                        }
+                    });
+
+                    if(callargs["actionType"] === "item")
+                    {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "resources\\scripts\\db\\useItems.php",
+                            data:
+                            {
+                                userID: callargs["userID"],
+                                effectIDs: callargs["entryID"],
+                                termID: callargs["newData"]
+                            }
+                        })
+                    }
+
+                    callargs["results"] = results.responseJSON;
+
+                    callback(callargs);
+                });
+            }
+            else
+            {
+                if(callargs["global"])
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "resources\\scripts\\db\\updateTerminal.php",
+                        data:
+                        {
+                            actionType: callargs["actionType"],
+                            entryID: callargs["entryID"],
+                            newData: callargs["newData"]
+                        }
+                    });
+                }
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "resources\\scripts\\db\\userActions.php",
+                    data:
+                    {
+                        userID: callargs["userID"],
+                        targetID: callargs["entryID"],
+                        action: callargs["upperAction"],
+                        newState: callargs["newData"],
+                        actionCost: callargs["actionCost"],
+                        global: callargs["global"]
+                    }
+                });
+
+                if(callargs["actionType"] === "item")
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "resources\\scripts\\db\\useItems.php",
+                        data:
+                        {
+                            userID: callargs["userID"],
+                            effectIDs: callargs["entryID"],
+                            termID: callargs["newData"]
+                        }
+                    })
+                }
+
+                callback(callargs);
+            }
+        }
+        else
+        {
+            callback(callargs);
+        }
+    }
+
     pauseTimer()
     {
         this.#pause = Date.now();

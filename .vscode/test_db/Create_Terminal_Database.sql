@@ -1,3 +1,4 @@
+-- Active: 1746590270449@@REXv5@3306@cpu_term
 CREATE DATABASE cpu_term;
 
 USE cpu_term;

@@ -160,6 +160,11 @@ class Terminal
                 "modify" => $entry["modify"]
             );
 
+            if($entry["icon"] === "utilities")
+            {
+                $entryData["type"] = $entry["type"];
+            }
+
             $unitCode = explode("-",$entry["path"]);
             $subClass = "";
 
@@ -275,9 +280,16 @@ class Terminal
             }
             $outIce = 0;
 
+            $prefixIntro = ">> ";
+
+            if($entry["type"] === "alarm")
+            {
+                $prefixIntro = "(&#x1F56A;)";
+            }
+
             $entryString .= '<div id="' . $icon . '-' . $entry["path"] . '" class="entry' . $subClass . '">' .
 								'<div class="entryTitleBar">' .
-									'<span class="entryPrefix">>> ' . $unit . ':\\</span>' .
+									'<span class="entryPrefix">' . $prefixIntro . $unit . ':\\</span>' .
 									'<span class="entryMaskContainer">' .
 										$titleMask .
 									'</span>' .

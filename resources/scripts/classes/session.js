@@ -151,6 +151,11 @@ class Session
 
             actionCost = Number(searchResults[action]);
 
+            if((searchResults["type"] === "alarm") && (payload.getFunction("ALARM SENSE")))
+            {
+                actionCost = Math.max(actionCost - 1, 0);
+            }
+
             if(Object.keys(this.#repeatIcons).includes(searchResults["icon"]))
             {
                 actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);

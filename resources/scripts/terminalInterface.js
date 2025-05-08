@@ -203,6 +203,17 @@ function injectUserPayload(userPayload)
 		if(payload.getFunction("ALARM SENSE"))
 		{
 			$("#alarmItem").removeClass("hidden");
+
+			$(".accessButton, .modifyButton").each(function(index,entryButton)
+			{
+				if($(entryButton).html() !== "N/A")
+				{
+					let action = entryButton.classList[0].split("Button")[0];
+					let newCost = session.getActionCost($(entryButton).attr("data-id"), action);
+					$(entryButton).attr("data-cost",newCost);
+					$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
+				};
+			});
 		}
 
 		if(payload.getFunction("BACKDOOR"))
@@ -322,6 +333,12 @@ function injectUserPayload(userPayload)
 									payload.setActiveEffect(effect.id, true);
 								}
 								break;
+							case(13): //DIGIPET
+								if(effect.uses > 0)
+								{
+									payload.setActiveEffect(effect.id, true);
+								}
+								break;
 						}
 					}
 					case("autoinit"):
@@ -334,7 +351,7 @@ function injectUserPayload(userPayload)
 								updateTags(2,Session.BEACON);
 								break;
 							case(18): //POWER GLOVE [UH9K]
-								payload.setActiveEffect(effect.id);
+								payload.setActiveEffect(effect.id, true);
 								break;
 						}
 						break;
@@ -1042,6 +1059,11 @@ function executeAction(actionMap,newData,globalAction)
 		$("#actionModal .modalButtonRow").html("");
 		$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
 
+		if((payload.getItem(12)) && (!payload.getActiveEffect(13)))
+		{
+			$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>");
+		}
+
 		$("#executeButton").bind("mousedown touchstart", function(event)
 		{
 			event.preventDefault();
@@ -1068,6 +1090,18 @@ function executeAction(actionMap,newData,globalAction)
 			}
 		})
 
+		$("#digiPetButton").bind("mouseup", function()
+		{
+			$("#digiPetButton").remove();
+			$("#executeButton").prop("disabled", true);
+
+			actionMap["newData"] = newData;
+			actionMap["global"] = globalAction;
+			actionMap["digipet"] = true;
+
+			mbTimer.startTimer(maxTime,completeAction,actionMap);
+		});
+
 		$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + (actionMap["actionCost"] < 0 ? "+" + (actionMap["actionCost"] * -1) : actionMap["actionCost"]) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s"));
 
 		$(".modalBodyText").addClass("hidden");
@@ -1084,19 +1118,36 @@ function executeAction(actionMap,newData,globalAction)
 	{
 		payload.setActiveEffect(5, true);
 
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "resources\\scripts\\db\\useItems.php",
+			data:
+			{
+				userID: payload.getUserID(),
+				effectIDs: 5,
+				termID: session.getTerminalID()
+			}
+		});
+
 		actionMap["newData"] = newData;
 		actionMap["global"] = globalAction;
 
-		mbTimer.startTimer(0,completeAction,actionMap);
+		mbTimer.skipTimer(completeAction,actionMap);
 
-		console.log("Test");
-
-		$("#load").addClass("hidden");
+		$("#load").removeClass("hidden");
 	}
+}
+
+function activateDigiPet(actionMap, newData, globalAction)
+{
+	
 }
 
 function completeAction(actionMap)
 {
+	$("#load").addClass("hidden");
+
 	closeModal("executed");
 
 	//actionMap:
@@ -1114,7 +1165,7 @@ function completeAction(actionMap)
 			// access
 			// modify
 		// upperAction
-	
+
 	switch(actionMap["actionType"])
 	{
 		case("entry"):
@@ -1185,6 +1236,26 @@ function completeAction(actionMap)
 		if((actionMap["upperAction"] !== "Activate") && (!session.isActionCopyable(actionMap["upperAction"])))
 		{
 			session.makeActionCopyable(actionMap["upperAction"]);
+		}
+	}
+
+	if(Object.keys(actionMap).includes("digipet"))
+	{
+		if(actionMap["digipet"])
+		{
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: 13,
+					termID: session.getTerminalID()
+				}
+			})
+
+			payload.setActiveEffect(13,true);
 		}
 	}
 }

@@ -1229,7 +1229,9 @@ footer
 
 .modalButtonRow[data-mode="execute"]
 {
-	justify-content: center;
+	flex-direction: column;
+	row-gap: 1rem;
+	align-items: center;
 }
 
 .modalButtonRow button
