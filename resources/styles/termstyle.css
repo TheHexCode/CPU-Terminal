@@ -796,7 +796,7 @@ ul
 	margin: 0 0 0.25rem 0;
 }
 
-.subContRepeatBox
+.subContModifierBox
 {
 	display: flex;
 	flex-direction: column;
@@ -808,21 +808,29 @@ ul
 	padding: 0.5rem 0 0.5rem 0;
 }
 
-.subContRepeatTitle
+.subContModifierTitle
 {
 	display: flex;
 	justify-content: center;
 	text-decoration: underline;
 }
 
-.subContRepeatAM
+.subContModifierTouched
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	width: 50%;
+}
+
+.subContModifierAM
 {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-around;
 }
 
-.subContRepeatIndicator
+.subContModifierIndicator
 {
 	border: 1px solid var(--fg-color);
 	padding: 0.25rem 0.2rem 0 0.25rem;
@@ -830,26 +838,10 @@ ul
 	box-shadow: 0 0 0.5rem var(--fg-color);
 }
 
-.subContRepeatIndicator.dimmed
+.subContModifierIndicator.dimmed
 {
 	box-shadow: 0 0 0;
 }
-
-/*
-.subContRepeat
-{
-	grid-column: start / titlestart;
-	grid-row: 1;
-	text-align: center;
-}
-
-.subContJohnny
-{
-	grid-column: start / titlestart;
-	grid-row: 2;
-	text-align: center;
-}
-*/
 
 .subContTitle
 {
@@ -1208,6 +1200,18 @@ footer
 	);
 	border-image-width: 1rem 0 1rem 0;
 	border-image-slice: 30;
+}
+
+.copycatBox
+{
+	display: flex;
+	flex-direction: row;
+	column-gap: 0.5rem;
+}
+
+#copycatActivate
+{
+	align-self: flex-start;
 }
 
 .modalButtonRow

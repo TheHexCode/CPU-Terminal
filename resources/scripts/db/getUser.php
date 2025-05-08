@@ -182,26 +182,35 @@ else
     $accessStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
     $hasAccessed = intval($accessStatement->fetch(PDO::FETCH_COLUMN)) > 0;
 
-    $actionQuery = "SELECT entries.id, user_id, entries.path, entries.icon, action, newState FROM cpu_term.user_actions AS UA1
+    $actionQuery = "SELECT entries.id, user_id, entries.path, entries.icon, action, newState FROM cpu_term.user_actions
                     INNER JOIN cpu_term.entries ON target_id=entries.id
-                    INNER JOIN (
-                        SELECT entries.id, MAX(time) as maxTime FROM cpu_term.user_actions
-                            INNER JOIN cpu_term.entries ON target_id=entries.id
-                            WHERE entries.terminal_id = :termID
-                                AND (user_id = :userID
-                                    OR global = true)
-                                AND target_type = 'entry'
-                            GROUP BY entries.id
-                    ) AS UA2 ON time=maxTime
-                    WHERE entries.terminal_id = :termID
-                        AND (user_id = :userID
-                            OR global = true)
-                        AND target_type = 'entry'";
+                    WHERE entries.terminal_id=:termID
+                        AND (user_id=:userID
+                            OR global=true)
+                        AND target_type='entry'
+                    ORDER BY time ASC";
 
     $actionStatement = $pdo->prepare($actionQuery);
     $actionStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
 
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $copyQuery = "  SELECT DISTINCT action FROM (
+                        SELECT action FROM cpu_term.user_actions AS UA1
+                            INNER JOIN cpu_term.entries ON UA1.target_id=entries.id
+                            WHERE UA1.user_id=:userID
+                                AND entries.terminal_id=:termID
+                       UNION
+                        SELECT action FROM cpu_term.user_actions AS UA2
+                            INNER JOIN cpu_term.accesslogs ON UA2.target_id=accesslogs.id
+                            WHERE UA2.user_id=:userID
+                                AND accesslogs.terminal_id=:termID
+                    ) AS UA";
+
+    $copyStatement = $pdo->prepare($copyQuery);
+    $copyStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
+
+    $copyResponse = $copyStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $remTagsQuery = "   SELECT SUM(tags) AS remTags FROM (
                                 SELECT tags FROM cpu_term.accessLogs
@@ -228,9 +237,12 @@ else
                                         AND UA_Term.target_id=:termID
                                         AND UA_Term.user_id=:userID
                                    UNION
-                                    SELECT SUM(cost) AS sumCost
-                                    FROM cpu_term.user_actions AS UA_Items
-                                    INNER JOIN cpu_term.accesslogs ON UA_Items.target_id=accesslogs.id
+                                    SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Items
+                                    INNER JOIN (
+                                        SELECT user_id, user_items.item_id, item_effects.id AS effect_id FROM cpu_term.user_items
+                                            INNER JOIN cpu_term.item_effects ON user_items.item_id=item_effects.item_id
+                                            WHERE user_id=:userID
+                                    ) AS user_effects ON target_id=user_effects.effect_id
                                     WHERE UA_Items.target_type='item'
                                         AND UA_Items.newState=:termID
                                         AND UA_Items.user_id=:userID
@@ -250,6 +262,7 @@ else
                                     "items" => $newItems,
                                     "hasAccessed" => $hasAccessed,
                                     "prevActions" => $actionResponse,
+                                    "copyables" => $copyResponse,
                                     "remTags" => max($remTagsResponse,0)
                                 ));
 }

@@ -26,6 +26,9 @@ class Session
     #entryData;
     #repeatIcons = new Object();
 
+    #touched = false;
+    #copyableActions = [];
+
     constructor(termInfo, initialEntries)
     {
         this.#termID = termInfo["termID"];
@@ -152,6 +155,11 @@ class Session
             {
                 actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
             }
+
+            if((action === "access") && (this.#touched))
+            {
+                actionCost = Math.max(actionCost - 1, 0);
+            }
         }
 
         actionCost += ((payload.getActiveEffect(19) || payload.getActiveEffect(20)) ? 1 : 0);
@@ -185,7 +193,12 @@ class Session
                         this.#repeatIcons[icon] = newIcon;
                     }
                 }
-
+                break;
+            case "TOUCHED":
+                if((entryAction === "access") && (!this.#touched))
+                {
+                    this.#touched = true;
+                }
                 break;
         }
     }
@@ -304,5 +317,15 @@ class Session
                         "</ul></p>" +
                     */    "<p>Booting from Hard Drive C:\\<br/>" +
                         "ERROR: Missing OS");
+    }
+
+    isActionCopyable(action)
+    {
+        return this.#copyableActions.includes(action.toLowerCase());
+    }
+
+    makeActionCopyable(action)
+    {
+        this.#copyableActions.push(action.toLowerCase());
     }
 }

@@ -4,22 +4,22 @@
 
 > ITEMS FROM OLD PROFILE PAGE
 > INVENTORY
-    > 5 - Pocket Hacker T0
-    > 6 - Pocket Hacker T1
-    > 7 - Budget Cyberdeck
     > 8 - Budget Remote Access Drive
-    > 10 - CRD Spider Cyberdeck T0
-    > 11 - CRD Spider Cyberdeck T1
-    > 15 - MM Console
     --------------------------------
-    - 4 - Copycat
+    > 4 - Copycat
     - 12 - DigiPet
-    - 14 - Johnny's Special Touch
     --------------------------------
     ✓ 1 - CMM Widow (1)
     ✓ 2 - Winton Wit (2,3)
     ✓ 3 - CMM Cocoon (id+1)
+    ✓ 5 - Pocket Hacker T0
+    ✓ 6 - Pocket Hacker T1
+    ✓ 7 - Budget Cyberdeck
     ✓ 9 - CipherSync Beacon
+    ✓ 10 - CRD Spider Cyberdeck T0
+    ✓ 11 - CRD Spider Cyberdeck T1
+    ✓ 14 - Johnny's Special Touch
+    ✓ 15 - MM Console
     ✓ 17 - Power Glove [UH9K]
     ✓ 18 - Shimmerstick T0
     ✓ 19 - Shimmerstick T1
@@ -33,6 +33,8 @@
 > MULTIPLAYER INTERRUPT
 
 > LOW PRIORITY
+    - Why do you sometimes have to double-click the Execute Button?
+    - Resume Timer on mouseenter (only if already started?)
     - Write message for empty active/passive
     - Help Popup to say what functions do what
     - Sync the blend of the reqTags and Gems

@@ -100,6 +100,25 @@ class Payload
         });
     }
 
+    useItemEffect(effectID)
+    {
+        let targetItem = this.#items.find(function(item)
+        {
+            return item.effects.find(function(effect)
+            {
+                return effect.id === effectID;
+            });
+        });
+
+        let targetEffect = targetItem.effects.find(function(effect)
+        {
+            return effect.id === effectID;
+        });
+
+        targetEffect["termUses"] += 1;
+        targetEffect["uses"] += 1;
+    }
+
     setActiveEffect(effectID, state)
     {
         if(state)

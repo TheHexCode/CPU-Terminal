@@ -5,6 +5,7 @@ var mbTimer = new Timer("#modalBodyTimer");
 
 $(document).ready(function()
 {
+	$("#payloadCodeInput").val("");
 	$("#terminalButton").attr("disabled",true);
 	$(".initItem input").prop("checked",false);
 });
@@ -16,6 +17,14 @@ function tens(numStr)
 	});
 	
 	return tensFormat.format(Number(numStr));
+}
+
+function mmss(secs)
+{
+	let mm = tens(parseInt(secs/60));
+	let ss = tens(parseInt(secs%60));
+
+	return mm + ":" + ss
 }
 
 function codeLimit(event)
@@ -229,21 +238,11 @@ function injectUserPayload(userPayload)
 			$("#repeatItem").append(repeatRoman);
 			$("#repeatItem").removeClass("hidden");
 
-			$(".subContRepeatTitle").append(repeatRoman);
-			$(".subContRepeatBox").removeClass("hidden");
+			$(".repeatBox .subContModifierTitle").append(repeatRoman);
+			$(".repeatBox").removeClass("hidden");
 		}
 
 		///////////// ITEMS
-
-		/*
-		SELECT items.id, name, tier, type, item_effects.id AS effect_id, charges, per_type, use_loc, effect
-		FROM cpu_term.items
-		INNER JOIN cpu_term.item_effects
-			ON items.id = item_effects.item_id
-		-- WHERE use_loc='autoinit';
-		-- arms, cust, deck, util, cons, impl
-		-- initial, action, item, puzzle, autoinit, autoact
-		*/
 
 		payload.getInventory().forEach(function(item)
 		{
@@ -251,25 +250,25 @@ function injectUserPayload(userPayload)
 
 			item.effects.forEach(function(effect)
 			{
+				$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
+
 				switch(effect.use_loc)
 				{
 					case("item"):
 					{
-						$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
-
 						let remCharges = effect.charges - effect.uses;
 
 						effectString += "<span class='itemActionRow'>" +
 											"<span class='itemMarks'>";
-
-						for(let i = 0; i < remCharges; i++)
-						{
-							effectString += "<img src='resources/images/actions/itemopen.png' />";
-						}
-
-						for(let j = 0; j < effect.uses; j++)
+						
+						for(let i = 0; i < effect.uses; i++)
 						{
 							effectString += "<img src='resources/images/actions/itemfilled.png' />";
+						}
+
+						for(let j = 0; j < remCharges; j++)
+						{
+							effectString += "<img src='resources/images/actions/itemopen.png' />";
 						}
 						
 						effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
@@ -313,6 +312,18 @@ function injectUserPayload(userPayload)
 						
 						break;
 					}
+					case("action"):
+					{
+						switch(effect.id)
+						{
+							case(5): //COPYCAT
+								if(effect.uses > 0)
+								{
+									payload.setActiveEffect(effect.id, true);
+								}
+								break;
+						}
+					}
 					case("autoinit"):
 					{
 						switch(effect.id)
@@ -324,6 +335,21 @@ function injectUserPayload(userPayload)
 								break;
 							case(18): //POWER GLOVE [UH9K]
 								payload.setActiveEffect(effect.id);
+								break;
+						}
+						break;
+					}
+					case("autoact"):
+					{
+						switch(effect.id)
+						{
+							case(15): //JOHNNY'S SPECIAL TOUCH
+								$(".touchedBox").removeClass("hidden");
+
+								if(effect.termUses > 0)
+								{
+									payload.setActiveEffect(effect.id, true);
+								}
 								break;
 						}
 						break;
@@ -377,11 +403,28 @@ function injectUserPayload(userPayload)
 						if(payload.getFunction("REPEAT"))
 						{
 							session.setFunctionState("REPEAT",resultJSON["entryID"],resultJSON["action"].toLowerCase(),payload.getFunction("REPEAT"));
-							updateEntryCosts(resultJSON["entryPath"],resultJSON["action"]);
+							updateEntryCosts("REPEAT",resultJSON["entryPath"],resultJSON["action"]);
+						}
+
+						if(payload.getActiveEffect(15)) // JOHNNY'S SPECIAL TOUCH
+						{
+							session.setFunctionState("TOUCHED",resultJSON["entryID"],resultJSON["action"].toLowerCase(),1);
+							updateEntryCosts("TOUCHED",resultJSON["entryPath"],resultJSON["action"]);
 						}
 					}
 				});
 			});
+
+			if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
+			{
+				userPayload["copyables"].forEach(function(copyableAction)
+				{
+					if(copyableAction !== "Item")
+					{
+						session.makeActionCopyable(copyableAction);
+					}
+				});
+			}
 
 			session.setCurrentTags(userPayload["remTags"] + requiredTags);
 
@@ -875,6 +918,13 @@ function setupConfirmModal(actionMap,buttons)
 	let quote = "\"";
 	let costText = " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s");
 
+	let copycatText = 	((payload.getItem(4)) && (!payload.getActiveEffect(5)) && (session.isActionCopyable(actionMap["upperAction"])) ?
+						"<br/><br/>" +
+						"<span class='copycatBox'>" +
+							"<input id='copycatActivate' type='checkbox'/>" +
+							"<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
+						"</span>" : "");
+
 	switch(actionMap["upperAction"])
 	{
 		case("Break"):
@@ -922,15 +972,18 @@ function setupConfirmModal(actionMap,buttons)
 		{
 			let effect = payload.getEffect(actionMap["entryID"]);
 
-			let charges = effect["charges"];
-			let charge_S = (charges === 1 ? "" : "s");
-			let remUses = effect["charges"] - effect["uses"];
-			let remUse_S = (remUses === 1 ? "" : "s");
-			let upperPer = effect["per_type"].charAt(0).toUpperCase() + effect["per_type"].slice(1);
+			let totCharges = effect["charges"];
+			let totCharge_S = (totCharges === 1 ? "" : "s");
+			let remCharges = effect["charges"] - effect["uses"];
+			let remCharge_S = (remCharges === 1 ? "" : "s");
+			let upperPerType = effect["per_type"].charAt(0).toUpperCase() + effect["per_type"].slice(1);
+
+			actionMap["remCharges"] = remCharges - 1;
+			actionMap["usedCharges"] = totCharges - (remCharges - 1);
 
 			costText = " to gain " + effect["effect"];
 
-			extraAfterText = "<br/><br/>This item may be used <b>" + charges + "</b> time" + charge_S + " per " + upperPer + ". You have <b>" + remUses + "</b> use" + remUse_S + " left.";
+			extraAfterText = "<br/><br/>This item may be used <b>" + totCharges + "</b> time" + totCharge_S + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + remCharge_S + " left.";
 			break;
 		}
 	}
@@ -938,7 +991,7 @@ function setupConfirmModal(actionMap,buttons)
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
 		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + costText + "?" +
-		extraAfterText
+		extraAfterText + copycatText
 	);
 
 	$(".modalBodyText").removeClass("hidden");
@@ -971,58 +1024,75 @@ function closeModal(event)
 
 function executeAction(actionMap,newData,globalAction)
 {
-	let maxTime = payload.getActionTime();
-
-	if(actionMap["actionType"] === "item")
+	if(!$("#copycatActivate").prop("checked"))
 	{
-		Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+		let maxTime = payload.getActionTime();
+
+		if(actionMap["actionType"] === "item")
+		{
+			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+		}
+		else
+		{
+			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+		}
+
+		$("#actionModal").width($("#main").width());
+
+		$("#actionModal .modalButtonRow").html("");
+		$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
+
+		$("#executeButton").bind("mousedown touchstart", function(event)
+		{
+			event.preventDefault();
+
+			$("#executeButton").addClass("active");
+
+			actionMap["newData"] = newData;
+			actionMap["global"] = globalAction;
+
+			mbTimer.startTimer(maxTime,completeAction,actionMap);
+		});
+		$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
+		{
+			$("#executeButton").removeClass("active");
+
+			mbTimer.pauseTimer();
+		});
+		$("#executeButton").bind("contextmenu", function(event)
+		{
+			if(event.originalEvent.pointerType === "touch")
+			{
+				event.preventDefault();
+				$("#executeButton").trigger("touchstart");
+			}
+		})
+
+		$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + (actionMap["actionCost"] < 0 ? "+" + (actionMap["actionCost"] * -1) : actionMap["actionCost"]) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s"));
+
+		$(".modalBodyText").addClass("hidden");
+		$("#modalBodyTimer .mmss .FG").html(mmss(maxTime));
+		$("#modalBodyTimer .hundsec .FG").html("00");
+		$("#modalBodyTimer").removeClass("hidden");
+
+		$("#actionModal .modalButtonRow").attr("data-mode","execute");
+		
+		$("#load").addClass("hidden");
+		$("#modalBG").css("display","flex");
 	}
-	else
+	else //USING COPYCAT
 	{
-		Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-	}
-
-	$("#actionModal").width($("#main").width());
-
-	$("#actionModal .modalButtonRow").html("");
-	$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
-
-	$("#executeButton").bind("mousedown touchstart", function(event)
-	{
-		event.preventDefault();
-
-		$("#executeButton").addClass("active");
+		payload.setActiveEffect(5, true);
 
 		actionMap["newData"] = newData;
 		actionMap["global"] = globalAction;
 
-		mbTimer.startTimer(maxTime,completeAction,actionMap);
-	});
-	$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
-	{
-		$("#executeButton").removeClass("active");
+		mbTimer.startTimer(0,completeAction,actionMap);
 
-		mbTimer.pauseTimer();
-	});
-	$("#executeButton").bind("contextmenu", function(event)
-	{
-		if(event.originalEvent.pointerType === "touch")
-		{
-			event.preventDefault();
-			$("#executeButton").trigger("touchstart");
-		}
-	})
+		console.log("Test");
 
-	$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + (actionMap["actionCost"] < 0 ? "+" + (actionMap["actionCost"] * -1) : actionMap["actionCost"]) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s"));
-
-	$(".modalBodyText").addClass("hidden");
-	$("#modalBodyTimer .mmss .FG").html("00:" + tens(maxTime));
-	$("#modalBodyTimer").removeClass("hidden");
-
-	$("#actionModal .modalButtonRow").attr("data-mode","execute");
-	
-	$("#load").addClass("hidden");
-	$("#modalBG").css("display","flex");
+		$("#load").addClass("hidden");
+	}
 }
 
 function completeAction(actionMap)
@@ -1059,7 +1129,13 @@ function completeAction(actionMap)
 			if(payload.getFunction("REPEAT"))
 			{
 				session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
-				updateEntryCosts(actionMap["results"]["entryPath"],actionMap["upperAction"]);
+				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["upperAction"]);
+			}
+
+			if(payload.getItem(14)) //JOHNNY'S SPECIAL TOUCH
+			{
+				session.setFunctionState("TOUCHED",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),1);
+				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["upperAction"]);
 			}
 			break;
 		}
@@ -1086,16 +1162,36 @@ function completeAction(actionMap)
 		case("root"):
 			session.rootTerminal(new Date());
 			break;
+		case("item"):
+			console.log(actionMap);
+
+			$(".itemButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
+
+			if(actionMap["remCharges"] <= 0)
+			{
+				$(".itemButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
+			}
+
+			payload.useItemEffect(actionMap["entryID"])
+			break;
 	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	disableExpensiveButtons();
+
+	if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
+	{
+		if((actionMap["upperAction"] !== "Activate") && (!session.isActionCopyable(actionMap["upperAction"])))
+		{
+			session.makeActionCopyable(actionMap["upperAction"]);
+		}
+	}
 }
 
-function updateEntryCosts(entryPath, entryAction)
+function updateEntryCosts(reducer, entryPath, entryAction)
 {
-	if((entryAction === "Access") || (entryAction === "Modify"))
+	if((reducer === "REPEAT") && ((entryAction === "Access") || (entryAction === "Modify")))
 	{
 		let iconID = entryPath.split("-")[0] + "Content";
 
@@ -1109,5 +1205,35 @@ function updateEntryCosts(entryPath, entryAction)
 		});
 
 		$(iconID + " .repeatIndicator" + entryAction).removeClass("dimmed");
+	}
+	else if((reducer === "TOUCHED") && (entryAction === "Access"))
+	{
+		$("." + entryAction.toLowerCase() + "Button").each(function(index,entryButton){
+			if($(entryButton).html() !== "N/A")
+			{
+				let newCost = session.getActionCost($(entryButton).attr("data-id"), entryAction.toLowerCase());
+				$(entryButton).attr("data-cost",newCost);
+				$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
+			};
+		});
+
+		$(".touchedIndicator").removeClass("dimmed");
+
+		if(!payload.getActiveEffect(15))
+		{
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: 15,
+					termID: session.getTerminalID()
+				}
+			})
+
+			payload.setActiveEffect(15,true);
+		}
 	}
 }
