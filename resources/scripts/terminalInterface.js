@@ -405,9 +405,21 @@ function injectUserPayload(userPayload)
 			{
 				let results = arguments;
 
-				Object.entries(results).forEach(function(result)
+				let resultsArray;
+
+				if(actionResults.length === 1)
 				{
-					resultJSON = result[1][0];
+					resultsArray = [];
+					resultsArray.push(["0", results]);
+				}
+				else
+				{
+					resultsArray = Object.entries(results);
+				}
+
+				resultsArray.forEach(function(result)
+				{
+					let resultJSON = result[1][0];
 
 					if(resultJSON["userID"] === payload.getUserID())
 					{
