@@ -47,7 +47,6 @@ $dbCharStatement->execute([':charName' => $mlCharResponse->name]);
 
 $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 
-#'Alarm Sense -DT1-', 'Craft (Choose one) -OT1-', 'Escape Binds I -DT1-', 'Hacking I -DT1-', 'Hacking I -DT2-', 'Knowledge (choose one)', 'Knowledge (choose one) -T1St-', 'Pick Locks I', 'Repair I', 'Repeat I', 'Resist', 'Scavenge I -DT1-', 'Strength I', 'Weapon Prof (all)&Armor Prof (all)', 'Wipe Your Tracks -DT3-'
 $mlFuncArray = array_column($mlCharResponse->skills,"name");
 
 if($dbCharResponse === false)
@@ -55,6 +54,11 @@ if($dbCharResponse === false)
     $userCode = generateCode($pdo);
 
     addUser($pdo,$userCode,$mlCharResponse->name,$mlFuncArray);
+
+    $dbCharStatement = $pdo->prepare($dbCharQuery);
+    $dbCharStatement->execute([':charName' => $mlCharResponse->name]);
+
+    $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 }
 else
 {    
