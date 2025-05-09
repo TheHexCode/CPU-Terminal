@@ -1,9 +1,5 @@
 USE cpu_term;
 
-DELETE FROM users;
-DELETE FROM user_functions;
-DELETE FROM user_selfreport;
-
 INSERT INTO users
             (userCode, charName)
     VALUES  ('333333', 'Test'),
@@ -68,7 +64,6 @@ INSERT INTO user_selfreport
             (2, 12),
             (2, 13),
             (2, 26),
-            (2, 272),
             (2, 369),
             (2, 370),
             (2, 371),

@@ -1,10 +1,5 @@
 USE cpu_term;
 
-DELETE FROM terminals
-	WHERE slug='test';
-DELETE FROM accessLogs;
-DELETE FROM entries;
-
 UPDATE activeJob
 	SET jobCode = 'ABC1234';
 

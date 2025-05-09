@@ -1,5 +1,5 @@
--- Active: 1746590270449@@REXv5@3306@cpu_term
-CREATE DATABASE cpu_term;
+-- Active: 1745412174410@@127.0.0.1@3306@cpu_items
+ -- CREATE SCHEMA cpu_term;
 
 USE cpu_term;
 
