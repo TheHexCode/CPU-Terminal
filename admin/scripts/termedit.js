@@ -290,12 +290,12 @@ class AdminTerminal
                                 '</div>' +
                                 '<div class="entryGrid">' +
                                     '<div class="entryTypeRow">' +
-                                        '<span class="entryTypeLabel">entry TYPE:</span>' +
-                                        '<select class="entryType" onselect="changeType(this, \'' + entry["type"] + '\')">' +
+                                        '<span class="entryTypeLabel">ENTRY TYPE:</span>' +
+                                        '<select class="entryType" onchange="changeType(this, \'' + entry["type"] + '\')">' +
                                             this.#getEntryTypes(entry["icon"], entry["type"]) +
                                         '</select>' +
-                                        '<span class="entryStateLabel">entry STATE:</span>' +
-                                        '<select class="entryState" onselect="changeState(this)">' +
+                                        '<span class="entryStateLabel">ENTRY STATE:</span>' +
+                                        '<select class="entryState" onchange="changeState(this)">' +
                                             this.#getTypeStates(entry["icon"], entry["type"], entry["state"]) +
                                         '</select>' +
                                     '</div>' +
@@ -315,7 +315,7 @@ class AdminTerminal
                             '</div>' +
                             (entry["type"] === "ice" ?
                                 this.drawEntries(entry["subIce"]) + 
-                                '<button class="addEntryButton" onclick="addiceEntry(event)">&plus; Add Entry to ice ' + entry["path"] + '</button>' +
+                                '<button class="addEntryButton" onclick="addiceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
                             '</div>' : '');
         }, this);
 
@@ -523,6 +523,8 @@ class AdminTerminal
 
     changeType(icon, entryID, newSelected)
     {
+        console.log("Test");
+
         let targetEntry = this.#entryList[icon];
 
         entryID.split("-").forEach(function (pathPart, pathIndex, pathArray)
@@ -804,6 +806,8 @@ function deleteEffect(event, effectIndex)
 function changeType(target, oldSelected)
 {
     oldSelected = oldSelected;
+
+    console.log("Test First");
 
     let icon = $(target).parents(".entryList")[0].dataset["icon"];
     let entryID = $(target).parents(".entry")[0].dataset["id"];
