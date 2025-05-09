@@ -208,7 +208,7 @@ function processCharInfo(charData)
 			srRoles.push(func["role_name"]);
 		}
 
-		$("input[data-id='" + func["id"] + "']").prop("checked",true);
+		$(".checkGroup input[data-id='" + func["id"] + "']").prop("checked",true);
 	});
 
 	console.log(srRoles);
