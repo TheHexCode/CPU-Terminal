@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require('../resources/scripts/db/dbConnect.php');
+    require('../resources/scripts/terminal/db/dbConnect.php');
     require ("scripts/adminTerm.php");
 
     $jobCode = htmlentities($_GET["jobCode"] ?? "", ENT_QUOTES, "UTF-8");

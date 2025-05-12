@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require('../resources/scripts/db/dbConnect.php');
+    require('../resources/scripts/terminal/db/dbConnect.php');
 
     $jobQuery = "SELECT jobCode FROM {$dbName}.sim_active_codes";
     $jobStatement = $pdo->prepare($jobQuery);

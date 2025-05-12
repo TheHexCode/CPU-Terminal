@@ -68,7 +68,7 @@ function submitCode(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources\\scripts\\db\\getUser.php",
+		url: "resources\\scripts\\terminal\\db\\getUser.php",
 		data:
 		{
 			userCode: $("#payloadCodeInput")[0].value,
@@ -389,7 +389,7 @@ function injectUserPayload(userPayload)
 			userPayload["prevActions"].forEach(function(entry)
 			{
 				results = $.getJSON(
-					"resources\\scripts\\db\\getEntryUpdate.php",
+					"resources\\scripts\\terminal\\db\\getEntryUpdate.php",
 					{
 						id: entry["id"],
 						newState: entry["newState"],
@@ -657,7 +657,7 @@ function accessTerminal(event)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\db\\useItems.php",
+				url: "resources\\scripts\\terminal\\db\\useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -669,7 +669,7 @@ function accessTerminal(event)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\db\\addLogEntry.php",
+				url: "resources\\scripts\\terminal\\db\\addLogEntry.php",
 				data:
 				{
 					termID: session.getTerminalID(),
@@ -747,7 +747,7 @@ function takeAction(target)
 			let entryState = session.getEntryState(entryID);
 
 			let entryJSON = $.getJSON(
-				"resources\\scripts\\db\\getEntryActions.php",
+				"resources\\scripts\\terminal\\db\\getEntryActions.php",
 				{ id: entryID, state: entryState, action: action }
 			)
 			.done(function() {
@@ -1133,7 +1133,7 @@ function executeAction(actionMap,newData,globalAction)
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "resources\\scripts\\db\\useItems.php",
+			url: "resources\\scripts\\terminal\\db\\useItems.php",
 			data:
 			{
 				userID: payload.getUserID(),
@@ -1258,7 +1258,7 @@ function completeAction(actionMap)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\db\\useItems.php",
+				url: "resources\\scripts\\terminal\\db\\useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -1307,7 +1307,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\db\\useItems.php",
+				url: "resources\\scripts\\terminal\\db\\useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),

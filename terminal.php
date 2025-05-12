@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources/scripts/db/startTerm.php';
+    require 'resources/scripts/terminal/db/startTerm.php';
 ?>
 <html>
 	<head>
@@ -12,11 +12,11 @@
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
 		<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<script type="text/javascript" src="resources/scripts/classes/session.js"></script>
-		<script type="text/javascript" src="resources/scripts/classes/payload.js"></script>
-		<script type="text/javascript" src="resources/scripts/classes/timer.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminalInterface.js"></script>
-		<script type="text/javascript" src="resources/scripts/classes/gems.js" defer></script>
+		<script type="text/javascript" src="resources/scripts/terminal/classes/session.js"></script>
+		<script type="text/javascript" src="resources/scripts/terminal/classes/payload.js"></script>
+		<script type="text/javascript" src="resources/scripts/terminal/classes/timer.js"></script>
+		<script type="text/javascript" src="resources/scripts/terminal/terminalInterface.js"></script>
+		<script type="text/javascript" src="resources/scripts/terminal/classes/gems.js" defer></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
 	</head>

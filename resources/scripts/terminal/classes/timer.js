@@ -53,7 +53,7 @@ class Timer
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            url: "resources\\scripts\\db\\updateTerminal.php",
+                            url: "resources\\scripts\\terminal\\db\\updateTerminal.php",
                             data:
                             {
                                 actionType: callargs["actionType"],
@@ -66,7 +66,7 @@ class Timer
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "resources\\scripts\\db\\userActions.php",
+                        url: "resources\\scripts\\terminal\\db\\userActions.php",
                         data:
                         {
                             userID: callargs["userID"],
@@ -83,7 +83,7 @@ class Timer
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            url: "resources\\scripts\\db\\useItems.php",
+                            url: "resources\\scripts\\terminal\\db\\useItems.php",
                             data:
                             {
                                 userID: callargs["userID"],
@@ -130,7 +130,7 @@ class Timer
                 if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))
                 {
                     results = $.getJSON(
-                        "resources\\scripts\\db\\getEntryUpdate.php",
+                        "resources\\scripts\\terminal\\db\\getEntryUpdate.php",
                         { id: callargs["entryID"], newState: callargs["newData"] }
                     );
                 }
@@ -153,7 +153,7 @@ class Timer
             if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))
             {
                 results = $.getJSON(
-                    "resources\\scripts\\db\\getEntryUpdate.php",
+                    "resources\\scripts\\terminal\\db\\getEntryUpdate.php",
                     { id: callargs["entryID"], newState: callargs["newData"] }
                 )
                 .done(function()
@@ -163,7 +163,7 @@ class Timer
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            url: "resources\\scripts\\db\\updateTerminal.php",
+                            url: "resources\\scripts\\terminal\\db\\updateTerminal.php",
                             data:
                             {
                                 actionType: callargs["actionType"],
@@ -176,7 +176,7 @@ class Timer
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "resources\\scripts\\db\\userActions.php",
+                        url: "resources\\scripts\\terminal\\db\\userActions.php",
                         data:
                         {
                             userID: callargs["userID"],
@@ -193,7 +193,7 @@ class Timer
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            url: "resources\\scripts\\db\\useItems.php",
+                            url: "resources\\scripts\\terminal\\db\\useItems.php",
                             data:
                             {
                                 userID: callargs["userID"],
@@ -215,7 +215,7 @@ class Timer
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "resources\\scripts\\db\\updateTerminal.php",
+                        url: "resources\\scripts\\terminal\\db\\updateTerminal.php",
                         data:
                         {
                             actionType: callargs["actionType"],
@@ -228,7 +228,7 @@ class Timer
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "resources\\scripts\\db\\userActions.php",
+                    url: "resources\\scripts\\terminal\\db\\userActions.php",
                     data:
                     {
                         userID: callargs["userID"],
@@ -245,7 +245,7 @@ class Timer
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "resources\\scripts\\db\\useItems.php",
+                        url: "resources\\scripts\\terminal\\db\\useItems.php",
                         data:
                         {
                             userID: callargs["userID"],

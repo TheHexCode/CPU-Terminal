@@ -1,6 +1,6 @@
 <?php
 
-require('../../resources/scripts/db/dbConnect.php');
+require('../../resources/scripts/terminal/db/dbConnect.php');
 
 $newCode = htmlentities(trim($_POST["newCode"]));
 

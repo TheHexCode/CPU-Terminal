@@ -1,7 +1,7 @@
 <?php
 
 require('dbConnect.php');
-include('resources/scripts/classes/terminal.php');
+include('resources/scripts/terminal/classes/terminal.php');
 
 $termSlug = $_GET["id"];
 

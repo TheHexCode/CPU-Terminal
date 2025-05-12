@@ -1,6 +1,6 @@
 <?php
 
-require('../../resources/scripts/db/dbConnect.php');
+require('../../resources/scripts/terminal/db/dbConnect.php');
 
 $action = $_POST["action"];
 $terminal = $_POST["terminal"];

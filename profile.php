@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources/scripts/db/startProfile.php';
+    require 'resources/scripts/profile/db/startProfile.php';
 ?>
 <html>
 	<head>
@@ -12,7 +12,7 @@
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">-->
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="resources/scripts/font/fontManip.js"></script>
-		<script type="text/javascript" src="resources/scripts/profileInterface.js"></script>
+		<script type="text/javascript" src="resources/scripts/profile/profileInterface.js"></script>
         <link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="resources/styles/prostyle.css"/>
 	</head>
@@ -100,7 +100,7 @@
 					</div>
 				</div>
 				<div id="itemBox" class="zoneBox">
-					<?php //require 'resources\\scripts\\db\\startProfile.php' ?>
+					<?php //require 'resources\\scripts\\profile\\db\\startProfile.php' ?>
 				</div>-->
 				<div id="profTabContainer">
 					<div class="tabSubContainer frontRow">
