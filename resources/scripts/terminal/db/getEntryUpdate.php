@@ -16,7 +16,7 @@ $entryStatement = $pdo->prepare($entryQuery);
 $entryStatement->execute([':entryID' => $entryID]);
 $entry = $entryStatement->fetch(PDO::FETCH_ASSOC);
 
-$iconFilepath = "../../schemas/icons.json";
+$iconFilepath = "../../../schemas/icons.json";
 $iconFile = fopen($iconFilepath,"r");
 $iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
 fclose($iconFile);

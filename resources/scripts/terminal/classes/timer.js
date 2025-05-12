@@ -122,6 +122,7 @@ class Timer
         if(!this.#timerInterval)
         {
             this.#elapse = 0;
+            this.#pause = false;
 
             let results = null;
             

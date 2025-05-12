@@ -1087,7 +1087,7 @@ function executeAction(actionMap,newData,globalAction)
 
 			mbTimer.startTimer(maxTime,completeAction,actionMap);
 		});
-		$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
+		$("#executeButton").bind("mouseleave mouseup dragleave touchend", function()
 		{
 			$("#executeButton").removeClass("active");
 

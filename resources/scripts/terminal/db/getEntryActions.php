@@ -9,7 +9,7 @@ $playerAction = $_GET["action"];
 $entry_query = $pdo->query("SELECT * FROM {$dbName}.sim_entries WHERE id={$entryID}");
 $entry = ($entry_query->fetchAll(PDO::FETCH_ASSOC))[0];
 
-$iconFilepath = "../../schemas/icons.json";
+$iconFilepath = "../../../schemas/icons.json";
 $iconFile = fopen($iconFilepath,"r");
 $iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
 fclose($iconFile);
