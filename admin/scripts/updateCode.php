@@ -1,10 +1,10 @@
 <?php
 
-require('..\\..\\resources\\scripts\\db\\dbConnect.php');
+require('../../resources/scripts/db/dbConnect.php');
 
 $newCode = htmlentities(trim($_POST["newCode"]));
 
-$codeQuery = "  UPDATE cpu_term.activejob
+$codeQuery = "  UPDATE {$dbName}.activeJob
                 SET jobCode=:newCode";
 
 $codeStatement = $pdo->prepare($codeQuery);

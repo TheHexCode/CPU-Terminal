@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <?php
-    require('..\\resources\\scripts\\db\\dbConnect.php');
+    require('../resources/scripts/db/dbConnect.php');
 
-    $jobQuery = "SELECT jobCode FROM cpu_term.activeJob";
+    $jobQuery = "SELECT jobCode FROM {$dbName}.activeJob";
     $jobStatement = $pdo->prepare($jobQuery);
     $jobStatement->execute();
     $jobCode = $jobStatement->fetch(PDO::FETCH_COLUMN);

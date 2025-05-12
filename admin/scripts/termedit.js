@@ -257,7 +257,7 @@ class AdminTerminal
             {
                 accessLabel = "BREAK";
                 modifyLabel = "SLEAZE";
-                titleLabel = "ice NAME";
+                titleLabel = "ICE NAME";
                 contentsLabel = "EFFECTS";
 
                 entry["parsedAccess"] = '"0" disabled';
@@ -315,7 +315,7 @@ class AdminTerminal
                             '</div>' +
                             (entry["type"] === "ice" ?
                                 this.drawEntries(entry["subIce"]) + 
-                                '<button class="addEntryButton" onclick="addiceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
+                                '<button class="addEntryButton" onclick="addIceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
                             '</div>' : '');
         }, this);
 
@@ -427,26 +427,26 @@ class AdminTerminal
         $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]));
     }
 
-    addiceEntry(icon, iceID)
+    addIceEntry(icon, iceID)
     {
-        let targetice = this.#entryList[icon];
+        let targetIce = this.#entryList[icon];
 
         iceID.split("-").forEach(function (pathPart, pathIndex, pathArray)
         {
             if(pathIndex === pathArray.length-1)
             {
-                targetice = targetice[pathPart];
+                targetIce = targetIce[pathPart];
             }
             else
             {
-                targetice = targetice[pathPart]["subIce"];
+                targetIce = targetIce[pathPart]["subIce"];
             }
         });
 
-        let newiceEntry = {
+        let newIceEntry = {
             icon: icon,
             parent: iceID,
-            path: iceID + "-" + targetice["subIce"].length,
+            path: iceID + "-" + targetIce["subIce"].length,
             access: 1,
             modify: 1,
             title: "",
@@ -456,7 +456,7 @@ class AdminTerminal
             subIce: []
         };
 
-        targetice["subIce"].push(newiceEntry);
+        targetIce["subIce"].push(newIceEntry);
 
         this.#changesPending = true;
 
@@ -523,8 +523,6 @@ class AdminTerminal
 
     changeType(icon, entryID, newSelected)
     {
-        console.log("Test");
-
         let targetEntry = this.#entryList[icon];
 
         entryID.split("-").forEach(function (pathPart, pathIndex, pathArray)
@@ -666,8 +664,6 @@ class AdminTerminal
             "termAccess": Number($("#termAccess").val()),
             "entries": JSON.stringify(this.#entryList)
         };
-
-        console.log(JSON.stringify(this.#entryList));
         
         $.ajax({
             type: "POST",
@@ -733,14 +729,14 @@ function addEntry(event)
     admTerm.addEntry(icon);
 }
 
-function addiceEntry(event)
+function addIceEntry(event)
 {
     event.preventDefault();
 
     let icon = $(event.target).parents(".entryList")[0].dataset["icon"];
     let iceID = $(event.target).prevAll().last()[0].dataset["id"];
 
-    admTerm.addiceEntry(icon, iceID);
+    admTerm.addIceEntry(icon, iceID);
 }
 
 function deleteEntry(event)
@@ -807,8 +803,6 @@ function changeType(target, oldSelected)
 {
     oldSelected = oldSelected;
 
-    console.log("Test First");
-
     let icon = $(target).parents(".entryList")[0].dataset["icon"];
     let entryID = $(target).parents(".entry")[0].dataset["id"];
     let oldIndex = $(target).children().filter(function(index, option){return option.value === oldSelected})[0].index 
@@ -831,7 +825,7 @@ function changeType(target, oldSelected)
 
     if((oldSelected === "ice"))
     {
-        alertString += " - ice Name\n"
+        alertString += " - ICE Name\n"
     }
     else if((newSelected === "ice") || (!oldAtts["title"] && newAtts["title"]))
     {

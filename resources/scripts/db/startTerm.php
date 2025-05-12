@@ -5,7 +5,7 @@ include('resources/scripts/classes/terminal.php');
 
 $termSlug = $_GET["id"];
 
-$termQuery = "  SELECT  SQL_NO_CACHE id,displayName,access,state,stateData
+$termQuery = "  SELECT id,displayName,access,state,stateData
                 FROM {$dbName}.terminals
                 INNER JOIN {$dbName}.activeJob
                     ON terminals.jobCode=activeJob.jobCode
@@ -23,19 +23,19 @@ else
 {
     if($termResponse['state'] === "bricked")
     {
-        $user_query = $pdo->query(" SELECT  SQL_NO_CACHE charName
+        $user_query = $pdo->query(" SELECT charName
                                     FROM {$dbName}.users
                                     WHERE id={$termResponse['id']};");
 
         $termResponse['stateData'] = $user_query->fetch(PDO::FETCH_ASSOC)['charName'];
     }
 
-    $entry_query = $pdo->query("SELECT  SQL_NO_CACHE id,icon,path,type,access,modify,title,contents,state
+    $entry_query = $pdo->query("SELECT id,icon,path,type,access,modify,title,contents,state
                                 FROM {$dbName}.entries
                                 WHERE entries.terminal_id={$termResponse['id']} ");
     $entryResponse = $entry_query->fetchAll(PDO::FETCH_ASSOC);
 
-    $log_query = $pdo->query("  SELECT SQL_NO_CACHE accessLogs.id,user_id,users.charName,mask,reassignee,state
+    $log_query = $pdo->query("  SELECT accessLogs.id,user_id,users.charName,mask,reassignee,state
                                 FROM {$dbName}.accessLogs
                                 LEFT JOIN {$dbName}.users
                                     ON accessLogs.user_id=users.id

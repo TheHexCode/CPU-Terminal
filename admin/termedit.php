@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <?php
-    require('..\\resources\\scripts\\db\\dbConnect.php');
-    require ("scripts\\adminTerm.php");
+    require('../resources/scripts/db/dbConnect.php');
+    require ("scripts/adminTerm.php");
 
     $jobCode = htmlentities($_GET["jobCode"] ?? "", ENT_QUOTES, "UTF-8");
     $slug = htmlentities($_GET["slug"] ?? "", ENT_QUOTES, "UTF-8");
 
-    $terminal = new adminTerminal($pdo, $jobCode, $slug);
+    $terminal = new adminTerminal($pdo, $dbName, $jobCode, $slug);
 ?>
 <html>
     <head>
