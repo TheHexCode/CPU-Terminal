@@ -1,5 +1,3 @@
-USE cpu_term;
-
 UPDATE sim_active_codes
 	SET jobCode = 'ABC1234';
 
