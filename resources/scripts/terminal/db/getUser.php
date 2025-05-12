@@ -28,7 +28,7 @@ if($userResponse === false)
 }
 else
 {
-    /*
+    
     $functionQuery = "  SELECT DISTINCT cpu_functions.name,
                                         SUM(ml_functions.rank) AS 'rank',
                                         cpu_functions.type,
@@ -41,7 +41,7 @@ else
                         GROUP BY cpu_functions.name,
                                 cpu_functions.type,
                                 cpu_functions.hacking_cat";
-    */
+    /*
     $functionQuery = "  SELECT DISTINCT cpu_functions.name,
                                         SUM(ml_functions.rank) AS 'rank',
                                         cpu_functions.type,
@@ -54,25 +54,23 @@ else
                         GROUP BY cpu_functions.name,
                                 cpu_functions.type,
                                 cpu_functions.hacking_cat";
-
+    */
     $functionStatement = $pdo->prepare($functionQuery);
     $functionStatement->execute([':userID' => $userResponse["ml_id"]]);
     $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    /*
     $roleQuery = "  SELECT DISTINCT cpu_roles.name
                     FROM {$dbName}.ml_functions
                     INNER JOIN {$dbName}.user_functions ON ml_functions.id=user_functions.mlFunction_id
                     INNER JOIN {$dbName}.cpu_roles ON ml_functions.role_id=cpu_roles.id
                     WHERE user_id = :userID";
-    */
-
+    /*
     $roleQuery = "  SELECT DISTINCT cpu_roles.name
                     FROM {$dbName}.ml_functions
                     INNER JOIN {$dbName}.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
                     INNER JOIN {$dbName}.cpu_roles ON ml_functions.role_id=cpu_roles.id
                     WHERE user_id = :userID";
-
+    */
     $roleStatement = $pdo->prepare($roleQuery);
     $roleStatement->execute([':userID' => $userResponse["ml_id"]]);
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);

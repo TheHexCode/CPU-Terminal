@@ -198,7 +198,7 @@ function processCharInfo(charData)
 	});
 
 	// NEW FUNCTIONS
-
+	/*
 	srRoles = [];
 
 	charData.selfReport.forEach(function(func)
@@ -217,7 +217,7 @@ function processCharInfo(charData)
 	$("#secondaryRole > option[value='" + srRoles[1] + "']").prop("selected",true);
 
 	roleChange();
-
+	*/
 	// END NEW FUNCTIONS
 
 	charData["items"].forEach(function(itemID)
@@ -236,41 +236,6 @@ function processCharInfo(charData)
 	$(".postLogon").removeClass("hidden");
 	$(".mlLoginBox").addClass("hidden");
 }
-
-/*
-function statSubmit(event)
-{
-    event.preventDefault();
-
-	$("#saveText").html("SAVING...");
-	$("#saveText").removeClass("hidden");
-	
-	// LIST OF ITEMS
-	let items = [];
-	$("#itemBox input:checked").each(function() {
-		items.push(Number($(this).attr("data-id")));
-	});
-
-	$.ajax({
-		type: "POST",
-		dataType: "json",
-		url: "resources\\scripts\\profile\\db\\updateInventory.php",
-		data:
-		{
-			userID: $("#payloadCharName").attr("data-id"),
-			items: items
-		}
-	})
-	.done(function()
-	{
-		$("#saveText").html("SAVED!");
-	
-		setTimeout(function(){
-			$("#saveText").addClass("hidden");
-		},5000);
-	});
-}
-*/
 
 function openTab(event, tabName)
 {
@@ -337,12 +302,14 @@ function statSubmit(event)
 	$("#saveText").html("SAVING...");
 	$("#saveText").removeClass("hidden");
 
+	/*
 	// LIST OF FUNCTIONS
 	let funcs = [];
 	$(".checkGroup input:checked").each(function() {
 		funcs.push(Number($(this).attr("data-id")));
 	});
-	
+	*/
+
 	// LIST OF ITEMS
 	let items = [];
 	$(".itemSelect input:checked").each(function() {
@@ -352,11 +319,10 @@ function statSubmit(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources\\scripts\\profile\\db\\updateSelfReport.php",
+		url: "resources\\scripts\\profile\\db\\updateInventory.php",
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),
-			funcs: funcs,
 			items: items
 		}
 	})

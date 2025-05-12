@@ -58,12 +58,13 @@
 						<span class="dseg BG">~~~~~~</span>
 						<span class="dseg FG"></span>
 					</div>
+					<!-- NEW FUNCTIONS --
 					<hr/>
 					<div class="infoRole">
 						<label for="primaryRole">Primary Role:</label>
 						<select id="primaryRole" onchange="roleChange()">
 							<option value="none">-Select-</option>
-							<?php echo getRoleSelect(); ?>
+							<?php //echo getRoleSelect(); ?>
 							<option value="other">Other</option>
 						</select>
 					</div>
@@ -71,12 +72,11 @@
 						<label for="secondaryRole">Secondary Role:</label>
 						<select id="secondaryRole" onchange="roleChange()">
 							<option value="none">-Select-</option>
-							<?php echo getRoleSelect(); ?>
+							<?php //echo getRoleSelect(); ?>
 							<option value="other">Other</option>
 						</select>
-					</div>
+					</div>-->
 				</div>
-				<!--
 				<div class="zoneBox">
 					<h2 id="skillBoxHeader">
 						FUNCTIONS FROM MYLARP PROFILE:
@@ -100,8 +100,9 @@
 					</div>
 				</div>
 				<div id="itemBox" class="zoneBox">
-					<?php //require 'resources\\scripts\\profile\\db\\startProfile.php' ?>
-				</div>-->
+					<?php echo getItemsTab(); ?>
+				</div>
+				<!--NEW FUNCTIONS--
 				<div id="profTabContainer">
 					<div class="tabSubContainer frontRow">
 						<button class="profTab active" onclick="openTab(event,'stndTab')">STANDARD</button>
@@ -112,10 +113,10 @@
 						<button class="profTab" onclick="openTab(event,'itemsTab')">ITEMS</button>
 					</div>
 				</div>
-				<div id="stndTab" class="profContent"><!-- STANDARD-->
-					<?php echo getFunctionTab("STANDARD"); ?>
+				<div id="stndTab" class="profContent">
+					<?php //echo getFunctionTab("STANDARD"); ?>
 				</div>
-				<div id="priTab" class="profContent hidden"><!-- PRIMARY -->
+				<div id="priTab" class="profContent hidden">
 					<section class="checkGroup" data-role="none">
 						<h2>NO PRIMARY ROLE SELECTED</h2>
 						<p>Please select a <em>Primary_Role</em> in the dropdown above, even if it's <em>Other</em>.</p>
@@ -124,9 +125,9 @@
 						<h2>OTHER PRIMARY ROLE SELECTED</h2>
 						<p>Your <em>Primary_Role</em> is not one which provides any hacking benefits. If you have a <em>Secondary_Role</em>, make sure to select them in the dropdown above, or utilize the <em>Standard_Role</em> for your payload.</p>
 					</section>
-					<?php echo getFunctionTab("PRIMARY"); ?>
+					<?php //echo getFunctionTab("PRIMARY"); ?>
 				</div>
-				<div id="secTab" class="profContent hidden"><!-- SECONDARY -->
+				<div id="secTab" class="profContent hidden">
 					<section class="checkGroup" data-role="none">
 						<h2>NO SECONDARY ROLE SELECTED</h2>
 						<p>If you have a <em>Secondary_Role</em>, please select it in the dropdown above. Otherwise, if you do not have a <em>Secondary_Role</em>, this text is what you should expect to see.</p>
@@ -134,12 +135,12 @@
 					<section class="checkGroup hidden" data-role="other">
 						<h2>OTHER SECONDARY ROLE SELECTED</h2>
 						<p>Your <em>Secondary_Role</em> is not one which provides any hacking benefits. You'll have to rely on your <em>Primary_Role</em> or the <em>Standard_Role</em> for your payload.</p>
-					</sectio>
-					<?php echo getFunctionTab("SECONDARY"); ?>
+					</section>
+					<?php //echo getFunctionTab("SECONDARY"); ?>
 				</div>
-				<div id="itemsTab" class="profContent hidden"><!-- ITEMS -->
-					<?php echo getItemsTab(); ?>
-				</div>
+				<div id="itemsTab" class="profContent hidden">
+					<?php //echo getItemsTab(); ?>
+				</div>-->
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>
 					<div class="spacer"></div>
