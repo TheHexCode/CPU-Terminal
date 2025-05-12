@@ -1,1 +1,1 @@
-resources/scripts/db/dbConfig/dbConfig.php
+resources/scripts/db/dbConfig/*.php

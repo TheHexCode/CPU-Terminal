@@ -25,33 +25,25 @@
 
 > MULTIPLAYER INTERRUPT
 
+> MAKE ITEMS DATABASE-ABLE
+
+> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
+    - ICE > ICE NAME / GRADE > EFFECTS
+    - TRAP > LIST OF EFFECTS
+
+> REVERT TO MYLARP FUNCTION PULL
+
+> PREVIEW TERMINAL IN DASHBOARD
+
+> FIX EXECUTE DOUBLE-CLICK PROBLEM
+
 > LOW PRIORITY
-    - Why do you sometimes have to double-click the Execute Button?
     - Resume Timer on mouseenter (only if already started?)
     - Write message for empty active/passive
-    - Help Popup to say what functions do what
+    - Help Popup to say what functions do what (Databaseable)
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
     - DigiPet animation when activated
 
 >> COMPLETED
-    ✓ HACKING
-    ✓ ROOT EXPLOIT
-    ✓ BACKDOOR
-        - All timers should be dropped by 10s per rank of Backdoor
-    ✓ DARK WEB MERCHANT/OPERATOR
-        - Reveals Dark Web category
-    ✓ Display Active/Passive functions on Deck page
-    ✓ Disable buttons that are too expensive
-    ✓ REPEAT
-    ✓ MASK
-        - Need field at start to type a Mask into
-    ✓ REASSIGN / WIPE YOUR TRACKS
-    ✓ BRICK
-    ✓ RIGGED
-    ✓ ROOT DEVICE
-            - Rooting vs. Rooted
-    ✓ ALLOW STAFF TO UPDATE JOB CODE
-    ✓ ITEMS FROM OLD PROFILE PAGE
-    ✓ ALARM SENSE
