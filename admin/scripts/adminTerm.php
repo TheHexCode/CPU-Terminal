@@ -13,7 +13,7 @@ class adminTerminal
     private $stateData;
     private $entries;
 
-    function __construct($pdo, $jobCode, $slug)
+    function __construct($pdo, $dbName, $jobCode, $slug)
     {
         if($jobCode === "" || $slug === "")
         {
@@ -33,13 +33,13 @@ class adminTerminal
             $this->pageTitle = "EDIT";
             $this->jobCode = $jobCode;
             $this->slug = $slug;
-            $this->getTerminal($pdo);
+            $this->getTerminal($pdo, $dbName);
         }
     }
 
-    private function getTerminal($pdo)
+    private function getTerminal($pdo, $dbName)
     {
-        $terminalQuery = "  SELECT * FROM cpu_term.terminals
+        $terminalQuery = "  SELECT * FROM {$dbName}.terminals
                             WHERE   jobCode=:jobCode
                                 AND slug=:slug";
         $terminalStatement = $pdo->prepare($terminalQuery);
@@ -53,14 +53,14 @@ class adminTerminal
         $this->stateData = $terminalInfo["stateData"];
 
         $entryQuery = " SELECT icon, path, type, access, modify, title, contents, state
-                        FROM cpu_term.entries
+                        FROM {$dbName}.entries
                         WHERE terminal_id=:termID";
         $entryStatement = $pdo->prepare($entryQuery);
         $entryStatement->execute([':termID' => $this->termID]);
         $this->entries = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
 
         $slugQuery = "  SELECT slug
-                        FROM cpu_term.terminals
+                        FROM {$dbName}.terminals
                         WHERE jobCode=:jobCode";
         $slugStatement = $pdo->prepare($slugQuery);
         $slugStatement->execute([':jobCode' => $this->jobCode]);

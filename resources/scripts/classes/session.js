@@ -1,12 +1,23 @@
 class Session
 {
-    #totalTags;
-    #payTags;
-    #extTags;
+    #totalTags = 0;
+    #payTags = {
+        "hack": 0,
+        "csb": 0,
+        "dissim": 0,
+        "clec": 0
+    };
+    #extTags = 0;
+    #minExtra = 0;
 
     static TOTAL = "TOTAL";
     static PAYLOAD = "PAYLOAD";
     static EXTRA = "EXTRA";
+
+    static HACK = "hack";
+    static BEACON = "csb";
+    static DISSIM = "dissim";
+    static CLEC = "clec";
 
     #termID;
     #termState;
@@ -15,12 +26,11 @@ class Session
     #entryData;
     #repeatIcons = new Object();
 
+    #touched = false;
+    #copyableActions = [];
+
     constructor(termInfo, initialEntries)
     {
-        this.#totalTags = 0;
-        this.#payTags = 0;
-        this.#extTags = 0;
-
         this.#termID = termInfo["termID"];
         this.#termState = termInfo["termState"];
         this.#stateData = termInfo["stateData"];
@@ -56,37 +66,52 @@ class Session
         return this.#termID;
     }
 
+    getExtraTagMin()
+    {
+        return this.#minExtra;
+    }
+
+    setExtraTagMin(minChange)
+    {
+        this.#minExtra = this.#minExtra + minChange;
+    }
+
     getCurrentTags(tagType = Session.TOTAL)
     {
-        if(tagType === Session.TOTAL)
+        switch(tagType)
         {
-            return this.#totalTags;
-        }
-        else if(tagType === Session.PAYLOAD)
-        {
-            return this.#payTags;
-        }
-        else if(tagType === Session.EXTRA)
-        {
-            return this.#extTags;
+            case(Session.TOTAL):
+                return this.#totalTags;
+                break;
+            case(Session.PAYLOAD):
+                return Math.min(10,Object.values(this.#payTags).reduce(
+                        (sum, current) => sum + current,
+                    0));
+                break;
+            case(Session.EXTRA):
+                return this.#extTags;
+                break;
         }
     }
 
     setCurrentTags(newTags, tagType = Session.TOTAL)
     {
-        if(tagType === Session.TOTAL)
+        switch(tagType)
         {
-            this.#totalTags = newTags;
-        }
-        else if(tagType === Session.PAYLOAD)
-        {
-            this.#payTags = newTags;
-            this.#totalTags = newTags + this.#extTags;
-        }
-        else if(tagType === Session.EXTRA)
-        {
-            this.#extTags = newTags;
-            this.#totalTags = this.#payTags + newTags;
+            case(Session.TOTAL):
+                this.#totalTags = newTags;
+                break;
+            case(Session.HACK):
+            case(Session.BEACON):
+            case(Session.DISSIM):
+            case(Session.CLEC):
+                this.#payTags[tagType] = newTags;
+                this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.#extTags;
+                break;
+            case(Session.EXTRA):
+                this.#extTags = newTags;
+                this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + newTags;
+                break;
         }
     }
 
@@ -99,34 +124,52 @@ class Session
 
     getActionCost(entryID, action)
     {
+        let actionCost;
+
         if(entryID === "nonEntry")
         {
             switch(action)
             {
                 case("reass"):
-                    return 2;
+                    actionCost = 2;
+                    break;
                 case("wipe"):
-                    return 1;
+                    actionCost = 1;
+                    break;
                 case("brick"):
-                    return 4;
+                    actionCost = 4;
+                    break;
                 case("rig"):
                 case("root"):
-                    return 6;
+                    actionCost = 6;
+                    break;
             }
         }
         else
         {
             let searchResults = this.#entryData.find(entry => entry.id === Number(entryID));
 
-            let actionCost = Number(searchResults[action]);
+            actionCost = Number(searchResults[action]);
+
+            if((searchResults["type"] === "alarm") && (payload.getFunction("ALARM SENSE")))
+            {
+                actionCost = Math.max(actionCost - 1, 0);
+            }
 
             if(Object.keys(this.#repeatIcons).includes(searchResults["icon"]))
             {
                 actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
             }
 
-            return actionCost;
+            if((action === "access") && (this.#touched))
+            {
+                actionCost = Math.max(actionCost - 1, 0);
+            }
         }
+
+        actionCost += ((payload.getActiveEffect(19) || payload.getActiveEffect(20)) ? 1 : 0);
+
+        return actionCost;
     }
 
     setFunctionState(functionName, entryID, entryAction, functionRank)
@@ -155,7 +198,12 @@ class Session
                         this.#repeatIcons[icon] = newIcon;
                     }
                 }
-
+                break;
+            case "TOUCHED":
+                if((entryAction === "access") && (!this.#touched))
+                {
+                    this.#touched = true;
+                }
                 break;
         }
     }
@@ -274,5 +322,15 @@ class Session
                         "</ul></p>" +
                     */    "<p>Booting from Hard Drive C:\\<br/>" +
                         "ERROR: Missing OS");
+    }
+
+    isActionCopyable(action)
+    {
+        return this.#copyableActions.includes(action.toLowerCase());
+    }
+
+    makeActionCopyable(action)
+    {
+        this.#copyableActions.push(action.toLowerCase());
     }
 }

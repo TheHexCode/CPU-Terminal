@@ -1,10 +1,5 @@
 USE cpu_term;
 
-DELETE FROM terminals
-	WHERE slug='test';
-DELETE FROM accessLogs;
-DELETE FROM entries;
-
 UPDATE activeJob
 	SET jobCode = 'ABC1234';
 
@@ -13,7 +8,7 @@ INSERT INTO terminals
      VALUES
            ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL);
 
-SET @TermID = 1;
+ -- SET @TermID = 1;
 SET @TermID = LAST_INSERT_ID();
 
 INSERT INTO accessLogs

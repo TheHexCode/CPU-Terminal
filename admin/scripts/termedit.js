@@ -1,21 +1,21 @@
 class AdminTerminal
 {
     static #iconTypeMap = {
-        "files": ["ENTRY","TRAP"],
-        "darkweb": ["ENTRY", "TRAP"],
-        "cameras": ["ENTRY"],
-        "locks": ["ENTRY"],
-        "defenses": ["ENTRY"],
-        "utilities": ["POWER", "ALARM"]
+        "files": ["entry","trap"],
+        "darkweb": ["entry", "trap"],
+        "cameras": ["entry"],
+        "locks": ["entry"],
+        "defenses": ["entry"],
+        "utilities": ["power", "alarm"]
     };
 
     static #iconTypeStateMap = {
-        "ICE": [
+        "ice": [
             "initial",
             "break",
             "sleaze"
         ],
-        "ENTRY": {
+        "entry": {
             "files": [
                 "initial",
                 "read",
@@ -50,30 +50,30 @@ class AdminTerminal
                 "disabled"
             ]
         },
-        "TRAP": [
+        "trap": [
             "initial",
             "read",
             "copied",
             "deleted"
         ],
-        "POWER": [
+        "power": [
             "initial",
             "disabled"
         ],
-        "ALARM": [
+        "alarm": [
             "initial",
             "disabled"
         ]
     };
 
     static #iconTypeAlertMap = {
-        "ICE": {
+        "ice": {
             "access": true,
             "modify": false,
             "title": true,
             "contents": "effects"
         },
-        "ENTRY": {
+        "entry": {
             "files": {
                 "access": false,
                 "modify": false,
@@ -111,19 +111,19 @@ class AdminTerminal
                 "contents": true
             }
         },
-        "TRAP": {
+        "trap": {
             "access": false,
             "modify": false,
             "title": true,
             "contents": "effects"
         },
-        "POWER": {
+        "power": {
             "access": false,
             "modify": false,
             "title": false,
             "contents": true
         },
-        "ALARM": {
+        "alarm": {
             "access": false,
             "modify": false,
             "title": false,
@@ -157,13 +157,13 @@ class AdminTerminal
 
     getIconTypeAlerts(icon, type)
     {
-        if(type === "ENTRY")
+        if(type === "entry")
         {
-            return AdminTerminal.#iconTypeAlertMap["ENTRY"][icon];
+            return AdminTerminal.#iconTypeAlertMap["entry"][icon];
         }
         else
         {
-            return AdminTerminal.#iconTypeAlertMap[type.toUpperCase()];
+            return AdminTerminal.#iconTypeAlertMap[type];
         }
     }
 
@@ -269,7 +269,7 @@ class AdminTerminal
             }
             else
             {
-                entry["parsedContents"] = '"' + entry["contents"] + '" />';
+                entry["parsedContents"] = '"' + entry["contents"] + '" onchange="changeEntry(this)" />';
             }
 
             entryString +=  (entry["type"] === "ice" ? '<div class="iceBox">' : '') +
@@ -291,11 +291,11 @@ class AdminTerminal
                                 '<div class="entryGrid">' +
                                     '<div class="entryTypeRow">' +
                                         '<span class="entryTypeLabel">ENTRY TYPE:</span>' +
-                                        '<select class="entryType" onselect="changeType(this, \'' + entry["type"] + '\')">' +
+                                        '<select class="entryType" onchange="changeType(this, \'' + entry["type"] + '\')">' +
                                             this.#getEntryTypes(entry["icon"], entry["type"]) +
                                         '</select>' +
                                         '<span class="entryStateLabel">ENTRY STATE:</span>' +
-                                        '<select class="entryState" onselect="changeState(this)">' +
+                                        '<select class="entryState" onchange="changeState(this)">' +
                                             this.#getTypeStates(entry["icon"], entry["type"], entry["state"]) +
                                         '</select>' +
                                     '</div>' +
@@ -315,7 +315,7 @@ class AdminTerminal
                             '</div>' +
                             (entry["type"] === "ice" ?
                                 this.drawEntries(entry["subIce"]) + 
-                                '<button class="addEntryButton" onclick="addICEEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
+                                '<button class="addEntryButton" onclick="addIceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
                             '</div>' : '');
         }, this);
 
@@ -328,10 +328,10 @@ class AdminTerminal
 
         AdminTerminal.#iconTypeMap[icon].forEach(function(iconType)
         {
-            typeListString += "<option" + (type.toUpperCase() === iconType ? " selected" : "") + ">" + iconType + "</option>";
+            typeListString += "<option" + (type === iconType ? " selected" : "") + ">" + iconType + "</option>";
         });
 
-        typeListString += "<option" + (type.toUpperCase() === "ICE" ? " selected" : "") + ">ICE</option>";
+        typeListString += "<option" + (type === "ice" ? " selected" : "") + ">ice</option>";
 
         return typeListString;
     }
@@ -341,13 +341,13 @@ class AdminTerminal
         let stateList;
         let stateListString = "";
 
-        if(type.toUpperCase() === "ENTRY")
+        if(type === "entry")
         {
-            stateList = AdminTerminal.#iconTypeStateMap["ENTRY"][icon];
+            stateList = AdminTerminal.#iconTypeStateMap["entry"][icon];
         }
         else
         {
-            stateList = AdminTerminal.#iconTypeStateMap[type.toUpperCase()];
+            stateList = AdminTerminal.#iconTypeStateMap[type];
         }
 
         stateList.forEach(function(state)
@@ -427,26 +427,26 @@ class AdminTerminal
         $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]));
     }
 
-    addICEEntry(icon, iceID)
+    addIceEntry(icon, iceID)
     {
-        let targetICE = this.#entryList[icon];
+        let targetIce = this.#entryList[icon];
 
         iceID.split("-").forEach(function (pathPart, pathIndex, pathArray)
         {
             if(pathIndex === pathArray.length-1)
             {
-                targetICE = targetICE[pathPart];
+                targetIce = targetIce[pathPart];
             }
             else
             {
-                targetICE = targetICE[pathPart]["subIce"];
+                targetIce = targetIce[pathPart]["subIce"];
             }
         });
 
-        let newICEEntry = {
+        let newIceEntry = {
             icon: icon,
             parent: iceID,
-            path: iceID + "-" + targetICE["subIce"].length,
+            path: iceID + "-" + targetIce["subIce"].length,
             access: 1,
             modify: 1,
             title: "",
@@ -456,7 +456,7 @@ class AdminTerminal
             subIce: []
         };
 
-        targetICE["subIce"].push(newICEEntry);
+        targetIce["subIce"].push(newIceEntry);
 
         this.#changesPending = true;
 
@@ -539,10 +539,10 @@ class AdminTerminal
 
         //access = true
         //modify = true
-        //title = true or oldType = ICE
+        //title = true or oldType = ice
         //contents = true or oldTypeAtts[contents] = effects
 
-        let oldAtts = admTerm.getIconTypeAlerts(icon, targetEntry["type"].toUpperCase());
+        let oldAtts = admTerm.getIconTypeAlerts(icon, targetEntry["type"]);
         let newAtts = admTerm.getIconTypeAlerts(icon, newSelected);
 
         if(newAtts["access"])
@@ -572,7 +572,7 @@ class AdminTerminal
             }
         }
 
-        targetEntry["type"] = newSelected.toLowerCase();
+        targetEntry["type"] = newSelected;
 
         this.#changesPending = true;
 
@@ -595,7 +595,7 @@ class AdminTerminal
             }
         });
 
-        targetEntry["state"] = newSelected.toLowerCase();
+        targetEntry["state"] = newSelected;
 
         this.#changesPending = true;
     }
@@ -664,14 +664,14 @@ class AdminTerminal
             "termAccess": Number($("#termAccess").val()),
             "entries": JSON.stringify(this.#entryList)
         };
-
+        
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "scripts\\updateTerm.php",
             data:
             {
-                action: "SAVE",
+                action: (this.#termID === -1 ? "CREATE" : "SAVE"),
                 terminal: termInfo
             }
         })
@@ -679,6 +679,7 @@ class AdminTerminal
         {
             admTerm.clearChanges();
         });
+        
     }
 
     deleteTerminal()
@@ -728,14 +729,14 @@ function addEntry(event)
     admTerm.addEntry(icon);
 }
 
-function addICEEntry(event)
+function addIceEntry(event)
 {
     event.preventDefault();
 
     let icon = $(event.target).parents(".entryList")[0].dataset["icon"];
     let iceID = $(event.target).prevAll().last()[0].dataset["id"];
 
-    admTerm.addICEEntry(icon, iceID);
+    admTerm.addIceEntry(icon, iceID);
 }
 
 function deleteEntry(event)
@@ -748,7 +749,7 @@ function deleteEntry(event)
     let entryID = $(entry).attr("data-id");
     let ice = ($(entry).parent().hasClass("iceBox") && ($(entry).prev().length === 0));
 
-    let confirmText = "Delete entry " + entryID + " from the " + icon + " icon" + (ice ? ", as well as all entries encapsulated in this ICE" : "") + "? You can recover this entry if you refresh the page without saving changes.";
+    let confirmText = "Delete entry " + entryID + " from the " + icon + " icon" + (ice ? ", as well as all entries encapsulated in this ice" : "") + "? You can recover this entry if you refresh the page without saving changes.";
 
     if (confirm(confirmText) == true)
     {
@@ -764,7 +765,7 @@ function changeEntry(field, effectIndex = null)
 {
     let icon = $(field).parents(".entryList")[0].dataset["icon"];
     let entryID = $(field).parents(".entry")[0].dataset["id"];
-    let fieldType = field.classList[0].split("entry")[1].toLowerCase();
+    let fieldType = field.classList[0].split("entry")[1];
 
     admTerm.changeEntry(field.value, icon, entryID, fieldType, effectIndex);
 }
@@ -800,12 +801,12 @@ function deleteEffect(event, effectIndex)
 
 function changeType(target, oldSelected)
 {
-    oldSelected = oldSelected.toUpperCase();
+    oldSelected = oldSelected;
 
     let icon = $(target).parents(".entryList")[0].dataset["icon"];
     let entryID = $(target).parents(".entry")[0].dataset["id"];
     let oldIndex = $(target).children().filter(function(index, option){return option.value === oldSelected})[0].index 
-    let newSelected = $(target)[0].selectedOptions[0].value.toUpperCase();
+    let newSelected = $(target)[0].selectedOptions[0].value;
 
     let oldAtts = admTerm.getIconTypeAlerts(icon, oldSelected);
     let newAtts = admTerm.getIconTypeAlerts(icon, newSelected);
@@ -822,11 +823,11 @@ function changeType(target, oldSelected)
         alertString += " - Modify Cost\n";
     }
 
-    if((oldSelected === "ICE"))
+    if((oldSelected === "ice"))
     {
         alertString += " - ICE Name\n"
     }
-    else if((newSelected === "ICE") || (!oldAtts["title"] && newAtts["title"]))
+    else if((newSelected === "ice") || (!oldAtts["title"] && newAtts["title"]))
     {
         alertString += " - Title\n";
     }

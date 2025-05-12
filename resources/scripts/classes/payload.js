@@ -7,6 +7,7 @@ class Payload
     #functions;
     #roles;
     #items;
+    #activeEffects = [];
 
     constructor()
     {
@@ -75,11 +76,88 @@ class Payload
         return this.#items;
     }
 
+    getItem(itemID)
+    {
+        return this.#items.find(function(item)
+        {
+            return item.item_id === itemID
+        });
+    }
+
+    getEffect(effectID)
+    {
+        let targetItem = this.#items.find(function(item)
+        {
+            return item.effects.find(function(effect)
+            {
+                return effect.id === effectID;
+            });
+        });
+
+        return targetItem.effects.find(function(effect)
+        {
+            return effect.id === effectID;
+        });
+    }
+
+    useItemEffect(effectID)
+    {
+        let targetItem = this.#items.find(function(item)
+        {
+            return item.effects.find(function(effect)
+            {
+                return effect.id === effectID;
+            });
+        });
+
+        let targetEffect = targetItem.effects.find(function(effect)
+        {
+            return effect.id === effectID;
+        });
+
+        targetEffect["termUses"] += 1;
+        targetEffect["uses"] += 1;
+    }
+
+    setActiveEffect(effectID, state)
+    {
+        if(state)
+        {
+            if(!this.#activeEffects.includes(effectID))
+            {
+                this.#activeEffects.push(effectID);
+            }
+        }
+        else
+        {
+            if(this.#activeEffects.includes(effectID))
+            {
+                let effectIndex = this.#activeEffects.findIndex((eID) => eID === effectID);
+                this.#activeEffects.splice(effectIndex,1);
+            }
+        }
+    }
+
+    getActiveEffect(effectID)
+    {
+        return this.#activeEffects.includes(effectID);
+    }
+
+    getAllActiveEffects()
+    {
+        return this.#activeEffects;
+    }
+
     getActionTime()
     {
+        // POSITIVE IS A BUFF; NEGATIVE IS A DEBUFF
         let bd = (this.getFunction("BACKDOOR") * 10);
-        let pgUK9K;
-        let ssT0;
-        let ssT1;
+        let pgUK9K = (this.getActiveEffect(18) ? 5 : 0);
+        let ssT0 = (this.getActiveEffect(19) ? -30 : 0);
+        let ssT1 = (this.getActiveEffect(20) ? -15 : 0);
+
+        let actionTime = Math.max(10, 30 - (bd + pgUK9K + ssT0 + ssT1));
+
+        return actionTime;
     }
 }

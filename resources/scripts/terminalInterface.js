@@ -3,6 +3,13 @@ var payload = new Payload();
 var taTimer = new Timer("#termAccessTimer");
 var mbTimer = new Timer("#modalBodyTimer");
 
+$(document).ready(function()
+{
+	$("#payloadCodeInput").val("");
+	$("#terminalButton").attr("disabled",true);
+	$(".initItem input").prop("checked",false);
+});
+
 function tens(numStr)
 {
 	var tensFormat = new Intl.NumberFormat('en-US', { 
@@ -10,6 +17,14 @@ function tens(numStr)
 	});
 	
 	return tensFormat.format(Number(numStr));
+}
+
+function mmss(secs)
+{
+	let mm = tens(parseInt(secs/60));
+	let ss = tens(parseInt(secs%60));
+
+	return mm + ":" + ss
 }
 
 function codeLimit(event)
@@ -56,7 +71,8 @@ function submitCode(event)
 		url: "resources\\scripts\\db\\getUser.php",
 		data:
 		{
-			userCode: $("#payloadCodeInput")[0].value
+			userCode: $("#payloadCodeInput")[0].value,
+			termID: session.getTerminalID()
 		}
 	})
 	.done(function(userData)
@@ -104,13 +120,12 @@ function injectUserPayload(userPayload)
 								""//"<span>PIN: 333333</span>"
 							);
 
-		let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
+		let maxTime = 30; // Functions and Items should not affect this
 
 		$("#terminalButton").html("Cracking Terminal...");
 		$("#terminalButton").removeClass("noPayload");
 		taTimer.startTimer(maxTime,allowAccess);
-		//$("#terminalButton").prop("disabled",false);
-		
+				
 		//// TAG MANAGEMENT
 
 		// Required Tags
@@ -124,42 +139,12 @@ function injectUserPayload(userPayload)
 		
 		payloadTags = payload.getFunction("Hacking") * 2;
 		payloadTags += payload.getFunction("Root Exploit") * 2;
-		payloadTags = Math.min(payloadTags,10);
 
-		$("#payTags").html(tens(payloadTags));
+		updateTags(payloadTags,Session.HACK);
 
-		session.setCurrentTags(payloadTags, Session.PAYLOAD);
+		// Extra Tags + Gems/Remaining Tags
 
-		// Extra Tags
-
-		if($("#extTags").html() === "XX")
-		{
-			extraTags = 0;
-			$("#extTags").html(tens("00"));
-		}
-		else
-		{
-			extraTags = parseInt($("#extTags").html());
-		}
-
-		session.setCurrentTags(extraTags, Session.EXTRA);
-
-		// Gems/Remaining Tags
-
-		Gems.updateTagGems(Gems.ACCESS, requiredTags, payloadTags, session.getCurrentTags());
-
-		remainingTags = session.getCurrentTags() - requiredTags;
-
-		if(remainingTags < 0)
-		{
-			$("#remTagsBG").html("~~~");
-		}
-		else
-		{
-			$("#remTagsBG").html("~~");
-		}
-
-		$("#remTags").html(tens(remainingTags));
+		updateTags(0,Session.EXTRA);
 
 		// Disable Expensive Buttons
 		disableExpensiveButtons();
@@ -218,6 +203,17 @@ function injectUserPayload(userPayload)
 		if(payload.getFunction("ALARM SENSE"))
 		{
 			$("#alarmItem").removeClass("hidden");
+
+			$(".accessButton, .modifyButton").each(function(index,entryButton)
+			{
+				if($(entryButton).html() !== "N/A")
+				{
+					let action = entryButton.classList[0].split("Button")[0];
+					let newCost = session.getActionCost($(entryButton).attr("data-id"), action);
+					$(entryButton).attr("data-cost",newCost);
+					$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
+				};
+			});
 		}
 
 		if(payload.getFunction("BACKDOOR"))
@@ -253,21 +249,11 @@ function injectUserPayload(userPayload)
 			$("#repeatItem").append(repeatRoman);
 			$("#repeatItem").removeClass("hidden");
 
-			$(".subContRepeatTitle").append(repeatRoman);
-			$(".subContRepeatBox").removeClass("hidden");
+			$(".repeatBox .subContModifierTitle").append(repeatRoman);
+			$(".repeatBox").removeClass("hidden");
 		}
 
 		///////////// ITEMS
-
-		/*
-		SELECT items.id, name, tier, type, item_effects.id AS effect_id, charges, per_type, use_loc, effect
-		FROM cpu_term.items
-		INNER JOIN cpu_term.item_effects
-			ON items.id = item_effects.item_id
-		-- WHERE use_loc='autoinit';
-		-- arms, cust, deck, util, cons, impl
-		-- initial, action, item, puzzle, autoinit, autoact
-		*/
 
 		payload.getInventory().forEach(function(item)
 		{
@@ -275,25 +261,25 @@ function injectUserPayload(userPayload)
 
 			item.effects.forEach(function(effect)
 			{
+				$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
+
 				switch(effect.use_loc)
 				{
 					case("item"):
 					{
-						$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
-
 						let remCharges = effect.charges - effect.uses;
 
 						effectString += "<span class='itemActionRow'>" +
 											"<span class='itemMarks'>";
-
-						for(let i = 0; i < remCharges; i++)
-						{
-							effectString += "<img src='resources/images/actions/itemopen.png' />";
-						}
-
-						for(let j = 0; j < effect.uses; j++)
+						
+						for(let i = 0; i < effect.uses; i++)
 						{
 							effectString += "<img src='resources/images/actions/itemfilled.png' />";
+						}
+
+						for(let j = 0; j < remCharges; j++)
+						{
+							effectString += "<img src='resources/images/actions/itemopen.png' />";
 						}
 						
 						effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
@@ -304,7 +290,56 @@ function injectUserPayload(userPayload)
 					}
 					case("initial"):
 					{
+						let disabled = false;
+
+						let target = $(
+								".initItem > input[data-effect='" + effect.id + "'], " +
+								".initItem > input[data-effect*='[" + effect.id + ",'], " + 
+								".initItem > input[data-effect*='," + effect.id + ",'], " +
+								".initItem > input[data-effect*='," + effect.id + "]']"
+							)[0];
+
+						if((effect.charges === null) && (effect.uses > 0))
+						{
+							disabled = true;
+
+							$(target).prop("checked", true);
+							initCheck(target);
+						}
+						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						{
+							disabled = true;
+						}
+
+						if(effect.termUses > 0)
+						{
+							payload.setActiveEffect(effect.id, true);
+						}
+
+						$(target).prop("disabled", disabled);
+						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
+
 						$(".initItem[data-id='" + item.item_id + "']").removeClass("hidden");
+						
+						break;
+					}
+					case("action"):
+					{
+						switch(effect.id)
+						{
+							case(5): //COPYCAT
+								if(effect.uses > 0)
+								{
+									payload.setActiveEffect(effect.id, true);
+								}
+								break;
+							case(13): //DIGIPET
+								if(effect.uses > 0)
+								{
+									payload.setActiveEffect(effect.id, true);
+								}
+								break;
+						}
 					}
 					case("autoinit"):
 					{
@@ -313,16 +348,28 @@ function injectUserPayload(userPayload)
 							case(10): //CIPHERSYNC BEACON
 								$("#hackDetails").append("<span>[BEACON:&nbsp;&nbsp;+02]</span>");
 
-								newPayloadTags = Math.min(session.getCurrentTags(Session.PAYLOAD) + 2,10);
-
-								$("#payTags").html(tens(newPayloadTags));
-
-								session.setCurrentTags(newPayloadTags, Session.PAYLOAD);
-								Gems.updateTagGems(Gems.ACCESS, requiredTags, session.getCurrentTags(Session.PAYLOAD), session.getCurrentTags());
+								updateTags(2,Session.BEACON);
 								break;
 							case(18): //POWER GLOVE [UH9K]
+								payload.setActiveEffect(effect.id, true);
 								break;
 						}
+						break;
+					}
+					case("autoact"):
+					{
+						switch(effect.id)
+						{
+							case(15): //JOHNNY'S SPECIAL TOUCH
+								$(".touchedBox").removeClass("hidden");
+
+								if(effect.termUses > 0)
+								{
+									payload.setActiveEffect(effect.id, true);
+								}
+								break;
+						}
+						break;
 					}
 				}
 			});
@@ -334,27 +381,232 @@ function injectUserPayload(userPayload)
 				"</li>"
 			);
 		});
+
+		if(userPayload["hasAccessed"])
+		{
+			actionResults = [];
+
+			userPayload["prevActions"].forEach(function(entry)
+			{
+				results = $.getJSON(
+					"resources\\scripts\\db\\getEntryUpdate.php",
+					{
+						id: entry["id"],
+						newState: entry["newState"],
+						action: entry["action"],
+						userID: entry["user_id"]
+					}
+				);
+
+				actionResults.push(results);
+			});
+
+			$.when(...actionResults).done(function()
+			{
+				let results = arguments;
+
+				let resultsArray;
+
+				if(actionResults.length === 1)
+				{
+					resultsArray = [];
+					resultsArray.push(["0", results]);
+				}
+				else
+				{
+					resultsArray = Object.entries(results);
+				}
+
+				resultsArray.forEach(function(result)
+				{
+					let resultJSON = result[1][0];
+
+					if(resultJSON["userID"] === payload.getUserID())
+					{
+						$(resultJSON["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(resultJSON["title"]);
+						$(resultJSON["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(resultJSON["contents"]);
+						$(resultJSON["entryPath"] + " > .entryIntContainer > .accessInterface").html(resultJSON["access"]);
+						$(resultJSON["entryPath"] + " > .entryIntContainer > .modifyInterface").html(resultJSON["modify"]);
+						$(resultJSON["entryPath"] + " > .subIce").removeClass("subIce");
+
+						if(payload.getFunction("REPEAT"))
+						{
+							session.setFunctionState("REPEAT",resultJSON["entryID"],resultJSON["action"].toLowerCase(),payload.getFunction("REPEAT"));
+							updateEntryCosts("REPEAT",resultJSON["entryPath"],resultJSON["action"]);
+						}
+
+						if(payload.getActiveEffect(15)) // JOHNNY'S SPECIAL TOUCH
+						{
+							session.setFunctionState("TOUCHED",resultJSON["entryID"],resultJSON["action"].toLowerCase(),1);
+							updateEntryCosts("TOUCHED",resultJSON["entryPath"],resultJSON["action"]);
+						}
+					}
+				});
+			});
+
+			if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
+			{
+				userPayload["copyables"].forEach(function(copyableAction)
+				{
+					if(copyableAction !== "Item")
+					{
+						session.makeActionCopyable(copyableAction);
+					}
+				});
+			}
+
+			session.setCurrentTags(userPayload["remTags"] + requiredTags);
+
+			accessTerminal("hasAccessed");
+		}
 	}
 
 	$("#load").addClass("hidden");
 }
 
-function updateExtraTags(change)
+function initCheck(target)
+{
+	let effectID = $(target).attr("data-effect");
+
+	if(effectID === "dis") //Dissimulator Role Ability (+Hack)
+	{
+		if($(target).prop("checked"))
+		{
+			$("#hackDetails").append("<span id='disDetails'>[DISSIM:&nbsp;&nbsp;+02]</span>");
+
+			updateTags(2,Session.DISSIM);
+		}
+		else
+		{
+			$("#hackDetails #disDetails").remove();
+
+			updateTags(-2,Session.DISSIM);
+		}
+	}
+	else
+	{
+		effectID = JSON.parse(effectID);
+
+		if(typeof effectID === "number")
+		{
+			effectID = [effectID];
+		}
+
+		effectID.forEach(function(eID)
+		{
+			switch (eID)
+			{
+				case(1): //CMM Widow
+					if(payload.getItem(1))
+					{
+						session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+						updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+						payload.setActiveEffect(eID, $(target).prop("checked"));
+					}
+					break;
+				case(2): //Winton Wit (Embolden)
+					session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
+					updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+					// Carries Over Through Scene
+					break;
+				case(3): //Winton Wit (Inspire)
+					session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
+					updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+					// Carries Over Through Scene
+					break;
+				case(4): //CMM Cocoon
+					if(payload.getItem(3))
+					{
+						session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+						updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+						payload.setActiveEffect(eID, $(target).prop("checked"));
+					}
+					break;
+				case(9): //BRAD
+					if($(target).prop("checked"))
+					{
+						
+					}
+					else
+					{
+						
+					}
+					break;
+				case(19): //Shimmerstick T0
+				case(20): //Shimmerstick T1
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+					break;
+				case(22): //CLEC Fingers (+Hack)
+					if($(target).prop("checked"))
+					{
+						$("#hackDetails").append("<span id='clecDetails'>[CLEC FRS:+02]</span>");
+						updateTags(2,Session.CLEC);
+					}
+					else
+					{
+						$("#hackDetails #clecDetails").remove();
+						updateTags(-2,Session.CLEC);
+					}
+
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+					break;
+			}
+		}, this);
+	}
+}
+
+function updateTags(change, tagType)
 {
 	let payTags = session.getCurrentTags(Session.PAYLOAD);
 	let extTags = session.getCurrentTags(Session.EXTRA);
 	let reqTags = parseInt($("#reqTags").html());
+	let newTags = 0;
 
-	extTags = Math.min(
-		Math.max(extTags + change, 0),
-		99 - ( payTags - reqTags )
-	);
+	switch(tagType)
+	{
+		case(Session.HACK):
+		case(Session.BEACON):
+		case(Session.DISSIM):
+		case(Session.CLEC):
+			newTags = payTags + change;
 
-	session.setCurrentTags(extTags, Session.EXTRA);
+			if((newTags >= 10) && ($("#hackMax").length === 0))
+			{
+				$("#hackDetails").after("<span id='hackMax'>(MAX: 10)</span>");
+			}
+	
+			session.setCurrentTags(change, tagType);
+
+			payTags = session.getCurrentTags(Session.PAYLOAD);
+			break;
+		case(Session.EXTRA):
+			newTags = Math.min(
+				Math.max(extTags + change, session.getExtraTagMin()),
+				99 - ( payTags - reqTags )
+			);
+
+			if(newTags < 0)
+			{
+				$("#extTagsBG").html("~~~");
+			}
+			else
+			{
+				$("#extTagsBG").html("~~");
+			}
+
+			session.setCurrentTags(newTags, Session.EXTRA);
+
+			extTags = session.getCurrentTags(Session.EXTRA);
+			break;
+	}
 
 	$("#extTags").html(tens(extTags));
 
-	Gems.updateTagGems(Gems.ACCESS, reqTags, payTags, session.getCurrentTags());
+	$("#payTags").html(tens(session.getCurrentTags(Session.PAYLOAD)));
+
+	Gems.updateTagGems(Gems.ACCESS, reqTags, (extTags < 0 ? payTags + extTags : payTags), session.getCurrentTags());
 
 	remTags = session.getCurrentTags() - reqTags;
 
@@ -378,7 +630,7 @@ function allowAccess()
 
 function accessTerminal(event)
 {
-	if(!event.target.disabled)
+	if((event === "hasAccessed") || (!event.target.disabled))
 	{
 		let reqTags = parseInt($("#reqTags").html());
 
@@ -401,6 +653,18 @@ function accessTerminal(event)
 					logMask = $("#payloadMask").val();
 				}
 			}
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: payload.getAllActiveEffects(),
+					termID: session.getTerminalID()
+				}
+			});
 			
 			$.ajax({
 				type: "POST",
@@ -410,7 +674,8 @@ function accessTerminal(event)
 				{
 					termID: session.getTerminalID(),
 					userID: payload.getUserID(),
-					userMask: logMask
+					userMask: logMask,
+					userTags: session.getCurrentTags()
 				}
 			})
 			.done(function(logID)
@@ -487,9 +752,9 @@ function takeAction(target)
 			)
 			.done(function() {
 				let actionMap = {
+					userID: payload.getUserID(),
 					actionType: "entry",
 					entryID: entryID,
-					entryPath: entryPath,
 					actionCost: session.getActionCost(entryID,action),
 					upperAction: upperAction,
 					entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
@@ -522,17 +787,17 @@ function takeAction(target)
 			break;
 		}
 		// ICE Entry
-		case "unwrap":
 		case "break":
+		case "sleaze":
 		{
 			let entryPath = "#" + $(target).parents(".entry")[0].id;
 
 			let actionMap = {
+				userID: payload.getUserID(),
 				actionType: "ice",
 				entryID: entryID,
-				entryPath: entryPath,
 				actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
-				upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+				upperAction: upperAction,
 				entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
 			};
 
@@ -556,6 +821,7 @@ function takeAction(target)
 			let entryPath = "#" + $(target).parents('.logEntry')[0].id;
 
 			let actionMap = {
+				userID: payload.getUserID(),
 				actionType: "log",
 				entryID: entryID,
 				actionCost: session.getActionCost("nonEntry",action),
@@ -582,10 +848,11 @@ function takeAction(target)
 		case "root":
 		{
 			let actionMap = {
+				userID: payload.getUserID(),
 				actionType: action,
 				entryID: session.getTerminalID(),
 				actionCost: session.getActionCost("nonEntry",action),
-				upperAction: action.charAt(0).toUpperCase() + action.slice(1),
+				upperAction: upperAction,
 				entryName: "Device"
 			};
 
@@ -603,6 +870,33 @@ function takeAction(target)
 			break;
 		}
 		// Item Activation
+		case ("item"):
+			let effect = payload.getEffect(Number(target.dataset["effect"]));
+			let effectCost = effect["effect"].substring(effect["effect"].indexOf("+"), effect["effect"].indexOf(" "));
+
+			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
+
+			let actionMap = {
+				userID: payload.getUserID(),
+				actionType: action,
+				entryID: Number(target.dataset["effect"]),
+				actionCost: Number(effectCost) * -1,
+				upperAction: "Activate",
+				entryName: $(entryPath + " .itemName").html()
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"],
+				text: "Confirm",
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
+			break;
 	}
 }
 
@@ -651,6 +945,14 @@ function setupConfirmModal(actionMap,buttons)
 	let extraBeforeText = "";
 	let extraAfterText = "";
 	let quote = "\"";
+	let costText = " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s");
+
+	let copycatText = 	((payload.getItem(4)) && (!payload.getActiveEffect(5)) && (session.isActionCopyable(actionMap["upperAction"])) ?
+						"<br/><br/>" +
+						"<span class='copycatBox'>" +
+							"<input id='copycatActivate' type='checkbox'/>" +
+							"<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
+						"</span>" : "");
 
 	switch(actionMap["upperAction"])
 	{
@@ -695,12 +997,30 @@ function setupConfirmModal(actionMap,buttons)
 			extraAfterText = "<br/><br/><span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>"
 			break;
 		}
+		case("Activate"):
+		{
+			let effect = payload.getEffect(actionMap["entryID"]);
+
+			let totCharges = effect["charges"];
+			let totCharge_S = (totCharges === 1 ? "" : "s");
+			let remCharges = effect["charges"] - effect["uses"];
+			let remCharge_S = (remCharges === 1 ? "" : "s");
+			let upperPerType = effect["per_type"].charAt(0).toUpperCase() + effect["per_type"].slice(1);
+
+			actionMap["remCharges"] = remCharges - 1;
+			actionMap["usedCharges"] = totCharges - (remCharges - 1);
+
+			costText = " to gain " + effect["effect"];
+
+			extraAfterText = "<br/><br/>This item may be used <b>" + totCharges + "</b> time" + totCharge_S + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + remCharge_S + " left.";
+			break;
+		}
 	}
 
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?" +
-		extraAfterText
+		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + costText + "?" +
+		extraAfterText + copycatText
 	);
 
 	$(".modalBodyText").removeClass("hidden");
@@ -733,58 +1053,113 @@ function closeModal(event)
 
 function executeAction(actionMap,newData,globalAction)
 {
-	let maxTime = 30 - (10 * payload.getFunction("BACKDOOR"));
-
-	Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-
-	$("#actionModal").width($("#main").width());
-
-	$("#actionModal .modalButtonRow").html("");
-	$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
-
-	$("#executeButton").bind("mousedown touchstart", function(event)
+	if(!$("#copycatActivate").prop("checked"))
 	{
-		event.preventDefault();
+		let maxTime = payload.getActionTime();
 
-		$("#executeButton").addClass("active");
+		if(actionMap["actionType"] === "item")
+		{
+			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+		}
+		else
+		{
+			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+		}
+
+		$("#actionModal").width($("#main").width());
+
+		$("#actionModal .modalButtonRow").html("");
+		$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
+
+		if((payload.getItem(12)) && (!payload.getActiveEffect(13)))
+		{
+			$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>");
+		}
+
+		$("#executeButton").bind("mousedown touchstart", function(event)
+		{
+			event.preventDefault();
+
+			$("#executeButton").addClass("active");
+
+			actionMap["newData"] = newData;
+			actionMap["global"] = globalAction;
+
+			mbTimer.startTimer(maxTime,completeAction,actionMap);
+		});
+		$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
+		{
+			$("#executeButton").removeClass("active");
+
+			mbTimer.pauseTimer();
+		});
+		$("#executeButton").bind("contextmenu", function(event)
+		{
+			if(event.originalEvent.pointerType === "touch")
+			{
+				event.preventDefault();
+				$("#executeButton").trigger("touchstart");
+			}
+		})
+
+		$("#digiPetButton").bind("mouseup", function()
+		{
+			$("#digiPetButton").remove();
+			$("#executeButton").prop("disabled", true);
+
+			actionMap["newData"] = newData;
+			actionMap["global"] = globalAction;
+			actionMap["digipet"] = true;
+
+			mbTimer.startTimer(maxTime,completeAction,actionMap);
+		});
+
+		$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + (actionMap["actionCost"] < 0 ? "+" + (actionMap["actionCost"] * -1) : actionMap["actionCost"]) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s"));
+
+		$(".modalBodyText").addClass("hidden");
+		$("#modalBodyTimer .mmss .FG").html(mmss(maxTime));
+		$("#modalBodyTimer .hundsec .FG").html("00");
+		$("#modalBodyTimer").removeClass("hidden");
+
+		$("#actionModal .modalButtonRow").attr("data-mode","execute");
+		
+		$("#load").addClass("hidden");
+		$("#modalBG").css("display","flex");
+	}
+	else //USING COPYCAT
+	{
+		payload.setActiveEffect(5, true);
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "resources\\scripts\\db\\useItems.php",
+			data:
+			{
+				userID: payload.getUserID(),
+				effectIDs: 5,
+				termID: session.getTerminalID()
+			}
+		});
 
 		actionMap["newData"] = newData;
 		actionMap["global"] = globalAction;
 
-		mbTimer.startTimer(maxTime,completeAction,actionMap);
-	});
-	$("#executeButton").bind("mouseleave mouseup touchleave touchend", function()
-	{
-		$("#executeButton").removeClass("active");
+		mbTimer.skipTimer(completeAction,actionMap);
 
-		mbTimer.pauseTimer();
-	});
-	$("#executeButton").bind("contextmenu", function(event)
-	{
-		if(event.originalEvent.pointerType === "touch")
-		{
-			event.preventDefault();
-			$("#executeButton").trigger("touchstart");
-		}
-	})
+		$("#load").removeClass("hidden");
+	}
+}
 
-	$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s"));
-
-	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + " \"" + actionMap["entryName"] + "\" for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s") + "?"
-	);
-	$(".modalBodyText").addClass("hidden");
-	$("#modalBodyTimer .mmss .FG").html("00:" + tens(maxTime));
-	$("#modalBodyTimer").removeClass("hidden");
-
-	$("#actionModal .modalButtonRow").attr("data-mode","execute");
+function activateDigiPet(actionMap, newData, globalAction)
+{
 	
-	$("#load").addClass("hidden");
-	$("#modalBG").css("display","flex");
 }
 
 function completeAction(actionMap)
 {
+	$("#load").addClass("hidden");
+
 	closeModal("executed");
 
 	//actionMap:
@@ -802,22 +1177,28 @@ function completeAction(actionMap)
 			// access
 			// modify
 		// upperAction
-	
+
 	switch(actionMap["actionType"])
 	{
 		case("entry"):
 		case("ice"):
 		{
-			$(actionMap["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
-			$(actionMap["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
-			$(actionMap["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
-			$(actionMap["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
-			$(actionMap["entryPath"] + " > .subIce").removeClass("subIce");
+			$(actionMap["results"]["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
+			$(actionMap["results"]["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
+			$(actionMap["results"]["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
+			$(actionMap["results"]["entryPath"] + " > .entryIntContainer > .modifyInterface").html(actionMap["results"]["modify"]);
+			$(actionMap["results"]["entryPath"] + " > .subIce").removeClass("subIce");
 
 			if(payload.getFunction("REPEAT"))
 			{
 				session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
-				updateEntryCosts(actionMap["entryPath"],actionMap["upperAction"]);
+				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["upperAction"]);
+			}
+
+			if(payload.getItem(14)) //JOHNNY'S SPECIAL TOUCH
+			{
+				session.setFunctionState("TOUCHED",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),1);
+				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["upperAction"]);
 			}
 			break;
 		}
@@ -844,16 +1225,56 @@ function completeAction(actionMap)
 		case("root"):
 			session.rootTerminal(new Date());
 			break;
+		case("item"):
+			console.log(actionMap);
+
+			$(".itemButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
+
+			if(actionMap["remCharges"] <= 0)
+			{
+				$(".itemButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
+			}
+
+			payload.useItemEffect(actionMap["entryID"])
+			break;
 	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	disableExpensiveButtons();
+
+	if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
+	{
+		if((actionMap["upperAction"] !== "Activate") && (!session.isActionCopyable(actionMap["upperAction"])))
+		{
+			session.makeActionCopyable(actionMap["upperAction"]);
+		}
+	}
+
+	if(Object.keys(actionMap).includes("digipet"))
+	{
+		if(actionMap["digipet"])
+		{
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: 13,
+					termID: session.getTerminalID()
+				}
+			})
+
+			payload.setActiveEffect(13,true);
+		}
+	}
 }
 
-function updateEntryCosts(entryPath, entryAction)
+function updateEntryCosts(reducer, entryPath, entryAction)
 {
-	if((entryAction === "Access") || (entryAction === "Modify"))
+	if((reducer === "REPEAT") && ((entryAction === "Access") || (entryAction === "Modify")))
 	{
 		let iconID = entryPath.split("-")[0] + "Content";
 
@@ -867,5 +1288,35 @@ function updateEntryCosts(entryPath, entryAction)
 		});
 
 		$(iconID + " .repeatIndicator" + entryAction).removeClass("dimmed");
+	}
+	else if((reducer === "TOUCHED") && (entryAction === "Access"))
+	{
+		$("." + entryAction.toLowerCase() + "Button").each(function(index,entryButton){
+			if($(entryButton).html() !== "N/A")
+			{
+				let newCost = session.getActionCost($(entryButton).attr("data-id"), entryAction.toLowerCase());
+				$(entryButton).attr("data-cost",newCost);
+				$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
+			};
+		});
+
+		$(".touchedIndicator").removeClass("dimmed");
+
+		if(!payload.getActiveEffect(15))
+		{
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources\\scripts\\db\\useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: 15,
+					termID: session.getTerminalID()
+				}
+			})
+
+			payload.setActiveEffect(15,true);
+		}
 	}
 }

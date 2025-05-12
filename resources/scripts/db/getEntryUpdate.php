@@ -2,11 +2,19 @@
 
 require('dbConnect.php');
 
+
 $entryID = $_GET["id"];
 $newState = $_GET["newState"];
+// OPTIONAL
+$userID = $_GET["userID"] ?? null;
+$action = $_GET["action"] ?? null;
 
-$entry_query = $pdo->query("SELECT * FROM cpu_term.entries WHERE id={$entryID}");
-$entry = ($entry_query->fetchAll(PDO::FETCH_ASSOC))[0];
+$entryQuery = " SELECT * FROM {$dbName}.entries 
+                WHERE id=:entryID";
+
+$entryStatement = $pdo->prepare($entryQuery);
+$entryStatement->execute([':entryID' => $entryID]);
+$entry = $entryStatement->fetch(PDO::FETCH_ASSOC);
 
 $iconFilepath = "../../schemas/icons.json";
 $iconFile = fopen($iconFilepath,"r");
@@ -15,7 +23,11 @@ fclose($iconFile);
 
 $newEntry = array();
 
-$newEntry["terminal_id"] = $entry["terminal_id"];
+//$newEntry["terminal_id"] = $entry["terminal_id"];
+$newEntry["userID"] = intval($userID);
+$newEntry["entryID"] = intval($entryID);
+$newEntry["action"] = $action;
+$newEntry["entryPath"] = "#" . $entry["icon"] . "-" . $entry["path"];
 
 if($entry["type"] === "ice")
 {
@@ -77,11 +89,11 @@ else
     }
 
     $newEntry["access"] = ($stateGuide["access"]["enabled"]) ?
-                            'Access: <button class="accessButton" data-enabled="true" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
+                            'Access: <button class="accessButton" data-enabled="true" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
                             'Access: <button class="accessButton" data-enabled="false" disabled="">N/A</button>';
 
     $newEntry["modify"] = ($stateGuide["modify"]["enabled"]) ?
-                            'Modify: <button class="modifyButton" data-enabled="true" data-id=' . $entry["id"] . ' onclick="entryAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
+                            'Modify: <button class="modifyButton" data-enabled="true" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                             'Modify: <button class="modifyButton" data-enabled="false" disabled="">N/A</button>';
 }
 

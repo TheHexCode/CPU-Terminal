@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources\\scripts\\db\\startTerm.php';
+    require 'resources/scripts/db/startTerm.php';
 ?>
 <html>
 	<head>
@@ -129,12 +129,12 @@
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button class="extraButton" onMouseUp="updateExtraTags(-1)"><b>-</b></button>
+								<button class="extraButton" onMouseUp="updateTags(-1, Session.EXTRA)"><b>-</b></button>
 								<div class="lcdBox blue">
-									<span class="dseg BG">~~</span>
+									<span id="extTagsBG" class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
-								<button class="extraButton" onMouseUp="updateExtraTags(1)">+</button>
+								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">+</button>
 							</div>
 						</div>
 					</div>
@@ -210,6 +210,7 @@
 							</label>
 						</li>
 					</ul>
+					<div class="accessSpacer"></div>
 					<div class="accessBox">
 						<div class="accessHeader">
 							TAGS REMAINING AFTER ACCESS:
@@ -266,11 +267,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">FILES</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -281,11 +288,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">DARK WEB FILES</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -296,11 +309,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">CAMERAS</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -311,11 +330,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">LOCKS</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -326,11 +351,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">AUTOMATED DEFENSIVE SYSTEMS</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -341,11 +372,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">UTILITY SYSTEMS</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -356,11 +393,17 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">PUZZLES</span>
 								</div>
-								<div class="subContRepeatBox hidden">
-									<span class="subContRepeatTitle">REPEAT</span>
-									<div class="subContRepeatAM">
-										<span class="subContRepeatIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContRepeatIndicator repeatIndicatorModify dimmed">MODIFY</span>
+								<div class="subContModifierBox touchedBox hidden">
+									<span class="subContModifierTitle">TOUCHED</span>
+									<div class="subContModifierTouched">
+										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
+									</div>
+								</div>
+								<div class="subContModifierBox repeatBox hidden">
+									<span class="subContModifierTitle">REPEAT</span>
+									<div class="subContModifierAM">
+										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
+										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
 									</div>
 								</div>
 								<div class="subContBody">
@@ -379,9 +422,9 @@
 									<ul id="actList">
 										<li id="brickItem" class="actItem hidden">
 											<span class="actionName">BRICK</span>
-											<button class="brickButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">4 Tags</button>
+											<button class="brickButton" data-enabled="true" data-cost="4" onclick="takeAction(this)">4 Tags</button>
 										</li>
-										<li id="riggItem" class="actItem hidden">
+										<li id="rigItem" class="actItem hidden">
 											<span class="actionName">RIGGED</span>
 											<button class="rigButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
 										</li>

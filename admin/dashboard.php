@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <?php
-    require('..\\resources\\scripts\\db\\dbConnect.php');
+    require('../resources/scripts/db/dbConnect.php');
 
-    $activeQuery = "SELECT * FROM cpu_term.activeJob";
+    $activeQuery = "SELECT * FROM {$dbName}.activeJob";
     $activeStatement = $pdo->prepare($activeQuery);
     $activeStatement->execute();
     $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
 
-    $termsQuery = " SELECT jobCode, slug FROM cpu_term.terminals";
+    $termsQuery = " SELECT jobCode, slug FROM {$dbName}.terminals";
     $termsStatement = $pdo->prepare($termsQuery);
     $termsStatement->execute();
     $termsList = $termsStatement->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);

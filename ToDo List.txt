@@ -1,59 +1,49 @@
-> FUNCTION FUNCTIONALITY
-    >> INITIAL
-    >> ACTIVE
-    >> PASSIVE
-        - ALARM SENSE
-
 > INVENTORY
-    > 1 - CMM Widow (1)
-    > 2 - Winton Wit (2,3)
-    > 3 - CMM Cocoon (id+1)
-    - 4 - Copycat
-    > 5 - Pocket Hacker T0
-    > 6 - Pocket Hacker T1
-    > 7 - Budget Cyberdeck
-    > 8 - Budget Remote Access Drive
-    - 9 - CipherSync Beacon
-    > 10 - CRD Spider Cyberdeck T0
-    > 11 - CRD Spider Cyberdeck T1
-    - 12 - DigiPet
-   -> 13 - FKD DC-17
-    - 14 - Johnny's Special Touch
-    > 15 - MM Console
-    - 16 - Nerd's Safety Console
-    - 17 - Power Glove [UH9K]
-    > 18 - Shimmerstick T0
-    > 19 - Shimmerstick T1
-    > 20 - Vigil
-    > 21 - CLEC Fingers
-    > 22 - Canopic Jar [Magsweep]
-
-> COOKIE / DB UPDATES
-    - OOC Action Log
+    ✓ 1 - CMM Widow (1)
+    ✓ 2 - Winton Wit (2,3)
+    ✓ 3 - CMM Cocoon (id+1)
+    ✓ 4 - Copycat
+    ✓ 5 - Pocket Hacker T0
+    ✓ 6 - Pocket Hacker T1
+    ✓ 7 - Budget Cyberdeck
+    ✓ 9 - CipherSync Beacon
+    ✓ 10 - CRD Spider Cyberdeck T0
+    ✓ 11 - CRD Spider Cyberdeck T1
+    ✓ 12 - DigiPet
+    ✓ 14 - Johnny's Special Touch
+    ✓ 15 - MM Console
+    ✓ 17 - Power Glove [UH9K]
+    ✓ 18 - Shimmerstick T0
+    ✓ 19 - Shimmerstick T1
+    ✓ 21 - CLEC Fingers
+    --------------------------------
+    X 8 - Budget Remote Access Drive
+    X 13 - FKD DC-17
+    X 16 - Nerd's Safety Glasses
+    X 20 - Vigil
+    X 22 - Canopic Jar [Magsweep]
 
 > MULTIPLAYER INTERRUPT
 
+> MAKE ITEMS DATABASE-ABLE
+
+> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
+    - ICE > ICE NAME / GRADE > EFFECTS
+    - TRAP > LIST OF EFFECTS
+
+> REVERT TO MYLARP FUNCTION PULL
+
+> PREVIEW TERMINAL IN DASHBOARD
+
+> FIX EXECUTE DOUBLE-CLICK PROBLEM
+
 > LOW PRIORITY
+    - Resume Timer on mouseenter (only if already started?)
     - Write message for empty active/passive
-    - Help Popup to say what functions do what
+    - Help Popup to say what functions do what (Databaseable)
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
+    - DigiPet animation when activated
 
 >> COMPLETED
-    ✓ HACKING
-    ✓ ROOT EXPLOIT
-    ✓ BACKDOOR
-        - All timers should be dropped by 10s per rank of Backdoor
-    ✓ DARK WEB MERCHANT/OPERATOR
-        - Reveals Dark Web category
-    ✓ Display Active/Passive functions on Deck page
-    ✓ Disable buttons that are too expensive
-    ✓ REPEAT
-    ✓ MASK
-        - Need field at start to type a Mask into
-    ✓ REASSIGN / WIPE YOUR TRACKS
-    ✓ BRICK
-    ✓ RIGGED
-    ✓ ROOT DEVICE
-            - Rooting vs. Rooted

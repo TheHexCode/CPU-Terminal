@@ -63,6 +63,9 @@ function processLogin(loginData)
 		console.log(loginData);
 		alert("Login Failed! Please Try Again");
 
+		$("#mlEmail").prop("readonly",false);
+		$("#mlPass").prop("readonly",false);
+
 		$("#load").addClass("hidden");
 	}
 	else
@@ -194,6 +197,29 @@ function processCharInfo(charData)
 		$("#" + category + "List").removeClass("hidden");
 	});
 
+	// NEW FUNCTIONS
+
+	srRoles = [];
+
+	charData.selfReport.forEach(function(func)
+	{
+		if((func["role_name"] !== "Standard") && (!srRoles.includes(func["role_name"])))
+		{
+			srRoles.push(func["role_name"]);
+		}
+
+		$(".checkGroup input[data-id='" + func["id"] + "']").prop("checked",true);
+	});
+
+	console.log(srRoles);
+
+	$("#primaryRole > option[value='" + srRoles[0] + "']").prop("selected",true);
+	$("#secondaryRole > option[value='" + srRoles[1] + "']").prop("selected",true);
+
+	roleChange();
+
+	// END NEW FUNCTIONS
+
 	charData["items"].forEach(function(itemID)
 	{
 		let inputID = "#item_" + itemID;
@@ -211,6 +237,7 @@ function processCharInfo(charData)
 	$(".mlLoginBox").addClass("hidden");
 }
 
+/*
 function statSubmit(event)
 {
     event.preventDefault();
@@ -231,6 +258,105 @@ function statSubmit(event)
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),
+			items: items
+		}
+	})
+	.done(function()
+	{
+		$("#saveText").html("SAVED!");
+	
+		setTimeout(function(){
+			$("#saveText").addClass("hidden");
+		},5000);
+	});
+}
+*/
+
+function openTab(event, tabName)
+{
+	$(".profContent").addClass("hidden");
+	$(".profTab").removeClass("active");
+	
+	if($(event.currentTarget).parent().hasClass("backRow"))
+	{
+		$("#profTabContainer").css("flex-direction","column");
+	}
+	else
+	{
+		$("#profTabContainer").css("flex-direction","column-reverse");
+	}
+	
+	$("#"+tabName).removeClass("hidden");
+	$(event.currentTarget).addClass("active");
+}
+
+function roleChange()
+{
+	let priRole = $("#primaryRole")[0].selectedOptions[0].value;
+	let secRole = $("#secondaryRole")[0].selectedOptions[0].value;
+	
+	$("#primaryRole > option").prop("hidden",false);
+	$("#secondaryRole > option").prop("hidden",false);
+	
+	switch (priRole)
+	{
+		case "other":
+		case "none":
+			$("#priButton").html("PRIMARY");
+			break;
+		default:
+			$("#secondaryRole > option[value='" + priRole + "']").prop("hidden",true);
+			$("#priButton").html(priRole.toUpperCase());
+	}
+	
+	switch (secRole)
+	{
+		case "other":
+		case "none":
+			$("#secButton").html("SECONDARY");
+			break;
+		default:
+			$("#primaryRole > option[value='" + secRole + "']").prop("hidden",true);
+			$("#secButton").html(secRole.toUpperCase());
+	}
+	
+	$("#priTab .checkGroup").addClass("hidden");
+	$("#priTab .checkGroup[data-role='" + priRole + "']").removeClass("hidden");
+	
+	$("#secTab .checkGroup").addClass("hidden");
+	$("#secTab .checkGroup[data-role='" + secRole+"']").removeClass("hidden");
+	
+	$("#priTab .checkGroup:not([data-role='"+priRole+"']) input[type='checkbox']").prop("checked",false);
+	$("#secTab .checkGroup:not([data-role='"+secRole+"']) input[type='checkbox']").prop("checked",false);
+}
+
+function statSubmit(event)
+{
+	event.preventDefault();
+
+	$("#saveText").html("SAVING...");
+	$("#saveText").removeClass("hidden");
+
+	// LIST OF FUNCTIONS
+	let funcs = [];
+	$(".checkGroup input:checked").each(function() {
+		funcs.push(Number($(this).attr("data-id")));
+	});
+	
+	// LIST OF ITEMS
+	let items = [];
+	$(".itemSelect input:checked").each(function() {
+		items.push(Number($(this).attr("data-id")));
+	});
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "resources\\scripts\\db\\updateSelfReport.php",
+		data:
+		{
+			userID: $("#payloadCharName").attr("data-id"),
+			funcs: funcs,
 			items: items
 		}
 	})

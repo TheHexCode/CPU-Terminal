@@ -144,6 +144,11 @@ h2
     padding: 0.5rem;
 }
 
+.zoneBox hr
+{
+	width: 100%;
+}
+
 #payloadCharName
 {
 	/* max-width: 368px */
@@ -176,6 +181,84 @@ h2
 	border: none;
 	font-size: 200%;
 	padding: 0;
+}
+
+.infoRole
+{
+	display: grid;
+	grid-template-columns: [start] 50% [mid] auto [end];
+	width: 100%;
+	padding-top: 0.5rem;
+}
+
+.infoRole label
+{
+	grid-row: 1;
+	grid-column: start / mid;
+}
+
+.infoRole select
+{
+	display: grid;
+	grid-column: mid / end;
+}
+
+#profTabContainer
+{
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.tabSubContainer
+{
+	flex-grow: 1;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	margin-top: -0.5rem;
+}
+
+.profTab
+{
+    flex-grow: 1;
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+	box-shadow: 0 0 0;
+	cursor: pointer;
+	padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+	border-radius: 0;
+}
+
+.profTab.active
+{
+	z-index: 75;
+	border-image: linear-gradient(to bottom, var(--fg-color) 30%, grey 100%) 1;
+	border-width: 0.5rem;
+	border-bottom: none;
+}
+
+.profTab:not(.active)
+{
+	border-image: linear-gradient(to bottom, dimgrey 30%, transparent 100%) 1;
+	border-width: 0.5rem;
+	border-style: solid;
+}
+
+.tabSubContainer .profTab:first-of-type:not(.active)
+{
+	margin: 0.5rem -0.5rem 0 0;
+}
+
+.tabSubContainer .profTab:last-of-type:not(.active)
+{
+	margin: 0.5rem 0 0 -0.5rem;
+}
+
+.profContent
+{
+    border: 0.5rem solid grey;
+    padding: 0.5rem;
+    margin-top: -1rem;
 }
 
 .itemSection

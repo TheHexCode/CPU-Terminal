@@ -160,13 +160,23 @@ class Terminal
                 "modify" => $entry["modify"]
             );
 
+            if($entry["icon"] === "utilities")
+            {
+                $entryData["type"] = $entry["type"];
+            }
+
             $unitCode = explode("-",$entry["path"]);
             $subClass = "";
 
             if(count($unitCode) > 1)
             {
-                //$newEntry["subIce"] = implode("-",array_slice($unitCode,0,count($unitCode)-1));
-                $subClass .= " subIce";
+                $parentPath = implode("-",array_splice($unitCode, 0,count($unitCode)-1));
+                $parent = current(array_filter($this->entries,function ($entry) use ($icon, $parentPath)
+                {
+                    return (($entry["icon"] === $icon) && ($entry["path"] === $parentPath));
+                }));
+
+                $subClass .= ($parent["state"] === "initial" ? " subIce" : "");
 
                 for($i = 1; $i < count($unitCode); $i++)
                 {
@@ -226,6 +236,7 @@ class Terminal
                 }
                 elseif($stateGuide["title"] === true)
                 {
+                    
                     $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
                     $entryData["title"] = $entry["title"];
                 }
@@ -242,8 +253,16 @@ class Terminal
                 }
                 elseif($stateGuide["contents"] === true)
                 {
-                    $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
-                    $entryData["contents"] = $entry["contents"];
+                    if($entry["type"] === "trap")
+                    {
+                        $contentsMask = '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) .  '</span>';
+                        $entryData["contents"] = implode("<br/>",json_decode($entry["contents"]));
+                    }
+                    else
+                    {
+                        $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
+                        $entryData["contents"] = $entry["contents"];
+                    }
                 }
                 else
                 {
@@ -261,9 +280,16 @@ class Terminal
             }
             $outIce = 0;
 
+            $prefixIntro = ">> ";
+
+            if($entry["type"] === "alarm")
+            {
+                $prefixIntro = "(&#x1F56A;)";
+            }
+
             $entryString .= '<div id="' . $icon . '-' . $entry["path"] . '" class="entry' . $subClass . '">' .
 								'<div class="entryTitleBar">' .
-									'<span class="entryPrefix">>> ' . $unit . ':\\</span>' .
+									'<span class="entryPrefix">' . $prefixIntro . $unit . ':\\</span>' .
 									'<span class="entryMaskContainer">' .
 										$titleMask .
 									'</span>' .
