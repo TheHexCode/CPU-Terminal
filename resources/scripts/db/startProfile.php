@@ -4,9 +4,9 @@ require('dbConnect.php');
 
 //** NEW FUNCTION STUFF **//
 
-$functionQuery = "  SELECT roles.name AS role_name, tier, ml_functions.id, functions.name AS function_name, `rank`, functions.type, functions.hacking_cat FROM cpu_term.ml_functions
-                    INNER JOIN cpu_term.functions ON function_id=functions.id
-                    INNER JOIN cpu_term.roles ON role_id=roles.id
+$functionQuery = "  SELECT roles.name AS role_name, tier, ml_functions.id, functions.name AS function_name, `rank`, functions.type, functions.hacking_cat FROM {$dbName}.ml_functions
+                    INNER JOIN {$dbName}.functions ON function_id=functions.id
+                    INNER JOIN {$dbName}.roles ON role_id=roles.id
                     WHERE functions.hacking_cat IS NOT NULL";
 
 $functionStatement = $pdo->prepare($functionQuery);
@@ -142,7 +142,7 @@ $itemArray = array(
 );
 
 $itemQuery = "  SELECT id,name,tier,type,radio
-                FROM cpu_term.items
+                FROM {$dbName}.items
                 WHERE enabled=1";
 
 $itemStatement = $pdo->prepare($itemQuery);

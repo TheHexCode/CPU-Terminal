@@ -7,7 +7,7 @@ $itemIDArray = $_POST["items"] ?? array();
 
 /////////////////////////////////////////////////////////////////////////////////
 
-$delFuncQuery = "   DELETE FROM cpu_term.user_selfreport
+$delFuncQuery = "   DELETE FROM {$dbName}.user_selfreport
                     WHERE user_id = :userID";
 
 $delFuncStatement = $pdo->prepare($delFuncQuery);
@@ -22,7 +22,7 @@ foreach($funcIDArray as $funcID)
 
 if(count($funcIDArray) > 0)
 {
-    $srFuncQuery = "INSERT INTO cpu_term.user_selfreport
+    $srFuncQuery = "INSERT INTO {$dbName}.user_selfreport
                                 (user_id, mlFunction_id)
                         VALUES ( ?,? " . str_repeat('), ( ?,? ',count($funcIDArray)-1) .")";
 
@@ -32,7 +32,7 @@ if(count($funcIDArray) > 0)
 
 /////////////////////////////////////////////////////////////////////////////////
 
-$delItemQuery = "   DELETE FROM cpu_term.user_items
+$delItemQuery = "   DELETE FROM {$dbName}.user_items
                     WHERE user_id = :userID";
 
 $delItemStatement = $pdo->prepare($delItemQuery);
@@ -47,7 +47,7 @@ foreach($itemIDArray as $itemID)
 
 if(count($itemIDArray) > 0)
 {
-    $srItemQuery = "INSERT INTO cpu_term.user_items
+    $srItemQuery = "INSERT INTO {$dbName}.user_items
                                 (user_id, item_id)
                         VALUES ( ?,? " . str_repeat('), ( ?,? ',count($itemIDArray)-1) .")";
 

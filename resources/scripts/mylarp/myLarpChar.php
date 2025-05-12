@@ -39,7 +39,7 @@ curl_close($curlHandle);
 
 #####################################################################################################################################################
 
-$dbCharQuery = "SELECT * FROM cpu_term.users
+$dbCharQuery = "SELECT * FROM {$dbName}.users
                 WHERE charName = :charName;";
 
 $dbCharStatement = $pdo->prepare($dbCharQuery);
@@ -51,9 +51,9 @@ $mlFuncArray = array_column($mlCharResponse->skills,"name");
 
 if($dbCharResponse === false)
 {
-    $userCode = generateCode($pdo);
+    $userCode = generateCode($pdo, $dbName);
 
-    addUser($pdo,$userCode,$mlCharResponse->name,$mlFuncArray);
+    addUser($pdo,$dbName,$userCode,$mlCharResponse->name,$mlFuncArray);
 
     $dbCharStatement = $pdo->prepare($dbCharQuery);
     $dbCharStatement->execute([':charName' => $mlCharResponse->name]);
@@ -64,15 +64,15 @@ else
 {    
     $userCode = $dbCharResponse["userCode"];
 
-    updateUser($pdo,$dbCharResponse["id"],$mlFuncArray);
+    updateUser($pdo,$dbName,$dbCharResponse["id"],$mlFuncArray);
 }
 
 $functionQuery = "  SELECT DISTINCT functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
                                     functions.type,
                                     functions.hacking_cat
-                    FROM cpu_term.ml_functions
-                    INNER JOIN cpu_term.functions ON ml_functions.function_id=functions.id
+                    FROM {$dbName}.ml_functions
+                    INNER JOIN {$dbName}.functions ON ml_functions.function_id=functions.id
                     WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )
                         AND functions.hacking_cat IS NOT NULL
                     GROUP BY functions.name,
@@ -84,8 +84,8 @@ $functionStatement->execute($mlFuncArray);
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
 $roleQuery = "  SELECT DISTINCT roles.name
-                FROM cpu_term.ml_functions
-                INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
+                FROM {$dbName}.ml_functions
+                INNER JOIN {$dbName}.roles ON ml_functions.role_id=roles.id
                 WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )";
 
 $roleStatement = $pdo->prepare($roleQuery);
@@ -94,9 +94,9 @@ $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-$selfReportQuery = "SELECT ml_functions.id, roles.name AS role_name FROM cpu_term.ml_functions
-                    INNER JOIN cpu_term.roles ON role_id=roles.id
-                    INNER JOIN cpu_term.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
+$selfReportQuery = "SELECT ml_functions.id, roles.name AS role_name FROM {$dbName}.ml_functions
+                    INNER JOIN {$dbName}.roles ON role_id=roles.id
+                    INNER JOIN {$dbName}.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
                     WHERE user_selfreport.user_id=:userID";
 
 $selfReportStatement = $pdo->prepare($selfReportQuery);
@@ -106,7 +106,7 @@ $selfReportResponse = $selfReportStatement->fetchAll(PDO::FETCH_ASSOC);
 ///////////////////////////////////////////////////////////////////////////////
 
 $itemQuery = "  SELECT item_id
-                FROM cpu_term.user_items
+                FROM {$dbName}.user_items
                 WHERE user_id = :userID";
 
 $itemStatement = $pdo->prepare($itemQuery);

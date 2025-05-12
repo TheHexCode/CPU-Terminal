@@ -8,15 +8,15 @@ $termID = $_POST["termID"];
 ###############################################################################################################################
 
 $activeQuery = "SELECT simCode,jobCode
-                FROM cpu_term.activejob";
+                FROM {$dbName}.activeJob";
 
 $activeStatement = $pdo->prepare($activeQuery);
 $activeStatement->execute();
 $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
 
-$userQuery = '  SELECT id,charName
-                FROM cpu_term.users
-                WHERE userCode = :userCode';
+$userQuery = "  SELECT id,charName
+                FROM {$dbName}.users
+                WHERE userCode = :userCode";
 
 $userStatement = $pdo->prepare($userQuery);
 $userStatement->execute([':userCode' => $userCode]);
@@ -33,9 +33,9 @@ else
                                         SUM(ml_functions.rank) AS 'rank',
                                         functions.type,
                                         functions.hacking_cat
-                        FROM cpu_term.user_functions
-                        INNER JOIN cpu_term.ml_functions ON ml_functions.id=user_functions.mlFunction_id
-                        INNER JOIN cpu_term.functions ON ml_functions.function_id=functions.id
+                        FROM {$dbName}.user_functions
+                        INNER JOIN {$dbName}.ml_functions ON ml_functions.id=user_functions.mlFunction_id
+                        INNER JOIN {$dbName}.functions ON ml_functions.function_id=functions.id
                         WHERE user_id = :userID
                             AND functions.hacking_cat IS NOT NULL
                         GROUP BY functions.name,
@@ -46,9 +46,9 @@ else
                                         SUM(ml_functions.rank) AS 'rank',
                                         functions.type,
                                         functions.hacking_cat
-                        FROM cpu_term.user_selfreport
-                        INNER JOIN cpu_term.ml_functions ON ml_functions.id=user_selfreport.mlFunction_id
-                        INNER JOIN cpu_term.functions ON ml_functions.function_id=functions.id
+                        FROM {$dbName}.user_selfreport
+                        INNER JOIN {$dbName}.ml_functions ON ml_functions.id=user_selfreport.mlFunction_id
+                        INNER JOIN {$dbName}.functions ON ml_functions.function_id=functions.id
                         WHERE user_id = :userID
                             AND functions.hacking_cat IS NOT NULL
                         GROUP BY functions.name,
@@ -61,16 +61,16 @@ else
 
     /*
     $roleQuery = "  SELECT DISTINCT roles.name
-                    FROM cpu_term.ml_functions
-                    INNER JOIN cpu_term.user_functions ON ml_functions.id=user_functions.mlFunction_id
-                    INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
+                    FROM {$dbName}.ml_functions
+                    INNER JOIN {$dbName}.user_functions ON ml_functions.id=user_functions.mlFunction_id
+                    INNER JOIN {$dbName}.roles ON ml_functions.role_id=roles.id
                     WHERE user_id = :userID";
     */
 
     $roleQuery = "  SELECT DISTINCT roles.name
-                    FROM cpu_term.ml_functions
-                    INNER JOIN cpu_term.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
-                    INNER JOIN cpu_term.roles ON ml_functions.role_id=roles.id
+                    FROM {$dbName}.ml_functions
+                    INNER JOIN {$dbName}.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
+                    INNER JOIN {$dbName}.roles ON ml_functions.role_id=roles.id
                     WHERE user_id = :userID";
 
     $roleStatement = $pdo->prepare($roleQuery);
@@ -78,8 +78,8 @@ else
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $itemQuery = "  SELECT item_id, items.name, items.tier, items.type
-                    FROM cpu_term.user_items
-                    INNER JOIN cpu_term.items ON user_items.item_id=items.id
+                    FROM {$dbName}.user_items
+                    INNER JOIN {$dbName}.items ON user_items.item_id=items.id
                     WHERE user_id = :userID";
 
     $itemStatement = $pdo->prepare($itemQuery);
@@ -87,13 +87,13 @@ else
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $effectQuery = "    SELECT id, charges, per_type, use_loc, effect
-                        FROM cpu_term.item_effects
+                        FROM {$dbName}.item_effects
                         WHERE item_id = :itemID";
 
     $effectStatement = $pdo->prepare($effectQuery);
 
     $simUseQuery = "SELECT COUNT(*)
-                    FROM cpu_term.item_uses
+                    FROM {$dbName}.item_uses
                     WHERE 	user_id = :userID
                         AND effect_id = :effectID
                         AND simCode = :simCode";
@@ -101,7 +101,7 @@ else
     $simUseStatement = $pdo->prepare($simUseQuery);
 
     $sceneUseQuery = "  SELECT COUNT(*)
-                        FROM cpu_term.item_uses
+                        FROM {$dbName}.item_uses
                         WHERE 	user_id = :userID
                             AND effect_id = :effectID
                             AND jobCode = :jobCode
@@ -147,7 +147,7 @@ else
             $effect["uses"] = $useResponse;
 
             $termUseQuery = "   SELECT COUNT(*)
-                                FROM cpu_term.item_uses
+                                FROM {$dbName}.item_uses
                                 WHERE 	user_id = :userID
                                     AND effect_id = :effectID
                                     AND jobCode = :jobCode
@@ -174,7 +174,7 @@ else
 
     //////////////////////////////////////////////////////////////////////////////
 
-    $accessQuery = "SELECT COUNT(user_id) FROM cpu_term.accesslogs
+    $accessQuery = "SELECT COUNT(user_id) FROM {$dbName}.accessLogs
                     WHERE user_id=:userID
                         AND terminal_id=:termID";
 
@@ -182,8 +182,8 @@ else
     $accessStatement->execute([':userID' => $userResponse["id"], ':termID' => $termID]);
     $hasAccessed = intval($accessStatement->fetch(PDO::FETCH_COLUMN)) > 0;
 
-    $actionQuery = "SELECT entries.id, user_id, entries.path, entries.icon, action, newState FROM cpu_term.user_actions
-                    INNER JOIN cpu_term.entries ON target_id=entries.id
+    $actionQuery = "SELECT entries.id, user_id, entries.path, entries.icon, action, newState FROM {$dbName}.user_actions
+                    INNER JOIN {$dbName}.entries ON target_id=entries.id
                     WHERE entries.terminal_id=:termID
                         AND (user_id=:userID
                             OR global=true)
@@ -196,15 +196,15 @@ else
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $copyQuery = "  SELECT DISTINCT action FROM (
-                        SELECT action FROM cpu_term.user_actions AS UA1
-                            INNER JOIN cpu_term.entries ON UA1.target_id=entries.id
+                        SELECT action FROM {$dbName}.user_actions AS UA1
+                            INNER JOIN {$dbName}.entries ON UA1.target_id=entries.id
                             WHERE UA1.user_id=:userID
                                 AND entries.terminal_id=:termID
                        UNION
-                        SELECT action FROM cpu_term.user_actions AS UA2
-                            INNER JOIN cpu_term.accesslogs ON UA2.target_id=accesslogs.id
+                        SELECT action FROM {$dbName}.user_actions AS UA2
+                            INNER JOIN {$dbName}.accessLogs ON UA2.target_id=accessLogs.id
                             WHERE UA2.user_id=:userID
-                                AND accesslogs.terminal_id=:termID
+                                AND accessLogs.terminal_id=:termID
                     ) AS UA";
 
     $copyStatement = $pdo->prepare($copyQuery);
@@ -213,34 +213,34 @@ else
     $copyResponse = $copyStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $remTagsQuery = "   SELECT SUM(tags) AS remTags FROM (
-                                SELECT tags FROM cpu_term.accessLogs
+                                SELECT tags FROM {$dbName}.accessLogs
                                     WHERE user_id=:userID
                                    UNION 
                                 SELECT SUM(sumCost * -1) FROM (
                                     SELECT SUM(cost) AS sumCost
-                                    FROM cpu_term.user_actions AS UA_Entries
-                                    INNER JOIN cpu_term.entries ON UA_Entries.target_id=entries.id
+                                    FROM {$dbName}.user_actions AS UA_Entries
+                                    INNER JOIN {$dbName}.entries ON UA_Entries.target_id=entries.id
                                     WHERE UA_Entries.target_type='entry'
                                         AND entries.terminal_id=:termID
                                         AND UA_Entries.user_id=:userID
                                    UNION
                                     SELECT SUM(cost) AS sumCost
-                                    FROM cpu_term.user_actions AS UA_Logs
-                                    INNER JOIN cpu_term.accesslogs ON UA_Logs.target_id=accesslogs.id
+                                    FROM {$dbName}.user_actions AS UA_Logs
+                                    INNER JOIN {$dbName}.accessLogs ON UA_Logs.target_id=accessLogs.id
                                     WHERE UA_Logs.target_type='log'
-                                        AND accesslogs.terminal_id=:termID
+                                        AND accessLogs.terminal_id=:termID
                                         AND UA_Logs.user_id=:userID
                                    UNION
                                     SELECT SUM(cost) AS sumCost
-                                    FROM cpu_term.user_actions AS UA_Term
+                                    FROM {$dbName}.user_actions AS UA_Term
                                     WHERE UA_Term.target_type='terminal'
                                         AND UA_Term.target_id=:termID
                                         AND UA_Term.user_id=:userID
                                    UNION
-                                    SELECT SUM(cost) AS sumCost FROM cpu_term.user_actions AS UA_Items
+                                    SELECT SUM(cost) AS sumCost FROM {$dbName}.user_actions AS UA_Items
                                     INNER JOIN (
-                                        SELECT user_id, user_items.item_id, item_effects.id AS effect_id FROM cpu_term.user_items
-                                            INNER JOIN cpu_term.item_effects ON user_items.item_id=item_effects.item_id
+                                        SELECT user_id, user_items.item_id, item_effects.id AS effect_id FROM {$dbName}.user_items
+                                            INNER JOIN {$dbName}.item_effects ON user_items.item_id=item_effects.item_id
                                             WHERE user_id=:userID
                                     ) AS user_effects ON target_id=user_effects.effect_id
                                     WHERE UA_Items.target_type='item'

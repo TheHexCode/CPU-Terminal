@@ -6,7 +6,7 @@ $userID = $_POST["userID"];
 $userMask = $_POST["userMask"];
 $userTags = $_POST["userTags"];
 
-$newLogQuery = "INSERT INTO cpu_term.accessLogs
+$newLogQuery = "INSERT INTO {$dbName}.accessLogs
                     (terminal_id, user_id, mask, state, tags)
                 VALUES (:termID, :userID, :mask, 'initial', :userTags)";
 

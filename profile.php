@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources\\scripts\\db\\startProfile.php';
+    require 'resources/scripts/db/startProfile.php';
 ?>
 <html>
 	<head>

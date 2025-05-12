@@ -9,7 +9,7 @@ $newState = $_GET["newState"];
 $userID = $_GET["userID"] ?? null;
 $action = $_GET["action"] ?? null;
 
-$entryQuery = " SELECT * FROM cpu_term.entries 
+$entryQuery = " SELECT * FROM {$dbName}.entries 
                 WHERE id=:entryID";
 
 $entryStatement = $pdo->prepare($entryQuery);

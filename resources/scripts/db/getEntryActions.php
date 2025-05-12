@@ -6,7 +6,7 @@ $entryID = $_GET["id"];
 $entryState = $_GET["state"];
 $playerAction = $_GET["action"];
 
-$entry_query = $pdo->query("SELECT * FROM cpu_term.entries WHERE id={$entryID}");
+$entry_query = $pdo->query("SELECT * FROM {$dbName}.entries WHERE id={$entryID}");
 $entry = ($entry_query->fetchAll(PDO::FETCH_ASSOC))[0];
 
 $iconFilepath = "../../schemas/icons.json";
