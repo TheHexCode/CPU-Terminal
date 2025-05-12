@@ -39,7 +39,7 @@ class adminTerminal
 
     private function getTerminal($pdo, $dbName)
     {
-        $terminalQuery = "  SELECT * FROM {$dbName}.terminals
+        $terminalQuery = "  SELECT * FROM {$dbName}.sim_terminals
                             WHERE   jobCode=:jobCode
                                 AND slug=:slug";
         $terminalStatement = $pdo->prepare($terminalQuery);
@@ -53,14 +53,14 @@ class adminTerminal
         $this->stateData = $terminalInfo["stateData"];
 
         $entryQuery = " SELECT icon, path, type, access, modify, title, contents, state
-                        FROM {$dbName}.entries
+                        FROM {$dbName}.sim_entries
                         WHERE terminal_id=:termID";
         $entryStatement = $pdo->prepare($entryQuery);
         $entryStatement->execute([':termID' => $this->termID]);
         $this->entries = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
 
         $slugQuery = "  SELECT slug
-                        FROM {$dbName}.terminals
+                        FROM {$dbName}.sim_terminals
                         WHERE jobCode=:jobCode";
         $slugStatement = $pdo->prepare($slugQuery);
         $slugStatement->execute([':jobCode' => $this->jobCode]);

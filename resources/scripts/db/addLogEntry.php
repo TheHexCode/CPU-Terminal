@@ -6,7 +6,7 @@ $userID = $_POST["userID"];
 $userMask = $_POST["userMask"];
 $userTags = $_POST["userTags"];
 
-$newLogQuery = "INSERT INTO {$dbName}.accessLogs
+$newLogQuery = "INSERT INTO {$dbName}.sim_access_logs
                     (terminal_id, user_id, mask, state, tags)
                 VALUES (:termID, :userID, :mask, 'initial', :userTags)";
 

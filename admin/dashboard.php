@@ -2,12 +2,12 @@
 <?php
     require('../resources/scripts/db/dbConnect.php');
 
-    $activeQuery = "SELECT * FROM {$dbName}.activeJob";
+    $activeQuery = "SELECT * FROM {$dbName}.sim_active_codes";
     $activeStatement = $pdo->prepare($activeQuery);
     $activeStatement->execute();
     $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
 
-    $termsQuery = " SELECT jobCode, slug FROM {$dbName}.terminals";
+    $termsQuery = " SELECT jobCode, slug FROM {$dbName}.sim_terminals";
     $termsStatement = $pdo->prepare($termsQuery);
     $termsStatement->execute();
     $termsList = $termsStatement->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);

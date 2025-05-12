@@ -4,7 +4,7 @@ function generateCode(PDO $pdo, $dbName)
 {
     $code_query = $pdo->query("SELECT userCode FROM {$dbName}.users");
 
-    $codeList = $code_query->fetchAll(PDO::FETCH_NUM)[0];
+    $codeList = $code_query->fetchAll(PDO::FETCH_COLUMN);
 
     $invalidCode = false;
 
@@ -74,16 +74,15 @@ function generateCode(PDO $pdo, $dbName)
     return implode($newCode);
 }
 
-function addUser(PDO $pdo, $dbName, string $newCode, string $newCharName, array $charSkills)
+function addUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCharName, array $charSkills)
 {
     $newCharQuery = "   INSERT INTO {$dbName}.users
-                            (userCode, charName)
-                        VALUES (:userCode, :charName)";
+                            (ml_id, userCode, charName)
+                        VALUES (:mlID, :userCode, :charName)";
 
     $newCharStatement = $pdo->prepare($newCharQuery);
 
-    $newCharStatement->execute([':userCode' => $newCode, ':charName' => $newCharName]);
-    $newCharID = $pdo->lastInsertId();
+    $newCharStatement->execute([':mlID' => $newID, ':userCode' => $newCode, ':charName' => $newCharName]);
 
     $newMLIDQuery = "   SELECT id
                         FROM {$dbName}.ml_functions
@@ -97,7 +96,7 @@ function addUser(PDO $pdo, $dbName, string $newCode, string $newCharName, array 
 
     foreach($newMLIDs as $mlID)
     {
-        array_push($userFuncArray,$newCharID,$mlID);
+        array_push($userFuncArray,$newID,$mlID);
     }
 
     $userFuncQuery = "  INSERT INTO {$dbName}.user_functions
@@ -108,8 +107,26 @@ function addUser(PDO $pdo, $dbName, string $newCode, string $newCharName, array 
     $userFuncStatement->execute($userFuncArray);
 }
 
-function updateUser(PDO $pdo, $dbName, string $userID, array $mlIDs)
+function updateUser(PDO $pdo, $dbName, int $userID, String $charName, array $mlIDs)
 {
+    $dbNameQuery = "SELECT charName FROM {$dbName}.users
+                    WHERE ml_id = :userID";
+
+    $dbNameStatement = $pdo->prepare($dbNameQuery);
+    $dbNameStatement->execute([':userID' => $userID]);
+
+    $dbCharName = $dbNameStatement->fetch(PDO::FETCH_COLUMN);
+
+    if($dbCharName !== $charName)
+    {
+        $updateNameQuery = "UPDATE {$dbName}.users
+                            SET charName = :charName
+                            WHERE ml_id = :userID";
+
+        $updateNameStatement = $pdo->prepare($updateNameQuery);
+        $updateNameStatement->execute([':charName' => $charName, ':userID' => $userID]);
+    }
+
     $dbFuncQuery = "SELECT DISTINCT ml_name
                     FROM {$dbName}.user_functions
                     INNER JOIN {$dbName}.ml_functions ON user_functions.mlFunction_id=ml_functions.id

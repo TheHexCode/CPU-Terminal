@@ -2,7 +2,7 @@
 <?php
     require('../resources/scripts/db/dbConnect.php');
 
-    $jobQuery = "SELECT jobCode FROM {$dbName}.activeJob";
+    $jobQuery = "SELECT jobCode FROM {$dbName}.sim_active_codes";
     $jobStatement = $pdo->prepare($jobQuery);
     $jobStatement->execute();
     $jobCode = $jobStatement->fetch(PDO::FETCH_COLUMN);

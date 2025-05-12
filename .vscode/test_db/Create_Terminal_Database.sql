@@ -1,14 +1,13 @@
--- Active: 1745412174410@@127.0.0.1@3306@cpu_items
- -- CREATE SCHEMA cpu_term;
+-- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
 
-USE cpu_term;
+USE dbiykpinec1m8s;
 
-CREATE TABLE activeJob (
+CREATE TABLE sim_active_codes (
     simCode TEXT    NOT NULL,
 	jobCode TEXT    NOT NULL
 );
 
-CREATE TABLE terminals (
+CREATE TABLE sim_terminals (
     id          INT     AUTO_INCREMENT,
     slug 		TEXT    NOT NULL,
     jobCode 	TEXT    NOT NULL,
@@ -19,7 +18,7 @@ CREATE TABLE terminals (
 	PRIMARY KEY (id)
 );
 
-CREATE TABLE entries (
+CREATE TABLE sim_entries (
     id          INT     AUTO_INCREMENT,
     terminal_id INT     NOT NULL,
     icon        ENUM('files','darkweb','cameras','locks','defenses','utilities')
@@ -33,19 +32,19 @@ CREATE TABLE entries (
     state       TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (terminal_id)
-        REFERENCES terminals(id)
+        REFERENCES sim_terminals(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
 CREATE TABLE users (
-    id          INT     AUTO_INCREMENT,
+    ml_id       INT     NOT NULL UNIQUE,
     userCode    TEXT    NOT NULL,
     charName    TEXT    NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (ml_id)
 );
 
-CREATE TABLE accessLogs (
+CREATE TABLE sim_access_logs (
     id          INT     AUTO_INCREMENT,
     terminal_id INT     NOT NULL,
     user_id     INT,
@@ -55,22 +54,22 @@ CREATE TABLE accessLogs (
     tags        INT,
     PRIMARY KEY (id),
     FOREIGN KEY (terminal_id)
-        REFERENCES terminals(id)
+        REFERENCES sim_terminals(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
-CREATE TABLE roles (
+CREATE TABLE cpu_roles (
     id      INT     AUTO_INCREMENT,
     name    TEXT    NOT NULL,
     PRIMARY KEY (id)
 );
 
-CREATE TABLE functions (
+CREATE TABLE cpu_functions (
     id          INT     AUTO_INCREMENT,
     name        TEXT    NOT NULL,
     type        TEXT,
@@ -89,11 +88,11 @@ CREATE TABLE ml_functions (
     tier        INT,
     PRIMARY KEY (id),
     FOREIGN KEY (function_id)
-        REFERENCES functions(id)
+        REFERENCES cpu_functions(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
     FOREIGN KEY (role_id)
-        REFERENCES roles(id)
+        REFERENCES cpu_roles(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
@@ -104,7 +103,7 @@ CREATE TABLE user_functions (
     CONSTRAINT userFunction
         PRIMARY KEY (user_id, mlFunction_id),
     FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (mlFunction_id)
@@ -119,7 +118,7 @@ CREATE TABLE user_selfreport (
     CONSTRAINT userFunction
         PRIMARY KEY (user_id, mlFunction_id),
     FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (mlFunction_id)
@@ -156,7 +155,7 @@ CREATE TABLE user_items (
     user_id INT NOT NULL,
     item_id INT NOT NULL,
     FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (item_id)
@@ -172,7 +171,7 @@ CREATE TABLE item_uses (
     jobCode     TEXT    NOT NULL,
     terminal_id INT     NOT NULL,
     FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (effect_id)
@@ -180,12 +179,12 @@ CREATE TABLE item_uses (
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (terminal_id)
-        REFERENCES terminals(id)
+        REFERENCES sim_terminals(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
-CREATE TABLE user_actions (
+CREATE TABLE sim_user_actions (
     id          INT         AUTO_INCREMENT,
     time        TIMESTAMP   NOT NULL,
     user_id     INT         NOT NULL,
@@ -197,18 +196,18 @@ CREATE TABLE user_actions (
     global      BOOLEAN     NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 )
 
 ####################################################################################################
 
-INSERT INTO activejob
+INSERT INTO sim_active_codes
             (simCode, jobCode)
     VALUES  ('MAY25', 'ABC1234');
 
-INSERT INTO functions
+INSERT INTO cpu_functions
             (name, type, hacking_cat)
     VALUES  ('[UNKNOWN]', 'error', NULL),
             ('Advanced Armor Proficiency', 'collect', NULL),
@@ -358,7 +357,7 @@ INSERT INTO functions
             ('Walk It Off', '', NULL),
             ('Wipe Your Tracks', 'unique', 'active');
 
-INSERT INTO roles
+INSERT INTO cpu_roles
             (name)
     VALUES  ('Standard'),
             ('Advocate'),

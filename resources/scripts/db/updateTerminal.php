@@ -11,7 +11,7 @@ switch($actionType)
 {
     case "entry":
     case "ice":
-        $updateQuery = "UPDATE {$dbName}.entries
+        $updateQuery = "UPDATE {$dbName}.sim_entries
                         SET state = :newData
                         WHERE id = :entryID";
 
@@ -22,7 +22,7 @@ switch($actionType)
     case "log":
         if($newData === "") // WIPE TRACKS
         {
-            $updateQuery = "UPDATE {$dbName}.accessLogs
+            $updateQuery = "UPDATE {$dbName}.sim_access_logs
                             SET state = 'wiped'
                             WHERE id = :entryID";
 
@@ -32,7 +32,7 @@ switch($actionType)
         }
         else // REASSIGN
         {
-            $updateQuery = "UPDATE {$dbName}.accessLogs
+            $updateQuery = "UPDATE {$dbName}.sim_access_logs
                             SET reassignee = :newData
                             WHERE id = :entryID";
 
@@ -42,7 +42,7 @@ switch($actionType)
         }
         break;
     case "brick":
-        $updateQuery = "UPDATE {$dbName}.terminals
+        $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'bricked',
                             stateData = :newData
                         WHERE id = :entryID";
@@ -52,7 +52,7 @@ switch($actionType)
         $updateStatement->execute([':newData' => $newData, ':entryID' => $entryID]);
         break;
     case "rig":
-        $updateQuery = "UPDATE {$dbName}.terminals
+        $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'rigged'
                         WHERE id = :entryID";
 
@@ -61,7 +61,7 @@ switch($actionType)
         $updateStatement->execute([':entryID' => $entryID]);
         break;
     case "root":
-        $updateQuery = "UPDATE {$dbName}.terminals
+        $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'rooting',
                             stateData = :newData
                         WHERE id = :entryID";
@@ -71,7 +71,7 @@ switch($actionType)
         $updateStatement->execute([':newData' => time(), ':entryID' => $entryID]);
         break;
     case "rooted":
-        $updateQuery = "UPDATE {$dbName}.terminals
+        $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'rooted',
                             stateData = NULL
                         WHERE id = :entryID";

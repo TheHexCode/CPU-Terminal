@@ -8,7 +8,7 @@ $newState = $_POST["newState"];
 $actionCost = $_POST["actionCost"];
 $global = $_POST["global"];
 
-$actionQuery = "INSERT INTO {$dbName}.user_actions
+$actionQuery = "INSERT INTO {$dbName}.sim_user_actions
                             (time, user_id, target_type, target_id, action, newState, cost, global)
                 VALUES ( UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ? )";
 

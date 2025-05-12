@@ -9,7 +9,7 @@ $newState = $_GET["newState"];
 $userID = $_GET["userID"] ?? null;
 $action = $_GET["action"] ?? null;
 
-$entryQuery = " SELECT * FROM {$dbName}.entries 
+$entryQuery = " SELECT * FROM {$dbName}.sim_entries 
                 WHERE id=:entryID";
 
 $entryStatement = $pdo->prepare($entryQuery);

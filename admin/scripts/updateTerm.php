@@ -7,7 +7,7 @@ $terminal = $_POST["terminal"];
 
 if($action === "CREATE")
 {
-    $createQuery = "INSERT INTO {$dbName}.terminals
+    $createQuery = "INSERT INTO {$dbName}.sim_terminals
                                 (slug, jobCode, displayName, access, state)
                     VALUES (:slug, :jobCode, :displayName, :accessCost, 'active')";
     
@@ -32,7 +32,7 @@ if($action === "CREATE")
             $entryArray = array_merge($entryArray,getEntries($termID,$icon));
         }
 
-        $insertQuery = "INSERT INTO {$dbName}.entries
+        $insertQuery = "INSERT INTO {$dbName}.sim_entries
                                     (terminal_id, icon, path, type, access, modify, title, contents, state)
                         VALUES ( ?,?,?,?,?,?,?,?,? " . str_repeat("), ( ?,?,?,?,?,?,?,?,? ",(count($entryArray) / 9) - 1) . ")";
 
@@ -44,7 +44,7 @@ if($action === "CREATE")
 }
 elseif($action === "SAVE")
 {
-    $updateQuery = "UPDATE {$dbName}.terminals
+    $updateQuery = "UPDATE {$dbName}.sim_terminals
                     SET slug=:slug, jobCode=:jobCode, displayName=:displayName, access=:accessCost
                     WHERE id=:termID";
     
@@ -57,7 +57,7 @@ elseif($action === "SAVE")
 
     if($terminal["entries"] !== null)
     {
-        $deleteQuery = "DELETE from {$dbName}.entries
+        $deleteQuery = "DELETE from {$dbName}.sim_entries
                         WHERE terminal_id=:termID";
         
         $deleteStatement = $pdo->prepare($deleteQuery);
@@ -71,7 +71,7 @@ elseif($action === "SAVE")
             $entryArray = array_merge($entryArray,getEntries($terminal["termID"],$icon));
         }
 
-        $insertQuery = "INSERT INTO {$dbName}.entries
+        $insertQuery = "INSERT INTO {$dbName}.sim_entries
                                     (terminal_id, icon, path, type, access, modify, title, contents, state)
                         VALUES ( ?,?,?,?,?,?,?,?,? " . str_repeat("), ( ?,?,?,?,?,?,?,?,? ",(count($entryArray) / 9) - 1) . ")";
 
@@ -83,7 +83,7 @@ elseif($action === "SAVE")
 }
 else if ($action === "DELETE")
 {
-    $deleteQuery = "DELETE FROM {$dbName}.terminals
+    $deleteQuery = "DELETE FROM {$dbName}.sim_terminals
                     WHERE id=:termID";
         
     $deleteStatement = $pdo->prepare($deleteQuery);

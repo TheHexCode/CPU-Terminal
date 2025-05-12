@@ -40,10 +40,10 @@ curl_close($curlHandle);
 #####################################################################################################################################################
 
 $dbCharQuery = "SELECT * FROM {$dbName}.users
-                WHERE charName = :charName;";
+                WHERE ml_id = :mlID;";
 
 $dbCharStatement = $pdo->prepare($dbCharQuery);
-$dbCharStatement->execute([':charName' => $mlCharResponse->name]);
+$dbCharStatement->execute([':mlID' => $mlCharID]);
 
 $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -53,10 +53,10 @@ if($dbCharResponse === false)
 {
     $userCode = generateCode($pdo, $dbName);
 
-    addUser($pdo,$dbName,$userCode,$mlCharResponse->name,$mlFuncArray);
+    addUser($pdo,$dbName,$mlCharID, $userCode,$mlCharResponse->name,$mlFuncArray);
 
     $dbCharStatement = $pdo->prepare($dbCharQuery);
-    $dbCharStatement->execute([':charName' => $mlCharResponse->name]);
+    $dbCharStatement->execute([':mlID' => $mlCharID]);
 
     $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 }
@@ -64,28 +64,28 @@ else
 {    
     $userCode = $dbCharResponse["userCode"];
 
-    updateUser($pdo,$dbName,$dbCharResponse["id"],$mlFuncArray);
+    updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharResponse->name, $mlFuncArray);
 }
 
-$functionQuery = "  SELECT DISTINCT functions.name,
+$functionQuery = "  SELECT DISTINCT cpu_functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
-                                    functions.type,
-                                    functions.hacking_cat
+                                    cpu_functions.type,
+                                    cpu_functions.hacking_cat
                     FROM {$dbName}.ml_functions
-                    INNER JOIN {$dbName}.functions ON ml_functions.function_id=functions.id
+                    INNER JOIN {$dbName}.cpu_functions ON ml_functions.function_id=cpu_functions.id
                     WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )
-                        AND functions.hacking_cat IS NOT NULL
-                    GROUP BY functions.name,
-                                functions.type,
-                                functions.hacking_cat;";
+                        AND cpu_functions.hacking_cat IS NOT NULL
+                    GROUP BY cpu_functions.name,
+                                cpu_functions.type,
+                                cpu_functions.hacking_cat;";
 
 $functionStatement = $pdo->prepare($functionQuery);
 $functionStatement->execute($mlFuncArray);
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
-$roleQuery = "  SELECT DISTINCT roles.name
+$roleQuery = "  SELECT DISTINCT cpu_roles.name
                 FROM {$dbName}.ml_functions
-                INNER JOIN {$dbName}.roles ON ml_functions.role_id=roles.id
+                INNER JOIN {$dbName}.cpu_roles ON ml_functions.role_id=cpu_roles.id
                 WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )";
 
 $roleStatement = $pdo->prepare($roleQuery);
@@ -94,13 +94,13 @@ $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-$selfReportQuery = "SELECT ml_functions.id, roles.name AS role_name FROM {$dbName}.ml_functions
-                    INNER JOIN {$dbName}.roles ON role_id=roles.id
+$selfReportQuery = "SELECT ml_functions.id, cpu_roles.name AS role_name FROM {$dbName}.ml_functions
+                    INNER JOIN {$dbName}.cpu_roles ON role_id=cpu_roles.id
                     INNER JOIN {$dbName}.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
                     WHERE user_selfreport.user_id=:userID";
 
 $selfReportStatement = $pdo->prepare($selfReportQuery);
-$selfReportStatement->execute([':userID' => $dbCharResponse["id"]]);
+$selfReportStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
 $selfReportResponse = $selfReportStatement->fetchAll(PDO::FETCH_ASSOC);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,10 +110,10 @@ $itemQuery = "  SELECT item_id
                 WHERE user_id = :userID";
 
 $itemStatement = $pdo->prepare($itemQuery);
-$itemStatement->execute([':userID' => $dbCharResponse["id"]]);
+$itemStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
 $itemResponse = $itemStatement->fetchAll(PDO::FETCH_COLUMN);
 
-echo json_encode(array(  "id" => $dbCharResponse["id"],
+echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "name" => $mlCharResponse->name,
                                 "userCode" => $userCode,
                                 "functions" => $functionResponse,

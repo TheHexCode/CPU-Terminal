@@ -12,7 +12,7 @@ if($effectIDs !== null)
         $effectIDs = array($effectIDs);
     }
 
-    $activeQuery = "SELECT * FROM {$dbName}.activeJob";
+    $activeQuery = "SELECT * FROM {$dbName}.sim_active_codes";
     $activeStatement = $pdo->prepare($activeQuery);
     $activeStatement->execute();
     $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
