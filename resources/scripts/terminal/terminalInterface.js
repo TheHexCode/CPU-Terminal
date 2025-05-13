@@ -83,9 +83,13 @@ function submitCode(event)
 
 function disableExpensiveButtons()
 {
+	console.log(session.getCurrentTags());
+
 	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
 		return $(this).attr("data-cost") > session.getCurrentTags()
 	});
+
+	$(expensiveButtons).each(function(index, button){console.log($(button))});
 
 	$(expensiveButtons).prop("disabled",true);
 	$(expensiveButtons).attr("data-enabled","false");
@@ -143,11 +147,7 @@ function injectUserPayload(userPayload)
 		updateTags(payloadTags,Session.HACK);
 
 		// Extra Tags + Gems/Remaining Tags
-
 		updateTags(0,Session.EXTRA);
-
-		// Disable Expensive Buttons
-		disableExpensiveButtons();
 
 		// ROLE
 		if(payload.hasRole("DISSIMULATOR"))
@@ -636,8 +636,10 @@ function accessTerminal(event)
 		let reqTags = parseInt($("#reqTags").html());
 
 		session.setCurrentTags(session.getCurrentTags() - reqTags);
-
 		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+
+		// Disable Expensive Buttons
+		disableExpensiveButtons();
 
 		if($(".logEntry[data-user='" + payload.getUserID() + "']").length === 0)
 		{
