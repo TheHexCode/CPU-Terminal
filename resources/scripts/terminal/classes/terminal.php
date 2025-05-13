@@ -229,6 +229,27 @@ class Terminal
                                 'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                 'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
 
+                if(gettype($stateGuide["title"]) === "array")
+                {
+                    switch($stateGuide["title"]["if"])
+                    {
+                        case("user"):
+                            $stateGuide["title"] = $stateGuide["title"]["false"];
+                            break;
+                    }
+                }
+
+                if(gettype($stateGuide["contents"]) === "array")
+                {
+                    switch($stateGuide["contents"]["if"])
+                    {
+                        case("user"):
+                            $stateGuide["contents"] = $stateGuide["contents"]["false"];
+                            break;
+                    }
+                }
+                
+                
                 if($stateGuide["title"] === false)
                 {
                     $titleMask = '<span class="entryMasking">&nbsp;</span>';
@@ -284,7 +305,7 @@ class Terminal
 
             if($entry["type"] === "alarm")
             {
-                $prefixIntro = "(&#x1F56A;)";
+                $prefixIntro = "&#x23F0;&#x269F; ";
             }
 
             $entryString .= '<div id="' . $icon . '-' . $entry["path"] . '" class="entry' . $subClass . '">' .

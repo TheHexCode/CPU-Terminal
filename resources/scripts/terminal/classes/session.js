@@ -115,6 +115,22 @@ class Session
         }
     }
 
+    setEntry(entryID)
+    {
+        $.getJSON(
+            "resources/scripts/terminal/db/getEntryState.php",
+            { id: entryID }
+        )
+        .done(this.#setEntryState.bind(this, entryID));
+    }
+
+    #setEntryState(entryID, entryJSON)
+    {
+        let entryIndex = this.#entryData.findIndex(entry => entry.id === Number(entryID));
+
+        this.#entryData[entryIndex] = entryJSON;
+    }
+
     getEntryState(entryID)
     {
         let searchResults = this.#entryData.find(entry => entry.id === Number(entryID));

@@ -68,7 +68,7 @@ function submitCode(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources\\scripts\\terminal\\db\\getUser.php",
+		url: "resources/scripts/terminal/db/getUser.php",
 		data:
 		{
 			userCode: $("#payloadCodeInput")[0].value,
@@ -389,12 +389,13 @@ function injectUserPayload(userPayload)
 			userPayload["prevActions"].forEach(function(entry)
 			{
 				results = $.getJSON(
-					"resources\\scripts\\terminal\\db\\getEntryUpdate.php",
+					"resources/scripts/terminal/db/getEntryUpdate.php",
 					{
 						id: entry["id"],
 						newState: entry["newState"],
 						action: entry["action"],
-						userID: entry["user_id"]
+						actionUser: entry["user_id"],
+						userID: payload.getUserID()
 					}
 				);
 
@@ -657,7 +658,7 @@ function accessTerminal(event)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\terminal\\db\\useItems.php",
+				url: "resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -669,7 +670,7 @@ function accessTerminal(event)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\terminal\\db\\addLogEntry.php",
+				url: "resources/scripts/terminal/db/addLogEntry.php",
 				data:
 				{
 					termID: session.getTerminalID(),
@@ -747,7 +748,7 @@ function takeAction(target)
 			let entryState = session.getEntryState(entryID);
 
 			let entryJSON = $.getJSON(
-				"resources\\scripts\\terminal\\db\\getEntryActions.php",
+				"resources/scripts/terminal/db/getEntryActions.php",
 				{ id: entryID, state: entryState, action: action }
 			)
 			.done(function() {
@@ -755,9 +756,10 @@ function takeAction(target)
 					userID: payload.getUserID(),
 					actionType: "entry",
 					entryID: entryID,
+					entryState: entryState,
 					actionCost: session.getActionCost(entryID,action),
 					upperAction: upperAction,
-					entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
+					entryName: $(entryPath + " .entryPrefix").text().slice(3,-2)
 				};
 
 				Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
@@ -1133,7 +1135,7 @@ function executeAction(actionMap,newData,globalAction)
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "resources\\scripts\\terminal\\db\\useItems.php",
+			url: "resources/scripts/terminal/db/useItems.php",
 			data:
 			{
 				userID: payload.getUserID(),
@@ -1183,6 +1185,8 @@ function completeAction(actionMap)
 		case("entry"):
 		case("ice"):
 		{
+			session.setEntry(actionMap["entryID"]);
+
 			$(actionMap["results"]["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
 			$(actionMap["results"]["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
 			$(actionMap["results"]["entryPath"] + " > .entryIntContainer > .accessInterface").html(actionMap["results"]["access"]);
@@ -1258,7 +1262,7 @@ function completeAction(actionMap)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\terminal\\db\\useItems.php",
+				url: "resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -1307,7 +1311,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources\\scripts\\terminal\\db\\useItems.php",
+				url: "resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),

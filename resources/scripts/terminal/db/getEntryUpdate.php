@@ -6,6 +6,7 @@ require('dbConnect.php');
 $entryID = $_GET["id"];
 $newState = $_GET["newState"];
 // OPTIONAL
+$actionUser = $_GET["actionUser"] ?? null;
 $userID = $_GET["userID"] ?? null;
 $action = $_GET["action"] ?? null;
 
@@ -49,9 +50,48 @@ if($entry["type"] === "ice")
 }
 else
 {
+    if($newState === "previous")
+    {
+        $newState = $entry["previous"];
+    }
+
     $stateGuide = $iconSchema[$entry["icon"]]["types"][$entry["type"]][$newState];
 
     $stateFormat = array_key_exists("formatting", $stateGuide) ? " ".$stateGuide["formatting"] : "";
+
+    if(gettype($stateGuide["title"]) === "array")
+    {
+        switch($stateGuide["title"]["if"])
+        {
+            case("user"):
+                if($actionUser === $userID)
+                {
+                    $stateGuide["title"] = $stateGuide["title"]["true"];
+                }
+                else
+                {
+                    $stateGuide["title"] = $stateGuide["title"]["false"];
+                }
+                break;
+        }
+    }
+
+    if(gettype($stateGuide["contents"]) === "array")
+    {
+        switch($stateGuide["contents"]["if"])
+        {
+            case("user"):
+                if($actionUser === $userID)
+                {
+                    $stateGuide["contents"] = $stateGuide["contents"]["true"];
+                }
+                else
+                {
+                    $stateGuide["contents"] = $stateGuide["contents"]["false"];
+                }
+                break;
+        }
+    }
 
     if($stateGuide["title"] === false)
     {

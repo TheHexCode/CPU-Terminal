@@ -33,9 +33,12 @@
 
 > PREVIEW TERMINAL IN DASHBOARD
 
-> FIX EXECUTE DOUBLE-CLICK PROBLEM
+> IF ONE PERSON DOWNLOADS A FILE/DARK WEB/CAMERA FOOTAGE, NO ONE ELSE CAN SEE IT, BECAUSE FILES ARE NON-FUNGIBLE
+
+> DECK ACTIONS ARE IMMEDIATE
 
 > LOW PRIORITY
+    - Make enter submit payload code
     - Resume Timer on mouseenter (only if already started?)
     - Write message for empty active/passive
     - Help Popup to say what functions do what (Databaseable)
@@ -46,3 +49,4 @@
 
 >> COMPLETED
     > REVERT TO MYLARP FUNCTION PULL
+    > FIX EXECUTE DOUBLE-CLICK PROBLEM

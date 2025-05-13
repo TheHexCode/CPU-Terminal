@@ -42,7 +42,7 @@ function mlLogin(event)
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "resources\\scripts\\profile\\mylarp\\myLarpLogin.php",
+			url: "resources/scripts/profile/mylarp/myLarpLogin.php",
 			data:
 			{
 				mlEmail: mlEmail,
@@ -131,7 +131,7 @@ function selectCharacter(charID)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources\\scripts\\profile\\mylarp\\myLarpChar.php",
+		url: "resources/scripts/profile/mylarp/myLarpChar.php",
 		data:
 		{
 			mlEmail: mlEmail,
@@ -319,7 +319,7 @@ function statSubmit(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources\\scripts\\profile\\db\\updateInventory.php",
+		url: "resources/scripts/profile/db/updateInventory.php",
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),

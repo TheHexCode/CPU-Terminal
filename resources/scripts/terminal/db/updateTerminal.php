@@ -4,6 +4,7 @@ require('dbConnect.php');
 $actionType = $_POST["actionType"];
 $entryID = $_POST["entryID"];
 $newData = $_POST["newData"];
+$oldData = $_POST["oldData"];
 
 //INTERRUPT CODE HERE?
 
@@ -12,12 +13,12 @@ switch($actionType)
     case "entry":
     case "ice":
         $updateQuery = "UPDATE {$dbName}.sim_entries
-                        SET state = :newData
+                        SET state = :newData, previous = :oldData
                         WHERE id = :entryID";
 
         $updateStatement = $pdo->prepare($updateQuery);
 
-        $updateStatement->execute([':newData' => $newData, ':entryID' => $entryID]);
+        $updateStatement->execute([':newData' => $newData, ':oldData' => $oldData, ':entryID' => $entryID]);
         break;
     case "log":
         if($newData === "") // WIPE TRACKS
@@ -80,5 +81,4 @@ switch($actionType)
 
         $updateStatement->execute([':entryID' => $entryID]);
         break;
-    //Items?
 }

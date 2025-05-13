@@ -28,13 +28,8 @@
 						"actions":
 						[
 							{
-								"button": "Download Copy",
-								"state": "copied",
-								"global": false
-							},
-							{
-								"button": "Delete File",
-								"state": "deleted",
+								"button": "Take File",
+								"state": "taken",
 								"global": true
 							}
 						]
@@ -54,43 +49,25 @@
 						"actions":
 						[
 							{
-								"button": "Download Copy",
-								"state": "copied",
-								"global": false
-							},
-							{
-								"button": "Delete File",
-								"state": "deleted",
+								"button": "Take File",
+								"state": "taken",
 								"global": true
 							}
 						]
 					}
 				},
-				"copied":
+				"taken":
 				{
-					"title": true,
-					"contents": true,
-					"access":
-					{
-						"enabled": false
+					"title": {
+						"if": "user",
+						"true": true,
+						"false": "ERROR"
 					},
-					"modify":
-					{
-						"enabled": true,
-						"actions":
-						[
-							{
-								"button": "Delete File",
-								"state": "deleted",
-								"global": true
-							}
-						]
-					}
-				},
-				"deleted":
-				{
-					"title": "ERROR",
-					"contents": "File Not Found",
+					"contents": {
+						"if": "user",
+						"true": true,
+						"false": "File Removed"
+					},
 					"access":
 					{
 						"enabled": false
@@ -125,13 +102,8 @@
 						"actions":
 						[
 							{
-								"button": "Download Copy",
-								"state": "copied",
-								"global": true
-							},
-							{
-								"button": "Delete File",
-								"state": "deleted",
+								"button": "Take File",
+								"state": "taken",
 								"global": true
 							}
 						]
@@ -211,13 +183,8 @@
 						"actions":
 						[
 							{
-								"button": "Download Copy",
-								"state": "copied",
-								"global": false
-							},
-							{
-								"button": "Delete File",
-								"state": "deleted",
+								"button": "Take File",
+								"state": "taken",
 								"global": true
 							}
 						]
@@ -237,43 +204,25 @@
 						"actions":
 						[
 							{
-								"button": "Download Copy",
-								"state": "copied",
-								"global": false
-							},
-							{
-								"button": "Delete File",
-								"state": "deleted",
+								"button": "Take File",
+								"state": "taken",
 								"global": true
 							}
 						]
 					}
 				},
-				"copied":
+				"taken":
 				{
-					"title": true,
-					"contents": true,
-					"access":
-					{
-						"enabled": false
+					"title": {
+						"if": "user",
+						"true": true,
+						"false": "ERROR"
 					},
-					"modify":
-					{
-						"enabled": true,
-						"actions":
-						[
-							{
-								"button": "Delete File",
-								"state": "deleted",
-								"global": true
-							}
-						]
-					}
-				},
-				"deleted":
-				{
-					"title": "ERROR",
-					"contents": "File Not Found",
+					"contents": {
+						"if": "user",
+						"true": true,
+						"false": "File Removed"
+					},
 					"access":
 					{
 						"enabled": false
@@ -308,13 +257,8 @@
 						"actions":
 						[
 							{
-								"button": "Download Copy",
-								"state": "copied",
-								"global": true
-							},
-							{
-								"button": "Delete File",
-								"state": "deleted",
+								"button": "Take File",
+								"state": "taken",
 								"global": true
 							}
 						]
@@ -389,6 +333,7 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "initial",
 								"global": true
 							}
 						]
@@ -399,14 +344,9 @@
 						"actions":
 						[
 							{
-								"button": "Download Footage",
-								"state": "copied",
+								"button": "Take Footage",
+								"state": "taken",
 								"global": false
-							},
-							{
-								"button": "Delete Footage",
-								"state": "deleted",
-								"global": true
 							}
 						]
 					}
@@ -423,6 +363,7 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "viewed",
 								"global": true
 							}
 						]
@@ -433,14 +374,9 @@
 						"actions":
 						[
 							{
-								"button": "Download Footage",
-								"state": "copied",
+								"button": "Take Footage",
+								"state": "taken",
 								"global": false
-							},
-							{
-								"button": "Delete Footage",
-								"state": "deleted",
-								"global": true
 							}
 						]
 					}
@@ -466,10 +402,14 @@
 						"enabled": false
 					}
 				},
-				"copied":
+				"taken":
 				{
 					"title": true,
-					"contents": "Feed Visible",
+					"contents": {
+						"if": "user",
+						"true": true,
+						"false": "Footage Removed"
+					},
 					"access":
 					{
 						"enabled": true,
@@ -478,30 +418,10 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "taken",
 								"global": true
 							}
 						]
-					},
-					"modify":
-					{
-						"enabled": true,
-						"actions":
-						[
-							{
-								"button": "Delete Footage",
-								"state": "deleted",
-								"global": true
-							}
-						]
-					}
-				},
-				"deleted":
-				{
-					"title": true,
-					"contents": "FEED ERROR",
-					"access":
-					{
-						"enabled": false
 					},
 					"modify":
 					{
@@ -530,6 +450,7 @@
 							{
 								"button": "Disable Lock",
 								"state": "disabled",
+								"previous": "initial",
 								"global": true
 							}
 						]
@@ -580,6 +501,7 @@
 							{
 								"button": "Disable Lock",
 								"state": "disabled",
+								"previous": "friendly",
 								"global": true
 							}
 						]
@@ -611,6 +533,7 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "initial",
 								"global": true
 							}
 						]
@@ -661,6 +584,7 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "friendly",
 								"global": true
 							}
 						]
@@ -692,6 +616,7 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "initial",
 								"global": true
 							}
 						]
@@ -737,6 +662,7 @@
 							{
 								"button": "Power Down",
 								"state": "disabled",
+								"previous": "initial",
 								"global": true
 							}
 						]

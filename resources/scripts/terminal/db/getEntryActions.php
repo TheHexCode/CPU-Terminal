@@ -7,7 +7,7 @@ $entryState = $_GET["state"];
 $playerAction = $_GET["action"];
 
 $entry_query = $pdo->query("SELECT * FROM {$dbName}.sim_entries WHERE id={$entryID}");
-$entry = ($entry_query->fetchAll(PDO::FETCH_ASSOC))[0];
+$entry = $entry_query->fetch(PDO::FETCH_ASSOC);
 
 $iconFilepath = "../../../schemas/icons.json";
 $iconFile = fopen($iconFilepath,"r");
@@ -18,7 +18,19 @@ $action = $iconSchema[$entry["icon"]]["types"][$entry["type"]][$entryState][$pla
 
 if($action["enabled"])
 {
-    $options = json_encode($action["actions"]);
+    $actionButtons = array();
+
+    foreach($action["actions"] as $button)
+    {
+        if($button["state"] === "previous")
+        {
+            $button["state"] = $entry["previous"];
+        }
+
+        array_push($actionButtons, $button);
+    }
+
+    $options = json_encode($actionButtons);
 }
 else
 {

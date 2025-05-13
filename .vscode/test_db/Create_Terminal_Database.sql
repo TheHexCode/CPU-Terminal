@@ -30,6 +30,7 @@ CREATE TABLE sim_entries (
     title       TEXT,
     contents    TEXT,
     state       TEXT,
+    stateData   TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (terminal_id)
         REFERENCES sim_terminals(id)
