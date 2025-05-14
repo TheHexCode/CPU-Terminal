@@ -5,12 +5,9 @@
 <html>
 	<head>
 		<title>TERMINAL</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--content="width=271; height=695">--> <!--904x2316; 271x695-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta charset="UTF-8">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-		<!--<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
-		<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminal/classes/session.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminal/classes/payload.js"></script>
@@ -21,7 +18,7 @@
 		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
 	</head>
 	<body>
-		<div id="main">
+		<div id="main"<?php echo $terminal->getMain() ?>>
 			<div id="load" class="hidden">
 				<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
 					<mask id="logoMask">

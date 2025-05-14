@@ -17,7 +17,9 @@ $termResponse = $termStatement->fetch(PDO::FETCH_ASSOC);
 
 if($termResponse === false)
 {
-    echo "<h1>HTTP ERROR 404: FILE NOT FOUND</h1>";
+    echo    "<h1>HTTP ERROR 404: FILE NOT FOUND</h1>";
+
+    $terminal = new Terminal($termResponse);
 }
 else
 {

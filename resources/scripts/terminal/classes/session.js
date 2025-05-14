@@ -48,6 +48,8 @@ class Session
                 this.terminalRooted();
                 break;
         }
+
+        $("footer script").remove();
     }
 
     /*

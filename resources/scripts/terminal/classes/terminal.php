@@ -2,6 +2,7 @@
 
 class Terminal
 {
+    private $main;
     private $termID;
     private $termDisplayName;
     private $termAccessCost;
@@ -14,19 +15,32 @@ class Terminal
 
     function __construct($termResponse)
     {
-        $this->termID = $termResponse["id"];
-        $this->termDisplayName = $termResponse["displayName"];
-        $this->termAccessCost = $termResponse["access"];
-        $this->termState = $termResponse["state"];
-        $this->stateData = $termResponse["stateData"];
-        $this->entries = $termResponse["entries"];
-        $this->initialEntries = array();
-        $this->logEntries = $termResponse["logEntries"];
+        if($termResponse === false)
+        {
+            $this->main = " class='hidden'";
+        }
+        else
+        {
+            $this->main = "";
+            $this->termID = $termResponse["id"];
+            $this->termDisplayName = $termResponse["displayName"];
+            $this->termAccessCost = $termResponse["access"];
+            $this->termState = $termResponse["state"];
+            $this->stateData = $termResponse["stateData"];
+            $this->entries = $termResponse["entries"];
+            $this->initialEntries = array();
+            $this->logEntries = $termResponse["logEntries"];
 
-        $iconFilepath = "resources/schemas/icons.json";
-        $iconFile = fopen($iconFilepath,"r");
-        $this->iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
-        fclose($iconFile);
+            $iconFilepath = "resources/schemas/icons.json";
+            $iconFile = fopen($iconFilepath,"r");
+            $this->iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
+            fclose($iconFile);
+        }
+    }
+
+    public function getMain()
+    {
+        return $this->main;
     }
 
     public function getTerminalName()
@@ -36,7 +50,7 @@ class Terminal
 
     public function getTerminalAccessCost()
     {
-        return $this->termAccessCost;
+        return $this->termAccessCost ?? 0;
     }
 
     public function getAccessGem($gem)
@@ -61,34 +75,41 @@ class Terminal
 
     public function setupSubTabButtons()
     {
-        $activeIcons = array_unique(array_column($this->entries,"icon"));
-
-        $subTabs = [
-            "inactive" => array(),
-            "disabled" => array()
-        ];
-
-        foreach(array_keys($this->iconSchema) as $icon)
+        if($this->main === "")
         {
-            if(in_array($icon,$activeIcons,true))
-            {
-                $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(this,\'' . $icon . 'Content\')">' . 
-                                    '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
-                                '</button>';
+            $activeIcons = array_unique(array_column($this->entries,"icon"));
 
-                array_push($subTabs["inactive"],$subTabString);
-            }
-            else
-            {
-                $subTabString = '<button id="' . $icon . 'SubTab" class="subTab disabled">' . 
-                                    '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
-                                '</button>';
+            $subTabs = [
+                "inactive" => array(),
+                "disabled" => array()
+            ];
 
-                array_push($subTabs["disabled"],$subTabString);
+            foreach(array_keys($this->iconSchema) as $icon)
+            {
+                if(in_array($icon,$activeIcons,true))
+                {
+                    $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(this,\'' . $icon . 'Content\')">' . 
+                                        '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
+                                    '</button>';
+
+                    array_push($subTabs["inactive"],$subTabString);
+                }
+                else
+                {
+                    $subTabString = '<button id="' . $icon . 'SubTab" class="subTab disabled">' . 
+                                        '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
+                                    '</button>';
+
+                    array_push($subTabs["disabled"],$subTabString);
+                }
             }
+
+            return (implode($subTabs["inactive"]) . implode($subTabs["disabled"]));
         }
-
-        return (implode($subTabs["inactive"]) . implode($subTabs["disabled"]));
+        else
+        {
+            return "";
+        }
     }
 
     public function setupLogEntries()
@@ -136,226 +157,240 @@ class Terminal
 
     public function setupIconEntries($icon)
     {
-        $dbArray = array_filter($this->entries,function ($entry) use ($icon)
+        if($this->main === "")
         {
-            return $entry["icon"] === $icon;
-        });
-
-        array_multisort(array_column($dbArray,"path"),SORT_NATURAL,$dbArray);
-
-        $iconGuide = $this->iconSchema[$icon];
-
-        $returnArray = array();
-
-        $inIce = array();
-        $outIce = 0;
-
-        foreach($dbArray as $entry)
-        {
-            $entryData = array(
-                "icon"   => $entry["icon"],
-                "id"     => $entry["id"],
-                "state"  => $entry["state"],
-                "access" => $entry["access"],
-                "modify" => $entry["modify"]
-            );
-
-            if($entry["icon"] === "utilities")
+            $dbArray = array_filter($this->entries,function ($entry) use ($icon)
             {
-                $entryData["type"] = $entry["type"];
-            }
+                return $entry["icon"] === $icon;
+            });
 
-            $unitCode = explode("-",$entry["path"]);
-            $subClass = "";
+            array_multisort(array_column($dbArray,"path"),SORT_NATURAL,$dbArray);
 
-            if(count($unitCode) > 1)
+            $iconGuide = $this->iconSchema[$icon];
+
+            $returnArray = array();
+
+            $inIce = array();
+            $outIce = 0;
+
+            foreach($dbArray as $entry)
             {
-                $parentPath = implode("-",array_splice($unitCode, 0,count($unitCode)-1));
-                $parent = current(array_filter($this->entries,function ($entry) use ($icon, $parentPath)
+                $entryData = array(
+                    "icon"   => $entry["icon"],
+                    "id"     => $entry["id"],
+                    "state"  => $entry["state"],
+                    "access" => $entry["access"],
+                    "modify" => $entry["modify"]
+                );
+
+                if($entry["icon"] === "utilities")
                 {
-                    return (($entry["icon"] === $icon) && ($entry["path"] === $parentPath));
-                }));
-
-                $subClass .= ($parent["state"] === "initial" ? " subIce" : "");
-
-                for($i = 1; $i < count($unitCode); $i++)
-                {
-                    $unitCode[$i] = chr(intval($unitCode[$i])+65);
-                }
-            }
-            
-            $unitCode = implode($unitCode);
-
-            if($entry["type"] === "ice")
-            {
-                array_push($inIce,$entry["path"]);
-
-                $subClass .= " ice";
-
-                $unit = "ICE " . $unitCode;
-
-                $accessInt = ($entry["state"] === "initial") ?
-                                'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' : 
-                                'Break: <button class="breakButton" data-enabled="false" disabled="" ">N/A</button>';
-
-                $modifyInt = ($entry["state"] === "initial") ?
-					            'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
-                                'Sleaze: <button class="sleazeButton" data-enabled="false" disabled="" ">N/A</button>';
-
-                $titleMask = $entry["title"];
-                $entryData["title"] = $entry["title"];
-
-                $contentsMask = ($entry["state"] === "initial") ?
-                                    '<span class="entryMasking">&nbsp;</span>' :
-							  	    '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) . '</span>';
-
-                $entryData["contents"] = ($entry["state"] === "initial") ? null : implode("<br/>",json_decode($entry["contents"]));
-            }
-            else
-            {
-                $stateGuide = $iconGuide["types"][$entry["type"]][$entry["state"]];
-
-                $outIce = count(array_filter($inIce,function($icePath) use($entry) {
-                    return !preg_match('/(' . $icePath . ')/',$entry["path"]);
-                }));
-
-                $unit = $iconGuide["unit"] . " " . $unitCode;
-
-                $accessInt = ($stateGuide["access"]["enabled"]) ?
-                                'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
-                                'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
-
-                $modifyInt = ($stateGuide["modify"]["enabled"]) ?
-                                'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
-                                'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
-
-                if(gettype($stateGuide["title"]) === "array")
-                {
-                    switch($stateGuide["title"]["if"])
-                    {
-                        case("user"):
-                            $stateGuide["title"] = $stateGuide["title"]["false"];
-                            break;
-                    }
+                    $entryData["type"] = $entry["type"];
                 }
 
-                if(gettype($stateGuide["contents"]) === "array")
+                $unitCode = explode("-",$entry["path"]);
+                $subClass = "";
+
+                if(count($unitCode) > 1)
                 {
-                    switch($stateGuide["contents"]["if"])
+                    $parentPath = implode("-",array_splice($unitCode, 0,count($unitCode)-1));
+                    $parent = current(array_filter($this->entries,function ($entry) use ($icon, $parentPath)
                     {
-                        case("user"):
-                            $stateGuide["contents"] = $stateGuide["contents"]["false"];
-                            break;
+                        return (($entry["icon"] === $icon) && ($entry["path"] === $parentPath));
+                    }));
+
+                    $subClass .= ($parent["state"] === "initial" ? " subIce" : "");
+
+                    for($i = 1; $i < count($unitCode); $i++)
+                    {
+                        $unitCode[$i] = chr(intval($unitCode[$i])+65);
                     }
                 }
                 
-                
-                if($stateGuide["title"] === false)
+                $unitCode = implode($unitCode);
+
+                if($entry["type"] === "ice")
                 {
-                    $titleMask = '<span class="entryMasking">&nbsp;</span>';
-                    $entryData["title"] = null;
-                }
-                elseif($stateGuide["title"] === true)
-                {
-                    
-                    $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
+                    array_push($inIce,$entry["path"]);
+
+                    $subClass .= " ice";
+
+                    $unit = "ICE " . $unitCode;
+
+                    $accessInt = ($entry["state"] === "initial") ?
+                                    'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' : 
+                                    'Break: <button class="breakButton" data-enabled="false" disabled="" ">N/A</button>';
+
+                    $modifyInt = ($entry["state"] === "initial") ?
+                                    'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
+                                    'Sleaze: <button class="sleazeButton" data-enabled="false" disabled="" ">N/A</button>';
+
+                    $titleMask = $entry["title"];
                     $entryData["title"] = $entry["title"];
+
+                    $contentsMask = ($entry["state"] === "initial") ?
+                                        '<span class="entryMasking">&nbsp;</span>' :
+                                        '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) . '</span>';
+
+                    $entryData["contents"] = ($entry["state"] === "initial") ? null : implode("<br/>",json_decode($entry["contents"]));
                 }
                 else
                 {
-                    $titleMask = '<span class="entrySecret">' . $stateGuide["title"] . '</span>';
-                    $entryData["title"] = $stateGuide["title"];
-                }
+                    $stateGuide = $iconGuide["types"][$entry["type"]][$entry["state"]];
 
-                if($stateGuide["contents"] === false)
-                {
-                    $contentsMask = '<span class="entryMasking">&nbsp;</span>';
-                    $entryData["contents"] = null;
-                }
-                elseif($stateGuide["contents"] === true)
-                {
-                    if($entry["type"] === "trap")
+                    $outIce = count(array_filter($inIce,function($icePath) use($entry) {
+                        return !preg_match('/(' . $icePath . ')/',$entry["path"]);
+                    }));
+
+                    $unit = $iconGuide["unit"] . " " . $unitCode;
+
+                    $accessInt = ($stateGuide["access"]["enabled"]) ?
+                                    'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
+                                    'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
+
+                    $modifyInt = ($stateGuide["modify"]["enabled"]) ?
+                                    'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
+                                    'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+
+                    if(gettype($stateGuide["title"]) === "array")
                     {
-                        $contentsMask = '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) .  '</span>';
-                        $entryData["contents"] = implode("<br/>",json_decode($entry["contents"]));
+                        switch($stateGuide["title"]["if"])
+                        {
+                            case("user"):
+                                $stateGuide["title"] = $stateGuide["title"]["false"];
+                                break;
+                        }
+                    }
+
+                    if(gettype($stateGuide["contents"]) === "array")
+                    {
+                        switch($stateGuide["contents"]["if"])
+                        {
+                            case("user"):
+                                $stateGuide["contents"] = $stateGuide["contents"]["false"];
+                                break;
+                        }
+                    }
+                    
+                    
+                    if($stateGuide["title"] === false)
+                    {
+                        $titleMask = '<span class="entryMasking">&nbsp;</span>';
+                        $entryData["title"] = null;
+                    }
+                    elseif($stateGuide["title"] === true)
+                    {
+                        
+                        $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
+                        $entryData["title"] = $entry["title"];
                     }
                     else
                     {
-                        $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
-                        $entryData["contents"] = $entry["contents"];
+                        $titleMask = '<span class="entrySecret">' . $stateGuide["title"] . '</span>';
+                        $entryData["title"] = $stateGuide["title"];
+                    }
+
+                    if($stateGuide["contents"] === false)
+                    {
+                        $contentsMask = '<span class="entryMasking">&nbsp;</span>';
+                        $entryData["contents"] = null;
+                    }
+                    elseif($stateGuide["contents"] === true)
+                    {
+                        if($entry["type"] === "trap")
+                        {
+                            $contentsMask = '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) .  '</span>';
+                            $entryData["contents"] = implode("<br/>",json_decode($entry["contents"]));
+                        }
+                        else
+                        {
+                            $contentsMask = '<span class="entrySecret">' . $entry["contents"] . '</span>';
+                            $entryData["contents"] = $entry["contents"];
+                        }
+                    }
+                    else
+                    {
+                        $contentsMask = '<span class="entrySecret">' . $stateGuide["contents"] . '</span>';
+                        $entryData["contents"] = $stateGuide["contents"];
                     }
                 }
-                else
+
+                $entryString = "";
+
+                for($i = 0; $i < $outIce; $i++)
                 {
-                    $contentsMask = '<span class="entrySecret">' . $stateGuide["contents"] . '</span>';
-                    $entryData["contents"] = $stateGuide["contents"];
+                    $entryString .= '</div>';
+                    array_pop($inIce);
                 }
+                $outIce = 0;
+
+                $prefixIntro = ">> ";
+
+                if($entry["type"] === "alarm")
+                {
+                    $prefixIntro = "&#x23F0;&#x269F; ";
+                }
+
+                $entryString .= '<div id="' . $icon . '-' . $entry["path"] . '" class="entry' . $subClass . '">' .
+                                    '<div class="entryTitleBar">' .
+                                        '<span class="entryPrefix">' . $prefixIntro . $unit . ':\\</span>' .
+                                        '<span class="entryMaskContainer">' .
+                                            $titleMask .
+                                        '</span>' .
+                                    '</div>' .
+                                    '<div class="entryContentsBar">' .
+                                        '<span class="entryMaskContainer">' .
+                                            $contentsMask .
+                                        '</span>' .
+                                    '</div>' .
+                                    '<div class="entryIntContainer">' .
+                                        '<div class="entryInterface accessInterface">' .
+                                            $accessInt .
+                                        '</div>' .
+                                        '<div class="entryInterface modifyInterface">' .
+                                            $modifyInt .
+                                        '</div>' .
+                                    '</div>' . 
+                                    '<hr/>';
+
+                if($entry["type"] !== "ice")
+                {
+                    $entryString .= '</div>';
+                }
+
+                array_push($returnArray, $entryString);
+                array_push($this->initialEntries,$entryData);
             }
 
-            $entryString = "";
-
-            for($i = 0; $i < $outIce; $i++)
+            $returnString = join("",$returnArray);
+            for($i = 0; $i < count($inIce); $i++)
             {
-                $entryString .= '</div>';
-                array_pop($inIce);
-            }
-            $outIce = 0;
-
-            $prefixIntro = ">> ";
-
-            if($entry["type"] === "alarm")
-            {
-                $prefixIntro = "&#x23F0;&#x269F; ";
+                $returnString .= '</div>';
             }
 
-            $entryString .= '<div id="' . $icon . '-' . $entry["path"] . '" class="entry' . $subClass . '">' .
-								'<div class="entryTitleBar">' .
-									'<span class="entryPrefix">' . $prefixIntro . $unit . ':\\</span>' .
-									'<span class="entryMaskContainer">' .
-										$titleMask .
-									'</span>' .
-								'</div>' .
-								'<div class="entryContentsBar">' .
-									'<span class="entryMaskContainer">' .
-										$contentsMask .
-									'</span>' .
-								'</div>' .
-								'<div class="entryIntContainer">' .
-									'<div class="entryInterface accessInterface">' .
-										$accessInt .
-									'</div>' .
-									'<div class="entryInterface modifyInterface">' .
-										$modifyInt .
-									'</div>' .
-								'</div>' . 
-                                '<hr/>';
-
-            if($entry["type"] !== "ice")
-            {
-                $entryString .= '</div>';
-            }
-
-            array_push($returnArray, $entryString);
-            array_push($this->initialEntries,$entryData);
+            return $returnString;
         }
-
-        $returnString = join("",$returnArray);
-        for($i = 0; $i < count($inIce); $i++)
+        else
         {
-            $returnString .= '</div>';
+            return "";
         }
-
-        return $returnString;
     }
 
     public function sendInitialEntries()
     {
-        $termInfo = array(
-            "termID" => $this->termID,
-            "termState" => $this->termState,
-            "stateData" => $this->stateData
-        );
+        if($this->main === "")
+        {
+            $termInfo = array(
+                "termID" => $this->termID,
+                "termState" => $this->termState,
+                "stateData" => $this->stateData
+            );
 
-        return "<script>var session = new Session(" . json_encode($termInfo) . ", " . json_encode($this->initialEntries) . ");</script>";
+            return "<script>var session = new Session(" . json_encode($termInfo) . ", " . json_encode($this->initialEntries) . ");</script>";
+        }
+        else
+        {
+            return "<script>$('#main').remove();</script>";
+        }
     }
 }
