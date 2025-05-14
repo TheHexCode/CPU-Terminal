@@ -83,13 +83,9 @@ function submitCode(event)
 
 function disableExpensiveButtons()
 {
-	console.log(session.getCurrentTags());
-
 	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
 		return $(this).attr("data-cost") > session.getCurrentTags()
 	});
-
-	$(expensiveButtons).each(function(index, button){console.log($(button))});
 
 	$(expensiveButtons).prop("disabled",true);
 	$(expensiveButtons).attr("data-enabled","false");
@@ -104,7 +100,7 @@ function injectUserPayload(userPayload)
 	}
 	else
 	{
-		console.log(userPayload);
+		//console.log(userPayload);
 
 		payload.setPayload(userPayload);
 
@@ -1057,11 +1053,11 @@ function closeModal(event)
 
 function executeAction(actionMap,newData,globalAction)
 {
-	if(!$("#copycatActivate").prop("checked"))
+	if((!$("#copycatActivate").prop("checked")) && (actionMap["actionType"] !== "item"))
 	{
 		let maxTime = payload.getActionTime();
 
-		if(actionMap["actionType"] === "item")
+		if(actionMap["actionCost"] < 0) // Deck Actions, currently
 		{
 			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
 		}
@@ -1130,28 +1126,40 @@ function executeAction(actionMap,newData,globalAction)
 		$("#load").addClass("hidden");
 		$("#modalBG").css("display","flex");
 	}
-	else //USING COPYCAT
+	else //USING COPYCAT OR AN ITEM
 	{
-		payload.setActiveEffect(5, true);
+		if(actionMap["actionType"] === "item")
+		{
+			actionMap["newData"] = newData;
+			actionMap["global"] = globalAction;
 
-		$.ajax({
-			type: "POST",
-			dataType: "json",
-			url: "resources/scripts/terminal/db/useItems.php",
-			data:
-			{
-				userID: payload.getUserID(),
-				effectIDs: 5,
-				termID: session.getTerminalID()
-			}
-		});
+			$("#load").removeClass("hidden");
 
-		actionMap["newData"] = newData;
-		actionMap["global"] = globalAction;
+			mbTimer.skipTimer(completeAction,actionMap);
+		}
+		else //COPYCAT
+		{
+			payload.setActiveEffect(5, true);
 
-		mbTimer.skipTimer(completeAction,actionMap);
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources/scripts/terminal/db/useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effectIDs: 5,
+					termID: session.getTerminalID()
+				}
+			});
 
-		$("#load").removeClass("hidden");
+			actionMap["newData"] = newData;
+			actionMap["global"] = globalAction;
+
+			$("#load").removeClass("hidden");
+
+			mbTimer.skipTimer(completeAction,actionMap);
+		}
 	}
 }
 
@@ -1162,9 +1170,9 @@ function activateDigiPet(actionMap, newData, globalAction)
 
 function completeAction(actionMap)
 {
-	$("#load").addClass("hidden");
-
 	closeModal("executed");
+
+	$("#load").addClass("hidden");
 
 	//actionMap:
 		// actionType
@@ -1232,8 +1240,6 @@ function completeAction(actionMap)
 			session.rootTerminal(new Date());
 			break;
 		case("item"):
-			console.log(actionMap);
-
 			$(".itemButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
 
 			if(actionMap["remCharges"] <= 0)

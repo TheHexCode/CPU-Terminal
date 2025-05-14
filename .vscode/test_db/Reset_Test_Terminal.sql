@@ -1,22 +1,19 @@
 UPDATE sim_active_codes
 	SET jobCode = 'ABC1234';
 
-INSERT INTO sim_terminals
-           (slug, jobCode, displayName, access, state, stateData)
+INSERT INTO sim_terminals (slug, jobCode, displayName, access, state, stateData)
      VALUES
            ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL);
 
  -- SET @TermID = 1;
 SET @TermID = LAST_INSERT_ID();
 
-INSERT INTO sim_access_logs
-           (terminal_id, user_id, mask, reassignee, state)
+INSERT INTO sim_access_logs (terminal_id, user_id, mask, reassignee, state)
      VALUES
            (@TermID, NULL, 'WYV3RN', NULL, 'initial'),
 		   (@TermID, NULL, 'Z1GZ4G', NULL, 'initial');
 
-INSERT INTO sim_entries
-           (terminal_id, icon, path, type, access, modify, title, contents, state)
+INSERT INTO sim_entries (terminal_id, icon, path, type, access, modify, title, contents, state)
      VALUES
 		   (@TermID,'files','0','entry',0,1,'Paydata','10 Credits','initial'),
 		   (@TermID,'files','1','trap',1,2,NULL,'["3 Strikes to Torso!"]','initial'),

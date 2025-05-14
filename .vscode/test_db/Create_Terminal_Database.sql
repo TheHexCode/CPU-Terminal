@@ -112,7 +112,7 @@ CREATE TABLE user_functions (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-
+/*
 CREATE TABLE user_selfreport (
     user_id         INT NOT NULL,
     mlFunction_id   INT NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE user_selfreport (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-
+*/
 CREATE TABLE items (
     id      INT     AUTO_INCREMENT,
     name    TEXT    NOT NULL,
