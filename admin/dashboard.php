@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require('../resourcesterminal/db/dbConnect.php');
+    require('../resources/scripts/terminal/db/dbConnect.php');
 
     $activeQuery = "SELECT * FROM {$dbName}.sim_active_codes";
     $activeStatement = $pdo->prepare($activeQuery);

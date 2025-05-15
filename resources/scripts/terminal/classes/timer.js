@@ -50,6 +50,8 @@ class Timer
                 {
                     if(callargs["global"])
                     {
+                        
+
                         $.ajax({
                             type: "POST",
                             dataType: "json",
