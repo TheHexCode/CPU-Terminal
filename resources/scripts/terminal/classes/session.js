@@ -19,8 +19,6 @@ class Session
     static DISSIM = "dissim";
     static CLEC = "clec";
 
-    #conn;
-
     #termID;
     #termState;
     #stateData;
@@ -33,19 +31,6 @@ class Session
 
     constructor(termInfo, initialEntries)
     {
-        this.#conn = new WebSocket('wss://term.cpularp.com:30000');
-
-        this.#conn.onopen = function(e)
-        {
-            console.log("Connection established!");
-            console.log(e);
-        };
-
-        this.#conn.onmessage = function(e)
-        {
-            console.log(e);
-        }
-
         this.#termID = termInfo["termID"];
         this.#termState = termInfo["termState"];
         this.#stateData = termInfo["stateData"];
@@ -65,11 +50,24 @@ class Session
         }
 
         $("footer script").remove();
+
+        this.#listenForUpdates();
     }
 
-    sendGlobalMessage(msg)
+    #listenForUpdates()
     {
-        this.#conn.send(msg);
+        var thisClass = this;
+        
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "listener/listen_client.php"
+        })
+        .done(function(update)
+        {
+            console.log(update);
+            thisClass.#listenForUpdates();
+        });
     }
 
     /*

@@ -123,21 +123,7 @@
 						"enabled": false
 					}
 				},
-				"copied":
-				{
-					"title": "Trap!",
-					"contents": true,
-					"formatting": "sprung",
-					"access":
-					{
-						"enabled": false
-					},
-					"modify":
-					{
-						"enabled": false
-					}
-				},
-				"deleted":
+				"taken":
 				{
 					"title": "Trap!",
 					"contents": true,
@@ -278,21 +264,7 @@
 						"enabled": false
 					}
 				},
-				"copied":
-				{
-					"title": "Trap!",
-					"contents": true,
-					"formatting": "sprung",
-					"access":
-					{
-						"enabled": false
-					},
-					"modify":
-					{
-						"enabled": false
-					}
-				},
-				"deleted":
+				"taken":
 				{
 					"title": "Trap!",
 					"contents": true,

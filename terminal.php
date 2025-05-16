@@ -545,6 +545,3 @@
 		</div>
 	</body>
 </html>
-
-<?php
-require 'listener/listen_client.php';

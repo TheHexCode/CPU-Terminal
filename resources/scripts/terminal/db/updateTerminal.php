@@ -3,10 +3,30 @@ require('dbConnect.php');
 
 $actionType = $_POST["actionType"];
 $entryID = $_POST["entryID"];
+$userID = $_POST["userID"];
 $newData = $_POST["newData"];
 $oldData = $_POST["oldData"];
 
-//INTERRUPT CODE HERE?
+//SEND INTERRUPT CODE
+use WebSocket;
+require '../../../../listener/composer/vendor/autoload.php';
+
+$tempClient = new WebSocket\Client("ws://localhost:8767");
+
+$tempClient->addMiddleware(new WebSocket\Middleware\CloseHandler());
+$tempClient->addMiddleware(new WebSocket\Middleware\PingResponder());
+
+$message = json_encode(array(
+                                "actionType" => (($actionType === "entry" || $actionType === "ice") ? "entry" : $actionType),
+                                "entryID" => intval($entryID),
+                                "userID" => intval($userID),
+                                "newData" => $newData
+                                ));
+
+$tempClient->text($message);
+
+$tempClient->close();
+//////////////////////////////////////////////////////
 
 switch($actionType)
 {

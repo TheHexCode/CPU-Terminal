@@ -50,8 +50,6 @@ class Timer
                 {
                     if(callargs["global"])
                     {
-                        
-
                         $.ajax({
                             type: "POST",
                             dataType: "json",
@@ -60,6 +58,7 @@ class Timer
                             {
                                 actionType: callargs["actionType"],
                                 entryID: callargs["entryID"],
+                                userID: callargs["userID"],
                                 newData: callargs["newData"],
                                 oldData: callargs["entryState"]
                             }

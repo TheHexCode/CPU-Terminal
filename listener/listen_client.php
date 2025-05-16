@@ -1,19 +1,40 @@
 <?php
 use WebSocket;
 
-require 'listener/composer/vendor/autoload.php';
+require 'composer/vendor/autoload.php';
 
 $client = new WebSocket\Client("ws://localhost:8767");
 
-//Add standard middleware
 $client->addMiddleware(new WebSocket\Middleware\CloseHandler());
 $client->addMiddleware(new WebSocket\Middleware\PingResponder());
 
-//Send a message
-$client->text("Hello Websocket!");
-
-//Read response (This is blocking)
 $message = $client->receive();
-echo "Got message: {$message->getContent()}\n";
+echo $message->getContent();
 
+// Close connection
 $client->close();
+
+/*
+$client->onHandshake(function (WebSocket\Client $client,
+										WebSocket\Connection $connection,
+										Psr\Http\Message\RequestInterface $request,
+										Psr\Http\Message\ResponseInterface $response)
+	{
+		$connection->text(json_encode($request));
+	});
+
+$client->onText(function (WebSocket\Client $client, WebSocket\Connection $connection, WebSocket\Message\Message $message)
+	{
+		/*
+			{
+				"actionType": enum("entry","log","brick","rig","root","rooted")
+				"entryID": int,
+				"userID": int,
+				"newData": String
+			}
+		*//*
+		$client->send($message);
+	});
+
+$client->start();
+*/
