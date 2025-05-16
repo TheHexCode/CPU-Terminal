@@ -50,24 +50,6 @@ class Session
         }
 
         $("footer script").remove();
-
-        this.#listenForUpdates();
-    }
-
-    #listenForUpdates()
-    {
-        var thisClass = this;
-        
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            url: "listener/listen_client.php"
-        })
-        .done(function(update)
-        {
-            console.log(update);
-            thisClass.#listenForUpdates();
-        });
     }
 
     /*

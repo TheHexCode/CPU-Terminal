@@ -703,6 +703,8 @@ function accessTerminal(event)
 			$("#accessZone").addClass("hidden");
 			$("#hackZone").removeClass("hidden");
 		}
+
+		new Listener(payload.getUserID());
 	}
 }
 
