@@ -24,16 +24,27 @@
     X 22 - Canopic Jar [Magsweep]
 
 > MULTIPLAYER INTERRUPT
+ - Change/interrupt other players
+ - Make changed tab/entry blink for other players
+ - Status symbols for listen server Status
+ - Status symbols for other players (spiders, too?)
+    -- Make these blink as they change as well?
 
-> MAKE ITEMS DATABASE-ABLE
+>> MAKE ICON SCHEMA DATABASED
 
-> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
+>> MAKE ITEMS DATABASE-ABLE
+
+>> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
     - ICE > ICE NAME / GRADE > EFFECTS
     - TRAP > LIST OF EFFECTS
 
+^> FOR ABOVE THREE, ADD CONFIG AREAS TO ADMIN DASHBOARD
+
 > PREVIEW TERMINAL IN DASHBOARD
 
-> DECK ACTIONS ARE IMMEDIATE
+> DIGIPET ANIMATION
+
+> ALLOW SHIMMERSTICK TO BE USED WHENEVER
 
 > LOW PRIORITY
     - Make enter submit payload code
@@ -43,8 +54,8 @@
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
-    - DigiPet animation when activated
 
 >> COMPLETED
     > REVERT TO MYLARP FUNCTION PULL
     > FIX EXECUTE DOUBLE-CLICK PROBLEM
+    > DECK ACTIONS ARE IMMEDIATE

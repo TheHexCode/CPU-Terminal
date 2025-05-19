@@ -9,7 +9,7 @@ $oldData = $_POST["oldData"];
 
 //SEND INTERRUPT CODE
 use WebSocket;
-require '../../../../listener/composer/vendor/autoload.php';
+require '../listener/composer/vendor/autoload.php';
 
 $tempClient = new WebSocket\Client("ws://localhost:8767");
 

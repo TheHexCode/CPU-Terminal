@@ -45,15 +45,22 @@ function codeLimit(event)
 	}
 }
 
-function activateCodeSubmit(target)
+function activateCodeSubmit(event)
 {
-	if(target.value.length === 6)
+	if((event.key === "Enter") && (event.target.value.length === 6))
 	{
-		$("#payloadCodeSubmit").prop("disabled",false);
+		submitCode(event);
 	}
 	else
 	{
-		$("#payloadCodeSubmit").prop("disabled",true);
+		if(event.target.value.length === 6)
+		{
+			$("#payloadCodeSubmit").prop("disabled",false);
+		}
+		else
+		{
+			$("#payloadCodeSubmit").prop("disabled",true);
+		}
 	}
 }
 
@@ -915,6 +922,8 @@ function setupConfirmModal(actionMap,buttons)
 	//	- data
 	//	- global
 
+	$("#actionModal").attr("data-id", actionMap["entryID"]);
+
 	buttons.forEach(function(button)
 	{
 		$("#actionModal .modalButtonRow").append("<button id='" + button.id + "' class='modalButton'>" + button.text + "</button>");
@@ -1039,6 +1048,8 @@ function closeModal(event)
 		mbTimer.killTimer();
 
 		$("#modalBG").css("display","none");
+
+		$("#actionModal").attr("data-id", "");
 		
 		$("#actionModal .modalHeaderText").html("");
 

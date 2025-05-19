@@ -31,6 +31,11 @@
 								"button": "Take File",
 								"state": "taken",
 								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -52,6 +57,11 @@
 								"button": "Take File",
 								"state": "taken",
 								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -68,6 +78,19 @@
 						"true": true,
 						"false": "File Removed"
 					},
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
+				{
+					"title": "ERROR",
+					"contents": "File Not Found",
 					"access":
 					{
 						"enabled": false
@@ -105,6 +128,11 @@
 								"button": "Take File",
 								"state": "taken",
 								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -124,6 +152,20 @@
 					}
 				},
 				"taken":
+				{
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "sprung",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
 				{
 					"title": "Trap!",
 					"contents": true,
@@ -172,6 +214,11 @@
 								"button": "Take File",
 								"state": "taken",
 								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -193,6 +240,11 @@
 								"button": "Take File",
 								"state": "taken",
 								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -209,6 +261,19 @@
 						"true": true,
 						"false": "File Removed"
 					},
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
+				{
+					"title": "ERROR",
+					"contents": "File Not Found",
 					"access":
 					{
 						"enabled": false
@@ -246,6 +311,11 @@
 								"button": "Take File",
 								"state": "taken",
 								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -265,6 +335,20 @@
 					}
 				},
 				"taken":
+				{
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "sprung",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
 				{
 					"title": "Trap!",
 					"contents": true,
@@ -318,7 +402,12 @@
 							{
 								"button": "Take Footage",
 								"state": "taken",
-								"global": false
+								"global": true
+							},
+							{
+								"button": "Delete Footage",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -348,7 +437,12 @@
 							{
 								"button": "Take Footage",
 								"state": "taken",
-								"global": false
+								"global": true
+							},
+							{
+								"button": "Delete Footage",
+								"state": "deleted",
+								"global": true
 							}
 						]
 					}
@@ -382,6 +476,28 @@
 						"true": true,
 						"false": "Footage Removed"
 					},
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "taken",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
+				{
+					"title": true,
+					"contents": "Footage Not Found",
 					"access":
 					{
 						"enabled": true,

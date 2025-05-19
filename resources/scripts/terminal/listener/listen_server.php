@@ -12,29 +12,36 @@ $server->onHandshake(function (WebSocket\Server $server,
 										WebSocket\Connection $connection,
 										Psr\Http\Message\ServerRequestInterface $request,
 										Psr\Http\Message\ResponseInterface $response)
-	{
-		echo "New Connection!\n";
-	});
+{
+	echo "New Connection!\n";
+});
 
 $server->onDisconnect(function (WebSocket\Server $server,
 										WebSocket\Connection $connection)
-	{
-		echo "Connection Disconnected :C\n";
-	});
+{
+	echo "Connection Disconnected :C\n";
+});
 
 $server->onText(function (WebSocket\Server $server, WebSocket\Connection $connection, WebSocket\Message\Message $message)
-	{
-		/*
-			{
-				"actionType": enum("entry","log","brick","rig","root","rooted")
-				"entryID": int,
-				"userID": int,
-				"newData": String
-			}
-		*/
-		$server->send($message);
+{
+	/*
+		{
+			"actionType": enum("entry","log","brick","rig","root","rooted")
+			"entryID": int,
+			"userID": int,
+			"newData": String
+		}
+	*/
+	$server->send($message);
 
-		echo var_dump($message);
-	});
+	$content = json_decode($message->getContent());
+
+	echo "User " . $content->userID . ", " . $content->actionType . " " . $content->entryID . " >> " . $content->newData . ";\n";
+});
+
+$server->onTick(function(WebSocket\Server $server)
+{
+	echo $server->getConnectionCount() . "\n";
+});
 
 $server->start();

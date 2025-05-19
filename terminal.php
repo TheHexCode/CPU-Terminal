@@ -12,6 +12,7 @@
 		<script type="text/javascript" src="resources/scripts/terminal/classes/session.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminal/classes/payload.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminal/classes/timer.js"></script>
+		<script type="text/javascript" src="resources/scripts/terminal/classes/listener.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminal/terminalInterface.js"></script>
 		<script type="text/javascript" src="resources/scripts/terminal/classes/gems.js" defer></script>
 		<link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
@@ -101,7 +102,7 @@
 					</div>
 					<div id="payloadCodeRow">
 						<span class="dseg BG">~~~~~~</span>
-						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(this)"/>
+						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(event)"/>
 					</div>
 					<button id="payloadCodeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
 					<span>OR</span>
