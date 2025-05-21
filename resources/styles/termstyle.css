@@ -209,6 +209,14 @@ ul
 	display: none;
 }
 
+#statusBar
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	padding: 0 0.25rem 0 0.25rem;
+}
+
 #gemBar
 {
 	display: flex;

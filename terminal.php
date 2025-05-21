@@ -31,6 +31,11 @@
 					</foreignObject>
 				</svg>
 			</div>
+			<div id="statusBar">
+				<!-- CONNECTED USERS? -->
+				<!-- CONNECTION STATUS -->
+				<img id="serverStatus" src="resources/images/status/server_on.png"/>
+			</div>
 			<div id="gemBar">
 				<div id="gemContainer">
 					<div class="gemPair">

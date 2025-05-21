@@ -28,6 +28,7 @@ class Listener
                     break;
                 case(537): // LISTEN SERVER DOWN
                     console.error(ajax.responseText);
+                    $("#serverStatus").attr("src","resources/images/status/server_off.png");
                     break;
                 case(200): // PARSER ERROR?
                     if(ajax.statusText === "parsererror")
@@ -45,9 +46,12 @@ class Listener
                     {
                         console.error(ajax);
                     }
+
+                    $("#serverStatus").attr("src","resources/images/status/server_off.png");
                     break;
                 default: // UNKNOWN ERROR
                     console.error(ajax);
+                    $("#serverStatus").attr("src","resources/images/status/server_off.png");
                     break;
             }
         })
