@@ -228,11 +228,24 @@ class Terminal
                     $titleMask = $entry["title"];
                     $entryData["title"] = $entry["title"];
 
-                    $contentsMask = ($entry["state"] === "initial") ?
-                                        '<span class="entryMasking">&nbsp;</span>' :
-                                        '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) . '</span>';
+                    if($entry["state"] === "initial")
+                    {
+                        $contentsMask = '<span class="entryMasking">&nbsp;</span>';
+                        $entryData["contents"] = null;
+                    }
+                    else
+                    {
+                        $contentsMask = '<span class="entrySecret">';
 
-                    $entryData["contents"] = ($entry["state"] === "initial") ? null : implode("<br/>",json_decode($entry["contents"]));
+                        foreach(json_decode($entry["contents"]) as $entryContent)
+                        {
+                            $contentsMask .= "<span" . ($entry["state"] === "break" ? " class='backstroke' data-text='" . $entryContent . "'" : "") . ">" . $entryContent . "</span>";
+                        }
+
+                        $contentsMask .= '</span>';
+                        
+                        $entryData["contents"] = $entry["contents"];
+                    }
                 }
                 else
                 {
@@ -299,8 +312,24 @@ class Terminal
                     {
                         if($entry["type"] === "trap")
                         {
-                            $contentsMask = '<span class="entrySecret">' . implode("<br/>",json_decode($entry["contents"])) .  '</span>';
-                            $entryData["contents"] = implode("<br/>",json_decode($entry["contents"]));
+                            if($entry["state"] === "initial")
+                            {
+                                $contentsMask = '<span class="entryMasking">&nbsp;</span>';
+                                $entryData["contents"] = null;
+                            }
+                            else
+                            {
+                                $contentsMask = '<span class="entrySecret">';
+
+                                foreach(json_decode($entry["contents"]) as $entryContent)
+                                {
+                                    $contentsMask .= "<span>" . $entryContent . "</span>";
+                                }
+
+                                $contentsMask .= '</span>';
+                                
+                                $entryData["contents"] = json_decode($entry["contents"]);
+                            }
                         }
                         else
                         {

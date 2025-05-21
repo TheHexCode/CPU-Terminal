@@ -922,6 +922,7 @@ function setupConfirmModal(actionMap,buttons)
 	//	- data
 	//	- global
 
+	$("#actionModal").attr("data-type", actionMap["actionType"]);
 	$("#actionModal").attr("data-id", actionMap["entryID"]);
 
 	buttons.forEach(function(button)
@@ -1049,14 +1050,20 @@ function closeModal(event)
 
 		$("#modalBG").css("display","none");
 
+		$("#actionModal").attr("data-type", "");
 		$("#actionModal").attr("data-id", "");
 		
+		$("#actionModal .modalOverlay").addClass("hidden");
+
+		$("#actionModal .modalHeaderRow").removeClass("dimmed");
 		$("#actionModal .modalHeaderText").html("");
 
+		$("#actionModal .modalBody").removeClass("dimmed");
 		$("#modalBodyTimer").addClass("hidden");
 		$("#actionModal .modalBodyText").html("");
 		$(".modalBodyText").addClass("hidden");
 
+		$("#actionModal .modalButtonRow").removeClass("dimmed");
 		$("#actionModal .modalButtonRow").attr("data-mode","none");
 		$("#actionModal .modalButtonRow").html("");
 

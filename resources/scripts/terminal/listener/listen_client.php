@@ -41,28 +41,3 @@ catch(Exception $error)
 
 // Close connection
 $client->close();
-
-/*
-$client->onHandshake(function (WebSocket\Client $client,
-										WebSocket\Connection $connection,
-										Psr\Http\Message\RequestInterface $request,
-										Psr\Http\Message\ResponseInterface $response)
-	{
-		$connection->text(json_encode($request));
-	});
-
-$client->onText(function (WebSocket\Client $client, WebSocket\Connection $connection, WebSocket\Message\Message $message)
-	{
-		/*
-			{
-				"actionType": enum("entry","log","brick","rig","root","rooted")
-				"entryID": int,
-				"userID": int,
-				"newData": String
-			}
-		*//*
-		$client->send($message);
-	});
-
-$client->start();
-*/

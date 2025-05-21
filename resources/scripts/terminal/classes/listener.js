@@ -36,6 +36,14 @@ class Listener
                         {
                             console.warn("Listen server shut down to switch jobs. Please close this window.");
                         }
+                        else // UNKNOWN ERROR
+                        {
+                            console.error(ajax);
+                        }
+                    }
+                    else // UNKNOWN ERROR
+                    {
+                        console.error(ajax);
                     }
                     break;
                 default: // UNKNOWN ERROR
@@ -80,6 +88,18 @@ class Listener
                     .done(function() {
                         //check for open modal that is targeting this entry
                         //if so, X out modal, update, and close modal when update is finished
+                        let modal = $("#actionModal")[0];
+
+                        if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === entryID))
+                        {
+                            // X OUT MODAL, DISABLE BUTTONS
+                            mbTimer.killTimer();
+
+
+                            $(modal).addClass("dimmed");
+                            $("#actionModal button").prop("disabled", true);
+                        }
+
                         let resultJSON = entryJSON.responseJSON;
 
                         $(resultJSON["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(resultJSON["title"]);
@@ -87,6 +107,11 @@ class Listener
                         $(resultJSON["entryPath"] + " > .entryIntContainer > .accessInterface").html(resultJSON["access"]);
                         $(resultJSON["entryPath"] + " > .entryIntContainer > .modifyInterface").html(resultJSON["modify"]);
                         $(resultJSON["entryPath"] + " > .subIce").removeClass("subIce");
+
+                        if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === entryID))
+                        {
+                            closeModal("interrupted");
+                        }
                     });
                     break;
                 case("log"):

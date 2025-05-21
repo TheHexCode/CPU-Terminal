@@ -8,24 +8,36 @@ $newData = $_POST["newData"];
 $oldData = $_POST["oldData"];
 
 //SEND INTERRUPT CODE
+$prevErrLvl = error_reporting(0);
+
 use WebSocket;
-require '../listener/composer/vendor/autoload.php';
+try
+{
+    require '../listener/composer/vendor/autoload.php';
 
-$tempClient = new WebSocket\Client("ws://localhost:8767");
+    $tempClient = new WebSocket\Client("ws://localhost:8767");
 
-$tempClient->addMiddleware(new WebSocket\Middleware\CloseHandler());
-$tempClient->addMiddleware(new WebSocket\Middleware\PingResponder());
+    $tempClient->addMiddleware(new WebSocket\Middleware\CloseHandler());
+    $tempClient->addMiddleware(new WebSocket\Middleware\PingResponder());
 
-$message = json_encode(array(
-                                "actionType" => (($actionType === "entry" || $actionType === "ice") ? "entry" : $actionType),
-                                "entryID" => intval($entryID),
-                                "userID" => intval($userID),
-                                "newData" => $newData
-                                ));
+    $message = json_encode(array(
+                                    "actionType" => (($actionType === "entry" || $actionType === "ice") ? "entry" : $actionType),
+                                    "entryID" => intval($entryID),
+                                    "userID" => intval($userID),
+                                    "newData" => $newData
+                                    ));
 
-$tempClient->text($message);
+        $tempClient->text($message);
 
-$tempClient->close();
+
+    $tempClient->close();
+}
+catch(Exception $error)
+{
+    //Ignore Errors Here
+}
+
+error_reporting($prevErrLvl);
 //////////////////////////////////////////////////////
 
 switch($actionType)

@@ -32,18 +32,27 @@ $newEntry["entryPath"] = "#" . $entry["icon"] . "-" . $entry["path"];
 
 if($entry["type"] === "ice")
 {
-    $newEntry["title"] = '<span class="entrySecret' . ($newState === "break" ? " sprung" : " disarmed") . '">' . $entry["title"] . '</span>';
+    $newEntry["title"] = '<span class="entrySecret' .
+                            ((($actionUser !== null) && ($actionUser === $userID) && ($newState === "break")) ? ' sprung backstroke" data-text="' . $entry["title"] . '"' : ' disarmed"') .
+                        '>' . $entry["title"] . '</span>';
 
     if(json_decode($entry["contents"]))
     {
-        $implodedContents = implode("<br/>",json_decode($entry["contents"]));
+        $spannedContents = "";
+
+        foreach(json_decode($entry["contents"]) as $entryContent)
+        {
+            $spannedContents .= "<span" .
+                                    ((($actionUser !== null) && ($actionUser === $userID) && ($newState === "break")) ? " class='backstroke' data-text='" . $entryContent . "'" : "") .
+                                ">" . $entryContent . "</span>";
+        }
     }
     else
     {
-        $implodedContents = $entry["contents"];
+        $spannedContents = $entry["contents"];
     }
 
-    $newEntry["contents"] = '<span class="entrySecret' . ($newState === "break" ? " sprung" : " disarmed") . '">' . $implodedContents . '</span>';
+    $newEntry["contents"] = '<span class="entrySecret' . ((($actionUser !== null) && ($actionUser === $userID) && ($newState === "break")) ? " sprung" : " disarmed") . '">' . $spannedContents . '</span>';
 
     $newEntry["access"] = 'Break: <button class="accessButton" data-enabled="false" disabled="">N/A</button>';
     $newEntry["modify"] = 'Sleaze: <button class="modifyButton" data-enabled="false" disabled="">N/A</button>';
@@ -57,7 +66,21 @@ else
 
     $stateGuide = $iconSchema[$entry["icon"]]["types"][$entry["type"]][$newState];
 
-    $stateFormat = array_key_exists("formatting", $stateGuide) ? " ".$stateGuide["formatting"] : "";
+    if($entry["type"] === "trap")
+    {
+        if(($actionUser !== null) && ($actionUser === $userID) && ($newState !== "disarmed"))
+        {
+            $stateFormat = " sprung";
+        }
+        else
+        {
+            $stateFormat = " disarmed";
+        }
+    }
+    else
+    {
+        $stateFormat = "";
+    }
 
     if(gettype($stateGuide["title"]) === "array")
     {
@@ -114,14 +137,19 @@ else
     {
         if(json_decode($entry["contents"]))
         {
-            $implodedContents = implode("<br/>",json_decode($entry["contents"]));
+            $spannedContents = "";
+
+            foreach(json_decode($entry["contents"]) as $entryContent)
+            {
+                $spannedContents .= "<span>" . $entryContent . "</span>";
+            }
         }
         else
         {
-            $implodedContents = $entry["contents"];
+            $spannedContents = $entry["contents"];
         }
 
-        $newEntry["contents"] = '<span class="entrySecret' . $stateFormat . '">' . $implodedContents . '</span>';
+        $newEntry["contents"] = '<span class="entrySecret' . $stateFormat . '">' . $spannedContents . '</span>';
     }
     else
     {

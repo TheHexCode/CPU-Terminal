@@ -95,9 +95,9 @@
 				</div>
 				<div id="payloadBox" class="noPayload">
 					<div id="payloadHeader" class="accessHeader">
-						<span class="red">ERROR:</span><span>&nbsp;NO PAYLOAD FOUND</span>
+						<span class="red backstroke" data-text="ERROR:">ERROR:</span><span class="backstroke" data-text="&nbsp;NO PAYLOAD FOUND">&nbsp;NO PAYLOAD FOUND</span>
 					</div>
-					<div id="payloadCodeHeader">
+					<div id="payloadCodeHeader" class="backstroke" data-text="ENTER PROFILE CODE">
 						ENTER PROFILE CODE
 					</div>
 					<div id="payloadCodeRow">
@@ -105,7 +105,7 @@
 						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(event)"/>
 					</div>
 					<button id="payloadCodeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
-					<span>OR</span>
+					<span class="backstroke" data-text="OR">OR</span>
 					<button id="payloadButton" onpointerup="window.open('./profile.php','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>
 				<div class="accessTagBox">
@@ -520,6 +520,7 @@
 		</div>
 		<div id="modalBG">
 			<div id="actionModal" class="modalBox">
+				<div class="modalOverlay hidden"></div>
 				<div class="modalHeaderRow">
 					<span class="modalHeaderText"></span>
 					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&times;</span>

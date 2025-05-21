@@ -52,11 +52,11 @@ class Session
         $("footer script").remove();
     }
 
-    /*
+    
     getEntryData()
     {
         return this.#entryData;
-    }
+    }/*
     getRepeatIcons()
     {
         return this.#repeatIcons;

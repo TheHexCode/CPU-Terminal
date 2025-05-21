@@ -415,11 +415,20 @@ ul
 		var(--dimred) 0 0.75rem,
 		var(--bg-color) 0.75rem 1.5rem
 	);
-	text-shadow:
-		 2px  2px 5px var(--bg-color),
-		 2px -2px 5px var(--bg-color),
-		-2px -2px 5px var(--bg-color),
-		-2px  2px 5px var(--bg-color);
+}
+
+.backstroke[data-text]::before
+{
+	content: attr(data-text);
+	position: absolute;
+	pointer-events: none;
+	-webkit-text-stroke: 0px;
+}
+
+.backstroke[data-text]
+{
+	position: relative;
+	-webkit-text-stroke: 5px var(--main-bg-color);
 }
 
 #payloadCodeHeader
@@ -461,6 +470,7 @@ ul
 
 #payloadCodeInput
 {
+	appearance: textfield;
 	-moz-appearance: textfield;
 	background-color: var(--trans-clear);
 	color: var(--fg-color);
@@ -1052,15 +1062,22 @@ ul
 	grid-column: 1;
 	z-index: 1;
 	padding: 0 0.15rem 0 0.15rem;
+	display: flex;
+	flex-direction: column;
 }
 
 .sprung
 {
 	color: var(--red);
-	text-shadow: 0px 0px 2px var(--black);
+	/*
+	text-shadow: 2px  0px  2px var(--black),
+				 0px  2px  2px var(--black),
+				 -2px 0px  2px var(--black),
+				 0px  -2px 2px var(--black);
+	*/
 }
 
-.disarmed, .broken
+.disarmed
 {
 	text-decoration: line-through;
 }
@@ -1140,12 +1157,38 @@ footer
 
 .modalBox
 {
+	position: relative;
 	height: auto;
 	max-width: var(--max-main-width);
 	font-family: "BigBlue-TerminalPlus";
 	color: var(--fg-color);
 	background-color: var(--bg-color);
-	border: 0.5rem solid var(--border-color);
+}
+
+.modalOverlay
+{
+	position: absolute;
+	margin: -1rem;
+	height: calc(100% + 2rem);
+	width: calc(100% + 2rem);
+	z-index: 2;
+	background: linear-gradient(to top right, var(--trans-clear) 0% 48%, var(--red) 48% 52%, var(--trans-clear) 52% 100%),
+				linear-gradient(to bottom right, var(--trans-clear) 0% 48%, var(--red) 48% 52%, var(--trans-clear) 52% 100%);
+	pointer-events: auto;
+}
+
+@keyframes overlayBlink
+{
+	50% {
+		opacity: 0;
+	}
+}
+
+.modalOverlay.blink
+{
+	animation: overlayBlink step-start;
+	animation-iteration-count: infinite;
+    animation-duration: 1s;
 }
 
 .modalHeaderRow
@@ -1155,6 +1198,7 @@ footer
 	justify-content: space-between;
 	align-items: center;
 	padding: 0.5rem;
+	border: 0.5rem solid var(--border-color);
 }
 
 .modalHeaderText
@@ -1184,7 +1228,7 @@ footer
 .modalBody
 {
 	border-style: solid;
-	border-width: 0.5rem 0 0.5rem 0;
+	border-width: 0 0.5rem 0 0.5rem;
 	border-color: var(--border-color);
 	padding: 1rem;
 }
@@ -1220,6 +1264,7 @@ footer
 	flex-direction: row;
 	column-gap: 1rem;
 	padding: 0.5rem;
+	border: 0.5rem solid var(--border-color);
 }
 
 .modalButtonRow[data-mode="confirm"]
@@ -1243,6 +1288,13 @@ footer
 {
 	filter: brightness(75%);
 	box-shadow: 0 0 1rem var(--fg-color);
+}
+
+.modalHeaderRow.dimmed,
+.modalBody.dimmed,
+.modalButtonRow.dimmed
+{
+	filter:brightness(80%);
 }
 
 .hidden

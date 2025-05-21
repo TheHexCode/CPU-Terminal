@@ -29,6 +29,11 @@
  - Status symbols for listen server Status
  - Status symbols for other players (spiders, too?)
     -- Make these blink as they change as well?
+ - Discord bot command for turning listener on/off
+
+> LISTENER FOR MISC EFFECTS
+ - Database
+ - Alarm / Lock
 
 >> MAKE ICON SCHEMA DATABASED
 
@@ -47,7 +52,6 @@
 > ALLOW SHIMMERSTICK TO BE USED WHENEVER
 
 > LOW PRIORITY
-    - Make enter submit payload code
     - Resume Timer on mouseenter (only if already started?)
     - Write message for empty active/passive
     - Help Popup to say what functions do what (Databaseable)
@@ -59,3 +63,4 @@
     > REVERT TO MYLARP FUNCTION PULL
     > FIX EXECUTE DOUBLE-CLICK PROBLEM
     > DECK ACTIONS ARE IMMEDIATE
+    - Make enter submit payload code
