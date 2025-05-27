@@ -47,7 +47,7 @@ $dbCharStatement->execute([':mlID' => $mlCharID]);
 
 $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 
-$mlFuncArray = array_column($mlCharResponse->skills,"name");
+$mlFuncArray = $mlCharResponse->skills;
 
 if($dbCharResponse === false)
 {
@@ -80,7 +80,7 @@ $functionQuery = "  SELECT DISTINCT cpu_functions.name,
                                 cpu_functions.hacking_cat;";
 
 $functionStatement = $pdo->prepare($functionQuery);
-$functionStatement->execute($mlFuncArray);
+$functionStatement->execute(array_column($mlFuncArray,"name"));
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
 $roleQuery = "  SELECT DISTINCT cpu_roles.name
@@ -89,7 +89,7 @@ $roleQuery = "  SELECT DISTINCT cpu_roles.name
                 WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )";
 
 $roleStatement = $pdo->prepare($roleQuery);
-$roleStatement->execute($mlFuncArray);
+$roleStatement->execute(array_column($mlFuncArray,"name"));
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
 ///////////////////////////////////////////////////////////////////////////////
