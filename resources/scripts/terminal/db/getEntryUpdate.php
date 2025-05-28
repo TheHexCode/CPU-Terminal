@@ -25,6 +25,7 @@ fclose($iconFile);
 $newEntry = array();
 
 //$newEntry["terminal_id"] = $entry["terminal_id"];
+$newEntry["actionUser"] = intval($actionUser);
 $newEntry["userID"] = intval($userID);
 $newEntry["entryID"] = intval($entryID);
 $newEntry["action"] = $action;
@@ -33,7 +34,7 @@ $newEntry["entryPath"] = "#" . $entry["icon"] . "-" . $entry["path"];
 if($entry["type"] === "ice")
 {
     $newEntry["title"] = '<span class="entrySecret' .
-                            ((($actionUser !== null) && ($actionUser === $userID) && ($newState === "break")) ? ' sprung backstroke" data-text="' . $entry["title"] . '"' : ' disarmed"') .
+                            (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? ' sprung backstroke" data-text="' . $entry["title"] . '"' : ' disarmed"') .
                         '>' . $entry["title"] . '</span>';
 
     if(json_decode($entry["contents"]))
@@ -43,7 +44,7 @@ if($entry["type"] === "ice")
         foreach(json_decode($entry["contents"]) as $entryContent)
         {
             $spannedContents .= "<span" .
-                                    ((($actionUser !== null) && ($actionUser === $userID) && ($newState === "break")) ? " class='backstroke' data-text='" . $entryContent . "'" : "") .
+                                    (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? " class='backstroke' data-text='" . $entryContent . "'" : "") .
                                 ">" . $entryContent . "</span>";
         }
     }
@@ -52,7 +53,7 @@ if($entry["type"] === "ice")
         $spannedContents = $entry["contents"];
     }
 
-    $newEntry["contents"] = '<span class="entrySecret' . ((($actionUser !== null) && ($actionUser === $userID) && ($newState === "break")) ? " sprung" : " disarmed") . '">' . $spannedContents . '</span>';
+    $newEntry["contents"] = '<span class="entrySecret' . (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? " sprung" : " disarmed") . '">' . $spannedContents . '</span>';
 
     $newEntry["access"] = 'Break: <button class="accessButton" data-enabled="false" disabled="">N/A</button>';
     $newEntry["modify"] = 'Sleaze: <button class="modifyButton" data-enabled="false" disabled="">N/A</button>';
@@ -68,7 +69,7 @@ else
 
     if($entry["type"] === "trap")
     {
-        if(($actionUser !== null) && ($actionUser === $userID) && ($newState !== "disarmed"))
+        if((($actionUser === null) || ($actionUser === $userID)) && ($newState !== "disarmed"))
         {
             $stateFormat = " sprung";
         }

@@ -427,14 +427,14 @@ function injectUserPayload(userPayload)
 				{
 					let resultJSON = result[1][0];
 
-					if(resultJSON["userID"] === payload.getUserID())
-					{
-						$(resultJSON["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(resultJSON["title"]);
-						$(resultJSON["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(resultJSON["contents"]);
-						$(resultJSON["entryPath"] + " > .entryIntContainer > .accessInterface").html(resultJSON["access"]);
-						$(resultJSON["entryPath"] + " > .entryIntContainer > .modifyInterface").html(resultJSON["modify"]);
-						$(resultJSON["entryPath"] + " > .subIce").removeClass("subIce");
+					$(resultJSON["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(resultJSON["title"]);
+					$(resultJSON["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(resultJSON["contents"]);
+					$(resultJSON["entryPath"] + " > .entryIntContainer > .accessInterface").html(resultJSON["access"]);
+					$(resultJSON["entryPath"] + " > .entryIntContainer > .modifyInterface").html(resultJSON["modify"]);
+					$(resultJSON["entryPath"] + " > .subIce").removeClass("subIce");
 
+					if(resultJSON["actionUser"] === payload.getUserID())
+					{
 						if(payload.getFunction("REPEAT"))
 						{
 							session.setFunctionState("REPEAT",resultJSON["entryID"],resultJSON["action"].toLowerCase(),payload.getFunction("REPEAT"));
@@ -1046,7 +1046,17 @@ function setupConfirmModal(actionMap,buttons)
 
 function closeModal(event)
 {
-	if((event.type !== "keyup") || (event.key === "Escape"))
+	if(event === "interrupted")
+	{
+		const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+		const blinkSleep = async () => {
+			await sleep(2000);
+			closeModal("interruptFollowUp");
+		};
+		
+		blinkSleep();
+	}
+	else if((event.type !== "keyup") || (event.key === "Escape"))
 	{
 		mbTimer.killTimer();
 
@@ -1055,6 +1065,7 @@ function closeModal(event)
 		$("#actionModal").attr("data-type", "");
 		$("#actionModal").attr("data-id", "");
 		
+		$("#actionModal .modalOverlay").removeClass("blink");
 		$("#actionModal .modalOverlay").addClass("hidden");
 
 		$("#actionModal .modalHeaderRow").removeClass("dimmed");

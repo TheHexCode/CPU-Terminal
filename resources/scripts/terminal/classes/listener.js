@@ -12,7 +12,7 @@ class Listener
         })
         .fail(function(ajax)
         {
-            console.error(ajax);
+            console.error(ajax.responseText);
             $("#serverStatus").attr("src","resources/images/status/server_off.png");
         })
         .done(function()
@@ -97,7 +97,6 @@ class Listener
             switch(actionType)
             {
                 case("entry"):
-                    //getEntryUpdate()
                     let entryJSON = $.getJSON(
                         "resources/scripts/terminal/db/getEntryUpdate.php",
                         {
@@ -118,8 +117,9 @@ class Listener
                             // X OUT MODAL, DISABLE BUTTONS
                             mbTimer.killTimer();
 
-
-                            $(modal).addClass("dimmed");
+                            $(modal).children(":not(.modalOverlay)").addClass("dimmed");
+                            $(modal).children(".modalOverlay").removeClass("hidden");
+                            $(modal).children(".modalOverlay").addClass("blink");
                             $("#actionModal button").prop("disabled", true);
                         }
 
