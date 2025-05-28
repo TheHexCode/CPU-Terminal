@@ -1,3 +1,35 @@
+function romanize(num)
+{
+	let roman = "";
+
+	let numeralMap = {
+		 M: 1000,
+		CM: 900,
+		 D: 500,
+		CD: 400,
+		 C: 100,
+		XC: 90,
+		 L: 50,
+		XL: 40,
+		 X: 10,
+		IX: 9,
+		 V: 5,
+		IV: 4,
+		 I: 1
+	}
+
+	for (i in numeralMap)
+	{
+		while (num >= numeralMap[i])
+		{
+			roman += i;
+			num -= numeralMap[i];
+		}
+	}
+
+	return roman;
+}
+
 function toggleRadio(radio)
 {
 	if($(radio).prop("data-active"))
@@ -163,30 +195,21 @@ function processCharInfo(charData)
 
 	charData.functions.forEach(function(func)
 	{
-		let romanRank = "";
+		let postName = "";
 
-		if(func.type === "ranked")
+		switch (func.type)
 		{
-			switch(func.rank)
+			case("ranked"):
+				postName = " " + romanize(func.rank);
+				break;
+			case("collect"):
 			{
-				case("1"):
-					romanRank = " I";
-					break;
-				case("2"):
-					romanRank = " II";
-					break;
-				case("3"):
-					romanRank = " III";
-					break;
-				case("4"):
-					romanRank = " IV";
-					break;
-				default: //5+
-					romanRank = " V";
+				postName = "<ul><li>" + func.caviats.replace(";","</li><li>") + "</li></ul>";
+				break;
 			}
 		}
 
-		funcStrings[func.hacking_cat] += "<li>" + func.name + romanRank +"</li>"
+		funcStrings[func.hacking_cat] += "<li>" + func.name + postName + "</li>";
 	});
 
 	Object.keys(funcStrings).forEach(function(category)

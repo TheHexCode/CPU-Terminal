@@ -107,7 +107,7 @@ class Session
             case(Session.BEACON):
             case(Session.DISSIM):
             case(Session.CLEC):
-                this.#payTags[tagType] = newTags;
+                this.#payTags[tagType] += newTags;
                 this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.#extTags;
                 break;
             case(Session.EXTRA):

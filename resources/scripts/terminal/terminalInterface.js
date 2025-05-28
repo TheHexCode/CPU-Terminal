@@ -8,6 +8,8 @@ $(document).ready(function()
 	$("#payloadCodeInput").val("");
 	$("#terminalButton").attr("disabled",true);
 	$(".initItem input").prop("checked",false);
+
+	Listener.testConnection();
 });
 
 function tens(numStr)
@@ -465,6 +467,8 @@ function injectUserPayload(userPayload)
 		}
 	}
 
+	new Listener(payload.getUserID());
+
 	$("#load").addClass("hidden");
 }
 
@@ -710,8 +714,6 @@ function accessTerminal(event)
 			$("#accessZone").addClass("hidden");
 			$("#hackZone").removeClass("hidden");
 		}
-
-		new Listener(payload.getUserID());
 	}
 }
 

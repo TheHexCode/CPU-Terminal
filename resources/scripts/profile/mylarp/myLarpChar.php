@@ -67,20 +67,32 @@ else
     updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharResponse->name, $mlFuncArray);
 }
 
-$functionQuery = "  SELECT DISTINCT cpu_functions.name,
+$functionQuery = "  SELECT DISTINCT	cpu_functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
                                     cpu_functions.type,
+                                    GROUP_CONCAT(
+                                        CASE
+                                            WHEN ml_functions.cav_type = 'bound'
+                                                THEN (SELECT cpu_caviats.displayName FROM cpu_caviats WHERE cpu_caviats.id = ml_functions.cav_id)
+                                            WHEN ml_functions.cav_type = 'choice'
+                                                THEN (SELECT cpu_caviats.displayName FROM cpu_caviats WHERE cpu_caviats.id = user_functions.cav_id)
+                                            ELSE NULL
+                                        END
+                                        SEPARATOR ';'
+                                    ) AS caviats,
                                     cpu_functions.hacking_cat
                     FROM {$dbName}.ml_functions
-                    INNER JOIN {$dbName}.cpu_functions ON ml_functions.function_id=cpu_functions.id
-                    WHERE ml_name IN ( ?" . str_repeat(', ?', count($mlFuncArray)-1) . " )
+                    INNER JOIN {$dbName}.user_functions ON user_functions.mlFunction_id = ml_functions.id
+                    INNER JOIN {$dbName}.cpu_functions ON cpu_functions.id = ml_functions.function_id
+                    WHERE
+                        user_functions.user_id = :userID
                         AND cpu_functions.hacking_cat IS NOT NULL
                     GROUP BY cpu_functions.name,
-                                cpu_functions.type,
-                                cpu_functions.hacking_cat;";
+                            cpu_functions.type,
+                            cpu_functions.hacking_cat;";
 
 $functionStatement = $pdo->prepare($functionQuery);
-$functionStatement->execute(array_column($mlFuncArray,"name"));
+$functionStatement->execute([':userID' => $mlCharID]);
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
 $roleQuery = "  SELECT DISTINCT cpu_roles.name
@@ -91,19 +103,6 @@ $roleQuery = "  SELECT DISTINCT cpu_roles.name
 $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute(array_column($mlFuncArray,"name"));
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
-
-///////////////////////////////////////////////////////////////////////////////
-/*
-$selfReportQuery = "SELECT ml_functions.id, cpu_roles.name AS role_name FROM {$dbName}.ml_functions
-                    INNER JOIN {$dbName}.cpu_roles ON role_id=cpu_roles.id
-                    INNER JOIN {$dbName}.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
-                    WHERE user_selfreport.user_id=:userID";
-
-$selfReportStatement = $pdo->prepare($selfReportQuery);
-$selfReportStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
-$selfReportResponse = $selfReportStatement->fetchAll(PDO::FETCH_ASSOC);
-*/
-///////////////////////////////////////////////////////////////////////////////
 
 $itemQuery = "  SELECT item_id
                 FROM {$dbName}.user_items
@@ -118,5 +117,4 @@ echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "userCode" => $userCode,
                                 "functions" => $functionResponse,
                                 "roles" => $roleResponse,
-                                //"selfReport" => $selfReportResponse,
                                 "items" => $itemResponse ));

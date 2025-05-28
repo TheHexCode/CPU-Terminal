@@ -1,14 +1,13 @@
 <?php
-use WebSocket;
-
 require 'composer/vendor/autoload.php';
+use WebSocket;
 
 $client = new WebSocket\Client("ws://localhost:8767");
 
 $client->addMiddleware(new WebSocket\Middleware\CloseHandler());
 $client->addMiddleware(new WebSocket\Middleware\PingResponder());
 
-$client->setTimeout(60);
+$client->setTimeout(300);
 
 try
 {

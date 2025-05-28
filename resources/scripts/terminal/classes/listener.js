@@ -2,8 +2,29 @@ class Listener
 {
     #listenID;
 
+    static testConnection()
+    {
+        $.ajax({
+            type: "GET",
+            dataType: "text",
+            url: "resources/scripts/terminal/listener/listen_test.php",
+            timeout: 0
+        })
+        .fail(function(ajax)
+        {
+            console.error(ajax);
+            $("#serverStatus").attr("src","resources/images/status/server_off.png");
+        })
+        .done(function()
+        {
+            $("#serverStatus").attr("src","resources/images/status/server_on.png");
+        });
+    }
+
     constructor(listenerID)
     {
+        console.log("Listening...");
+
         this.#listenID = listenerID;
 
         this.#listenForUpdates();
