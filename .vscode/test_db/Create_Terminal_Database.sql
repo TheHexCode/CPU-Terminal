@@ -213,14 +213,16 @@ CREATE TABLE sim_user_actions (
         REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
-)
+);
 
 ####################################################################################################
 
-INSERT INTO sim_active_codes (simCode, jobCode)
+INSERT INTO sim_active_codes
+            (simCode, jobCode)
     VALUES  ('MAY25', 'ABC1234');
 
-INSERT INTO cpu_functions (name, type, hacking_cat)
+INSERT INTO cpu_functions
+            (name, type, hacking_cat)
     VALUES  ('[UNKNOWN]', 'error', NULL),	
             ('Advanced Armor Proficiency', 'collect', NULL),	
             ('Advanced Shield Proficiency', 'collect', NULL),	
@@ -371,7 +373,8 @@ INSERT INTO cpu_functions (name, type, hacking_cat)
             ('Walk It Off', '', NULL),	
             ('Wipe Your Tracks', 'unique', 'active');
 
-INSERT INTO cpu_caviats (ml_name, displayName)
+INSERT INTO cpu_caviats
+            (ml_name, displayName)
     VALUES  ('Agriculture', 'Agriculture'),
             ('Architecture', 'Architecture'),
             ('Electronics', 'Electronics'),
@@ -424,7 +427,8 @@ INSERT INTO cpu_caviats (ml_name, displayName)
             ('5s', '5s'),
             ('All', 'All');
 
-INSERT INTO cpu_roles (name)
+INSERT INTO cpu_roles
+            (name)
     VALUES  ('Standard'),
             ('Advocate'),
             ('Anthrack'),
@@ -445,7 +449,8 @@ INSERT INTO cpu_roles (name)
             ('Slipstream'),
             ('Warden');
 
-INSERT INTO ml_functions (ml_id, ml_name, `rank`, function_id, cav_type, cav_id, role_id, tier)
+INSERT INTO ml_functions
+            (ml_id, ml_name, `rank`, function_id, cav_type, cav_id, role_id, tier)
     VALUES  (5, 'Scout I', 1, 120, NULL, NULL, 1, 1),
             (6, 'Repair I', 1, 104, NULL, NULL, 1, 1),
             (7, 'Ammo Hound', 1, 6, NULL, NULL, 1, 2),
@@ -1070,7 +1075,8 @@ INSERT INTO ml_functions (ml_id, ml_name, `rank`, function_id, cav_type, cav_id,
             (603, 'Unstoppable -S5-', 1, 147, NULL, NULL, 16, 5),
             (604, 'skill_category_access_required', -1, 1, NULL, NULL, NULL, NULL);
 
-INSERT INTO items (name, tier, type, radio, enabled)
+INSERT INTO items
+            (name, tier, type, radio, enabled)
     VALUES  ('CMM Widow', 2, 'arms', NULL, 1),
             ('Winton Wit', 0, 'arms', NULL, 1),
             ('CMM Cocoon', 2, 'arms', NULL, 1),
@@ -1094,7 +1100,8 @@ INSERT INTO items (name, tier, type, radio, enabled)
             ('CLEC Fingers', 0, 'impl', NULL, 1),
             ('Canopic Jar [MagSweep]', 0, 'impl', NULL, 0);
 
-INSERT INTO item_effects (item_id, charges, per_type, use_loc, effect)
+INSERT INTO item_effects
+            (item_id, charges, per_type, use_loc, effect)
     VALUES  (1, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
             (2, NULL, 'scene', 'initial', 'Activated Embolden? -1 Tag'),
             (2, NULL, 'scene', 'initial', 'Activated Inspire? -1 Tag'),

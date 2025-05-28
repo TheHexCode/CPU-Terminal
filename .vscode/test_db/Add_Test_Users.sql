@@ -1,10 +1,12 @@
 USE cpu_term;
 
-INSERT INTO users (ml_id, userCode, charName)
+INSERT INTO users
+            (ml_id, userCode, charName)
     VALUES  (-1, '333333', 'Test'),
             (161, '876353', 'Puck');
 
-INSERT INTO user_functions (user_id, mlFunction_id, cav_id)
+INSERT INTO user_functions
+            (user_id, mlFunction_id, cav_id)
     VALUES  (-1, 180, NULL),
             (-1, 190, NULL),
             (-1, 176, NULL),

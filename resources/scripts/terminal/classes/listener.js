@@ -23,8 +23,6 @@ class Listener
 
     constructor(listenerID)
     {
-        console.log("Listening...");
-
         this.#listenID = listenerID;
 
         this.#listenForUpdates();
