@@ -151,7 +151,7 @@ class Payload
     getActionTime()
     {
         // POSITIVE IS A BUFF; NEGATIVE IS A DEBUFF
-        let bd = (this.getFunction("BACKDOOR") * 10);
+        let bd = ((this.getFunction("BACKDOOR") > 0) ? (this.getFunction("BACKDOOR") * 5) + 5 : 0);
         let pgUK9K = (this.getActiveEffect(18) ? 5 : 0);
         let ssT0 = (this.getActiveEffect(19) ? -30 : 0);
         let ssT1 = (this.getActiveEffect(20) ? -15 : 0);

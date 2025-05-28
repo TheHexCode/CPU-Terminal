@@ -98,20 +98,30 @@
 						</span>
 					</div>
 				</div>
-				<div id="payloadBox" class="noPayload">
+				<div id="payloadBox" class="codeBox noPayload">
 					<div id="payloadHeader" class="accessHeader">
 						<span class="red backstroke" data-text="ERROR:">ERROR:</span><span class="backstroke" data-text="&nbsp;NO PAYLOAD FOUND">&nbsp;NO PAYLOAD FOUND</span>
 					</div>
-					<div id="payloadCodeHeader" class="backstroke" data-text="ENTER PROFILE CODE">
+					<div id="payloadCodeHeader" class="codeHeader backstroke" data-text="ENTER PROFILE CODE">
 						ENTER PROFILE CODE
 					</div>
-					<div id="payloadCodeRow">
+					<div id="payloadCodeRow" class="codeRow">
 						<span class="dseg BG">~~~~~~</span>
-						<input id="payloadCodeInput" type="number" class="dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(event)"/>
+						<input id="payloadCodeInput" type="number" class="codeInput dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateCodeSubmit(event)"/>
 					</div>
-					<button id="payloadCodeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
+					<button id="payloadCodeSubmit" class="codeSubmit" onmouseUp="submitCode(event)" disabled>SUBMIT CODE</button>
 					<span class="backstroke" data-text="OR">OR</span>
 					<button id="payloadButton" onpointerup="window.open('./profile.php','_blank')">SETUP PAYLOAD PROFILE</button>
+				</div>
+				<div id="masherBox" class="codeBox hidden">
+					<div id="masherCodeHeader" class="codeHeader">
+						ENTER OPTIONAL PROFILE CODE FOR BUTTON MASHER ASSISTANCE
+					</div>
+					<div id="masherCodeRow" class="codeRow">
+						<span class="dseg BG">~~~~~~</span>
+						<input id="masherCodeInput" type="number" class="codeInput dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateBMCodeSubmit(event)"/>
+					</div>
+					<button id="masherCodeSubmit" class="codeSubmit" onmouseUp="submitBMCode(event)" disabled>SUBMIT CODE</button>
 				</div>
 				<div class="accessTagBox">
 					<div class="accessTagRow">
@@ -123,7 +133,7 @@
 								<span class="dseg BG">~~</span>
 								<span id="payTags" class="dseg FG">XX</span>
 							</div>
-							<div id="hackDetails" class="payDetails">
+							<div id="hackDetails" class="tagDetails">
 								<span>[HACKING:&nbsp;+XX]</span>
 							</div>
 						</div>
@@ -138,6 +148,8 @@
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
 								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">+</button>
+							</div>
+							<div id="extraDetails" class="tagDetails">
 							</div>
 						</div>
 					</div>

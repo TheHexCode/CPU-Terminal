@@ -5,7 +5,8 @@ var mbTimer = new Timer("#modalBodyTimer");
 
 $(document).ready(function()
 {
-	$("#payloadCodeInput").val("");
+	$(".codeInput").val("");
+	$(".codeSubmit").attr("disabled", true);
 	$("#terminalButton").attr("disabled",true);
 	$(".initItem input").prop("checked",false);
 
@@ -27,6 +28,38 @@ function mmss(secs)
 	let ss = tens(parseInt(secs%60));
 
 	return mm + ":" + ss
+}
+
+function romanize(num)
+{
+	let roman = "";
+
+	let numeralMap = {
+		 M: 1000,
+		CM: 900,
+		 D: 500,
+		CD: 400,
+		 C: 100,
+		XC: 90,
+		 L: 50,
+		XL: 40,
+		 X: 10,
+		IX: 9,
+		 V: 5,
+		IV: 4,
+		 I: 1
+	}
+
+	for (i in numeralMap)
+	{
+		while (num >= numeralMap[i])
+		{
+			roman += i;
+			num -= numeralMap[i];
+		}
+	}
+
+	return roman;
 }
 
 function codeLimit(event)
@@ -90,6 +123,50 @@ function submitCode(event)
 	});
 }
 
+function activateBMCodeSubmit(event)
+{
+	if((event.key === "Enter") && (event.target.value.length === 6))
+	{
+		submitBMCode(event);
+	}
+	else
+	{
+		if(event.target.value.length === 6)
+		{
+			$("#masherCodeSubmit").prop("disabled",false);
+		}
+		else
+		{
+			$("#masherCodeSubmit").prop("disabled",true);
+		}
+	}
+}
+
+function submitBMCode(event)
+{
+	event.preventDefault();
+
+	$("#masherCodeInput").prop("readonly",true);
+
+	$("#load").removeClass("hidden");
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "resources/scripts/terminal/db/getMasher.php",
+		data:
+		{
+			masherCode: $("#masherCodeInput")[0].value,
+			mainID: payload.getUserID(),
+			termID: session.getTerminalID()
+		}
+	})
+	.done(function(masherData)
+	{
+		injectButtonMasher(masherData);
+	});
+}
+
 function disableExpensiveButtons()
 {
 	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
@@ -105,7 +182,7 @@ function injectUserPayload(userPayload)
 	if(userPayload.length === 0)
 	{
 		$("#payloadCodeInput").prop("readonly",false);
-		alert("No Such User!");
+		alert("No Such User! Please Try Another Code");
 	}
 	else
 	{
@@ -114,6 +191,7 @@ function injectUserPayload(userPayload)
 		payload.setPayload(userPayload);
 
 		$("#payloadBox").removeClass("noPayload");
+		$("#masherBox").removeClass("hidden");
 
 		$("#payloadBox").html(	"<div id='payloadHeader' class='accessHeader'>" +
 									"<u>CONNECTING USER IDENTIFIED</u>" +
@@ -125,8 +203,7 @@ function injectUserPayload(userPayload)
 										"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
 										"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
 									"</div>" :
-									"" ) +
-								""//"<span>PIN: 333333</span>"
+									"" )
 							);
 
 		let maxTime = 30; // Functions and Items should not affect this
@@ -142,14 +219,15 @@ function injectUserPayload(userPayload)
 
 		// Payload Tags
 		$("#hackDetails").html(
-			"<span>[HACKING:&nbsp;+" + tens(payload.getFunction("Hacking") * 2) + "]</span>" +
-			( payload.getFunction("Root Exploit") ? "<span>[ROOT EXP:+" + tens(payload.getFunction("Root Exploit") * 2) + "]</span>" : "" )
+			"<span>[HACKING:&nbsp;+" + tens(payload.getFunction("HACKING") * 2) + "]</span>"
 		)
-		
-		payloadTags = payload.getFunction("Hacking") * 2;
-		payloadTags += payload.getFunction("Root Exploit") * 2;
 
-		updateTags(payloadTags,Session.HACK);
+		$("#extraDetails").html(
+			payload.getFunction("ROOT EXPLOIT") ? "<span>[ROOT EXP:+" + tens(payload.getFunction("ROOT EXPLOIT") * 2) + "]</span>" : ""
+		)
+
+		updateTags(payload.getFunction("HACKING") * 2, Session.HACK);
+		updateTags(payload.getFunction("ROOT EXPLOIT") * 2, Session.REX);
 
 		// Extra Tags + Gems/Remaining Tags
 		updateTags(0,Session.EXTRA);
@@ -161,14 +239,6 @@ function injectUserPayload(userPayload)
 		}
 
 		// FUNCTIONS / INVENTORY
-
-		let romanTiers = {
-			1: " I",
-			2: " II",
-			3: " III",
-			4: " IV",
-			5: " V"
-		}
 
 		///////////// ACTIVE
 
@@ -223,9 +293,7 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("BACKDOOR"))
 		{
-			let bdRoman = romanTiers[payload.getFunction("BACKDOOR")];
-
-			$("#bdItem").append(bdRoman);
+			$("#bdItem").append(" " + romanize(payload.getFunction("BACKDOOR")));
 
 			$("#bdItem").removeClass("hidden");
 		}
@@ -249,12 +317,10 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("REPEAT"))
 		{
-			let repeatRoman = romanTiers[payload.getFunction("REPEAT")];
-
-			$("#repeatItem").append(repeatRoman);
+			$("#repeatItem").append(" " + romanize(payload.getFunction("REPEAT")));
 			$("#repeatItem").removeClass("hidden");
 
-			$(".repeatBox .subContModifierTitle").append(repeatRoman);
+			$(".repeatBox .subContModifierTitle").append(" " + romanize(payload.getFunction("REPEAT")));
 			$(".repeatBox").removeClass("hidden");
 		}
 
@@ -472,6 +538,31 @@ function injectUserPayload(userPayload)
 	$("#load").addClass("hidden");
 }
 
+function injectButtonMasher(masherData)
+{
+	if(masherData["name"] === null)
+	{
+		$("#masherCodeInput").prop("readonly",false);
+		alert("No Such User! Please Try Another Code");
+	}
+	else
+	{
+		console.log(masherData);
+		/*
+		if(masherData < 2)
+		{
+
+		}
+		else
+		{
+
+		}
+		*/
+	}
+
+	$("#load").addClass("hidden");
+}
+
 function initCheck(target)
 {
 	let effectID = $(target).attr("data-effect");
@@ -584,16 +675,31 @@ function updateTags(change, tagType)
 			{
 				$("#hackDetails").after("<span id='hackMax'>(MAX: 10)</span>");
 			}
+
+			if((session.getCurrentTags() + change) > 99+reqTags)
+			{
+				session.setCurrentTags((change * -1), Session.EXTRA);
+				extTags = session.getCurrentTags(Session.EXTRA);
+			}
 	
 			session.setCurrentTags(change, tagType);
-
 			payTags = session.getCurrentTags(Session.PAYLOAD);
+			break;
+		case(Session.REX):
+			newTags = extTags + change;
+	
+			session.setCurrentTags(change, tagType);
+			session.setExtraTagMin(change);
+
+			extTags = session.getCurrentTags(Session.EXTRA);
 			break;
 		case(Session.EXTRA):
 			newTags = Math.min(
 				Math.max(extTags + change, session.getExtraTagMin()),
 				99 - ( payTags - reqTags )
 			);
+
+			change = newTags - extTags;
 
 			if(newTags < 0)
 			{
@@ -604,7 +710,7 @@ function updateTags(change, tagType)
 				$("#extTagsBG").html("~~");
 			}
 
-			session.setCurrentTags(newTags, Session.EXTRA);
+			session.setCurrentTags(change, Session.EXTRA);
 
 			extTags = session.getCurrentTags(Session.EXTRA);
 			break;

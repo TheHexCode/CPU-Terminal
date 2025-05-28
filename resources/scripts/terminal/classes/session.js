@@ -7,14 +7,18 @@ class Session
         "dissim": 0,
         "clec": 0
     };
-    #extTags = 0;
+    #extTags = {
+        "rex": 0,
+        "extra": 0
+    };
     #minExtra = 0;
 
-    static TOTAL = "TOTAL";
-    static PAYLOAD = "PAYLOAD";
-    static EXTRA = "EXTRA";
+    static TOTAL = "total";
+    static PAYLOAD = "payload";
+    static EXTRA = "extra";
 
     static HACK = "hack";
+    static REX = "rex";
     static BEACON = "csb";
     static DISSIM = "dissim";
     static CLEC = "clec";
@@ -56,12 +60,7 @@ class Session
     getEntryData()
     {
         return this.#entryData;
-    }/*
-    getRepeatIcons()
-    {
-        return this.#repeatIcons;
     }
-    */
 
     getTerminalID()
     {
@@ -91,7 +90,9 @@ class Session
                     0));
                 break;
             case(Session.EXTRA):
-                return this.#extTags;
+                return Object.values(this.#extTags).reduce(
+                        (sum, current) => sum + current,
+                    0);
                 break;
         }
     }
@@ -108,11 +109,12 @@ class Session
             case(Session.DISSIM):
             case(Session.CLEC):
                 this.#payTags[tagType] += newTags;
-                this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.#extTags;
+                this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);
                 break;
             case(Session.EXTRA):
-                this.#extTags = newTags;
-                this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + newTags;
+            case(Session.REX):
+                this.#extTags[tagType] += newTags;
+                this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);
                 break;
         }
     }

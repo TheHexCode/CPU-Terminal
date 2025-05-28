@@ -37,3 +37,12 @@ INSERT INTO user_functions
             (161, 377, NULL),
             (161, 380, NULL),
             (161, 389, NULL);
+
+# 2.0RC TEST FUNCTIONS #
+INSERT INTO user_functions
+            (user_id, mlFunction_id, cav_id)
+    VALUES  (-1, 624, NULL),
+            (-1, 625, NULL),
+            (-1, 626, NULL);
+            #(-1, 627, NULL);
+# END TEST FUNCTIONS #
