@@ -441,20 +441,41 @@
 								</div>
 								<div class="subContBody">
 									<ul id="actList">
-										<li id="noActFuncs" class="actItem">
-											<span class="actionName">NO ACTIVE FUNCTIONS</span>
+										<li id="noActFuncs">
+											<span class="actItem">
+												<span class="actionName">NO ACTIVE FUNCTIONS</span>
+											</span>
 										</li>
-										<li id="brickItem" class="actItem hidden">
-											<span class="actionName">BRICK</span>
-											<button class="brickButton" data-enabled="true" data-cost="4" onclick="takeAction(this)">4 Tags</button>
+										<li id="brickItem" class="hidden">
+											<span class="actItem">
+												<span class="actionName">BRICK</span>
+												<button class="brickButton" data-enabled="true" data-cost="4" onclick="takeAction(this)">4 Tags</button>
+											</span>
 										</li>
-										<li id="rigItem" class="actItem hidden">
-											<span class="actionName">RIGGED</span>
-											<button class="rigButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
+										<li id="rigItem" class="hidden">
+											<span class="actItem">
+												<span class="actionName">RIGGED</span>
+												<button class="rigButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
+											</span>
 										</li>
-										<li id="rootItem" class="actItem hidden">
-											<span class="actionName">ROOT DEVICE</span>
-											<button class="rootButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
+										<li id="rootItem" class="hidden">
+											<span class="actItem">
+												<span class="actionName">ROOT DEVICE</span>
+												<button class="rootButton" data-enabled="true" data-cost="6" onclick="takeAction(this)">6 Tags</button>
+											</span>
+										</li>
+										<li id="siphItem" class="hidden">
+											<span class="actItem">
+												<span class="actionName">SIPHON CHARGE</span>
+												<button class="siphButton" data-enabled="true" data-cost="2" onclick="takeAction(this)">2 Tags</button>
+											</span>
+										</li>
+										<hr id="actSeparator" class="hidden"/>
+										<li id="pingItem" class="hidden">
+											<span class="actItem">
+												<span class="actionName">REFERSH PING FUNCTION</span>
+												<button class="pingButton" data-enabled="true" data-cost="1" onclick="takeAction(this)">1 Tag</button>
+											</span>
 										</li>
 									</ul>
 								</div>

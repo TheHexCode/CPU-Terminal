@@ -231,6 +231,20 @@ function injectUserPayload(userPayload)
 			}
 		}
 
+		if(payload.getFunction("SIPHON CHARGE"))
+		{
+			$("#noActFuncs").addClass("hidden");
+			$("#siphItem").removeClass("hidden");
+		}
+
+		if(payload.getFunction("PING"))
+		{
+			$("#noActFuncs").addClass("hidden");
+
+			$("#actSeparator").removeClass("hidden");
+			$("#pingItem").removeClass("hidden");
+		}
+
 		///////////// PASSIVE
 
 		if(payload.getFunction("ALARM SENSE"))
