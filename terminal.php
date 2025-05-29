@@ -91,11 +91,13 @@
 			<div id="accessZone" class="zoneBox">
 				<div class="accessBox">
 					<div class="accessHeader">TAGS REQUIRED TO ACCESS TERMINAL:</div>
-					<div class="lcdBox blend">
-						<span class="dseg BG">~~</span>
-						<span id="reqTags" class="dseg FG">
-							<?php echo str_pad($terminal->getTerminalAccessCost(),2,"0",STR_PAD_LEFT) ?>
-						</span>
+					<div class="tagInterface">
+						<div class="lcdBox blend">
+							<span class="dseg BG">~~</span>
+							<span id="reqTags" class="dseg FG">
+								<?php echo str_pad($terminal->getTerminalAccessCost(),2,"0",STR_PAD_LEFT) ?>
+							</span>
+						</div>
 					</div>
 				</div>
 				<div id="payloadBox" class="codeBox noPayload">
@@ -113,41 +115,33 @@
 					<span class="backstroke" data-text="OR">OR</span>
 					<button id="payloadButton" onpointerup="window.open('./profile.php','_blank')">SETUP PAYLOAD PROFILE</button>
 				</div>
-				<div id="masherBox" class="codeBox hidden">
-					<div id="masherCodeHeader" class="codeHeader">
-						ENTER OPTIONAL PROFILE CODE FOR BUTTON MASHER ASSISTANCE
-					</div>
-					<div id="masherCodeRow" class="codeRow">
-						<span class="dseg BG">~~~~~~</span>
-						<input id="masherCodeInput" type="number" class="codeInput dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateBMCodeSubmit(event)"/>
-					</div>
-					<button id="masherCodeSubmit" class="codeSubmit" onmouseUp="submitBMCode(event)" disabled>SUBMIT CODE</button>
-				</div>
-				<div class="accessTagBox">
+				<div class="accessTagContainer">
 					<div class="accessTagRow">
 						<div class="accessBox">
 							<div class="accessHeader">
-								TAGS FROM PAYLOAD:
+								TAGS FROM HACKING FUNC:
 							</div>
-							<div class="lcdBox amber">
-								<span class="dseg BG">~~</span>
-								<span id="payTags" class="dseg FG">XX</span>
+							<div class="tagInterface">
+								<div class="lcdBox amber">
+									<span class="dseg BG">~~</span>
+									<span id="payTags" class="dseg FG">XX</span>
+								</div>
 							</div>
 							<div id="hackDetails" class="tagDetails">
 								<span>[HACKING:&nbsp;+XX]</span>
 							</div>
 						</div>
-						<div class="accessBox">
+						<div class="accessBox blue">
 							<div class="accessHeader">
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button class="extraButton" onMouseUp="updateTags(-1, Session.EXTRA)"><b>-</b></button>
+								<button class="extraButton" onMouseUp="updateTags(-1, Session.EXTRA)"><b>&minus;</b></button>
 								<div class="lcdBox blue">
 									<span id="extTagsBG" class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
-								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">+</button>
+								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">&plus;</button>
 							</div>
 							<div id="extraDetails" class="tagDetails">
 							</div>
@@ -230,9 +224,11 @@
 						<div class="accessHeader">
 							TAGS REMAINING AFTER ACCESS:
 						</div>
-						<div class="lcdBox blue">
-							<span id="remTagBG" class="dseg BG">~~</span>
-							<span id="remTags" class="dseg FG">XX</span>
+						<div class="tagInterface">
+							<div class="lcdBox blue">
+								<span id="remTagBG" class="dseg BG">~~</span>
+								<span id="remTags" class="dseg FG">XX</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -276,6 +272,16 @@
 									<ul id="logList">
 										<?php echo $terminal->setupLogEntries() ?>
 									</ul>
+								</div>
+								<div id="masherBox" class="codeBox">
+									<div id="masherCodeHeader" class="codeHeader">
+										ENTER PROFILE CODE FOR BUTTON MASHER ASSISTANCE
+									</div>
+									<div id="masherCodeRow" class="codeRow">
+										<span class="dseg BG">~~~~~~</span>
+										<input id="masherCodeInput" type="number" class="codeInput dseg FG" size="6" max="999999" min="000000" minlength="6" maxlength="6" onkeydown="codeLimit(event)" onkeyup="activateBMCodeSubmit(event)"/>
+									</div>
+									<button id="masherCodeSubmit" class="codeSubmit" onmouseUp="submitBMCode(event)" disabled>SUBMIT CODE</button>
 								</div>
 							</div>
 							<div id="filesContent" class="subContent">
@@ -435,6 +441,9 @@
 								</div>
 								<div class="subContBody">
 									<ul id="actList">
+										<li id="noActFuncs" class="actItem">
+											<span class="actionName">NO ACTIVE FUNCTIONS</span>
+										</li>
 										<li id="brickItem" class="actItem hidden">
 											<span class="actionName">BRICK</span>
 											<button class="brickButton" data-enabled="true" data-cost="4" onclick="takeAction(this)">4 Tags</button>
@@ -456,6 +465,9 @@
 								</div>
 								<div class="subContBody">
 									<ul id="passList">
+										<li id="noPassFuncs">
+											<span class="actionName">NO PASSIVE FUNCTIONS</span>
+										</li>
 										<li id="alarmItem" class="hidden">
 											ALARM SENSE
 										</li>
@@ -471,6 +483,9 @@
 										<li id="repeatItem" class="hidden">
 											REPEAT
 										</li>
+										<li id="knowItem" class="hidden">
+											<!-- KNOWLEDGE -->
+										</li>
 									</ul>
 								</div>
 							</div>
@@ -479,6 +494,13 @@
 									<span class="subContTitle">INVENTORY</span>
 								</div>
 								<div class="subContBody">
+									<div id="noItems" class="itemCat">
+										<ul>
+											<li>
+												NO ITEMS
+											</li>
+										</ul>
+									</div>
 									<div class="itemCat hidden" data-cat="deck">
 										<h4>CYBERDECK</h4>
 										<ul class="itemList">

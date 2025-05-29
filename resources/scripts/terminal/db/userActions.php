@@ -27,6 +27,7 @@ switch($action)
     case("Brick"):
     case("Rig"):
     case("Root"):
+    case("Masher"): //$newState = masher's ID
         $targetType = "terminal";
         break;
     case("Activate"):

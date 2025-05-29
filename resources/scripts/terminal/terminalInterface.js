@@ -123,50 +123,6 @@ function submitCode(event)
 	});
 }
 
-function activateBMCodeSubmit(event)
-{
-	if((event.key === "Enter") && (event.target.value.length === 6))
-	{
-		submitBMCode(event);
-	}
-	else
-	{
-		if(event.target.value.length === 6)
-		{
-			$("#masherCodeSubmit").prop("disabled",false);
-		}
-		else
-		{
-			$("#masherCodeSubmit").prop("disabled",true);
-		}
-	}
-}
-
-function submitBMCode(event)
-{
-	event.preventDefault();
-
-	$("#masherCodeInput").prop("readonly",true);
-
-	$("#load").removeClass("hidden");
-
-	$.ajax({
-		type: "POST",
-		dataType: "json",
-		url: "resources/scripts/terminal/db/getMasher.php",
-		data:
-		{
-			masherCode: $("#masherCodeInput")[0].value,
-			mainID: payload.getUserID(),
-			termID: session.getTerminalID()
-		}
-	})
-	.done(function(masherData)
-	{
-		injectButtonMasher(masherData);
-	});
-}
-
 function disableExpensiveButtons()
 {
 	expensiveButtons = $("button[data-enabled!='false']").filter(function() {
@@ -191,7 +147,6 @@ function injectUserPayload(userPayload)
 		payload.setPayload(userPayload);
 
 		$("#payloadBox").removeClass("noPayload");
-		$("#masherBox").removeClass("hidden");
 
 		$("#payloadBox").html(	"<div id='payloadHeader' class='accessHeader'>" +
 									"<u>CONNECTING USER IDENTIFIED</u>" +
@@ -244,17 +199,20 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("BRICK"))
 		{
+			$("#noActFuncs").addClass("hidden");
 			$("#brickItem").removeClass("hidden");
 		}
 
 		if(payload.getFunction("RIGGED"))
 		{
+			$("#noActFuncs").addClass("hidden");
 			$("#rigItem").removeClass("hidden");
 			session.rigTerminal(payload.getUserID());
 		}
 
 		if(payload.getFunction("ROOT DEVICE"))
 		{
+			$("#noActFuncs").addClass("hidden");
 			$("#rootItem").removeClass("hidden");
 		}
 
@@ -277,6 +235,7 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("ALARM SENSE"))
 		{
+			$("#noPassFuncs").addClass("hidden");
 			$("#alarmItem").removeClass("hidden");
 
 			$(".accessButton, .modifyButton").each(function(index,entryButton)
@@ -295,11 +254,14 @@ function injectUserPayload(userPayload)
 		{
 			$("#bdItem").append(" " + romanize(payload.getFunction("BACKDOOR")));
 
+			$("#noPassFuncs").addClass("hidden");
 			$("#bdItem").removeClass("hidden");
 		}
 
 		if(payload.getFunction("DARK WEB MERCHANT") || payload.getFunction("DARK WEB OPERATOR"))
 		{
+			$("#noPassFuncs").addClass("hidden");
+
 			if(payload.getFunction("DARK WEB MERCHANT"))
 			{
 				$("#dwmItem").removeClass("hidden");
@@ -317,6 +279,8 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("REPEAT"))
 		{
+			$("#noPassFuncs").addClass("hidden");
+
 			$("#repeatItem").append(" " + romanize(payload.getFunction("REPEAT")));
 			$("#repeatItem").removeClass("hidden");
 
@@ -332,6 +296,8 @@ function injectUserPayload(userPayload)
 
 			item.effects.forEach(function(effect)
 			{
+				$("#noItems").addClass("hidden");
+
 				$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
 
 				switch(effect.use_loc)
@@ -529,36 +495,23 @@ function injectUserPayload(userPayload)
 
 			session.setCurrentTags(userPayload["remTags"] + requiredTags);
 
+			if(userPayload["masherData"] !== null)
+			{
+				session.setMasher(userPayload["masherData"]);
+
+				$("#masherBox").html(	"<div id='masherHeader' class='accessHeader'>" +
+											"<u>BUTTON MASHER IDENTIFIED</u>" +
+										"</div>" +
+										"<span>Masher: " + session.getMasher("name") + "</span>" +
+										"<div>Tags: +" + tens(session.getMasher("rank")) + "</div>"
+									);
+			}
+
 			accessTerminal("hasAccessed");
 		}
 	}
 
 	new Listener(payload.getUserID());
-
-	$("#load").addClass("hidden");
-}
-
-function injectButtonMasher(masherData)
-{
-	if(masherData["name"] === null)
-	{
-		$("#masherCodeInput").prop("readonly",false);
-		alert("No Such User! Please Try Another Code");
-	}
-	else
-	{
-		console.log(masherData);
-		/*
-		if(masherData < 2)
-		{
-
-		}
-		else
-		{
-
-		}
-		*/
-	}
 
 	$("#load").addClass("hidden");
 }
@@ -686,7 +639,12 @@ function updateTags(change, tagType)
 			payTags = session.getCurrentTags(Session.PAYLOAD);
 			break;
 		case(Session.REX):
-			newTags = extTags + change;
+		case(Session.MASHER):
+			if((session.getCurrentTags() + change) > 99+reqTags)
+			{
+				session.setCurrentTags((change * -1), Session.EXTRA);
+				extTags = session.getCurrentTags(Session.EXTRA);
+			}
 	
 			session.setCurrentTags(change, tagType);
 			session.setExtraTagMin(change);
@@ -821,6 +779,127 @@ function accessTerminal(event)
 			$("#hackZone").removeClass("hidden");
 		}
 	}
+}
+
+function activateBMCodeSubmit(event)
+{
+	if((event.key === "Enter") && (event.target.value.length === 6))
+	{
+		submitBMCode(event);
+	}
+	else
+	{
+		if(event.target.value.length === 6)
+		{
+			$("#masherCodeSubmit").prop("disabled",false);
+		}
+		else
+		{
+			$("#masherCodeSubmit").prop("disabled",true);
+		}
+	}
+}
+
+function submitBMCode(event)
+{
+	event.preventDefault();
+
+	$("#masherCodeInput").prop("readonly",true);
+
+	$("#load").removeClass("hidden");
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "resources/scripts/terminal/db/getMasher.php",
+		data:
+		{
+			masherCode: $("#masherCodeInput")[0].value,
+			mainID: payload.getUserID(),
+			termID: session.getTerminalID()
+		}
+	})
+	.done(function(masherData)
+	{
+		injectButtonMasher(masherData);
+	});
+}
+
+function injectButtonMasher(masherData)
+{
+	/*
+		masherData:
+		 - id   -> masher's character ID
+		 - name -> masher's character name
+		 - rank -> masher's rank in Button Masher
+		 - uses -> number of times this Scene that BM has been activated for the Masher
+		           (should always be 0 or 1 since BM is 1/Scene)
+	*/
+
+	if(masherData["name"] === null)
+	{
+		$("#masherCodeInput").prop("readonly",false);
+		alert("No Such User! Please Try Another Code");
+	}
+	else
+	{
+		console.log(masherData);
+
+		if(masherData["rank"] < 2)
+		{
+			$("#masherCodeInput").prop("readonly",false);
+			alert(masherData["name"] + " only has " + masherData["rank"] + " rank" + (masherData["rank"] === 1 ? "" : "s") + " in Button Masher, but requires at least two (2) to provide assistance.");
+		}
+		else
+		{
+			if(masherData["uses"] !== 0)
+			{
+				$("#masherCodeInput").prop("readonly",false);
+				alert(masherData["name"] + " has already used Button Masher this Scene!");
+			}
+			else
+			{
+				session.setMasher(masherData);
+
+				$.ajax({
+					type: "POST",
+					dataType: "json",
+					url: "resources/scripts/terminal/db/userActions.php",
+					data:
+					{
+						userID: payload.getUserID(),
+						targetID: session.getTerminalID(),
+						action: "Masher",
+						newState: session.getMasher("id"),
+						actionCost: session.getMasher("rank") * -1,
+						global: false
+					}
+				});
+
+				$("#masherBox").html(	"<div id='masherHeader' class='accessHeader'>" +
+											"<u>BUTTON MASHER IDENTIFIED</u>" +
+										"</div>" +
+										"<span>Masher: " + masherData["name"] + "</span>" +
+										"<div>Tags: +" + tens(masherData["rank"]) + "</div>" //+
+										/* !! ACTIVATE BELOW IF MASHING GENERATES A LOG TO MASK FROM
+										( payload.getFunction("Mask") ?
+											"<div id='maskName' class='multiLineTextInput'>" +
+												"<label for='payloadMask'>Mask:</label>" +
+												"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
+												"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
+											"</div>" :
+											"" )
+										*/
+									);
+
+				session.setCurrentTags(session.getCurrentTags() + masherData["rank"]);
+				Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+			}
+		}
+		
+	}
+
+	$("#load").addClass("hidden");
 }
 
 function openTab(target, contentID)

@@ -172,7 +172,8 @@ else
 
     //////////////////////////////////////////////////////////////////////////////
 
-    $accessQuery = "SELECT COUNT(user_id) FROM {$dbName}.sim_access_logs
+    $accessQuery = "SELECT COUNT(user_id)
+                    FROM {$dbName}.sim_access_logs
                     WHERE user_id=:userID
                         AND terminal_id=:termID";
 
@@ -180,7 +181,8 @@ else
     $accessStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
     $hasAccessed = intval($accessStatement->fetch(PDO::FETCH_COLUMN)) > 0;
 
-    $actionQuery = "SELECT sim_entries.id, user_id, sim_entries.path, sim_entries.icon, action, newState FROM {$dbName}.sim_user_actions
+    $actionQuery = "SELECT sim_entries.id, user_id, sim_entries.path, sim_entries.icon, action, newState
+                    FROM {$dbName}.sim_user_actions
                     INNER JOIN {$dbName}.sim_entries ON target_id=sim_entries.id
                     WHERE sim_entries.terminal_id=:termID
                         AND (user_id=:userID
@@ -192,6 +194,18 @@ else
     $actionStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
 
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $masherQuery = "SELECT newState AS id, users.charName AS name, cost AS 'rank'
+                    FROM {$dbName}.sim_user_actions
+                    INNER JOIN {$dbName}.users ON users.ml_id = sim_user_actions.newState
+                    WHERE target_id = :termID
+                        AND user_id = :userID
+                        AND action = 'Masher'";
+
+    $masherStatement = $pdo->prepare($masherQuery);
+    $masherStatement->execute([':termID' => $termID, ':userID' => $userResponse["ml_id"]]);
+
+    $masherData = $masherStatement->fetch(PDO::FETCH_ASSOC);
 
     $copyQuery = "  SELECT DISTINCT action FROM (
                         SELECT action FROM {$dbName}.sim_user_actions AS UA1
@@ -260,6 +274,11 @@ else
                                     "items" => $newItems,
                                     "hasAccessed" => $hasAccessed,
                                     "prevActions" => $actionResponse,
+                                    "masherData" => ($masherData ? array(
+                                                        "id" => intval($masherData["id"]),
+                                                        "name" => $masherData["name"],
+                                                        "rank" => intval($masherData["rank"]) * -1
+                                                    ) : null),
                                     "copyables" => $copyResponse,
                                     "remTags" => max($remTagsResponse,0)
                                 ));

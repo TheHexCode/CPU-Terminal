@@ -9,6 +9,7 @@ class Session
     };
     #extTags = {
         "rex": 0,
+        "mash": 0,
         "extra": 0
     };
     #minExtra = 0;
@@ -19,6 +20,7 @@ class Session
 
     static HACK = "hack";
     static REX = "rex";
+    static MASHER = "mash";
     static BEACON = "csb";
     static DISSIM = "dissim";
     static CLEC = "clec";
@@ -26,6 +28,12 @@ class Session
     #termID;
     #termState;
     #stateData;
+
+    #masher = {
+        id: null,
+        name: null,
+        rank: 0
+    }
 
     #entryData;
     #repeatIcons = new Object();
@@ -56,11 +64,12 @@ class Session
         $("footer script").remove();
     }
 
-    
+    /*
     getEntryData()
     {
         return this.#entryData;
     }
+    */
 
     getTerminalID()
     {
@@ -113,10 +122,30 @@ class Session
                 break;
             case(Session.EXTRA):
             case(Session.REX):
+            case(Session.MASHER):
                 this.#extTags[tagType] += newTags;
                 this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);
                 break;
         }
+    }
+
+    getMasher(attr = null)
+    {
+        if(Object.hasOwn(this.#masher,attr))
+        {
+            return this.#masher[attr];
+        }
+        else
+        {
+            return this.#masher;
+        }
+    }
+
+    setMasher(masherData)
+    {
+        this.#masher["id"] = masherData["id"];
+        this.#masher["name"] = masherData["name"];
+        this.#masher["rank"] = masherData["rank"];
     }
 
     setEntry(entryID)

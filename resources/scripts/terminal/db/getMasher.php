@@ -2,7 +2,6 @@
 require('dbConnect.php');
 
 $masherCode = $_POST["masherCode"];
-$mainID = $_POST["mainID"];
 $termID = $_POST["termID"];
 
 ###############################################################################################################################
@@ -30,7 +29,7 @@ else
 {
     
     $masherQuery = "  SELECT SUM(ml_functions.rank) AS bm_rank
-                        FROM ml_functions
+                        FROM {$dbName}.ml_functions
                         INNER JOIN user_functions ON user_functions.mlFunction_id = ml_functions.id
                         INNER JOIN cpu_functions ON cpu_functions.id = ml_functions.function_id
                         WHERE
@@ -41,19 +40,22 @@ else
     $masherStatement->execute([':masherID' => $userResponse["ml_id"]]);
     $masherRank = $masherStatement->fetch(PDO::FETCH_COLUMN);
 
-    /* NEED TO FIGURE OUT WHERE TO PUT BUTTON MASHER ASSIST INFO INTO DB FIRST
+    
     $sceneUseQuery = "  SELECT COUNT(*)
-                        FROM {$dbName}.item_uses
-                        WHERE 	user_id = :userID
-                            AND effect_id = :effectID
-                            AND jobCode = :jobCode
-                            AND simCode = :simCode";
+                        FROM {$dbName}.sim_user_actions
+                        INNER JOIN {$dbName}.sim_terminals ON sim_terminals.id = sim_user_actions.target_id
+                        WHERE   sim_terminals.jobCode = :jobCode
+                            AND sim_user_actions.action = 'Masher'
+                            AND sim_user_actions.newState = :masherID";
 
     $sceneUseStatement = $pdo->prepare($sceneUseQuery);
-    */
+    $sceneUseStatement->execute([':jobCode' => $activeCodes["jobCode"], ':masherID' => $userResponse["ml_id"]]);
+
+    $sceneUses = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
 
     echo json_encode(array(  "id" => $userResponse["ml_id"],
                                     "name" => $userResponse["charName"],
-                                    "bmRank" => intval($masherRank)
+                                    "rank" => intval($masherRank),
+                                    "uses" => $sceneUses
                                 ));
 }

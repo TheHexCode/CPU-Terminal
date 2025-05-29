@@ -43,6 +43,6 @@ INSERT INTO user_functions
             (user_id, mlFunction_id, cav_id)
     VALUES  (-1, 624, NULL),
             (-1, 625, NULL),
-            (-1, 626, NULL);
-            #(-1, 627, NULL);
+            (-1, 626, NULL),
+            (-1, 627, NULL);
 # END TEST FUNCTIONS #
