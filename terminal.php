@@ -147,68 +147,66 @@
 							</div>
 						</div>
 					</div>
-					<ul class="initItemList">
-						<li id="disInit" class="initItem hidden">
-							<input type="checkbox" id="disCheck" data-effect="dis" onchange="initCheck(this)"/>
-							<label for="disCheck">
-								<span class="initName">DISSIMULATOR:</span>
-								<span class="initAbil">&nbsp;+1 HACKING?</span>
-							</label>
-						</li>
-						<li id="cmmInit" data-id="1" class="initItem hidden">
-							<input type="checkbox" id="cmmCheck" data-effect="[1,4]" onchange="initCheck(this)"/>
-							<label for="cmmCheck">
-								<span class="initName">CMM ARMS:</span>
-								<span class="initAbil">&nbsp;Used Slip this Scene?</span>
-							</label>
-						</li>
-						<li id="witEInit" data-id="2" class="initItem hidden">
-							<input type="checkbox" id="witECheck" data-effect="2" onchange="initCheck(this)"/>
-							<label for="witECheck">
-								<span class="initName">WINTON WIT:</span>
-								<span class="initAbil">&nbsp;Activated Embolden?</span>
-							</label>
-						</li>
-						<li id="witIInit" data-id="2" class="initItem hidden">
-							<input type="checkbox" id="witICheck" data-effect="3" onchange="initCheck(this)"/>
-							<label for="witICheck">
-								<span class="initName">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;</span>
-								<span class="initAbil">&nbsp;Activated Inspire?</span>
-							</label>
-						</li>
-						<li id="bradInit" data-id="8" class="initItem hidden">
-							<input type="checkbox" id="bradCheck" data-effect="9" onchange="initCheck(this)"/>
-							<label for="bradCheck">
-								<span class="initName">REMOTE ACCESS DRIVE:</span>
-								<span class="initAbil">&nbsp;Enable Remote Hacking?</span>
-							</label>
-						</li>
-						<li id="shm0Init" data-id="18" class="initItem hidden">
-							<input type="checkbox" id="shm0Check" data-effect="19" onchange="initCheck(this)"/>
-							<label for="shm0Check">
-								<span class="initName">CONSUMABLE:</span>
-								<span class="initAbil">&nbsp;Using Shimmerstick T0?</span>
-							</label>
-						</li>
-						<li id="shm1Init" data-id="19" class="initItem hidden">
-							<input type="checkbox" id="shm1Check" data-effect="20" onchange="initCheck(this)"/>
-							<label for="shm1Check">
-								<span class="initName">CONSUMABLE:</span>
-								<span class="initAbil">&nbsp;Using Shimmerstick T1?</span>
-							</label>
-						</li>
+					<div class="initItemList">
+						<div id="disInit" class="initItem hidden">
+							<div class="initHeader">DISSIMULATOR ABILITY:</div>
+							<div class="initGroup">
+								<div class="initOption">
+									<input type="radio" id="disOpt1" name="disRadio" onclick="initRadio(this)">
+									<label for="disOpt1">+1 HACKING</label>
+								</div>
+								<div class="initOption">
+									<input type="radio" id="disOpt2" name="disRadio" onclick="initRadio(this)">
+									<label for="disOpt2">KNOWLEDGE [H&amp;DS]</label>
+								</div>
+							</div>
+						</div>
+						<div id="polyInit" class="initItem hidden">
+							<div class="initHeader">POLYMATH ABILITY:</div>
+							<div class="initGroup">
+								<div class="initOption">
+									<input type="radio" id="polyOpt1" name="polyRadio" onclick="initRadio(this)">
+									<label for="polyOpt1">ALARM SENSE</label>
+								</div>
+								<div class="initOption">
+									<input type="radio" id="polyOpt2" name="polyRadio" onclick="initRadio(this)">
+									<label for="polyOpt2">+1 REPAIR</label>
+								</div>
+							</div>
+						</div>
+						<div id="cmmInit" data-item="1" class="initItem hidden">
+							<div class="initHeader">CMM ARMS:</div>
+							<div class="initOption">
+								<input type="checkbox" id="cmmOpt" name="cmmCheck" data-effect="[1,4]" onclick="initCheck(this)">
+								<label for="cmmOpt">Used Slip this Scene?</label>
+							</div>
+						</div>
+						<div id="witInit" data-item="2" class="initItem hidden">
+							<div class="initHeader">WINTON WIT:</div>
+							<div class="initGroup">
+								<div class="initOption">
+									<input type="checkbox" id="witOpt1" onclick="initCheck(this)">
+									<label for="witOpt1">Activated Embolden 2+ times this Scene?</label>
+								</div>
+								<div class="initOption">
+									<input type="checkbox" id="witOpt2" onclick="initCheck(this)">
+									<label for="witOpt2">Activated Inspire 2+ times this Scene?</label>
+								</div>
+							</div>
+						</div>
+						<div id="clecInit" data-item="21" class="initItem hidden">
+							<div class="initHeader">CLEC FINGERS:</div>
+							<div class="initOption">
+								<input type="checkbox" id="clecOpt" onclick="initCheck(this)">
+								<label for="clecOpt">+1 HACKING (1/Sim?)</label>
+							</div>
+						</div>
+						<!--
 						<li id="viglInit" data-id="20" class="initItem hidden">
 							<input type="checkbox" id="viglCheck" data-effect="21" onchange="initCheck(this)"/>
 							<label for="viglCheck">
 								<span class="initName">CONSUMABLE:</span>
 								<span class="initAbil">&nbsp;Using Vigil?</span>
-							</label>
-						</li>
-						<li id="clecInit" data-id="21" class="initItem hidden">
-							<input type="checkbox" id="clecCheck" data-effect="22" onchange="initCheck(this)"/>
-							<label for="clecCheck">
-								<span class="initName">CLEC FINGERS:</span>
-								<span class="initAbil">&nbsp;+1 Hacking (1/Sim)?</span>
 							</label>
 						</li>
 						<li id="magInit" data-id="22" class="initItem hidden">
@@ -218,7 +216,8 @@
 								<span class="initAbil">&nbsp;Brick Device (1/Sim)?</span>
 							</label>
 						</li>
-					</ul>
+						-->
+					</div>
 					<div class="accessSpacer"></div>
 					<div class="accessBox">
 						<div class="accessHeader">

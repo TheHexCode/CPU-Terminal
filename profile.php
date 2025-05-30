@@ -102,45 +102,6 @@
 				<div id="itemBox" class="zoneBox">
 					<?php echo getItemsTab(); ?>
 				</div>
-				<!--NEW FUNCTIONS--
-				<div id="profTabContainer">
-					<div class="tabSubContainer frontRow">
-						<button class="profTab active" onclick="openTab(event,'stndTab')">STANDARD</button>
-						<button id="priButton" class="profTab" onclick="openTab(event,'priTab')">PRIMARY</button>
-					</div>
-					<div class="tabSubContainer backRow">
-						<button id="secButton" class="profTab" onclick="openTab(event,'secTab')">SECONDARY</button>
-						<button class="profTab" onclick="openTab(event,'itemsTab')">ITEMS</button>
-					</div>
-				</div>
-				<div id="stndTab" class="profContent">
-					<?php //echo getFunctionTab("STANDARD"); ?>
-				</div>
-				<div id="priTab" class="profContent hidden">
-					<section class="checkGroup" data-role="none">
-						<h2>NO PRIMARY ROLE SELECTED</h2>
-						<p>Please select a <em>Primary_Role</em> in the dropdown above, even if it's <em>Other</em>.</p>
-					</section>
-					<section class="checkGroup hidden" data-role="other">
-						<h2>OTHER PRIMARY ROLE SELECTED</h2>
-						<p>Your <em>Primary_Role</em> is not one which provides any hacking benefits. If you have a <em>Secondary_Role</em>, make sure to select them in the dropdown above, or utilize the <em>Standard_Role</em> for your payload.</p>
-					</section>
-					<?php //echo getFunctionTab("PRIMARY"); ?>
-				</div>
-				<div id="secTab" class="profContent hidden">
-					<section class="checkGroup" data-role="none">
-						<h2>NO SECONDARY ROLE SELECTED</h2>
-						<p>If you have a <em>Secondary_Role</em>, please select it in the dropdown above. Otherwise, if you do not have a <em>Secondary_Role</em>, this text is what you should expect to see.</p>
-					</section>
-					<section class="checkGroup hidden" data-role="other">
-						<h2>OTHER SECONDARY ROLE SELECTED</h2>
-						<p>Your <em>Secondary_Role</em> is not one which provides any hacking benefits. You'll have to rely on your <em>Primary_Role</em> or the <em>Standard_Role</em> for your payload.</p>
-					</section>
-					<?php //echo getFunctionTab("SECONDARY"); ?>
-				</div>
-				<div id="itemsTab" class="profContent hidden">
-					<?php //echo getItemsTab(); ?>
-				</div>-->
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>
 					<div class="spacer"></div>

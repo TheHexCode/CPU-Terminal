@@ -359,11 +359,10 @@ function injectUserPayload(userPayload)
 					{
 						let disabled = false;
 
-						let target = $(
-								".initItem > input[data-effect='" + effect.id + "'], " +
-								".initItem > input[data-effect*='[" + effect.id + ",'], " + 
-								".initItem > input[data-effect*='," + effect.id + ",'], " +
-								".initItem > input[data-effect*='," + effect.id + "]']"
+						let target = $(".initItem[data-item='" + effect.id + "'], " +
+								".initItem input[data-effect*='[" + effect.id + ",'], " + 
+								".initItem input[data-effect*='," + effect.id + ",'], " +
+								".initItem input[data-effect*='," + effect.id + "]']"
 							)[0];
 
 						if((effect.charges === null) && (effect.uses > 0))
@@ -386,7 +385,7 @@ function injectUserPayload(userPayload)
 						$(target).prop("disabled", disabled);
 						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
 
-						$(".initItem[data-id='" + item.item_id + "']").removeClass("hidden");
+						$(".initItem[data-item='" + item.item_id + "']").removeClass("hidden");
 						
 						break;
 					}

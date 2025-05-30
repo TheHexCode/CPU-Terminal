@@ -559,23 +559,86 @@ ul
 	padding: 0 0 0 0.25rem;
 }
 
+/*
+<div id="disInit" class="initItem hidden">
+	<div class="initHeader">DISSIMULATOR ABILITY:</div>
+	<div class="initGroup">
+		<div class="initOption">
+			<input type="radio" id="disOpt1" name="disRadio" onclick="initRadio(this)">
+			<label for="disOpt1">+1 HACKING</label>
+		</div>
+		<div class="initOption">
+			<input type="radio" id="disOpt2" name="disRadio" onclick="initRadio(this)">
+			<label for="disOpt2">KNOWLEDGE [H&amp;DS]</label>
+		</div>
+	</div>
+</div>
+<div id="cmmInit" data-id="1" class="initItem hidden">
+	<div class="initHeader">CMM ARMS:</div>
+	<div class="initOption">
+		<input type="checkbox" id="cmmOpt" data-effect="[1,4]" onclick="initCheck(this)">
+		<label for="cmmOpt">Used Slip this Scene?</label>
+	</div>
+</div>
+<div id="witInit" data-id="2" class="initItem hidden">
+	<div class="initHeader">WINTON WIT:</div>
+	<div class="initGroup">
+		<div class="initOption">
+			<input type="checkbox" id="witOpt1" onclick="initCheck(this)">
+			<label for="witOpt1">Activated Embolden 2+ times this Scene?</label>
+		</div>
+		<div class="initOption">
+			<input type="checkbox" id="witOpt2" onclick="initCheck(this)">
+			<label for="witOpt2">Activated Inspire 2+ times this Scene?</label>
+		</div>
+	</div>
+</div>
+<div id="clecInit" data-id="21" class="initItem hidden">
+	<div class="initHeader">CLEC FINGERS:</div>
+	<div class="initOption">
+		<input type="checkbox" id="clecOpt" onclick="initCheck(this)">
+		<label for="clecOpt">+1 HACKING (1/Sim?)</label>
+	</div>
+</div>
+
+|DISSIMULATOR ABILITY:     |
+|  |O|+1 HACKING           |
+|  |O|KNOWLEDGE [H&DS]     |
+----------------------------
+|CMM ARMS:                 |
+|  |□|USED SLIP THIS SCENE?|
+----------------------------
+*/
+
 .initItem
 {
 	display: grid;
-	grid-template-columns: min-content auto;
-	margin: 1rem 0;
+	grid-template-columns: [start] 1rem [tab] min-content [label] auto [end];
+	margin: 1rem 0 1rem 1rem;
 }
 
-.initItem input
+.initHeader
 {
-	margin: 0 1rem;
+	grid-column: start / end;
 }
 
-.initItem label
+.initGroup,
+.initOption
 {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
+	grid-column: tab / end;
+	display: grid;
+	grid-template-columns: subgrid;
+}
+
+.initOption > input
+{
+	grid-column: tab / label;
+}
+
+.initOption > label
+{
+	grid-column: label / end;
+	padding: 0.25rem 0.25rem 0 0.25rem;
 }
 
 .accessSpacer

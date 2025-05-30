@@ -10,7 +10,7 @@
         - RANK 2 >> 20s
         - RANK 3 >> 10s
       AN ITEM MAY ONLY BENEFIT FROM FIELD REPAIR ONCE PER SCENE, AND IMMEDIATELY BREAKS AT THE END OF THE SCENE IT HAS BENEFITTED FROM FIELD REPAIR
-      
+
 
  >> CHANGED FUNCTIONS
   - BRICK
@@ -53,8 +53,8 @@
     ✓ 14 - Johnny's Special Touch
     ✓ 15 - MM Console
     ✓ 17 - Power Glove [UH9K]
-    ✓ 18 - Shimmerstick T0
-    ✓ 19 - Shimmerstick T1
+    - 18 - Shimmerstick T0
+    - 19 - Shimmerstick T1
     ✓ 21 - CLEC Fingers
     --------------------------------
     X 8 - Budget Remote Access Drive
@@ -90,6 +90,7 @@
 > DIGIPET ANIMATION
 
 > ALLOW SHIMMERSTICK TO BE USED WHENEVER
+  - SAME WITH BRAD
 
 > PUZZLES
  - TYPE
