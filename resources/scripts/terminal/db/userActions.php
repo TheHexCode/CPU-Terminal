@@ -28,6 +28,8 @@ switch($action)
     case("Rig"):
     case("Root"):
     case("Masher"): //$newState = masher's ID
+    case("Siphon Charge"):
+    case("Refresh"):
         $targetType = "terminal";
         break;
     case("Activate"):

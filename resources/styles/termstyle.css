@@ -939,6 +939,11 @@ ul
 	margin-bottom: 2rem;
 }
 
+.itemCat:nth-last-child(1 of :not(.hidden))
+{
+	margin-bottom: 0;
+}
+
 .itemItem
 {
 	margin: 0 0 0.5rem 0;

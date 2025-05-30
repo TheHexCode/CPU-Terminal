@@ -179,11 +179,13 @@ class Session
         {
             switch(action)
             {
-                case("reass"):
-                    actionCost = 2;
-                    break;
                 case("wipe"):
+                case("ping"):
                     actionCost = 1;
+                    break;
+                case("reass"):
+                case("siph"):
+                    actionCost = 2;
                     break;
                 case("brick"):
                     actionCost = 4;

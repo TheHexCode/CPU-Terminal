@@ -130,7 +130,12 @@ function disableExpensiveButtons()
 	});
 
 	$(expensiveButtons).prop("disabled",true);
-	$(expensiveButtons).attr("data-enabled","false");
+
+	affordableButtons = $("button[data-enabled!='false']").filter(function() {
+		return $(this).attr("data-cost") <= session.getCurrentTags()
+	});
+
+	$(affordableButtons).prop("disabled",false);
 }
 
 function injectUserPayload(userPayload)
@@ -494,6 +499,8 @@ function injectUserPayload(userPayload)
 						}
 					}
 				});
+
+				disableExpensiveButtons();
 			});
 
 			if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
@@ -858,59 +865,67 @@ function injectButtonMasher(masherData)
 	else
 	{
 		console.log(masherData);
-
-		if(masherData["rank"] < 2)
+		if(masherData["id"] === payload.getUserID())
 		{
 			$("#masherCodeInput").prop("readonly",false);
-			alert(masherData["name"] + " only has " + masherData["rank"] + " rank" + (masherData["rank"] === 1 ? "" : "s") + " in Button Masher, but requires at least two (2) to provide assistance.");
+			alert("You can't be your own Button Masher! Try again!");
 		}
 		else
 		{
-			if(masherData["uses"] !== 0)
+			if(masherData["rank"] < 2)
 			{
 				$("#masherCodeInput").prop("readonly",false);
-				alert(masherData["name"] + " has already used Button Masher this Scene!");
+				alert(masherData["name"] + " only has " + masherData["rank"] + " rank" + (masherData["rank"] === 1 ? "" : "s") + " in Button Masher, but requires at least two (2) to provide assistance.");
 			}
 			else
 			{
-				session.setMasher(masherData);
+				if(masherData["uses"] !== 0)
+				{
+					$("#masherCodeInput").prop("readonly",false);
+					alert(masherData["name"] + " has already used Button Masher this Scene!");
+				}
+				else
+				{
+					session.setMasher(masherData);
 
-				$.ajax({
-					type: "POST",
-					dataType: "json",
-					url: "resources/scripts/terminal/db/userActions.php",
-					data:
-					{
-						userID: payload.getUserID(),
-						targetID: session.getTerminalID(),
-						action: "Masher",
-						newState: session.getMasher("id"),
-						actionCost: session.getMasher("rank") * -1,
-						global: false
-					}
-				});
+					$.ajax({
+						type: "POST",
+						dataType: "json",
+						url: "resources/scripts/terminal/db/userActions.php",
+						data:
+						{
+							userID: payload.getUserID(),
+							targetID: session.getTerminalID(),
+							action: "Masher",
+							newState: session.getMasher("id"),
+							actionCost: session.getMasher("rank") * -1,
+							global: false
+						}
+					});
 
-				$("#masherBox").html(	"<div id='masherHeader' class='accessHeader'>" +
-											"<u>BUTTON MASHER IDENTIFIED</u>" +
-										"</div>" +
-										"<span>Masher: " + masherData["name"] + "</span>" +
-										"<div>Tags: +" + tens(masherData["rank"]) + "</div>" //+
-										/* !! ACTIVATE BELOW IF MASHING GENERATES A LOG TO MASK FROM
-										( payload.getFunction("Mask") ?
-											"<div id='maskName' class='multiLineTextInput'>" +
-												"<label for='payloadMask'>Mask:</label>" +
-												"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
-												"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
-											"</div>" :
-											"" )
-										*/
-									);
+					$("#masherBox").html(	"<div id='masherHeader' class='accessHeader'>" +
+												"<u>BUTTON MASHER IDENTIFIED</u>" +
+											"</div>" +
+											"<span>Masher: " + masherData["name"] + "</span>" +
+											"<div>Tags: +" + tens(masherData["rank"]) + "</div>" //+
+											/* !! ACTIVATE BELOW IF MASHING GENERATES A LOG TO MASK FROM
+											( payload.getFunction("Mask") ?
+												"<div id='maskName' class='multiLineTextInput'>" +
+													"<label for='payloadMask'>Mask:</label>" +
+													"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
+													"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
+												"</div>" :
+												"" )
+											*/
+										);
 
-				session.setCurrentTags(session.getCurrentTags() + masherData["rank"]);
-				Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+					session.setCurrentTags(session.getCurrentTags() + masherData["rank"]);
+					Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+
+					disableExpensiveButtons();
+				}
 			}
 		}
-		
 	}
 
 	$("#load").addClass("hidden");
@@ -1081,6 +1096,7 @@ function takeAction(target)
 		}
 		// Item Activation
 		case ("item"):
+		{
 			let effect = payload.getEffect(Number(target.dataset["effect"]));
 			let effectCost = effect["effect"].substring(effect["effect"].indexOf("+"), effect["effect"].indexOf(" "));
 
@@ -1107,6 +1123,55 @@ function takeAction(target)
 			setupConfirmModal(actionMap,buttons);
 
 			break;
+		}
+		case("siph"):
+		{
+			let actionMap = {
+				userID: payload.getUserID(),
+				actionType: action,
+				entryID: session.getTerminalID(),
+				actionCost: session.getActionCost("nonEntry",action),
+				upperAction: "Siphon Charge",
+				entryName: "Device"
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+				text: "Confirm",
+				data: payload.getUserID(),
+				global: false
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
+			break;
+		}
+		case("ping"):
+		{
+			let actionMap = {
+				userID: payload.getUserID(),
+				actionType: "refresh",
+				entryID: session.getTerminalID(),
+				actionCost: session.getActionCost("nonEntry", "ping"),
+				upperAction: "Refresh",
+				entryName: "Ping Function"
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+				text: "Confirm",
+				data: "Ping",
+				global: false
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
+			break;
+		}
 	}
 }
 
@@ -1116,6 +1181,8 @@ function setupConfirmModal(actionMap,buttons)
 	//	- upperAction
 	//	- entryName
 	//	- actionCost
+	//  - actionType < For Interruption
+	//  - entryID < For Interruption
 
 	// BUTTON ARRAY ITEMS REQUIRE:
 	//	- id
@@ -1155,7 +1222,7 @@ function setupConfirmModal(actionMap,buttons)
 
 	$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
 
-	let extraBeforeText = "";
+	let extraBeforeText = " ";
 	let extraAfterText = "";
 	let quote = "\"";
 	let costText = " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s");
@@ -1178,7 +1245,7 @@ function setupConfirmModal(actionMap,buttons)
 		}
 		case("Reassign"):
 		{
-			extraBeforeText = " Log Entry for";
+			extraBeforeText = " Log Entry for ";
 			extraAfterText =	"<br/><br/>" +
 								"<div id='reassName' class='multiLineTextInput'>" +
 									"<label for='reassInput'>New Name to Reassign Log Entry to:</label>" +
@@ -1189,7 +1256,7 @@ function setupConfirmModal(actionMap,buttons)
 		}
 		case("Wipe Tracks"):
 		{
-			extraBeforeText = " for";
+			extraBeforeText = " for ";
 			break;
 		}
 		case("Brick"):
@@ -1228,11 +1295,26 @@ function setupConfirmModal(actionMap,buttons)
 			extraAfterText = "<br/><br/>This item may be used <b>" + totCharges + "</b> time" + totCharge_S + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + remCharge_S + " left.";
 			break;
 		}
+		case("Siphon Charge"):
+		{
+			quote = "";
+			extraBeforeText = " from ";
+
+			costText += " to gain 2 Amps";
+
+			extraAfterText = "<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource."
+			break;
+		}
+		case("Refresh"):
+		{
+			quote = "";
+			break;
+		}
 	}
 
 	$("#modalBodyTimer").addClass("hidden");
 	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + extraBeforeText + " " + quote + actionMap["entryName"] + quote + costText + "?" +
+		actionMap["upperAction"] + extraBeforeText + quote + actionMap["entryName"] + quote + costText + "?" +
 		extraAfterText + copycatText
 	);
 
@@ -1481,6 +1563,16 @@ function completeAction(actionMap)
 
 			payload.useItemEffect(actionMap["entryID"])
 			break;
+		case("siph"):
+		{
+			setupAlertModal("You gain +2 Amps!<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource.");
+			break;
+		}
+		case("refresh"):
+		{
+			setupAlertModal("Your " + actionMap["newData"] + " Function has been Refreshed!<br/><br/>NOTE: The usage of the " + actionMap["newData"] + " Function is not tracked by this OS. Do not run this action again unless you've used " + actionMap["newData"] + " again this Scene and require another Refresh.");
+			break;
+		}
 	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
@@ -1563,4 +1655,37 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 			payload.setActiveEffect(15,true);
 		}
 	}
+}
+
+function setupAlertModal(bodyText)
+{
+	$("#actionModal").attr("data-type", "");
+	$("#actionModal").attr("data-id", "");
+
+	$("#actionModal .modalOverlay").removeClass("blink");
+	$("#actionModal .modalOverlay").addClass("hidden");
+
+	$("#actionModal .modalButtonRow").html("<button id='okButton' class='modalButton'>OK</button>");
+			
+	$("#okButton").bind("pointerup", function()
+	{
+		closeModal("okayed");
+	});
+
+	$("#actionModal").width($("#main").width());
+	$("#actionModal").removeClass("ice");
+
+	$("#actionModal .modalHeaderRow").removeClass("dimmed");
+	$("#actionModal .modalHeaderText").html("Action Success");
+
+	$("#actionModal .modalBody").removeClass("dimmed");
+	$("#modalBodyTimer").addClass("hidden");
+	$("#actionModal .modalBodyText").html(bodyText);
+
+	$(".modalBodyText").removeClass("hidden");
+
+	$("#actionModal .modalButtonRow").removeClass("dimmed");
+	$("#actionModal .modalButtonRow").attr("data-mode","confirm");
+	
+	$("#modalBG").css("display","flex");
 }
