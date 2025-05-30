@@ -29,32 +29,30 @@ if($userResponse === false)
 else
 {
     
-    $functionQuery = "  SELECT DISTINCT cpu_functions.name,
+    $functionQuery = "  SELECT DISTINCT	cpu_functions.name,
                                         SUM(ml_functions.rank) AS 'rank',
                                         cpu_functions.type,
+                                        GROUP_CONCAT(
+                                            CASE
+                                                WHEN ml_functions.cav_type = 'bound'
+                                                    THEN (SELECT cpu_caviats.displayName FROM cpu_caviats WHERE cpu_caviats.id = ml_functions.cav_id)
+                                                WHEN ml_functions.cav_type = 'choice'
+                                                    THEN (SELECT cpu_caviats.displayName FROM cpu_caviats WHERE cpu_caviats.id = user_functions.cav_id)
+                                                ELSE NULL
+                                            END
+                                            SEPARATOR ';'
+                                        ) AS caviats,
                                         cpu_functions.hacking_cat
-                        FROM {$dbName}.user_functions
-                        INNER JOIN {$dbName}.ml_functions ON ml_functions.id=user_functions.mlFunction_id
-                        INNER JOIN {$dbName}.cpu_functions ON ml_functions.function_id=cpu_functions.id
-                        WHERE user_id = :userID
+                        FROM {$dbName}.ml_functions
+                        INNER JOIN {$dbName}.user_functions ON user_functions.mlFunction_id = ml_functions.id
+                        INNER JOIN {$dbName}.cpu_functions ON cpu_functions.id = ml_functions.function_id
+                        WHERE
+                            user_functions.user_id = :userID
                             AND cpu_functions.hacking_cat IS NOT NULL
                         GROUP BY cpu_functions.name,
                                 cpu_functions.type,
                                 cpu_functions.hacking_cat";
-    /*
-    $functionQuery = "  SELECT DISTINCT cpu_functions.name,
-                                        SUM(ml_functions.rank) AS 'rank',
-                                        cpu_functions.type,
-                                        cpu_functions.hacking_cat
-                        FROM {$dbName}.user_selfreport
-                        INNER JOIN {$dbName}.ml_functions ON ml_functions.id=user_selfreport.mlFunction_id
-                        INNER JOIN {$dbName}.cpu_functions ON ml_functions.function_id=cpu_functions.id
-                        WHERE user_id = :userID
-                            AND cpu_functions.hacking_cat IS NOT NULL
-                        GROUP BY cpu_functions.name,
-                                cpu_functions.type,
-                                cpu_functions.hacking_cat";
-    */
+    
     $functionStatement = $pdo->prepare($functionQuery);
     $functionStatement->execute([':userID' => $userResponse["ml_id"]]);
     $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
@@ -64,13 +62,7 @@ else
                     INNER JOIN {$dbName}.user_functions ON ml_functions.id=user_functions.mlFunction_id
                     INNER JOIN {$dbName}.cpu_roles ON ml_functions.role_id=cpu_roles.id
                     WHERE user_id = :userID";
-    /*
-    $roleQuery = "  SELECT DISTINCT cpu_roles.name
-                    FROM {$dbName}.ml_functions
-                    INNER JOIN {$dbName}.user_selfreport ON ml_functions.id=user_selfreport.mlFunction_id
-                    INNER JOIN {$dbName}.cpu_roles ON ml_functions.role_id=cpu_roles.id
-                    WHERE user_id = :userID";
-    */
+
     $roleStatement = $pdo->prepare($roleQuery);
     $roleStatement->execute([':userID' => $userResponse["ml_id"]]);
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);

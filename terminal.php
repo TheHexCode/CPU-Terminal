@@ -504,8 +504,11 @@
 										<li id="repeatItem" class="hidden">
 											REPEAT
 										</li>
+										<hr id="passSeparator" class="hidden"/>
 										<li id="knowItem" class="hidden">
-											<!-- KNOWLEDGE -->
+											KNOWLEDGE
+											<ul>
+											</ul>
 										</li>
 									</ul>
 								</div>

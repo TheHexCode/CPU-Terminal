@@ -147,7 +147,7 @@ function injectUserPayload(userPayload)
 	}
 	else
 	{
-		//console.log(userPayload);
+		console.log(userPayload);
 
 		payload.setPayload(userPayload);
 
@@ -294,6 +294,17 @@ function injectUserPayload(userPayload)
 		else
 		{
 			$("#darkwebSubTab").addClass("hidden");
+		}
+
+		if(payload.getFunction("KNOWLEDGE"))
+		{
+			$("#passSeparator").removeClass("hidden");
+			$("#knowItem").removeClass("hidden");
+
+			payload.getFunction("KNOWLEDGE").split(";").forEach(function (caviat)
+			{
+				$("#knowItem > ul").append("<li>" + caviat.toUpperCase() + "</li>");
+			});
 		}
 
 		if(payload.getFunction("REPEAT"))

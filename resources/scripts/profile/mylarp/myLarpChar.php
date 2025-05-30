@@ -89,7 +89,7 @@ $functionQuery = "  SELECT DISTINCT	cpu_functions.name,
                         AND cpu_functions.hacking_cat IS NOT NULL
                     GROUP BY cpu_functions.name,
                             cpu_functions.type,
-                            cpu_functions.hacking_cat;";
+                            cpu_functions.hacking_cat";
 
 $functionStatement = $pdo->prepare($functionQuery);
 $functionStatement->execute([':userID' => $mlCharID]);

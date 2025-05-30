@@ -60,6 +60,10 @@ class Payload
             {
                 return Number(userFunc.rank);
             }
+            else if((userFunc.type === "collect"))
+            {
+                return userFunc.caviats;
+            }
             else
             {
                 return Boolean(Number(userFunc.rank));
