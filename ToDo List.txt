@@ -39,26 +39,36 @@
   - payload.getActiveEffect(#)
 
 > INVENTORY
+  >> AUTO-INIT
+    - CipherSync Beacon
+    - Power Glove [UH9K]
+  >> INIT
     - Budget Remote Access Drive
     - CMM Widow
     - CMM Cocoon
-    - Copycat
-    - Pocket Hacker T0
-    - Pocket Hacker T1
-    - Budget Cyberdeck
-    - CipherSync Beacon
-    - CRD Spider Cyberdeck T0
-    - CRD Spider Cyberdeck T1
-    - DigiPet
-    - Johnny's Special Touch
-    - MM Console
-    - Power Glove [UH9K]
     - Shimmerstick T0
     - Shimmerstick T1
     - CLEC Fingers
     - Canopic Jar [Magsweep]
     - Vigil T0
     - Vigil T1
+  >> ITEMTAB
+    - Pocket Hacker T0
+    - Pocket Hacker T1
+    - Budget Cyberdeck
+    - CRD Spider Cyberdeck T0
+    - CRD Spider Cyberdeck T1
+    - MM Console
+    - DigiPet[1]
+    > ALSO
+      - Budget Remote Access Drive
+      - Shimmerstick T0
+      - Shimmerstick T1
+  >> ACTION
+    - Copycat
+    - DigiPet[2]
+  >> AUTO-ACTION
+    - Johnny's Special Touch
     --------------------------------
     X FKD DC-17
     X Nerd's Safety Glasses
