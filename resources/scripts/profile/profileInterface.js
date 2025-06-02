@@ -220,29 +220,6 @@ function processCharInfo(charData)
 		$("#" + category + "List").removeClass("hidden");
 	});
 
-	// NEW FUNCTIONS
-	/*
-	srRoles = [];
-
-	charData.selfReport.forEach(function(func)
-	{
-		if((func["role_name"] !== "Standard") && (!srRoles.includes(func["role_name"])))
-		{
-			srRoles.push(func["role_name"]);
-		}
-
-		$(".checkGroup input[data-id='" + func["id"] + "']").prop("checked",true);
-	});
-
-	console.log(srRoles);
-
-	$("#primaryRole > option[value='" + srRoles[0] + "']").prop("selected",true);
-	$("#secondaryRole > option[value='" + srRoles[1] + "']").prop("selected",true);
-
-	roleChange();
-	*/
-	// END NEW FUNCTIONS
-
 	charData["items"].forEach(function(itemID)
 	{
 		let inputID = "#item_" + itemID;
@@ -325,18 +302,19 @@ function statSubmit(event)
 	$("#saveText").html("SAVING...");
 	$("#saveText").removeClass("hidden");
 
-	/*
-	// LIST OF FUNCTIONS
-	let funcs = [];
-	$(".checkGroup input:checked").each(function() {
-		funcs.push(Number($(this).attr("data-id")));
-	});
-	*/
-
 	// LIST OF ITEMS
 	let items = [];
-	$(".itemSelect input:checked").each(function() {
-		items.push(Number($(this).attr("data-id")));
+	$(".itemSelect input:checked").each(function(index, item) {
+		let itemPush = {
+			id: Number($(item).attr("data-id"))
+		}
+
+		let itemCount = $(".itemCount[data-id=" + $(item).attr("data-id") + "]");
+		
+		itemPush["count"] = (itemCount.length ? Number($(itemCount[0]).attr("data-charges")) : null);
+
+
+		items.push(itemPush);
 	});
 
 	$.ajax({

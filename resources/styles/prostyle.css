@@ -278,7 +278,31 @@ h2
 .itemSelect
 {
 	display: grid;
-	grid-template-columns: min-content auto;
+	grid-template-columns: [start] min-content [tab] auto [end];
+	width: 100%;
+}
+
+.itemCount
+{
+	grid-column: tab / end;
+	grid-row: 2;
+}
+
+.itemCountRow
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.itemImgBox
+{
+	display: grid;
+	grid-template-columns: repeat(auto-fit,minmax(20px,1fr));
+	row-gap: 0.25rem;
+	justify-items: center;
+	align-content: center;
+	width: 100%;
 }
 
 #saveBar

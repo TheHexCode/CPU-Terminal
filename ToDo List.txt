@@ -1,4 +1,4 @@
-> 2.0 RELEASE CANDIDATE
+> 2.0
 
  >> NEW FUNCTIONS
   - REPAIR
@@ -39,37 +39,40 @@
   - payload.getActiveEffect(#)
 
 > INVENTORY
-    ✓ 1 - CMM Widow (1)
-    ✓ 2 - Winton Wit (2,3)
-    ✓ 3 - CMM Cocoon (id+1)
-    ✓ 4 - Copycat
-    ✓ 5 - Pocket Hacker T0
-    ✓ 6 - Pocket Hacker T1
-    ✓ 7 - Budget Cyberdeck
-    ✓ 9 - CipherSync Beacon
-    ✓ 10 - CRD Spider Cyberdeck T0
-    ✓ 11 - CRD Spider Cyberdeck T1
-    ✓ 12 - DigiPet
-    ✓ 14 - Johnny's Special Touch
-    ✓ 15 - MM Console
-    ✓ 17 - Power Glove [UH9K]
-    - 18 - Shimmerstick T0
-    - 19 - Shimmerstick T1
-    ✓ 21 - CLEC Fingers
+    - Budget Remote Access Drive
+    - CMM Widow
+    - CMM Cocoon
+    - Copycat
+    - Pocket Hacker T0
+    - Pocket Hacker T1
+    - Budget Cyberdeck
+    - CipherSync Beacon
+    - CRD Spider Cyberdeck T0
+    - CRD Spider Cyberdeck T1
+    - DigiPet
+    - Johnny's Special Touch
+    - MM Console
+    - Power Glove [UH9K]
+    - Shimmerstick T0
+    - Shimmerstick T1
+    - CLEC Fingers
+    - Canopic Jar [Magsweep]
+    - Vigil T0
+    - Vigil T1
     --------------------------------
-    X 8 - Budget Remote Access Drive
-    X 13 - FKD DC-17
-    X 16 - Nerd's Safety Glasses
-    X 20 - Vigil
-    X 22 - Canopic Jar [Magsweep]
+    X FKD DC-17
+    X Nerd's Safety Glasses
+
+  - Plus/Minus Charges on Profile Page
+  - haveDeck class
+  - plus/Minus functions in Payload for Role Talents
 
 > MULTIPLAYER INTERRUPT
- - Change/interrupt other players
  - Make changed tab/entry blink for other players
- - Status symbols for listen server Status
  - Status symbols for other players (spiders, too?)
     -- Make these blink as they change as well?
  - Discord bot command for turning listen server on/off
+ - Discord bot command for changing job code
 
 > LISTENER FOR MISC EFFECTS
  - Database
@@ -144,3 +147,5 @@
     - SIPHON CHARGE
       FOR TWO TAGS, CHARACTER CAN GAIN 2 AMPS
       [ASSUMING REPEATABLE SINCE IT COSTS TAGS TO DO]
+    - MP INT > Change/interrupt other players
+    - MP INT > Status symbols for listen server Status

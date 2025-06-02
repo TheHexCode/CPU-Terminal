@@ -67,7 +67,7 @@ else
     $roleStatement->execute([':userID' => $userResponse["ml_id"]]);
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
-    $itemQuery = "  SELECT item_id, items.name, items.tier, items.type
+    $itemQuery = "  SELECT item_id, items.name, items.tier, items.abbr, items.category
                     FROM {$dbName}.user_items
                     INNER JOIN {$dbName}.items ON user_items.item_id=items.id
                     WHERE user_id = :userID";
@@ -76,7 +76,7 @@ else
     $itemStatement->execute([':userID' => $userResponse["ml_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $effectQuery = "    SELECT id, charges, per_type, use_loc, effect
+    $effectQuery = "    SELECT id, charges, per_type, use_loc
                         FROM {$dbName}.item_effects
                         WHERE item_id = :itemID";
 
@@ -98,6 +98,13 @@ else
                             AND simCode = :simCode";
 
     $sceneUseStatement = $pdo->prepare($sceneUseQuery);
+
+    $itemUseQuery = "  SELECT COUNT(*)
+                        FROM {$dbName}.item_uses
+                        WHERE 	user_id = :userID
+                            AND effect_id = :effectID";
+
+    $itemUseStatement = $pdo->prepare($itemUseQuery);
 
     $newItems = array();
 
@@ -129,6 +136,12 @@ else
                         ]);
                     $useResponse = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
                     break;
+                case ("item"):
+                    $itemUseStatement->execute([
+                            ':userID' => $userResponse["ml_id"],
+                            ':effectID' => $effect["id"]
+                        ]);
+                    $useResponse = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
                 default:
                     $useResponse = 0;
                     break;

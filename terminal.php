@@ -147,76 +147,89 @@
 							</div>
 						</div>
 					</div>
-					<div class="initItemList">
+					<div id="roleTalentList" class="initItemList">
 						<div id="disInit" class="initItem hidden">
-							<div class="initHeader">DISSIMULATOR ABILITY:</div>
+							<div class="initHeader">DISSIMULATOR TALENT:</div>
 							<div class="initGroup">
 								<div class="initOption">
-									<input type="radio" id="disOpt1" name="disRadio" onclick="initRadio(this)">
+									<input type="radio" id="disOpt1" name="disRadio" value="plusHack" onclick="initRadio(this)">
 									<label for="disOpt1">+1 HACKING</label>
 								</div>
 								<div class="initOption">
-									<input type="radio" id="disOpt2" name="disRadio" onclick="initRadio(this)">
-									<label for="disOpt2">KNOWLEDGE [H&amp;DS]</label>
+									<input type="radio" id="disOpt2" name="disRadio" value="k_hds" onclick="initRadio(this)">
+									<label for="disOpt2">KNOWLEDGE [Hacking &amp; DigiSec]</label>
 								</div>
 							</div>
 						</div>
 						<div id="polyInit" class="initItem hidden">
-							<div class="initHeader">POLYMATH ABILITY:</div>
+							<div class="initHeader">POLYMATH TALENT:</div>
 							<div class="initGroup">
 								<div class="initOption">
-									<input type="radio" id="polyOpt1" name="polyRadio" onclick="initRadio(this)">
+									<input type="radio" id="polyOpt1" name="polyRadio" value="alarmSense" onclick="initRadio(this)">
 									<label for="polyOpt1">ALARM SENSE</label>
 								</div>
 								<div class="initOption">
-									<input type="radio" id="polyOpt2" name="polyRadio" onclick="initRadio(this)">
+									<input type="radio" id="polyOpt2" name="polyRadio" value="plusRepair" onclick="initRadio(this)">
 									<label for="polyOpt2">+1 REPAIR</label>
 								</div>
 							</div>
 						</div>
-						<div id="cmmInit" data-item="1" class="initItem hidden">
+					</div>
+					<div class="initItemList">
+						<div id="cmmInit" class="initItem hidden">
 							<div class="initHeader">CMM ARMS:</div>
 							<div class="initOption">
-								<input type="checkbox" id="cmmOpt" name="cmmCheck" data-effect="[1,4]" onclick="initCheck(this)">
+								<input type="checkbox" id="cmmOpt" onclick="initCheck(this)">
 								<label for="cmmOpt">Used Slip this Scene?</label>
 							</div>
 						</div>
-						<div id="witInit" data-item="2" class="initItem hidden">
-							<div class="initHeader">WINTON WIT:</div>
-							<div class="initGroup">
-								<div class="initOption">
-									<input type="checkbox" id="witOpt1" onclick="initCheck(this)">
-									<label for="witOpt1">Activated Embolden 2+ times this Scene?</label>
-								</div>
-								<div class="initOption">
-									<input type="checkbox" id="witOpt2" onclick="initCheck(this)">
-									<label for="witOpt2">Activated Inspire 2+ times this Scene?</label>
-								</div>
-							</div>
-						</div>
-						<div id="clecInit" data-item="21" class="initItem hidden">
+						<div id="impl_clecInit" class="initItem hidden">
 							<div class="initHeader">CLEC FINGERS:</div>
 							<div class="initOption">
 								<input type="checkbox" id="clecOpt" onclick="initCheck(this)">
-								<label for="clecOpt">+1 HACKING (1/Sim?)</label>
+								<label for="clecOpt">+1 HACKING (1/Sim)?</label>
 							</div>
 						</div>
-						<!--
-						<li id="viglInit" data-id="20" class="initItem hidden">
-							<input type="checkbox" id="viglCheck" data-effect="21" onchange="initCheck(this)"/>
-							<label for="viglCheck">
-								<span class="initName">CONSUMABLE:</span>
-								<span class="initAbil">&nbsp;Using Vigil?</span>
-							</label>
+						<li id="shim0Init" class="initItem hidden">
+							<div class="initHeader">SHIMMERSTICK [T0]:</div>
+							<div class="initOption">
+								<input type="checkbox" id="shim0Opt" onclick="initCheck(this)">
+								<label for="shim0Opt">Apply to this Device?<span class="haveDeck"><br/>(Can apply later)</span></label>
+							</div>
 						</li>
-						<li id="magInit" data-id="22" class="initItem hidden">
-							<input type="checkbox" id="magCheck" data-effect="23" onchange="initCheck(this)"/>
-							<label for="magCheck">
-								<span class="initName">MAGSWEEP:</span>
-								<span class="initAbil">&nbsp;Brick Device (1/Sim)?</span>
-							</label>
+						<li id="shim1Init" class="initItem hidden">
+							<div class="initHeader">SHIMMERSTICK [T1]:</div>
+							<div class="initOption">
+								<input type="checkbox" id="shim1Opt" onclick="initCheck(this)">
+								<label for="shim1Opt">Apply to this Device?<span class="haveDeck"><br/>(Can apply later)</span></label>
+							</div>
 						</li>
-						-->
+						<li id="vigl0Init" class="initItem hidden">
+							<div class="initHeader">VIGIL [T0]:</div>
+							<div class="initOption">
+								<input type="checkbox" id="vigl0Opt" onclick="initCheck(this)">
+								<label for="vigl0Opt">Consumed dose before Scene?</label>
+							</div>
+						</li>
+						<li id="vigl1Init" class="initItem hidden">
+							<div class="initHeader">VIGIL [T1]:</div>
+							<div class="initOption">
+								<input type="checkbox" id="vigl1Opt" onclick="initCheck(this)">
+								<label for="vigl1Opt">Consumed dose before Scene?</label>
+							</div>
+						</li>
+						<div id="bradInit" class="initItem hidden">
+							<div class="initHeader">Budget Access Remote Drive:</div>
+							<div class="initOption">
+								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="haveDeck"><br/>(Can set up later)</span></button>
+							</div>
+						</div>
+						<li id="impl_magsInit" class="initItem hidden">
+							<div class="initHeader">MAGSWEEP:</div>
+							<div class="initOption">
+								<button onclick="initAction(this)">Brick Device?</button>
+							</div>
+						</li>
 					</div>
 					<div class="accessSpacer"></div>
 					<div class="accessBox">

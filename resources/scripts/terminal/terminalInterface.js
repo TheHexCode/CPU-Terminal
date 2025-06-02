@@ -332,38 +332,11 @@ function injectUserPayload(userPayload)
 
 				switch(effect.use_loc)
 				{
-					case("item"):
-					{
-						let remCharges = effect.charges - effect.uses;
-
-						effectString += "<span class='itemActionRow'>" +
-											"<span class='itemMarks'>";
-						
-						for(let i = 0; i < effect.uses; i++)
-						{
-							effectString += "<img src='resources/images/actions/itemfilled.png' />";
-						}
-
-						for(let j = 0; j < remCharges; j++)
-						{
-							effectString += "<img src='resources/images/actions/itemopen.png' />";
-						}
-						
-						effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
-									"</span>" +
-									"<button class='itemButton' data-effect='" + effect.id + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">" + effect.effect + "</button>" +
-								"</span>";
-						break;
-					}
-					case("initial"):
+					case("init"):
 					{
 						let disabled = false;
 
-						let target = $(".initItem[data-item='" + effect.id + "'], " +
-								".initItem input[data-effect*='[" + effect.id + ",'], " + 
-								".initItem input[data-effect*='," + effect.id + ",'], " +
-								".initItem input[data-effect*='," + effect.id + "]']"
-							)[0];
+						let target = $(".initItem[id='" + item.abbr + "Init']")[0];
 
 						if((effect.charges === null) && (effect.uses > 0))
 						{
@@ -385,8 +358,61 @@ function injectUserPayload(userPayload)
 						$(target).prop("disabled", disabled);
 						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
 
-						$(".initItem[data-item='" + item.item_id + "']").removeClass("hidden");
+						$(target).removeClass("hidden");
 						
+						break;
+					}
+					case("before_after"):
+					{
+						let disabled = false;
+
+						let target = $(".initItem[id='" + item.abbr + "Init']")[0];
+
+						if((effect.charges === null) && (effect.uses > 0))
+						{
+							disabled = true;
+
+							$(target).prop("checked", true);
+							initCheck(target);
+						}
+						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						{
+							disabled = true;
+						}
+
+						if(effect.termUses > 0)
+						{
+							payload.setActiveEffect(effect.id, true);
+						}
+
+						$(target).prop("disabled", disabled);
+						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
+
+						$(target).removeClass("hidden");
+
+						//No Break;
+					}
+					case("itemTab"):
+					{
+						let remCharges = effect.charges - effect.uses;
+
+						effectString += "<span class='itemActionRow'>" +
+											"<span class='itemMarks'>";
+						
+						for(let i = 0; i < effect.uses; i++)
+						{
+							effectString += "<img src='resources/images/actions/itemfilled.png' />";
+						}
+
+						for(let j = 0; j < remCharges; j++)
+						{
+							effectString += "<img src='resources/images/actions/itemopen.png' />";
+						}
+						
+						effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
+									"</span>" +
+									"<button class='itemButton' data-effect='" + effect.id + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">" + effect.effect + "</button>" +
+								"</span>";
 						break;
 					}
 					case("action"):
@@ -547,97 +573,179 @@ function injectUserPayload(userPayload)
 	$("#load").addClass("hidden");
 }
 
+function initRadio(target)
+{
+	//This assumes a radio selection of only two for now
+	let prevTarget = $("input[name='"+$(target).prop("name")+"'][data-active='true']");
+
+	if($(target).attr("data-active") === "true") //CLICK OFF
+	{
+		$(target).attr("data-active",false);
+		$(target).prop("checked",false);
+	}
+	else //CLICK ON, TURN OTHER OFF
+	{
+		prevTarget.attr("data-active",false);
+		$(target).attr("data-active",true);
+	}
+
+	//Remove old effects
+	if(prevTarget.length > 0)
+	{
+		prevTarget = prevTarget[0];
+
+		switch(prevTarget.value)
+		{
+			case("plusHack"):
+			{
+				$("#hackDetails #disDetails").remove();
+				updateTags(-2,Session.DISSIM);
+
+				break;
+			}
+			case("k_HDS"):
+			{
+				if(payload.getFunction("KNOWLEDGE").includes("DISSIM: HACKING &amp; DIGISEC"))
+				{
+					$("#knowItem #disKnow").remove();
+					//payload.minusRank("k_HDS");
+				}
+
+				break;
+			}
+			case("alarmSense"):
+			{
+				if(payload.getFunction("POLY: ALARM SENSE"))
+				{
+					$("#polyAS").remove();
+					//payload.minusRank("alarmSense");
+				}
+				
+				break;
+			}
+			case("plusRepair"):
+			{
+				//payload.minusRank("repair");
+				break;
+			}
+		}
+	}
+
+	//Turn on new effects only if they didn't just turn themselves off
+	if(prevTarget !== target)
+	{
+		switch(target.value)
+		{
+			case("plusHack"):
+			{
+				$("#hackDetails").append("<span id='disDetails'>[DISSIM:&nbsp;&nbsp;+02]</span>");
+				updateTags(2,Session.DISSIM);
+
+				break;
+			}
+			case("k_HDS"):
+			{
+				if(!(payload.getFunction("KNOWLEDGE").includes("HACKING &amp; DIGISEC")))
+				{
+					$("#knowItem > ul").append("<li id='disKnow'>DISSIM: HACKING &amp; DIGISEC</li>");
+					//payload.plusRank("k_HDS");
+				}
+
+				break;
+			}
+			case("alarmSense"):
+			{
+				if(!(payload.getFunction("ALARM SENSE")))
+				{
+					$("#alarmItem").after("<li id='polyAS'>POLY: ALARM SENSE</li>");
+					//payload.plusRank("alarmSense");
+				}
+
+				break;
+			}
+			case("plusRepair"):
+			{
+				//payload.plusRank("repair");
+				
+				break;
+			}
+		}
+	}
+}
+
 function initCheck(target)
 {
 	let effectID = $(target).attr("data-effect");
 
-	if(effectID === "dis") //Dissimulator Role Ability (+Hack)
+	effectID = JSON.parse(effectID);
+
+	if(typeof effectID === "number")
 	{
-		if($(target).prop("checked"))
-		{
-			$("#hackDetails").append("<span id='disDetails'>[DISSIM:&nbsp;&nbsp;+02]</span>");
-
-			updateTags(2,Session.DISSIM);
-		}
-		else
-		{
-			$("#hackDetails #disDetails").remove();
-
-			updateTags(-2,Session.DISSIM);
-		}
+		effectID = [effectID];
 	}
-	else
+
+	effectID.forEach(function(eID)
 	{
-		effectID = JSON.parse(effectID);
-
-		if(typeof effectID === "number")
+		switch (eID)
 		{
-			effectID = [effectID];
+			case(1): //CMM Widow
+				if(payload.getItem(1))
+				{
+					session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+					updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+				}
+				break;
+			case(2): //Winton Wit (Embolden)
+				session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
+				updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
+				payload.setActiveEffect(eID, $(target).prop("checked"));
+				// Carries Over Through Scene
+				break;
+			case(3): //Winton Wit (Inspire)
+				session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
+				updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
+				payload.setActiveEffect(eID, $(target).prop("checked"));
+				// Carries Over Through Scene
+				break;
+			case(4): //CMM Cocoon
+				if(payload.getItem(3))
+				{
+					session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+					updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+					payload.setActiveEffect(eID, $(target).prop("checked"));
+				}
+				break;
+			case(9): //BRAD
+				if($(target).prop("checked"))
+				{
+					
+				}
+				else
+				{
+					
+				}
+				break;
+			case(19): //Shimmerstick T0
+			case(20): //Shimmerstick T1
+				payload.setActiveEffect(eID, $(target).prop("checked"));
+				break;
+			case(22): //CLEC Fingers (+Hack)
+				if($(target).prop("checked"))
+				{
+					$("#hackDetails").append("<span id='clecDetails'>[CLEC FRS:+02]</span>");
+					updateTags(2,Session.CLEC);
+				}
+				else
+				{
+					$("#hackDetails #clecDetails").remove();
+					updateTags(-2,Session.CLEC);
+				}
+
+				payload.setActiveEffect(eID, $(target).prop("checked"));
+				break;
 		}
-
-		effectID.forEach(function(eID)
-		{
-			switch (eID)
-			{
-				case(1): //CMM Widow
-					if(payload.getItem(1))
-					{
-						session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
-						updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
-						payload.setActiveEffect(eID, $(target).prop("checked"));
-					}
-					break;
-				case(2): //Winton Wit (Embolden)
-					session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
-					updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
-					payload.setActiveEffect(eID, $(target).prop("checked"));
-					// Carries Over Through Scene
-					break;
-				case(3): //Winton Wit (Inspire)
-					session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
-					updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
-					payload.setActiveEffect(eID, $(target).prop("checked"));
-					// Carries Over Through Scene
-					break;
-				case(4): //CMM Cocoon
-					if(payload.getItem(3))
-					{
-						session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
-						updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
-						payload.setActiveEffect(eID, $(target).prop("checked"));
-					}
-					break;
-				case(9): //BRAD
-					if($(target).prop("checked"))
-					{
-						
-					}
-					else
-					{
-						
-					}
-					break;
-				case(19): //Shimmerstick T0
-				case(20): //Shimmerstick T1
-					payload.setActiveEffect(eID, $(target).prop("checked"));
-					break;
-				case(22): //CLEC Fingers (+Hack)
-					if($(target).prop("checked"))
-					{
-						$("#hackDetails").append("<span id='clecDetails'>[CLEC FRS:+02]</span>");
-						updateTags(2,Session.CLEC);
-					}
-					else
-					{
-						$("#hackDetails #clecDetails").remove();
-						updateTags(-2,Session.CLEC);
-					}
-
-					payload.setActiveEffect(eID, $(target).prop("checked"));
-					break;
-			}
-		}, this);
-	}
+	}, this);
 }
 
 function updateTags(change, tagType)
@@ -1555,7 +1663,16 @@ function completeAction(actionMap)
 			break;
 		}
 		case("brick"):
-			session.brickTerminal(payload.getHandle());
+			//session.brickTerminal(payload.getHandle());
+
+			const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+			const freezeSleep = async () => {
+				await sleep(1000);
+				location.reload();
+			};
+			
+			freezeSleep();
+
 			break;
 		case("rig"):
 			session.rigTerminal();

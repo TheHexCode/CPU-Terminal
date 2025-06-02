@@ -142,22 +142,26 @@ CREATE TABLE user_selfreport (
 );
 */
 CREATE TABLE items (
-    id      INT     AUTO_INCREMENT,
-    name    TEXT    NOT NULL,
-    tier    INT,
-    type    TEXT    NOT NULL,
-    radio   TEXT,
-    enabled BOOL    NOT NULL,
+    id          INT     AUTO_INCREMENT,
+    name        TEXT    NOT NULL,
+    tier        INT     NOT NULL,
+    category    TEXT    NOT NULL,
+    radio       TEXT,
+    abbr        TEXT    NOT NULL,
+    enabled     BOOL    NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE item_effects (
-    id          INT AUTO_INCREMENT,
-    item_id     INT NOT NULL,
+    id          INT     AUTO_INCREMENT,
+    item_id     INT     NOT NULL,
+    abbr        TEXT,
+    use_loc     TEXT    NOT NULL,
+    req_type    TEXT,
+    requirement TEXT,
     charges     INT,
     per_type    TEXT,
-    use_loc     TEXT,
-    effect      TEXT,
+    notes       TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (item_id)
         REFERENCES items(id)
@@ -168,6 +172,7 @@ CREATE TABLE item_effects (
 CREATE TABLE user_items (
     user_id INT NOT NULL,
     item_id INT NOT NULL,
+    count   INT,
     FOREIGN KEY (user_id)
         REFERENCES users(ml_id)
         ON UPDATE CASCADE
@@ -1086,52 +1091,50 @@ INSERT INTO ml_functions
 # END TEST FUNCTIONS #
 
 INSERT INTO items
-            (name, tier, type, radio, enabled)
-    VALUES  ('CMM Widow', 2, 'arms', NULL, 1),
-            ('Winton Wit', 0, 'arms', NULL, 1),
-            ('CMM Cocoon', 2, 'arms', NULL, 1),
-            ('Copycat', 0, 'cust', NULL, 1),
-            ('Pocket Hacker', 0, 'cust', 'ph', 1),
-            ('Pocket Hacker', 1, 'cust', 'ph', 1),
-            ('Budget Cyberdeck', 0, 'deck', 'deck', 1),
-            ('Budget Remote Access Drive', 0, 'util', NULL, 1),
-            ('CipherSync Beacon', 0, 'util', NULL, 1),
-            ('CRD Spider Cyberdeck', 0, 'deck', 'deck', 1),
-            ('CRD Spider Cyberdeck', 1, 'deck', 'deck', 1),
-            ('DigiPet', 0, 'util', NULL, 1),
-            ('FKD DC-17', 1, 'deck', 'deck', 0),
-            ('Johnny&#39;s Special Touch', 1, 'deck', 'deck', 1),
-            ('MM Console', 0, 'deck', 'deck', 1),
-            ('Nerd&#39;s Safety Glasses', 0, 'util', NULL, 0),
-            ('Power Glove [Ultra-Hacking 9000]', 1, 'impl', 'deck', 1),
-            ('Shimmerstick', 0, 'cons', 'shimstick', 1),
-            ('Shimmerstick', 1, 'cons', 'shimstick', 1),
-            ('Vigil', NULL, 'cons', NULL, 0),
-            ('CLEC Fingers', 0, 'impl', NULL, 1),
-            ('Canopic Jar [MagSweep]', 0, 'impl', NULL, 0);
+            (name, tier, category, radio, abbr, enabled)
+    VALUES  ('Budget Cyberdeck',0,'deck','deck','deck_bud',1),
+            ('Budget Remote Access Drive',0,'util',NULL,'brad',1),
+            ('Canopic Jar [Magsweep]',0,'impl',NULL,'impl_mags',1),
+            ('CLEC Fingers',0,'impl',NULL,'impl_clec',1),
+            ('CMM Cocoon',2,'arms',NULL,'cmm',1),
+            ('CMM Widow',2,'arms',NULL,'cmm',1),
+            ('Copycat',0,'cust',NULL,'copycat',1),
+            ('CRD Spider Cyberdeck',1,'deck','deck','deck_crd1',1),
+            ('CRD Spider Cyberdeck',2,'deck','deck','deck_crd2',1),
+            ('CypherSync Beacon',0,'util',NULL,'beac',1),
+            ('DigiPet',0,'util',NULL,'pet_play',1),
+            ('Johnny&#39;s Special Touch',1,'deck','deck','deck_jst',1),
+            ('MM Console',0,'deck','deck','deck_mm',1),
+            ('Nerd&#39;s Safety Glasses',0,'util',NULL,'--',0),
+            ('Pocket Hacker',0,'cust','ph','phack0',1),
+            ('Pocket Hacker',1,'cust','ph','phack1',1),
+            ('Power Glove [Ultra-Hacking 9000]',1,'impl','deck','deck_uh9k',1),
+            ('Shimmerstick',0,'cons',NULL,'shim0',1),
+            ('Shimmerstick',1,'cons',NULL,'shim1',1),
+            ('Vigil',0,'cons',NULL,'vigl0',1),
+            ('Vigil',1,'cons',NULL,'vigl1',1);
 
 INSERT INTO item_effects
-            (item_id, charges, per_type, use_loc, effect)
-    VALUES  (1, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
-            (2, NULL, 'scene', 'initial', 'Activated Embolden? -1 Tag'),
-            (2, NULL, 'scene', 'initial', 'Activated Inspire? -1 Tag'),
-            (3, 1, 'scene', 'initial', 'If used Slip this scene, gain +1 Tag'),
-            (4, 1, 'sim', 'action', 'Activate same action type already done this Device for No Timer'),
-            (5, 1, 'sim', 'item', '+1 Tag'),
-            (6, 2, 'sim', 'item', '+1 Tag'),
-            (7, 1, 'sim', 'item', '+1 Tag'),
-            (8, NULL, NULL, 'initial', 'Enable Remote Hacking'),
-            (9, NULL, NULL, 'autoinit', 'Gain +1 Hacking'),
-            (10, 1, 'sim', 'item', '+1 Tag'),
-            (11, 2, 'sim', 'item', '+2 Tags'),
-            (12, 1, 'scene', 'action', 'Allow Action Timer to continue without holding button'),
-            (13, 1, 'scene', 'item', '+2 Tags'),
-            (14, NULL, NULL, 'autoact', 'All Access Actions, after the first, are -1 Tag Cost'),
-            (15, 2, 'sim', 'item', '+1 Tag'),
-            (16, 1, 'sim', 'puzzle', 'Can retry puzzle which requires Knowledge'),
-            (17, NULL, NULL, 'autoinit', 'All Actions -5s'),
-            (18, 10, 'item', 'initial', 'All Actions: +1 Tag Cost & +30s Timer'),
-            (19, 10, 'item', 'initial', 'All Actions: +1 Tag Cost & +15s Timer'),
-            (20, NULL, NULL, 'initial', 'Can consume Function Charges to increase Tags, up to +10'),
-            (21, 1, 'sim', 'initial', 'Gain +1 Hacking'),
-            (22, 1, 'sim', 'initial', 'Instantly Brick Device');
+            (item_id, abbr, use_loc, req_type, requirement, charges, per_type, notes)
+    VALUES  (1,'deck_bud','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
+            (2,'brad','before_after','function','Hacking',NULL,NULL,NULL),
+            (3,'impl_mags','init',NULL,NULL,1,'sim','Perform Brick Action / Skip Timer'),
+            (4,'impl_clec','init',NULL,NULL,1,'sim','+1 Hacking'),
+            (5,'cmm_coc','init','function','Slip',1,'scene','+1 Tag'),
+            (6,'cmm_wid','init','function','Slip',1,'scene','+1 Tag'),
+            (7,'copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
+            (8,'deck_crd1','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
+            (9,'deck_crd2','itemTab',NULL,NULL,2,'sim','[DECK] +2 Tags'),
+            (10,'beac','auto_init',NULL,NULL,NULL,NULL,'+1 Hacking'),
+            (11,'pet_play','itemTab',NULL,NULL,1,'sim','[Nothing except adds active effect]'),
+            (11,'pet_use','execute','active_effect','pet_play',1,'scene','Complete Timer'),
+            (12,'deck_jst','auto_action',NULL,NULL,NULL,NULL,'Repeat > Access > All Icons > -1 Tag'),
+            (13,'deck_mm','itemTab',NULL,NULL,2,'sim','[DECK] +1 Tag'),
+            (14,'--','failed_puzzle',NULL,NULL,1,'sim','Re-attempt failed Puzzle'),
+            (15,'phack0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
+            (16,'phack1','itemTab',NULL,NULL,2,'sim','+1 Tag'),
+            (17,'deck_uh9k','auto_init',NULL,NULL,NULL,NULL,'Timer -5s'),
+            (18,'shim0','before_after',NULL,NULL,10,'item',NULL),
+            (19,'shim1','before_after',NULL,NULL,10,'item',NULL),
+            (20,'vigl0','init',NULL,NULL,1,'item',NULL),
+            (21,'vigl1','init',NULL,NULL,1,'item',NULL);
