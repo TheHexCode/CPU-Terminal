@@ -2,7 +2,7 @@
 
  >> NEW FUNCTIONS
   - REPAIR
-      CAN THIS BE USED TO REPAIR BRICKED TERMINALS? GUESSING NO BECAUSE YOU NEED ACCESS TO AN ENGINEERING WORKSTATION TO REPAIR?
+      CAN BE USED TO REPAIR BRICKED TERMINALS. REQUIRES A WORKSTATION, UNLESS...
   - FIELD REPAIR
       FOR EACH RANK OF REPAIR YOU HAVE, YOU MAY ACTIVATE THIS FUNCTION ONCE PER SCENE
       WHEN ACTIVATING, YOU MAY RAPIDLY REPAIR A BROKEN ITEM ACCORDING TO THE FOLLOWING TABLE:
@@ -24,12 +24,6 @@
   - BASTION ROLE ABILITY
       CAN USE 2 AMPS TO REFRESH ANY FUNCTION GRANTED BY WEAPONS / ARMOR
       [WHICH MEANS CMM/WINTON ARMS]
-  - POLYMATH ROLE ABILITY
-      CAN GIVE ONESELF REPAIR OR ALARM SENSE
-
- >> CHANGED ROLE ABILITIES
-  - DISSIMULATOR ROLE ABILITY
-      CAN ALSO GIVE OUT KNOW[H/DSS]
 
 > WHAT IF FUNCTIONS HAVE BEEN REFRESHED?
   - ITEMS CANNOT BE REFRESHED, UNDER NORMAL CIRCUMSTANCES?
@@ -38,44 +32,47 @@
   - payload.getItem(#)
   - payload.getActiveEffect(#)
 
-> INVENTORY
-  >> AUTO-INIT
-    - CipherSync Beacon
-    - Power Glove [UH9K]
+> INVENTORY ✓
+  > MUST:
+    1 - Recognize User Has Item
+    2 - Allow User to Activate Item
+    3 - Remember Item Activation on Terminal
+    4 - Remember Activation For Duration
+    5 - Remember Usage for Scene/Sim/Item
+                                   (1,2,3,4,5)
+  ✓  AUTO-INIT
+    ✓ CipherSync Beacon------------(✓,✓,✓,✓,✓)
+    ✓ Power Glove [UH9K]-----------(✓,✓,✓,✓,✓)
   >> INIT
-    - Budget Remote Access Drive
-    - CMM Widow
-    - CMM Cocoon
-    - Shimmerstick T0
-    - Shimmerstick T1
-    - CLEC Fingers
-    - Canopic Jar [Magsweep]
-    - Vigil T0
-    - Vigil T1
+    - Budget Remote Access Drive---(✓,X,X,X,X)
+    - CMM Widow--------------------(✓,✓,✓,✓,✓)
+    - CMM Cocoon-------------------(✓,✓,✓,✓,✓)
+    - Shimmerstick T0--------------(✓,✓,✓,✓,X)
+    - Shimmerstick T1--------------(✓,✓,✓,✓,X)
+    - CLEC Fingers-----------------(✓,✓,✓,✓,✓)
+    - Canopic Jar [Magsweep]-------(✓,X,X,X,X)
+    - Vigil T0---------------------(✓,X,X,X,X)
+    - Vigil T1---------------------(✓,X,X,X,X)
   >> ITEMTAB
-    - Pocket Hacker T0
-    - Pocket Hacker T1
-    - Budget Cyberdeck
-    - CRD Spider Cyberdeck T0
-    - CRD Spider Cyberdeck T1
-    - MM Console
-    - DigiPet[1]
+    - Pocket Hacker T0-------------(X,X,X,X,X)
+    - Pocket Hacker T1-------------(X,X,X,X,X)
+    - Budget Cyberdeck-------------(X,X,X,X,X)
+    - CRD Spider Cyberdeck T0------(X,X,X,X,X)
+    - CRD Spider Cyberdeck T1------(X,X,X,X,X)
+    - MM Console-------------------(X,X,X,X,X)
+    - DigiPet[1]-------------------(X,X,X,X,X)
     > ALSO
-      - Budget Remote Access Drive
-      - Shimmerstick T0
-      - Shimmerstick T1
+      - Budget Remote Access Drive-(X,X,X,X,X)
+      - Shimmerstick T0------------(X,X,X,X,X)
+      - Shimmerstick T1------------(X,X,X,X,X)
   >> ACTION
-    - Copycat
-    - DigiPet[2]
+    - Copycat----------------------(X,X,X,X,X)
+    - DigiPet[2]-------------------(X,X,X,X,X)
   >> AUTO-ACTION
-    - Johnny's Special Touch
-    --------------------------------
+    - Johnny's Special Touch-------(X,X,X,X,X)
+    ==========================================
     X FKD DC-17
     X Nerd's Safety Glasses
-
-  - Plus/Minus Charges on Profile Page
-  - haveDeck class
-  - plus/Minus functions in Payload for Role Talents
 
 > MULTIPLAYER INTERRUPT
  - Make changed tab/entry blink for other players
@@ -159,3 +156,7 @@
       [ASSUMING REPEATABLE SINCE IT COSTS TAGS TO DO]
     - MP INT > Change/interrupt other players
     - MP INT > Status symbols for listen server Status
+    - DISSIMULATOR ROLE ABILITY
+      CAN ALSO GIVE OUT KNOW[H/DSS]
+    - POLYMATH ROLE ABILITY
+      CAN GIVE ONESELF REPAIR OR ALARM SENSE

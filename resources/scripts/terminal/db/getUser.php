@@ -67,7 +67,7 @@ else
     $roleStatement->execute([':userID' => $userResponse["ml_id"]]);
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
-    $itemQuery = "  SELECT item_id, items.name, items.tier, items.abbr, items.category
+    $itemQuery = "  SELECT item_id, items.name, items.tier, items.abbr, items.category, items.radio
                     FROM {$dbName}.user_items
                     INNER JOIN {$dbName}.items ON user_items.item_id=items.id
                     WHERE user_id = :userID";
@@ -76,7 +76,7 @@ else
     $itemStatement->execute([':userID' => $userResponse["ml_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $effectQuery = "    SELECT id, charges, per_type, use_loc
+    $effectQuery = "    SELECT id, abbr, charges, per_type, use_loc
                         FROM {$dbName}.item_effects
                         WHERE item_id = :itemID";
 
@@ -99,10 +99,11 @@ else
 
     $sceneUseStatement = $pdo->prepare($sceneUseQuery);
 
-    $itemUseQuery = "  SELECT COUNT(*)
-                        FROM {$dbName}.item_uses
+    $itemUseQuery = "   SELECT SUM(charges - count)
+                        FROM user_items
+                        INNER JOIN item_effects ON item_effects.item_id = user_items.item_id
                         WHERE 	user_id = :userID
-                            AND effect_id = :effectID";
+                            AND user_items.item_id = :itemID";
 
     $itemUseStatement = $pdo->prepare($itemUseQuery);
 
@@ -139,15 +140,16 @@ else
                 case ("item"):
                     $itemUseStatement->execute([
                             ':userID' => $userResponse["ml_id"],
-                            ':effectID' => $effect["id"]
+                            ':itemID' => $item["item_id"]
                         ]);
-                    $useResponse = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
+                    $useResponse = $itemUseStatement->fetch(PDO::FETCH_COLUMN);
+                    break;
                 default:
                     $useResponse = 0;
                     break;
             }
 
-            $effect["uses"] = $useResponse;
+            $effect["uses"] = intval($useResponse);
 
             $termUseQuery = "   SELECT COUNT(*)
                                 FROM {$dbName}.item_uses

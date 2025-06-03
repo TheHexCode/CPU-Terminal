@@ -209,7 +209,14 @@ function processCharInfo(charData)
 			}
 		}
 
-		funcStrings[func.hacking_cat] += "<li>" + func.name + postName + "</li>";
+		let hacking_cat = func.hacking_cat;
+
+		if(func.hacking_cat === "repair")
+		{
+			hacking_cat = "passive";
+		}
+
+		funcStrings[hacking_cat] += "<li>" + func.name + postName + "</li>";
 	});
 
 	Object.keys(funcStrings).forEach(function(category)
@@ -220,9 +227,11 @@ function processCharInfo(charData)
 		$("#" + category + "List").removeClass("hidden");
 	});
 
-	charData["items"].forEach(function(itemID)
+	charData["items"].forEach(function(item)
 	{
-		let inputID = "#item_" + itemID;
+		let inputID = "#item_" + item["item_id"];
+
+		setItemCharges(item["item_id"], item["count"]);
 
 		$(inputID).prop("checked",true);
 		$("input[name='"+$(inputID).prop("name")+"']").prop("data-active",false);
@@ -237,62 +246,40 @@ function processCharInfo(charData)
 	$(".mlLoginBox").addClass("hidden");
 }
 
-function openTab(event, tabName)
+function setItemCharges(itemID, charges)
 {
-	$(".profContent").addClass("hidden");
-	$(".profTab").removeClass("active");
-	
-	if($(event.currentTarget).parent().hasClass("backRow"))
+	$(".itemCount[data-id='" + itemID + "']").attr("data-charges", charges);
+	$(".itemCount[data-id='" + itemID + "'] .countSum").html(charges);
+
+	let chargeImages = $(".itemCount[data-id='" + itemID + "']").find("img");
+
+	for(let i = 0; i < charges; i++)
 	{
-		$("#profTabContainer").css("flex-direction","column");
+		$(chargeImages[i]).attr("src","resources/images/actions/itemopen.png");
 	}
-	else
+
+	for(let j = charges; j < chargeImages.length; j++)
 	{
-		$("#profTabContainer").css("flex-direction","column-reverse");
+		$(chargeImages[j]).attr("src","resources/images/actions/itemfilled.png");
 	}
-	
-	$("#"+tabName).removeClass("hidden");
-	$(event.currentTarget).addClass("active");
+
+
+	$(".itemCount[data-id='" + itemID + "']").removeClass("hidden");
 }
 
-function roleChange()
+function changeItemCharges(itemID, change)
 {
-	let priRole = $("#primaryRole")[0].selectedOptions[0].value;
-	let secRole = $("#secondaryRole")[0].selectedOptions[0].value;
-	
-	$("#primaryRole > option").prop("hidden",false);
-	$("#secondaryRole > option").prop("hidden",false);
-	
-	switch (priRole)
+	let target = $(".itemCount[data-id='" + itemID + "']")[0];
+
+	if(target !== undefined)
 	{
-		case "other":
-		case "none":
-			$("#priButton").html("PRIMARY");
-			break;
-		default:
-			$("#secondaryRole > option[value='" + priRole + "']").prop("hidden",true);
-			$("#priButton").html(priRole.toUpperCase());
+		let currentCharges = Number($(target).attr("data-charges"));
+		let maxCharges = $(target).find("img").length;
+		let newCharges = Math.max(0, Math.min(maxCharges, currentCharges + change));
+
+		setItemCharges(itemID, newCharges);
 	}
-	
-	switch (secRole)
-	{
-		case "other":
-		case "none":
-			$("#secButton").html("SECONDARY");
-			break;
-		default:
-			$("#primaryRole > option[value='" + secRole + "']").prop("hidden",true);
-			$("#secButton").html(secRole.toUpperCase());
-	}
-	
-	$("#priTab .checkGroup").addClass("hidden");
-	$("#priTab .checkGroup[data-role='" + priRole + "']").removeClass("hidden");
-	
-	$("#secTab .checkGroup").addClass("hidden");
-	$("#secTab .checkGroup[data-role='" + secRole+"']").removeClass("hidden");
-	
-	$("#priTab .checkGroup:not([data-role='"+priRole+"']) input[type='checkbox']").prop("checked",false);
-	$("#secTab .checkGroup:not([data-role='"+secRole+"']) input[type='checkbox']").prop("checked",false);
+
 }
 
 function statSubmit(event)

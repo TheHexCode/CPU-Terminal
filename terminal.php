@@ -118,7 +118,7 @@
 				<div class="accessTagContainer">
 					<div class="accessTagRow">
 						<div class="accessBox">
-							<div class="accessHeader">
+							<div id="hackHeader" class="accessHeader">
 								TAGS FROM HACKING FUNC:
 							</div>
 							<div class="tagInterface">
@@ -156,7 +156,7 @@
 									<label for="disOpt1">+1 HACKING</label>
 								</div>
 								<div class="initOption">
-									<input type="radio" id="disOpt2" name="disRadio" value="k_hds" onclick="initRadio(this)">
+									<input type="radio" id="disOpt2" name="disRadio" value="k_HDS" onclick="initRadio(this)">
 									<label for="disOpt2">KNOWLEDGE [Hacking &amp; DigiSec]</label>
 								</div>
 							</div>
@@ -186,22 +186,24 @@
 						<div id="impl_clecInit" class="initItem hidden">
 							<div class="initHeader">CLEC FINGERS:</div>
 							<div class="initOption">
-								<input type="checkbox" id="clecOpt" onclick="initCheck(this)">
-								<label for="clecOpt">+1 HACKING (1/Sim)?</label>
+								<input type="checkbox" id="impl_clecOpt" onclick="initCheck(this)">
+								<label for="impl_clecOpt">+1 HACKING (1/Sim)?</label>
 							</div>
 						</div>
 						<li id="shim0Init" class="initItem hidden">
 							<div class="initHeader">SHIMMERSTICK [T0]:</div>
+							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
 							<div class="initOption">
 								<input type="checkbox" id="shim0Opt" onclick="initCheck(this)">
-								<label for="shim0Opt">Apply to this Device?<span class="haveDeck"><br/>(Can apply later)</span></label>
+								<label for="shim0Opt">Apply to this Device?<span class="hasDeck"><br/>(Can apply later)</span></label>
 							</div>
 						</li>
 						<li id="shim1Init" class="initItem hidden">
 							<div class="initHeader">SHIMMERSTICK [T1]:</div>
+							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
 							<div class="initOption">
 								<input type="checkbox" id="shim1Opt" onclick="initCheck(this)">
-								<label for="shim1Opt">Apply to this Device?<span class="haveDeck"><br/>(Can apply later)</span></label>
+								<label for="shim1Opt">Apply to this Device?<span class="hasDeck"><br/>(Can apply later)</span></label>
 							</div>
 						</li>
 						<li id="vigl0Init" class="initItem hidden">
@@ -219,13 +221,13 @@
 							</div>
 						</li>
 						<div id="bradInit" class="initItem hidden">
-							<div class="initHeader">Budget Access Remote Drive:</div>
+							<div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
 							<div class="initOption">
-								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="haveDeck"><br/>(Can set up later)</span></button>
+								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck"><br/>(Can set up later)</span></button>
 							</div>
 						</div>
 						<li id="impl_magsInit" class="initItem hidden">
-							<div class="initHeader">MAGSWEEP:</div>
+							<div class="initHeader">CANOPIC JAR [MAGSWEEP]:</div>
 							<div class="initOption">
 								<button onclick="initAction(this)">Brick Device?</button>
 							</div>

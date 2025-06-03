@@ -1080,13 +1080,13 @@ INSERT INTO ml_functions
             (603, 'Unstoppable -S5-', 1, 148, NULL, NULL, 16, 5),
             (604, 'skill_category_access_required', -1, 1, NULL, NULL, NULL, NULL);
 
-# 2.0RC TEST FUNCTIONS #
+# 2.0 TEST FUNCTIONS #
 INSERT INTO ml_functions
             (ml_id, ml_name, `rank`, function_id, cav_type, cav_id, role_id, tier)
     VALUES  (1000, 'Ping -T1-', 1, 80, NULL, NULL, 1, 1),
             (1001, 'Siphon Charge -T2-', 1, 124, NULL, NULL, 1, 2),
-            (1002, 'Button Masher I', 1, 14, NULL, NULL, 1, 3),
-            (1003, 'Button Masher II', 2, 14, NULL, NULL, 1, 4),
+            (1002, 'Button Masher I', 1, 14, NULL, NULL, 15, 3),
+            (1003, 'Button Masher II', 2, 14, NULL, NULL, 5, 4),
             (1004, 'Field Repair I', 1, 41, NULL, NULL, 1, 5);
 # END TEST FUNCTIONS #
 

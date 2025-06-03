@@ -571,6 +571,17 @@ ul
 	grid-column: start / end;
 }
 
+.initUses
+{
+	grid-column: tab / end;
+}
+
+.useSum
+{
+	--fg-color: var(--blue);
+	color: var(--fg-color);
+}
+
 .initGroup,
 .initOption
 {

@@ -320,6 +320,11 @@ function injectUserPayload(userPayload)
 
 		///////////// ITEMS
 
+		if(payload.hasDeck())
+		{
+			$(".hasDeck").removeClass("hidden");
+		}
+
 		payload.getInventory().forEach(function(item)
 		{
 			let effectString = "<hr/>";
@@ -333,41 +338,27 @@ function injectUserPayload(userPayload)
 				switch(effect.use_loc)
 				{
 					case("init"):
-					{
-						let disabled = false;
-
-						let target = $(".initItem[id='" + item.abbr + "Init']")[0];
-
-						if((effect.charges === null) && (effect.uses > 0))
-						{
-							disabled = true;
-
-							$(target).prop("checked", true);
-							initCheck(target);
-						}
-						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
-						{
-							disabled = true;
-						}
-
-						if(effect.termUses > 0)
-						{
-							payload.setActiveEffect(effect.id, true);
-						}
-
-						$(target).prop("disabled", disabled);
-						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
-
-						$(target).removeClass("hidden");
-						
-						break;
-					}
 					case("before_after"):
 					{
+						////////////////////
+						//	CMM Widow
+						//	CMM Cocoon
+						//	CLEC Fingers
+						//  Vigil T0
+						//  Vigil T1
+						//  Canopic Jar [Magsweep]
+						////////////////////
+						////////////////////
+						//	Shimmerstick T0
+						//  Shimmerstick T1
+						//  Budget Access Remote Drive
+						////////////////////
+
 						let disabled = false;
 
 						let target = $(".initItem[id='" + item.abbr + "Init']")[0];
 
+						/*
 						if((effect.charges === null) && (effect.uses > 0))
 						{
 							disabled = true;
@@ -375,92 +366,193 @@ function injectUserPayload(userPayload)
 							$(target).prop("checked", true);
 							initCheck(target);
 						}
-						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						*/
+						
+						if((effect.per_type === "item") && (effect.charges > 1))
 						{
-							disabled = true;
+							// This is for the "USES LEFT:" section for multi-use consumables
+							// I.E. Shimmerstick
+							$(target).find(".useSum").html(effect.charges - effect.uses);
 						}
 
 						if(effect.termUses > 0)
 						{
-							payload.setActiveEffect(effect.id, true);
+							//Don't need to check the box since if termUses is > 0
+							//  they've already accessed the terminal and won't see the checkbox
+							//But they have used it, so set the Active Effect
+							payload.setActiveEffect(effect.abbr, true);
+						}
+						
+						if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						{
+							//Ran out of charges, cannot use on this terminal
+							disabled = true;
 						}
 
-						$(target).prop("disabled", disabled);
-						$("#" + target.id + " + label").toggleClass("dimmed", disabled);
+						$("#" + target.id + " input").prop("disabled", disabled);
+						$("#" + target.id + " button").prop("disabled", disabled);
+						$(target).toggleClass("dimmed", disabled);
 
 						$(target).removeClass("hidden");
-
-						//No Break;
+						
+						break;
 					}
+				}
+
+				// TWO SWITCH/CASE STATEMENTS SO THAT BEFORE_AFTER DOES BOTH init AND itemTab things
+
+				switch(effect.use_loc)
+				{
 					case("itemTab"):
+					case("before_after"):
 					{
+						////////////////////
+						//	DECKS:
+						//  - Budget Cyberdeck
+						//  - CRD Spider Cyberdeck T1
+						//  - CRD Spider Cyberdeck T2
+						//  - MM Console
+						//  - Pocket Hacker T0
+						//  - Pocket Hacker T1
+						//  DigiPet [Play]
+						////////////////////
+						////////////////////
+						//	Shimmerstick T0
+						//  Shimmerstick T1
+						//  Budget Access Remote Drive
+						////////////////////
+
 						let remCharges = effect.charges - effect.uses;
 
-						effectString += "<span class='itemActionRow'>" +
-											"<span class='itemMarks'>";
-						
-						for(let i = 0; i < effect.uses; i++)
+						// ABILITY TO USE EFFECT NOT DETERMINED BY CHARGES
+						// EX: Budget Access Remote Drive
+						if(effect.charges === null)
+						{							
+							// Add Use Button to Effect String
+						}
+						else // ABILITY TO USE IS LIMITED BY CHARGES
 						{
-							effectString += "<img src='resources/images/actions/itemfilled.png' />";
+							// DECKS, WHICH HAVE DEDICATED CHARGES
+							if(item.radio === "deck")
+							{
+								effectString += "<span class='itemActionRow'>" +
+													"<span class='itemMarks'>";
+								
+								for(let i = 0; i < effect.uses; i++)
+								{
+									effectString += "<img src='resources/images/actions/itemfilled.png' />";
+								}
+
+								for(let j = 0; j < remCharges; j++)
+								{
+									effectString += "<img src='resources/images/actions/itemopen.png' />";
+								}
+								
+								effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
+											"</span>" +
+											"<button class='itemButton' data-effect='" + effect.id + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">" + effect.effect + "</button>" +
+										"</span>";
+							}
+							else
+							{
+								////////////////////
+								//  DigiPet [Play]
+								////////////////////
+								////////////////////
+								//	Shimmerstick T0
+								//  Shimmerstick T1
+								//  Budget Access Remote Drive
+								////////////////////
+							}
 						}
 
-						for(let j = 0; j < remCharges; j++)
-						{
-							effectString += "<img src='resources/images/actions/itemopen.png' />";
-						}
-						
-						effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
-									"</span>" +
-									"<button class='itemButton' data-effect='" + effect.id + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">" + effect.effect + "</button>" +
-								"</span>";
 						break;
 					}
-					case("action"):
+					case("auto_init"):
 					{
-						switch(effect.id)
+						////////////////////
+						//	CypherSync Beacon
+						//  Power Glove [Ultra-Hacking 9000]
+						////////////////////
+						switch(effect.abbr)
 						{
-							case(5): //COPYCAT
-								if(effect.uses > 0)
-								{
-									payload.setActiveEffect(effect.id, true);
-								}
-								break;
-							case(13): //DIGIPET
-								if(effect.uses > 0)
-								{
-									payload.setActiveEffect(effect.id, true);
-								}
-								break;
-						}
-					}
-					case("autoinit"):
-					{
-						switch(effect.id)
-						{
-							case(10): //CIPHERSYNC BEACON
+							case("beac"): // CIPHERSYNC BEACON
+							{
 								$("#hackDetails").append("<span>[BEACON:&nbsp;&nbsp;+02]</span>");
-
 								updateTags(2,Session.BEACON);
+
 								break;
-							case(18): //POWER GLOVE [UH9K]
-								payload.setActiveEffect(effect.id, true);
+							}
+							case("deck_uh9k"): // POWER GLOVE [UH9K]
+							{
+								payload.setActiveEffect(effect.abbr, true);
+
 								break;
+							}
 						}
+
 						break;
 					}
-					case("autoact"):
+					case("confirm"):
 					{
-						switch(effect.id)
+						////////////////////
+						//	CopyCat
+						////////////////////
+						switch(effect.abbr)
 						{
-							case(15): //JOHNNY'S SPECIAL TOUCH
+							case("copycat"): //COPYCAT
+							{
+								if(effect.uses > effect.charges)
+								{
+									payload.setActiveEffect(effect.abbr, true);
+								}
+
+								break;
+							}
+						}
+
+						break;
+					}
+					case("execute"):
+					{
+						////////////////////
+						//	DigiPet [Use]
+						////////////////////
+						switch(effect.abbr)
+						{
+							case("pet_use"): //DIGIPET_USE
+							{
+								if(effect.uses > 0)
+								{
+									payload.setActiveEffect(effect.abbr, true);
+								}
+
+								break;
+							}
+						}
+
+						break;
+					}
+					case("auto_action"):
+					{
+						////////////////////
+						//	deck_jst
+						////////////////////
+						switch(effect.abbr)
+						{
+							case("deck_jst"): //JOHNNY'S SPECIAL TOUCH
+							{
 								$(".touchedBox").removeClass("hidden");
 
 								if(effect.termUses > 0)
 								{
-									payload.setActiveEffect(effect.id, true);
+									payload.setActiveEffect(effect.abbr, true);
 								}
+
 								break;
+							}
 						}
+
 						break;
 					}
 				}
@@ -528,7 +620,7 @@ function injectUserPayload(userPayload)
 							updateEntryCosts("REPEAT",resultJSON["entryPath"],resultJSON["action"]);
 						}
 
-						if(payload.getActiveEffect(15)) // JOHNNY'S SPECIAL TOUCH
+						if(payload.getActiveEffect("deck_jst")) // JOHNNY'S SPECIAL TOUCH
 						{
 							session.setFunctionState("TOUCHED",resultJSON["entryID"],resultJSON["action"].toLowerCase(),1);
 							updateEntryCosts("TOUCHED",resultJSON["entryPath"],resultJSON["action"]);
@@ -539,7 +631,7 @@ function injectUserPayload(userPayload)
 				disableExpensiveButtons();
 			});
 
-			if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
+			if((payload.getItem(4)) && (!payload.getActiveEffect("copycat")))
 			{
 				userPayload["copyables"].forEach(function(copyableAction)
 				{
@@ -605,27 +697,34 @@ function initRadio(target)
 			}
 			case("k_HDS"):
 			{
-				if(payload.getFunction("KNOWLEDGE").includes("DISSIM: HACKING &amp; DIGISEC"))
+				if(payload.getExtraFunction("KNOWLEDGE"))
 				{
-					$("#knowItem #disKnow").remove();
-					//payload.minusRank("k_HDS");
+					if(payload.getExtraFunction("KNOWLEDGE")["caviats"].includes("Hacking &amp; DigiSec"))
+					{
+						$("#knowItem #disKnow").remove();
+						payload.minusFunction("k_HDS");
+					}
 				}
 
 				break;
 			}
 			case("alarmSense"):
 			{
-				if(payload.getFunction("POLY: ALARM SENSE"))
+				if(payload.getExtraFunction("ALARM SENSE"))
 				{
 					$("#polyAS").remove();
-					//payload.minusRank("alarmSense");
+					payload.minusFunction("alarmSense");
 				}
 				
 				break;
 			}
 			case("plusRepair"):
 			{
-				//payload.minusRank("repair");
+				if(payload.getExtraFunction("REPAIR"))
+				{
+					payload.minusFunction("repair");
+				}
+
 				break;
 			}
 		}
@@ -645,10 +744,10 @@ function initRadio(target)
 			}
 			case("k_HDS"):
 			{
-				if(!(payload.getFunction("KNOWLEDGE").includes("HACKING &amp; DIGISEC")))
+				if(!(payload.getFunction("KNOWLEDGE").includes("Hacking &amp; DigiSec")))
 				{
 					$("#knowItem > ul").append("<li id='disKnow'>DISSIM: HACKING &amp; DIGISEC</li>");
-					//payload.plusRank("k_HDS");
+					payload.plusFunction("k_HDS");
 				}
 
 				break;
@@ -658,14 +757,14 @@ function initRadio(target)
 				if(!(payload.getFunction("ALARM SENSE")))
 				{
 					$("#alarmItem").after("<li id='polyAS'>POLY: ALARM SENSE</li>");
-					//payload.plusRank("alarmSense");
+					payload.plusFunction("alarmSense");
 				}
 
 				break;
 			}
 			case("plusRepair"):
 			{
-				//payload.plusRank("repair");
+				payload.plusFunction("repair");
 				
 				break;
 			}
@@ -675,65 +774,33 @@ function initRadio(target)
 
 function initCheck(target)
 {
-	let effectID = $(target).attr("data-effect");
+	let effects = payload.getItemEffects(target.id.split("Opt")[0]);
 
-	effectID = JSON.parse(effectID);
-
-	if(typeof effectID === "number")
+	effects.forEach(function(effectArray)
 	{
-		effectID = [effectID];
-	}
+		let effect = effectArray[0];
 
-	effectID.forEach(function(eID)
-	{
-		switch (eID)
+		switch(effect["abbr"])
 		{
-			case(1): //CMM Widow
-				if(payload.getItem(1))
-				{
-					session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
-					updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
-					payload.setActiveEffect(eID, $(target).prop("checked"));
-				}
-				break;
-			case(2): //Winton Wit (Embolden)
-				session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
-				updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
-				payload.setActiveEffect(eID, $(target).prop("checked"));
-				// Carries Over Through Scene
-				break;
-			case(3): //Winton Wit (Inspire)
-				session.setExtraTagMin($(target).prop("checked") ? -1 : 1);
-				updateTags($(target).prop("checked") ? -1 : 1, Session.EXTRA);
-				payload.setActiveEffect(eID, $(target).prop("checked"));
-				// Carries Over Through Scene
-				break;
-			case(4): //CMM Cocoon
-				if(payload.getItem(3))
-				{
-					session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
-					updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
-					payload.setActiveEffect(eID, $(target).prop("checked"));
-				}
-				break;
-			case(9): //BRAD
+			////////////////////
+			//	CLEC Fingers - impl_clec
+			//  CMM Widow - cmm_wid
+			//	CMM Cocoon - cmm_coc
+			//  Vigil T0 - vigl0
+			//  Vigil T1 - vigl1
+			//  X Canopic Jar [Magsweep]
+			////////////////////
+			////////////////////
+			//	Shimmerstick T0 - shim0
+			//  Shimmerstick T1 - shim1
+			//  X Budget Access Remote Drive
+			////////////////////
+
+			case("impl_clec"): // CLEC Fingers (+Hack)
+			{
 				if($(target).prop("checked"))
 				{
-					
-				}
-				else
-				{
-					
-				}
-				break;
-			case(19): //Shimmerstick T0
-			case(20): //Shimmerstick T1
-				payload.setActiveEffect(eID, $(target).prop("checked"));
-				break;
-			case(22): //CLEC Fingers (+Hack)
-				if($(target).prop("checked"))
-				{
-					$("#hackDetails").append("<span id='clecDetails'>[CLEC FRS:+02]</span>");
+					$("#hackDetails").append("<span id='clecDetails'>[FINGERS:&nbsp;+02]</span>");
 					updateTags(2,Session.CLEC);
 				}
 				else
@@ -741,11 +808,63 @@ function initCheck(target)
 					$("#hackDetails #clecDetails").remove();
 					updateTags(-2,Session.CLEC);
 				}
+			}
+			case("cmm_coc"): // CMM Cocoon (+1 Tag, Stacks)
+			case("cmm_wid"): // CMM Widow (+1 Tag, Stacks)
+			{
+				session.setExtraTagMin($(target).prop("checked") ? 1 : -1);
+				updateTags($(target).prop("checked") ? 1 : -1, Session.EXTRA);
+				payload.setActiveEffect(effect["abbr"], $(target).prop("checked"));
 
-				payload.setActiveEffect(eID, $(target).prop("checked"));
+				if($(target).prop("checked"))
+				{
+					if($("#cmmDetails").length > 0)
+					{
+						let cmmTotal = Number($("#cmmSum").html());
+
+						cmmTotal++;
+
+						$("#cmmSum").html(tens(cmmTotal));
+					}
+					else
+					{
+						$("#extraDetails").append("<span id='cmmDetails'>[CMM ARMS:+<span id='cmmSum'>01</span>]</span>");
+					}
+				}
+				else
+				{
+					$("#extraDetails #cmmDetails").remove();
+				}
+
 				break;
+			}
+			case("shim0"): // Shimmerstick T0
+			case("shim1"): // Shimmerstick T1
+			{
+				let otherTarget = $("#" + (effect["abbr"] === "shim0" ? "shim1" : "shim0") + "Init")[0];
+				payload.setActiveEffect(effect["abbr"], $(target).prop("checked"));
+
+				$("#" + otherTarget.id + " input").prop("disabled", $(target).prop("checked"));
+				$(otherTarget).toggleClass("dimmed", $(target).prop("checked"));
+
+				break;
+			}
+			case("vigl0"): // Vigil T0
+			case("vigl1"): // Vigil T1
+			{
+
+				break;
+			}
 		}
 	}, this);
+}
+
+function initAction(target)
+{
+	////////////////////
+	//  Budget Access Remote Drive
+	//  Canopic Jar [Magsweep]
+	////////////////////
 }
 
 function updateTags(change, tagType)
@@ -765,7 +884,7 @@ function updateTags(change, tagType)
 
 			if((newTags >= 10) && ($("#hackMax").length === 0))
 			{
-				$("#hackDetails").after("<span id='hackMax'>(MAX: 10)</span>");
+				$("#hackHeader").append("<span id='hackMax'>(MAX: 10)</span>");
 			}
 
 			if((session.getCurrentTags() + change) > 99+reqTags)
@@ -848,6 +967,22 @@ function accessTerminal(event)
 		session.setCurrentTags(session.getCurrentTags() - reqTags);
 		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
 
+		if(payload.getFunction("ALARM SENSE"))
+		{
+			//MOVED HERE SO THAT ADDING ALARM SENSE FROM POLYMATH STILL APPLIES
+
+			$(".accessButton, .modifyButton").each(function(index,entryButton)
+			{
+				if($(entryButton).html() !== "N/A")
+				{
+					let action = entryButton.classList[0].split("Button")[0];
+					let newCost = session.getActionCost($(entryButton).attr("data-id"), action);
+					$(entryButton).attr("data-cost",newCost);
+					$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
+				};
+			});
+		}
+
 		// Disable Expensive Buttons
 		disableExpensiveButtons();
 
@@ -874,7 +1009,7 @@ function accessTerminal(event)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: payload.getAllActiveEffects(),
+					effectIDs: payload.getActiveEffectIDs(),
 					termID: session.getTerminalID()
 				}
 			});
@@ -1215,7 +1350,7 @@ function takeAction(target)
 		// Item Activation
 		case ("item"):
 		{
-			let effect = payload.getEffect(Number(target.dataset["effect"]));
+			let effect = payload.getEffect(Number(target.dataset["effect"])); //!! FIX GET EFFECT
 			let effectCost = effect["effect"].substring(effect["effect"].indexOf("+"), effect["effect"].indexOf(" "));
 
 			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
@@ -1397,7 +1532,7 @@ function setupConfirmModal(actionMap,buttons)
 		}
 		case("Activate"):
 		{
-			let effect = payload.getEffect(actionMap["entryID"]);
+			let effect = payload.getEffect(actionMap["entryID"]);  //!! FIX GET EFFECT
 
 			let totCharges = effect["charges"];
 			let totCharge_S = (totCharges === 1 ? "" : "s");

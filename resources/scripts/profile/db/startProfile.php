@@ -71,12 +71,12 @@ foreach($itemArray as $itemCat)
 
         if($item["max_charges"] > 1)
         {
-            $itemString .=  "<div class='itemCount hidden' data-id='" . $item["id"] . "' data-charges='" . $item["max_charges"] . "'>" .
+            $itemString .=  "<div class='itemCount' data-id='" . $item["id"] . "' data-charges='" . $item["max_charges"] . "'>" .
                                 "<div class='itemCountHeader'>" .
                                     "<span>USES LEFT: <span class='countSum'>" . $item["max_charges"] . "</span>/" . $item["max_charges"] . "</span>" .
                                 "</div>" .
                                 "<div class='itemCountRow'>" .
-                                    "<button><b>&lt;&nbsp;&minus;</b></button>" . 
+                                    "<button onclick='changeItemCharges(" . $item["id"] . ", -1)'><b>&lt;&nbsp;&minus;</b></button>" . 
                                     "<span class='itemImgBox'>";
             
             for($i = 1; $i <= $item["max_charges"]; $i++)
@@ -85,7 +85,7 @@ foreach($itemArray as $itemCat)
             }
                                     
             $itemString .=          "</span>" .
-                                    "<button>&plus;&nbsp;<b>&gt;</b></button>" .
+                                    "<button onclick='changeItemCharges(" . $item["id"] . ", 1)'>&plus;&nbsp;<b>&gt;</b></button>" .
                                 "</div>" .
                             "</div>";
         }

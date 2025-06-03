@@ -218,7 +218,7 @@ class Session
             }
         }
 
-        actionCost += ((payload.getActiveEffect(19) || payload.getActiveEffect(20)) ? 1 : 0);
+        actionCost += ((payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1")) ? 1 : 0);
 
         return actionCost;
     }

@@ -104,13 +104,13 @@ $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute(array_column($mlFuncArray,"name"));
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
-$itemQuery = "  SELECT item_id
+$itemQuery = "  SELECT item_id, count
                 FROM {$dbName}.user_items
                 WHERE user_id = :userID";
 
 $itemStatement = $pdo->prepare($itemQuery);
 $itemStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
-$itemResponse = $itemStatement->fetchAll(PDO::FETCH_COLUMN);
+$itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
 echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "name" => $mlCharResponse->name,
