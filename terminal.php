@@ -33,6 +33,8 @@
 			</div>
 			<div id="statusBar">
 				<!-- CONNECTED USERS? -->
+				<!-- DIGIPET STATUS -->
+				<!--<img id="petStatus" class="hidden" src="resources/images/status/pet_egg.png"/>-->
 				<!-- CONNECTION STATUS -->
 				<img id="serverStatus" src="resources/images/status/server_on.png"/>
 			</div>
@@ -195,7 +197,7 @@
 							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
 							<div class="initOption">
 								<input type="checkbox" id="shim0Opt" onclick="initCheck(this)">
-								<label for="shim0Opt">Apply to this Device?<span class="hasDeck"><br/>(Can apply later)</span></label>
+								<label for="shim0Opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
 							</div>
 						</li>
 						<li id="shim1Init" class="initItem hidden">
@@ -203,7 +205,7 @@
 							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
 							<div class="initOption">
 								<input type="checkbox" id="shim1Opt" onclick="initCheck(this)">
-								<label for="shim1Opt">Apply to this Device?<span class="hasDeck"><br/>(Can apply later)</span></label>
+								<label for="shim1Opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
 							</div>
 						</li>
 						<li id="vigl0Init" class="initItem hidden">
@@ -223,7 +225,7 @@
 						<div id="bradInit" class="initItem hidden">
 							<div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
 							<div class="initOption">
-								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck"><br/>(Can set up later)</span></button>
+								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck hidden"><br/>(Can set up later)</span></button>
 							</div>
 						</div>
 						<li id="impl_magsInit" class="initItem hidden">

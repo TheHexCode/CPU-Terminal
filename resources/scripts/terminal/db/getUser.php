@@ -76,7 +76,7 @@ else
     $itemStatement->execute([':userID' => $userResponse["ml_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $effectQuery = "    SELECT id, abbr, charges, per_type, use_loc
+    $effectQuery = "    SELECT id, abbr, charges, per_type, use_loc, req_type, requirement
                         FROM {$dbName}.item_effects
                         WHERE item_id = :itemID";
 
@@ -256,9 +256,11 @@ else
                                         AND UA_Term.target_id=:termID
                                         AND UA_Term.user_id=:userID
                                    UNION
-                                    SELECT SUM(cost) AS sumCost FROM {$dbName}.sim_user_actions AS UA_Items
+                                    SELECT SUM(cost) AS sumCost
+                                    FROM {$dbName}.sim_user_actions AS UA_Items
                                     INNER JOIN (
-                                        SELECT user_id, user_items.item_id, item_effects.id AS effect_id FROM {$dbName}.user_items
+                                        SELECT user_id, user_items.item_id, item_effects.id AS effect_id
+                                            FROM {$dbName}.user_items
                                             INNER JOIN {$dbName}.item_effects ON user_items.item_id=item_effects.item_id
                                             WHERE user_id=:userID
                                     ) AS user_effects ON target_id=user_effects.effect_id

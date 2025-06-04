@@ -79,7 +79,9 @@ class Timer
                             global: callargs["global"]
                         }
                     });
-
+                    
+                    //Decks don't use a timer
+                    /*
                     if(callargs["actionType"] === "item")
                     {
                         $.ajax({
@@ -94,6 +96,7 @@ class Timer
                             }
                         })
                     }
+                    */
 
                     if(results !== null)
                     {
@@ -245,7 +248,7 @@ class Timer
                     }
                 });
 
-                if(callargs["actionType"] === "item")
+                if(callargs["actionType"] === "deck")
                 {
                     $.ajax({
                         type: "POST",
@@ -254,7 +257,7 @@ class Timer
                         data:
                         {
                             userID: callargs["userID"],
-                            effectIDs: callargs["entryID"],
+                            effectIDs: payload.getEffect(callargs["entryID"])["id"],
                             termID: callargs["newData"]
                         }
                     })
@@ -278,5 +281,10 @@ class Timer
     {
         clearInterval(this.#timerInterval);
         this.#timerInterval = null
+    }
+
+    isAlive()
+    {
+        return !(this.#timerInterval === null);
     }
 }

@@ -260,19 +260,35 @@ class Payload
         return targetItems.map(item => (item.effects));
     }
 
-    useItemEffect(effectID)
+    getEffect(effectAbbr)
     {
         let targetItem = this.#items.find(function(item)
         {
             return item.effects.find(function(effect)
             {
-                return effect.id === effectID;
+                return effect.abbr === effectAbbr;
+            });
+        });
+
+        return targetItem.effects.find(function(effect)
+        {
+            return effect.abbr === effectAbbr;
+        });
+    }
+
+    useItemEffect(effectAbbr)
+    {
+        let targetItem = this.#items.find(function(item)
+        {
+            return item.effects.find(function(effect)
+            {
+                return effect.abbr === effectAbbr;
             });
         });
 
         let targetEffect = targetItem.effects.find(function(effect)
         {
-            return effect.id === effectID;
+            return effect.abbr === effectAbbr;
         });
 
         targetEffect["termUses"] += 1;

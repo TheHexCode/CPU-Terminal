@@ -1102,7 +1102,7 @@ INSERT INTO items
             ('CRD Spider Cyberdeck',1,'deck','deck','deck_crd1',1),
             ('CRD Spider Cyberdeck',2,'deck','deck','deck_crd2',1),
             ('CypherSync Beacon',0,'util',NULL,'beac',1),
-            ('DigiPet',0,'util',NULL,'pet_play',1),
+            ('DigiPet',0,'util',NULL,'digipet',1),
             ('Johnny&#39;s Special Touch',1,'deck','deck','deck_jst',1),
             ('MM Console',0,'deck','deck','deck_mm',1),
             ('Nerd&#39;s Safety Glasses',0,'util',NULL,'--',0),

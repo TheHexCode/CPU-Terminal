@@ -168,8 +168,15 @@ function injectUserPayload(userPayload)
 
 		let maxTime = 30; // Functions and Items should not affect this
 
-		$("#terminalButton").html("Cracking Terminal...");
-		$("#terminalButton").removeClass("noPayload");
+		if(payload.hasDeck())
+		{
+			$("#terminalButton").html("Cracking Terminal...");
+			$("#terminalButton").removeClass("noPayload");
+		}
+		else
+		{
+			$("#terminalButton").html("No Cyberdeck!");
+		}
 		taTimer.startTimer(maxTime,allowAccess);
 				
 		//// TAG MANAGEMENT
@@ -197,6 +204,13 @@ function injectUserPayload(userPayload)
 		{
 			$("#disInit").removeClass("hidden");
 		}
+
+		if(payload.hasRole("POLYMATH"))
+		{
+			$("#polyInit").removeClass("hidden");
+		}
+
+		//!! Bastion!
 
 		// FUNCTIONS / INVENTORY
 
@@ -324,6 +338,10 @@ function injectUserPayload(userPayload)
 		{
 			$(".hasDeck").removeClass("hidden");
 		}
+		else
+		{
+			$(".noDeck").removeClass("hidden");
+		}
 
 		payload.getInventory().forEach(function(item)
 		{
@@ -333,7 +351,7 @@ function injectUserPayload(userPayload)
 			{
 				$("#noItems").addClass("hidden");
 
-				$(".itemCat[data-cat='" + item.type + "']").removeClass("hidden");
+				$(".itemCat[data-cat='" + item.category + "']").removeClass("hidden");
 
 				switch(effect.use_loc)
 				{
@@ -351,29 +369,12 @@ function injectUserPayload(userPayload)
 						////////////////////
 						//	Shimmerstick T0
 						//  Shimmerstick T1
-						//  Budget Access Remote Drive
+						//  Budget Access Remote Drive (REQ: HACKING I)
 						////////////////////
 
 						let disabled = false;
 
 						let target = $(".initItem[id='" + item.abbr + "Init']")[0];
-
-						/*
-						if((effect.charges === null) && (effect.uses > 0))
-						{
-							disabled = true;
-
-							$(target).prop("checked", true);
-							initCheck(target);
-						}
-						*/
-						
-						if((effect.per_type === "item") && (effect.charges > 1))
-						{
-							// This is for the "USES LEFT:" section for multi-use consumables
-							// I.E. Shimmerstick
-							$(target).find(".useSum").html(effect.charges - effect.uses);
-						}
 
 						if(effect.termUses > 0)
 						{
@@ -382,11 +383,33 @@ function injectUserPayload(userPayload)
 							//But they have used it, so set the Active Effect
 							payload.setActiveEffect(effect.abbr, true);
 						}
-						
-						if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						else if((effect.req_type === "function") && (!payload.getFunction(effect.requirement)))
+						{
+							//Doesn't have the requisite function to use item
+							//EX: CMM Arms need Slip
+							//    B.R.A.D. needs Hacking I
+							if($("#" + target.id + " .initReq").length === 0)
+							{
+								$("#" + target.id + " .initHeader").append("<span class='initReq'><br/>&nbsp;[Req Func: " + effect.requirement + "]</span>");
+							}
+							disabled = true;
+						}
+						else if((effect.req_type === "active_effect") && (!payload.getActiveEffect(effect.requirement)))
+						{
+							//Doesn't have the requisite active effect to use item
+							//No current examples, but future proofing
+							disabled = true;
+						}
+						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
 						{
 							//Ran out of charges, cannot use on this terminal
 							disabled = true;
+						}
+						else if((effect.per_type === "item") && (effect.charges > 1))
+						{
+							// This is for the "USES LEFT:" section for multi-use consumables
+							// I.E. Shimmerstick
+							$(target).find(".useSum").html(effect.charges - effect.uses);
 						}
 
 						$("#" + target.id + " input").prop("disabled", disabled);
@@ -419,10 +442,8 @@ function injectUserPayload(userPayload)
 						////////////////////
 						//	Shimmerstick T0
 						//  Shimmerstick T1
-						//  Budget Access Remote Drive
+						//  Budget Access Remote Drive (REQ: HACKING I)
 						////////////////////
-
-						let remCharges = effect.charges - effect.uses;
 
 						// ABILITY TO USE EFFECT NOT DETERMINED BY CHARGES
 						// EX: Budget Access Remote Drive
@@ -432,9 +453,31 @@ function injectUserPayload(userPayload)
 						}
 						else // ABILITY TO USE IS LIMITED BY CHARGES
 						{
+							let remCharges = effect.charges - effect.uses;
+
 							// DECKS, WHICH HAVE DEDICATED CHARGES
-							if(item.radio === "deck")
+							if((item.radio === "deck") || (item.radio === "ph"))
 							{
+								let plusTags = 0;
+
+								switch(effect.abbr)
+								{
+									case("deck_bud"):
+									case("deck_crd1"):
+									case("deck_mm"):
+									case("phack0"):
+									case("phack1"):
+									{
+										plusTags = 1;
+										break;
+									}
+									case("deck_crd2"):
+									{
+										plusTags = 2;
+										break;
+									}
+								}
+
 								effectString += "<span class='itemActionRow'>" +
 													"<span class='itemMarks'>";
 								
@@ -450,7 +493,7 @@ function injectUserPayload(userPayload)
 								
 								effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
 											"</span>" +
-											"<button class='itemButton' data-effect='" + effect.id + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">" + effect.effect + "</button>" +
+											"<button class='deckButton' data-effect='" + effect.abbr + "' data-plus='" + plusTags + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">+" + plusTags + " Tag" + (plusTags === 1 ? "" : "s") + "</button>" +
 										"</span>";
 							}
 							else
@@ -461,8 +504,53 @@ function injectUserPayload(userPayload)
 								////////////////////
 								//	Shimmerstick T0
 								//  Shimmerstick T1
-								//  Budget Access Remote Drive
 								////////////////////
+
+								switch(effect.abbr)
+								{
+									case("pet_play"):
+									{
+										// STATUS BAR
+										if(payload.getActiveEffect("pet_use")) // USED THIS SCENE
+										{
+											$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
+
+											effectString += "<span class='itemActionRow'>" +
+																"<span></span>" +
+																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)' disabled>Played With Already</button>" +
+															"</span>";
+										}
+										else if(payload.getActiveEffect("pet_play")) // PLAYED WITH THIS SIM
+										{
+											$("#petStatus").attr("src","resources/images/status/pet_ready.png");
+
+											effectString += "<span class='itemActionRow'>" +
+																"<span></span>" +
+																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)' disabled>Played With Already</button>" +
+															"</span>";
+										}
+										else // NOT USED, NOT PLAYED WITH
+										{
+											effectString += "<span class='itemActionRow'>" +
+																"<span></span>" +
+																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)'>Play With DigiPet!</button>" +
+															"</span>";
+										}
+
+										$("#petStatus").removeClass("hidden");
+
+										break;
+									}
+									case("shim0"):
+									case("shim1"):
+									{
+										effectString += "<span class='itemActionRow'>" +
+															"<span></span>" +
+															"<button class='shimButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)'>Use on Device</button>" +
+														"</span>";
+										break;
+									}
+								}
 							}
 						}
 
@@ -558,7 +646,7 @@ function injectUserPayload(userPayload)
 				}
 			});
 
-			$(".itemCat[data-cat='" + item.type + "'] > .itemList").append(
+			$(".itemCat[data-cat='" + item.category + "'] > .itemList").append(
 				"<li id='item_" + item.item_id + "' class='itemItem'>" +
 					"<span class='itemName'>" + item.name + (item.tier !== null ? " [T" + item.tier + "]" : "") + "</span>" +
 					(effectString.length > 5 ? effectString : "") +
@@ -631,7 +719,7 @@ function injectUserPayload(userPayload)
 				disableExpensiveButtons();
 			});
 
-			if((payload.getItem(4)) && (!payload.getActiveEffect("copycat")))
+			if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 			{
 				userPayload["copyables"].forEach(function(copyableAction)
 				{
@@ -808,6 +896,7 @@ function initCheck(target)
 					$("#hackDetails #clecDetails").remove();
 					updateTags(-2,Session.CLEC);
 				}
+				break;
 			}
 			case("cmm_coc"): // CMM Cocoon (+1 Tag, Stacks)
 			case("cmm_wid"): // CMM Widow (+1 Tag, Stacks)
@@ -838,14 +927,39 @@ function initCheck(target)
 
 				break;
 			}
-			case("shim0"): // Shimmerstick T0
-			case("shim1"): // Shimmerstick T1
+			case("shim0"): // Shimmerstick T0 (+1 Tag to All Costs, +30s to All Timers)
+			case("shim1"): // Shimmerstick T1 (+1 Tag to All Costs, +15s to All Timers)
 			{
 				let otherTarget = $("#" + (effect["abbr"] === "shim0" ? "shim1" : "shim0") + "Init")[0];
 				payload.setActiveEffect(effect["abbr"], $(target).prop("checked"));
 
 				$("#" + otherTarget.id + " input").prop("disabled", $(target).prop("checked"));
 				$(otherTarget).toggleClass("dimmed", $(target).prop("checked"));
+
+				//Only need to allow access to Term if user doesn't have a cyberdeck
+				if(!(payload.hasDeck()))
+				{
+					if($(target).prop("checked"))
+					{
+						//Timer is Alive when is still running, so don't allow access, but make it show as ready to go
+						if(taTimer.isAlive())
+						{
+							$("#terminalButton").html("Cracking Terminal...");
+							$("#terminalButton").removeClass("noPayload");
+						}
+						else
+						{
+							$("#terminalButton").removeClass("noPayload");
+							allowAccess();
+						}
+					}
+					else
+					{
+						$("#terminalButton").html("No Cyberdeck!");
+						$("#terminalButton").attr("disabled", true);
+						$("#terminalButton").addClass("noPayload");
+					}
+				}
 
 				break;
 			}
@@ -862,7 +976,7 @@ function initCheck(target)
 function initAction(target)
 {
 	////////////////////
-	//  Budget Access Remote Drive
+	//  Budget Access Remote Drive (REQ: HACKING I)
 	//  Canopic Jar [Magsweep]
 	////////////////////
 }
@@ -954,8 +1068,11 @@ function updateTags(change, tagType)
 
 function allowAccess()
 {
-	$("#terminalButton").html("Access Terminal");
-	$("#terminalButton").attr("disabled",false);
+	if(payload.hasDeck() || payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1"))
+	{
+		$("#terminalButton").html("Access Terminal");
+		$("#terminalButton").attr("disabled",false);
+	}
 }
 
 function accessTerminal(event)
@@ -1347,20 +1464,20 @@ function takeAction(target)
 
 			break;
 		}
-		// Item Activation
-		case ("item"):
+		// Deck Activation
+		case ("deck"):
 		{
-			let effect = payload.getEffect(Number(target.dataset["effect"])); //!! FIX GET EFFECT
-			let effectCost = effect["effect"].substring(effect["effect"].indexOf("+"), effect["effect"].indexOf(" "));
+			let effect = payload.getEffect(target.dataset["effect"]);
+			let effectCost = Number(target.dataset["plus"]);
 
 			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
 
 			let actionMap = {
 				userID: payload.getUserID(),
 				actionType: action,
-				entryID: Number(target.dataset["effect"]),
-				actionCost: Number(effectCost) * -1,
-				upperAction: "Activate",
+				entryID: effect["abbr"],
+				actionCost: effectCost * -1,
+				upperAction: "Use Deck",
 				entryName: $(entryPath + " .itemName").html()
 			};
 
@@ -1480,7 +1597,7 @@ function setupConfirmModal(actionMap,buttons)
 	let quote = "\"";
 	let costText = " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s");
 
-	let copycatText = 	((payload.getItem(4)) && (!payload.getActiveEffect(5)) && (session.isActionCopyable(actionMap["upperAction"])) ?
+	let copycatText = 	((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")) && (session.isActionCopyable(actionMap["upperAction"])) ?
 						"<br/><br/>" +
 						"<span class='copycatBox'>" +
 							"<input id='copycatActivate' type='checkbox'/>" +
@@ -1530,9 +1647,9 @@ function setupConfirmModal(actionMap,buttons)
 			extraAfterText = "<br/><br/><span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>"
 			break;
 		}
-		case("Activate"):
+		case("Use Deck"):
 		{
-			let effect = payload.getEffect(actionMap["entryID"]);  //!! FIX GET EFFECT
+			let effect = payload.getEffect(actionMap["entryID"]);
 
 			let totCharges = effect["charges"];
 			let totCharge_S = (totCharges === 1 ? "" : "s");
@@ -1543,7 +1660,7 @@ function setupConfirmModal(actionMap,buttons)
 			actionMap["remCharges"] = remCharges - 1;
 			actionMap["usedCharges"] = totCharges - (remCharges - 1);
 
-			costText = " to gain " + effect["effect"];
+			costText = " to gain +" + (actionMap["actionCost"] * -1) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s");
 
 			extraAfterText = "<br/><br/>This item may be used <b>" + totCharges + "</b> time" + totCharge_S + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + remCharge_S + " left.";
 			break;
@@ -1620,7 +1737,7 @@ function closeModal(event)
 
 function executeAction(actionMap,newData,globalAction)
 {
-	if((!$("#copycatActivate").prop("checked")) && (actionMap["actionType"] !== "item"))
+	if((!$("#copycatActivate").prop("checked")) && (actionMap["actionType"] !== "deck"))
 	{
 		let maxTime = payload.getActionTime();
 
@@ -1638,9 +1755,16 @@ function executeAction(actionMap,newData,globalAction)
 		$("#actionModal .modalButtonRow").html("");
 		$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
 
-		if((payload.getItem(12)) && (!payload.getActiveEffect(13)))
+		if(payload.getItem("digipet"))
 		{
-			$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>");
+			if(!payload.getActiveEffect("pet_play"))
+			{
+				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton' disabled>YOUR DIGIPET IS SLEEPING<br/>PLAY WITH IT TO USE IT!</button>");
+			}
+			else if(!payload.getActiveEffect("pet_use"))
+			{
+				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>");
+			}
 		}
 
 		$("#executeButton").bind("mousedown touchstart", function(event)
@@ -1672,6 +1796,7 @@ function executeAction(actionMap,newData,globalAction)
 		$("#digiPetButton").bind("mouseup", function()
 		{
 			$("#digiPetButton").remove();
+			//!! Dancing Digipet Animation
 			$("#executeButton").prop("disabled", true);
 
 			actionMap["newData"] = newData;
@@ -1695,7 +1820,7 @@ function executeAction(actionMap,newData,globalAction)
 	}
 	else //USING COPYCAT OR AN ITEM
 	{
-		if(actionMap["actionType"] === "item")
+		if(actionMap["actionType"] === "deck")
 		{
 			actionMap["newData"] = newData;
 			actionMap["global"] = globalAction;
@@ -1706,7 +1831,7 @@ function executeAction(actionMap,newData,globalAction)
 		}
 		else //COPYCAT
 		{
-			payload.setActiveEffect(5, true);
+			payload.setActiveEffect("copycat", true);
 
 			$.ajax({
 				type: "POST",
@@ -1715,7 +1840,7 @@ function executeAction(actionMap,newData,globalAction)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: 5,
+					effectIDs: payload.getEffect("copycat")["id"],
 					termID: session.getTerminalID()
 				}
 			});
@@ -1815,15 +1940,15 @@ function completeAction(actionMap)
 		case("root"):
 			session.rootTerminal(new Date());
 			break;
-		case("item"):
-			$(".itemButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
+		case("deck"):
+			$(".deckButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
 
 			if(actionMap["remCharges"] <= 0)
 			{
-				$(".itemButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
+				$(".deckButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
 			}
 
-			payload.useItemEffect(actionMap["entryID"])
+			payload.useItemEffect(actionMap["entryID"]);
 			break;
 		case("siph"):
 		{
@@ -1843,7 +1968,7 @@ function completeAction(actionMap)
 
 	if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
 	{
-		if((actionMap["upperAction"] !== "Activate") && (!session.isActionCopyable(actionMap["upperAction"])))
+		if((actionMap["upperAction"] !== "Use Deck") && (!session.isActionCopyable(actionMap["upperAction"])))
 		{
 			session.makeActionCopyable(actionMap["upperAction"]);
 		}
@@ -1860,12 +1985,12 @@ function completeAction(actionMap)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: 13,
+					effectIDs: payload.getEffect("pet_use")["id"],
 					termID: session.getTerminalID()
 				}
 			})
 
-			payload.setActiveEffect(13,true);
+			payload.setActiveEffect("pet_use",true);
 		}
 	}
 }
@@ -1900,7 +2025,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 
 		$(".touchedIndicator").removeClass("dimmed");
 
-		if(!payload.getActiveEffect(15))
+		if(!payload.getActiveEffect("deck_jst"))
 		{
 			$.ajax({
 				type: "POST",
@@ -1909,12 +2034,12 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: 15,
+					effectIDs: payload.getEffect("deck_jst")["id"],
 					termID: session.getTerminalID()
 				}
 			})
 
-			payload.setActiveEffect(15,true);
+			payload.setActiveEffect("deck_jst",true);
 		}
 	}
 }
