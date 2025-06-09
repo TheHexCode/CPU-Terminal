@@ -47,8 +47,8 @@
     - Budget Remote Access Drive---(✓,X,X,X,X)
     ✓ CMM Widow--------------------(✓,✓,✓,✓,✓)
     ✓ CMM Cocoon-------------------(✓,✓,✓,✓,✓)
-    - Shimmerstick T0--------------(✓,✓,✓,✓,X)
-    - Shimmerstick T1--------------(✓,✓,✓,✓,X)
+    ✓ Shimmerstick T0--------------(✓,✓,✓,✓,✓)
+    ✓ Shimmerstick T1--------------(✓,✓,✓,✓,✓)
     ✓ CLEC Fingers-----------------(✓,✓,✓,✓,✓)
     - Canopic Jar [Magsweep]-------(✓,X,X,X,X)
     - Vigil T0---------------------(✓,X,X,X,X)
@@ -63,15 +63,16 @@
     - DigiPet[1]-------------------(✓,X,X,X,X)
     > ALSO
       - Budget Remote Access Drive-(X,X,X,X,X)
-      - Shimmerstick T0------------(X,X,X,X,X)
-      - Shimmerstick T1------------(X,X,X,X,X)
+      - Shimmerstick T0------------(✓,X,✓,✓,✓)
+      - Shimmerstick T1------------(✓,X,✓,✓,✓)
   >> ACTION
     - Copycat----------------------(X,X,X,X,X)
     - DigiPet[2]-------------------(X,X,X,X,X)
   >> AUTO-ACTION
     - Johnny's Special Touch-------(X,X,X,X,X)
     ==========================================
-    X FKD DC-17
+    X FKD DC-17 T0
+    X FKD DC-17 T1
     X Nerd's Safety Glasses
 
 > MULTIPLAYER INTERRUPT
@@ -83,7 +84,8 @@
 
 > LISTENER FOR MISC EFFECTS
  - Database
- - Alarm / Lock
+ - Alarm
+ - Lock
 
 >> MAKE ICON SCHEMA DATABASED
 
@@ -110,6 +112,7 @@
     - SUDOKU
     - REVERSE MASTERMIND
     - SLIDING PANELS [?]
+    - PICROSS
 
 > LOW PRIORITY
     - Resume Timer on mouseenter (only if already started?)

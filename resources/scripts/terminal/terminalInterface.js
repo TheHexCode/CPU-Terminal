@@ -382,6 +382,12 @@ function injectUserPayload(userPayload)
 							//  they've already accessed the terminal and won't see the checkbox
 							//But they have used it, so set the Active Effect
 							payload.setActiveEffect(effect.abbr, true);
+
+							if((effect.abbr === "shim0") || (effect.abbr === "shim1"))
+							{
+								$("#shimStatus").attr("src", "resources/images/status/" + effect.abbr + ".png");
+								$("#shimStatus").toggleClass("hidden", $(target).prop("checked"));
+							}
 						}
 						else if((effect.req_type === "function") && (!payload.getFunction(effect.requirement)))
 						{
@@ -400,16 +406,21 @@ function injectUserPayload(userPayload)
 							//No current examples, but future proofing
 							disabled = true;
 						}
-						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
-						{
-							//Ran out of charges, cannot use on this terminal
-							disabled = true;
-						}
 						else if((effect.per_type === "item") && (effect.charges > 1))
 						{
 							// This is for the "USES LEFT:" section for multi-use consumables
 							// I.E. Shimmerstick
-							$(target).find(".useSum").html(effect.charges - effect.uses);
+							$(target).find(".useSum").html(Math.max(effect.charges - effect.uses, 0));
+
+							if(effect.uses >= effect.charges)
+							{
+								disabled = true;
+							}
+						}
+						else if((effect.per_type !== null) && (effect.uses >= effect.charges))
+						{
+							//Ran out of charges, cannot use on this terminal
+							disabled = true;
 						}
 
 						$("#" + target.id + " input").prop("disabled", disabled);
@@ -531,6 +542,8 @@ function injectUserPayload(userPayload)
 										}
 										else // NOT USED, NOT PLAYED WITH
 										{
+											$("#petStatus").attr("src","resources/images/status/pet_egg.png");
+
 											effectString += "<span class='itemActionRow'>" +
 																"<span></span>" +
 																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)'>Play With DigiPet!</button>" +
@@ -652,6 +665,19 @@ function injectUserPayload(userPayload)
 					(effectString.length > 5 ? effectString : "") +
 				"</li>"
 			);
+
+			if(payload.getActiveEffect("shim0")) //SHIM [T0] ACTIVE
+			{
+				$(".shimButton").attr("disabled",true);
+				$(".shimButton[data-effect='shim0']").html("Already Active");
+				$(".shimButton[data-effect='shim1']").html("Other Shimmerstick Active");
+			}
+			else if(payload.getActiveEffect("shim1"))  //SHIM [T1] ACTIVE
+			{
+				$(".shimButton").attr("disabled",true);
+				$(".shimButton[data-effect='shim0']").html("Other Shimmerstick Active");
+				$(".shimButton[data-effect='shim1']").html("Already Active");
+			}
 		});
 
 		if(userPayload["hasAccessed"])
@@ -935,6 +961,27 @@ function initCheck(target)
 
 				$("#" + otherTarget.id + " input").prop("disabled", $(target).prop("checked"));
 				$(otherTarget).toggleClass("dimmed", $(target).prop("checked"));
+
+				$("#shimStatus").attr("src", "resources/images/status/" + effect["abbr"] + ".png");
+				$("#shimStatus").toggleClass("hidden", !$(target).prop("checked"));
+
+				if(payload.getActiveEffect("shim0")) //SHIM [T0] ACTIVE
+				{
+					$(".shimButton").attr("disabled",true);
+					$(".shimButton[data-effect='shim0']").html("Already Active");
+					$(".shimButton[data-effect='shim1']").html("Other Shimmerstick Active");
+				}
+				else if(payload.getActiveEffect("shim1"))  //SHIM [T1] ACTIVE
+				{
+					$(".shimButton").attr("disabled",true);
+					$(".shimButton[data-effect='shim0']").html("Other Shimmerstick Active");
+					$(".shimButton[data-effect='shim1']").html("Already Active");
+				}
+				else
+				{
+					$(".shimButton").attr("disabled",false);
+					$(".shimButton").html("Use on Device");
+				}
 
 				//Only need to allow access to Term if user doesn't have a cyberdeck
 				if(!(payload.hasDeck()))
@@ -1541,6 +1588,19 @@ function takeAction(target)
 			setupConfirmModal(actionMap,buttons);
 
 			break;
+		}
+		case("pet"):
+		{
+			if(!payload.getActiveEffect("pet_play"))
+			{
+				payload.setActiveEffect("pet_play", true);
+				$("#petStatus").attr("src","resources/images/status/pet_ready.png");
+			}
+			else
+			{
+				payload.setActiveEffect("pet_use", true);
+				$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
+			}
 		}
 	}
 }
