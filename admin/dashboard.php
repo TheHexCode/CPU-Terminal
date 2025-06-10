@@ -40,9 +40,16 @@
                     <?php
                         $termString = "";
 
-                        foreach($termsList[$activeCodes["jobCode"]] as $termSlug)
+                        if(array_key_exists($activeCodes["jobCode"],$termsList))
                         {
-                            $termString .= "<li>" . strtoupper($termSlug) . "</li>";
+                            foreach($termsList[$activeCodes["jobCode"]] as $termSlug)
+                            {
+                                $termString .= "<li>" . strtoupper($termSlug) . "</li>";
+                            }
+                        }
+                        else
+                        {
+                            $termString .= "<li>NO ACTIVE TERMINALS FOR THIS JOB CODE</li>";
                         }
 
                         echo $termString;

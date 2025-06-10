@@ -28,10 +28,6 @@
 > WHAT IF FUNCTIONS HAVE BEEN REFRESHED?
   - ITEMS CANNOT BE REFRESHED, UNDER NORMAL CIRCUMSTANCES?
 
-> CHANGE ITEM/EFFECT CALLS FROM HARDCODED NUMBERS TO A FUNCTION AFTER LOOKING UP THEIR IDS
-  - payload.getItem(#)
-  - payload.getActiveEffect(#)
-
 > INVENTORY ✓
   > MUST:
     1 - Recognize User Has Item
@@ -75,6 +71,9 @@
     X FKD DC-17 T0
     X FKD DC-17 T1
     X Nerd's Safety Glasses
+
+> MAKE ITEM USES INSIDE THE ITEM
+  > THAT WAY SHIM & VIGIL EFFECTS ARE ABLE TO BE 1/SCENE
 
 > MULTIPLAYER INTERRUPT
  - Make changed tab/entry blink for other players

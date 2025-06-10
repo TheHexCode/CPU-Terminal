@@ -24,7 +24,7 @@ if($effects !== null)
                         WHERE abbr = :effectAbbr";
         
         $perStatement = $pdo->prepare($perQuery);
-        $perStatement->execute([':effectAbbr' => intval($effect)]);
+        $perStatement->execute([':effectAbbr' => $effect]);
 
         $perType = $perStatement->fetch(PDO::FETCH_COLUMN);
 
@@ -37,12 +37,13 @@ if($effects !== null)
                             WHERE item_effects.abbr = :effectAbbr";
 
             $itemStatement = $pdo->prepare($itemQuery);
-            $itemStatement->execute([':effectAbbr' =>intval($effect)]);
+            $itemStatement->execute([':effectAbbr' => $effect]);
 
             $itemAbbrs = $itemStatement->fetchAll(PDO::FETCH_COLUMN);
 
             foreach($itemAbbrs as $itemAbbr)
             {
+
                 $usesQuery = "  SELECT count FROM {$dbName}.user_items
                                 WHERE user_id = :userID
                                     AND item_abbr = :itemAbbr";
