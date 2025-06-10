@@ -56,7 +56,7 @@
     ✓ CRD Spider Cyberdeck T0------(✓,✓,✓,✓,✓)
     ✓ CRD Spider Cyberdeck T1------(✓,✓,✓,✓,✓)
     ✓ MM Console-------------------(✓,✓,✓,✓,✓)
-    - DigiPet[1]-------------------(✓,X,X,X,X)
+    ✓ DigiPet[1]-------------------(✓,✓,✓,✓,✓)
     > ALSO
       - Budget Remote Access Drive-(X,X,X,X,X)
       - Shimmerstick T0------------(✓,X,✓,✓,✓)
@@ -64,7 +64,7 @@
       - Canopic Jar [Magsweep]-----(X,X,X,X,X)
   >> ACTION
     - Copycat----------------------(X,X,X,X,X)
-    - DigiPet[2]-------------------(X,X,X,X,X)
+    ✓ DigiPet[2]-------------------(✓,✓,✓,✓,✓)
   >> AUTO-ACTION
     - Johnny's Special Touch-------(X,X,X,X,X)
     ==========================================
@@ -86,6 +86,9 @@
  - Database
  - Alarm
  - Lock
+
+> DASHBOARD NOT SAVING ENTRY FILE/CONTENTS?
+ - Something to do with changeEntry not firing when you change the input text
 
 >> MAKE ICON SCHEMA DATABASED
 

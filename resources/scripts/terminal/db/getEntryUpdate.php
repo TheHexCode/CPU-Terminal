@@ -69,7 +69,7 @@ else
 
     if($entry["type"] === "trap")
     {
-        if((($actionUser === null) || ($actionUser === $userID)) && ($newState !== "disarmed"))
+        if((($actionUser === null) || ($actionUser === $userID)) && ($newState !== "read"))
         {
             $stateFormat = " sprung";
         }

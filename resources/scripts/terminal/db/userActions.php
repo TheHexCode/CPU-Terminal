@@ -33,6 +33,7 @@ switch($action)
         $targetType = "terminal";
         break;
     case("Use Deck"):
+    case("Play"):
         $targetType = "item";
         $action = "Item";
         break;

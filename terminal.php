@@ -32,11 +32,11 @@
 				</svg>
 			</div>
 			<div id="statusBar">
-				<img id="shimStatus" class="hidden" src=""/>
-				<!-- DIGIPET STATUS -->
-				<img id="petStatus" class="hidden" src=""/>
+				<div id="itemStatus">
+					<img id="petStatus" class="hidden" src=""/>
+					<img id="shimStatus" class="hidden" src=""/>
+				</div>
 				<!-- CONNECTED USERS? -->
-				<!-- CONNECTION STATUS -->
 				<img id="serverStatus" src="resources/images/status/server_on.png"/>
 			</div>
 			<div id="gemBar">

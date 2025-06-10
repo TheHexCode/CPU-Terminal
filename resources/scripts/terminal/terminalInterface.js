@@ -524,32 +524,29 @@ function injectUserPayload(userPayload)
 									case("pet_play"):
 									{
 										// STATUS BAR
-										if(payload.getActiveEffect("pet_use")) // USED THIS SCENE
+										
+										if(!payload.getActiveEffect("pet_use")) // HASN'T BEEN USED THIS SCENE
 										{
-											$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
+											if(effect.uses > 0)
+											{
+												$("#petStatus").attr("src","resources/images/status/pet_ready.png");
 
-											effectString += "<span class='itemActionRow'>" +
-																"<span></span>" +
-																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)' disabled>Played With Already</button>" +
-															"</span>";
-										}
-										else if(payload.getActiveEffect("pet_play")) // PLAYED WITH THIS SIM
-										{
-											$("#petStatus").attr("src","resources/images/status/pet_ready.png");
+												effectString += "<span class='itemActionRow'>" +
+																	"<span></span>" +
+																	"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)' disabled>Played With Already</button>" +
+																"</span>";
 
-											effectString += "<span class='itemActionRow'>" +
-																"<span></span>" +
-																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)' disabled>Played With Already</button>" +
-															"</span>";
-										}
-										else // NOT USED, NOT PLAYED WITH
-										{
-											$("#petStatus").attr("src","resources/images/status/pet_egg.png");
+												payload.setActiveEffect("pet_play", true);
+											}
+											else
+											{
+												$("#petStatus").attr("src","resources/images/status/pet_egg.png");
 
-											effectString += "<span class='itemActionRow'>" +
-																"<span></span>" +
-																"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)'>Play With DigiPet!</button>" +
-															"</span>";
+												effectString += "<span class='itemActionRow'>" +
+																	"<span></span>" +
+																	"<button class='petButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)'>Play With DigiPet!</button>" +
+																"</span>";
+											}
 										}
 
 										$("#petStatus").removeClass("hidden");
@@ -632,6 +629,8 @@ function injectUserPayload(userPayload)
 							{
 								if(effect.uses > 0)
 								{
+									$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
+
 									payload.setActiveEffect(effect.abbr, true);
 								}
 
@@ -1331,16 +1330,7 @@ function injectButtonMasher(masherData)
 												"<u>BUTTON MASHER IDENTIFIED</u>" +
 											"</div>" +
 											"<span>Masher: " + masherData["name"] + "</span>" +
-											"<div>Tags: +" + tens(masherData["rank"]) + "</div>" //+
-											/* !! ACTIVATE BELOW IF MASHING GENERATES A LOG TO MASK FROM
-											( payload.getFunction("Mask") ?
-												"<div id='maskName' class='multiLineTextInput'>" +
-													"<label for='payloadMask'>Mask:</label>" +
-													"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
-													"<input type='text' id='payloadMask' placeholder='Anonymous User' maxlength='15'></input>" +
-												"</div>" :
-												"" )
-											*/
+											"<div>Tags: +" + tens(masherData["rank"]) + "</div>"
 										);
 
 					session.setCurrentTags(session.getCurrentTags() + masherData["rank"]);
@@ -1518,36 +1508,6 @@ function takeAction(target)
 
 			break;
 		}
-		// Deck Activation
-		case ("deck"):
-		{
-			let effect = payload.getEffect(target.dataset["effect"]);
-			let effectCost = Number(target.dataset["plus"]);
-
-			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
-
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: action,
-				entryID: effect["abbr"],
-				actionCost: effectCost * -1,
-				upperAction: "Use Deck",
-				entryName: $(entryPath + " .itemName").html()
-			};
-
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
-
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"],
-				text: "Confirm",
-				data: session.getTerminalID(),
-				global: false
-			}];
-
-			setupConfirmModal(actionMap,buttons);
-
-			break;
-		}
 		case("siph"):
 		{
 			let actionMap = {
@@ -1596,18 +1556,60 @@ function takeAction(target)
 
 			break;
 		}
+		// Item Activations
+		case ("deck"):
+		{
+			let effect = payload.getEffect(target.dataset["effect"]);
+			let effectCost = Number(target.dataset["plus"]);
+
+			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
+
+			let actionMap = {
+				userID: payload.getUserID(),
+				actionType: action,
+				entryID: effect["abbr"],
+				actionCost: effectCost * -1,
+				upperAction: "Use Deck",
+				entryName: $(entryPath + " .itemName").html()
+			};
+
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"],
+				text: "Confirm",
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			setupConfirmModal(actionMap,buttons);
+
+			break;
+		}
 		case("pet"):
 		{
-			if(!payload.getActiveEffect("pet_play"))
-			{
-				payload.setActiveEffect("pet_play", true);
-				$("#petStatus").attr("src","resources/images/status/pet_ready.png");
-			}
-			else
-			{
-				payload.setActiveEffect("pet_use", true);
-				$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
-			}
+			// DIGIPET ACTIVATE IN ITEM TAB
+			let effect = payload.getEffect(target.dataset["effect"]);
+
+			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
+
+			let actionMap = {
+				userID: payload.getUserID(),
+				actionType: action,
+				entryID: effect["abbr"],
+				actionCost: 0,
+				upperAction: "Play",
+				entryName: "DigiPet"
+			};
+
+			let buttons = [{
+				id: actionMap["actionType"] + actionMap["entryID"],
+				text: "Confirm",
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			setupConfirmModal(actionMap,buttons);
 		}
 	}
 }
@@ -1648,6 +1650,7 @@ function setupConfirmModal(actionMap,buttons)
 	});
 
 	$("#actionModal").width($("#main").width());
+
 	if(actionMap["actionType"] === "ice")
 	{
 		$("#actionModal").addClass("ice");
@@ -1714,6 +1717,21 @@ function setupConfirmModal(actionMap,buttons)
 			extraAfterText = "<br/><br/><span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>"
 			break;
 		}
+		case("Siphon Charge"):
+		{
+			quote = "";
+			extraBeforeText = " from ";
+
+			costText += " to gain 2 Amps";
+
+			extraAfterText = "<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource."
+			break;
+		}
+		case("Refresh"):
+		{
+			quote = "";
+			break;
+		}
 		case("Use Deck"):
 		{
 			let effect = payload.getEffect(actionMap["entryID"]);
@@ -1732,21 +1750,15 @@ function setupConfirmModal(actionMap,buttons)
 			extraAfterText = "<br/><br/>This item may be used <b>" + totCharges + "</b> time" + totCharge_S + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + remCharge_S + " left.";
 			break;
 		}
-		case("Siphon Charge"):
+		case("Play"): //pet_play
 		{
+			extraBeforeText = " with ";
 			quote = "";
-			extraBeforeText = " from ";
+			costText = " for this Sim";
 
-			costText += " to gain 2 Amps";
-
-			extraAfterText = "<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource."
 			break;
 		}
-		case("Refresh"):
-		{
-			quote = "";
-			break;
-		}
+		
 	}
 
 	$("#modalBodyTimer").addClass("hidden");
@@ -1761,6 +1773,7 @@ function setupConfirmModal(actionMap,buttons)
 	
 	$("#modalBG").css("display","flex");
 }
+
 
 function closeModal(event)
 {
@@ -1822,15 +1835,19 @@ function executeAction(actionMap,newData,globalAction)
 		$("#actionModal .modalButtonRow").html("");
 		$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
 
-		if(payload.getItem("digipet"))
+		if(payload.getItem("digi_pet"))
 		{
 			if(!payload.getActiveEffect("pet_play"))
 			{
-				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton' disabled>YOUR DIGIPET IS SLEEPING<br/>PLAY WITH IT TO USE IT!</button>");
+				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton' disabled>YOUR DIGIPET IS STILL UNHATCHED!<br/>PLAY WITH IT TO USE IT!</button>");
 			}
 			else if(!payload.getActiveEffect("pet_use"))
 			{
 				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>");
+			}
+			else //pet_use
+			{
+				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalbutton' disabled>YOUR DIGIPET IS ALL TUCKERED OUT!<br/>WAIT UNTIL NEXT SCENE!")
 			}
 		}
 
@@ -1838,18 +1855,24 @@ function executeAction(actionMap,newData,globalAction)
 		{
 			event.preventDefault();
 
-			$("#executeButton").addClass("active");
+			if(!$("#executeButton").prop("disabled"))
+			{
+				$("#executeButton").addClass("active");
 
-			actionMap["newData"] = newData;
-			actionMap["global"] = globalAction;
+				actionMap["newData"] = newData;
+				actionMap["global"] = globalAction;
 
-			mbTimer.startTimer(maxTime,completeAction,actionMap);
+				mbTimer.startTimer(maxTime,completeAction,actionMap);
+			}
 		});
 		$("#executeButton").bind("mouseleave mouseup dragleave touchend", function()
 		{
-			$("#executeButton").removeClass("active");
+			if(!$("#executeButton").prop("disabled"))
+			{
+				$("#executeButton").removeClass("active");
 
-			mbTimer.pauseTimer();
+				mbTimer.pauseTimer();
+			}
 		});
 		$("#executeButton").bind("contextmenu", function(event)
 		{
@@ -1920,11 +1943,6 @@ function executeAction(actionMap,newData,globalAction)
 			mbTimer.skipTimer(completeAction,actionMap);
 		}
 	}
-}
-
-function activateDigiPet(actionMap, newData, globalAction)
-{
-	
 }
 
 function completeAction(actionMap)
@@ -2007,16 +2025,6 @@ function completeAction(actionMap)
 		case("root"):
 			session.rootTerminal(new Date());
 			break;
-		case("deck"):
-			$(".deckButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
-
-			if(actionMap["remCharges"] <= 0)
-			{
-				$(".deckButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
-			}
-
-			payload.useItemEffect(actionMap["entryID"]);
-			break;
 		case("siph"):
 		{
 			setupAlertModal("You gain +2 Amps!<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource.");
@@ -2027,13 +2035,44 @@ function completeAction(actionMap)
 			setupAlertModal("Your " + actionMap["newData"] + " Function has been Refreshed!<br/><br/>NOTE: The usage of the " + actionMap["newData"] + " Function is not tracked by this OS. Do not run this action again unless you've used " + actionMap["newData"] + " again this Scene and require another Refresh.");
 			break;
 		}
+		case("deck"):
+		{
+			$(".deckButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
+
+			if(actionMap["remCharges"] <= 0)
+			{
+				$(".deckButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
+			}
+
+			payload.useItemEffect(actionMap["entryID"]);
+			break;
+		}
+		case("pet"):
+		{
+			payload.setActiveEffect("pet_play", true);
+			$("#petStatus").attr("src","resources/images/status/pet_ready.png");
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "resources/scripts/terminal/db/useItems.php",
+				data:
+				{
+					userID: payload.getUserID(),
+					effects: "pet_play",
+					termID: session.getTerminalID()
+				}
+			});
+
+			break;
+		}
 	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	disableExpensiveButtons();
 
-	if((payload.getItem(4)) && (!payload.getActiveEffect(5)))
+	if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 	{
 		if((actionMap["upperAction"] !== "Use Deck") && (!session.isActionCopyable(actionMap["upperAction"])))
 		{
@@ -2058,6 +2097,7 @@ function completeAction(actionMap)
 			})
 
 			payload.setActiveEffect("pet_use",true);
+			$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
 		}
 	}
 }
