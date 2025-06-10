@@ -67,25 +67,27 @@ else
     $roleStatement->execute([':userID' => $userResponse["ml_id"]]);
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
-    $itemQuery = "  SELECT item_id, items.name, items.tier, items.abbr, items.category, items.radio
+    $itemQuery = "  SELECT items.abbr, items.name, items.tier, items.category, items.radio
                     FROM {$dbName}.user_items
-                    INNER JOIN {$dbName}.items ON user_items.item_id=items.id
+                    INNER JOIN {$dbName}.items ON user_items.item_abbr=items.abbr
                     WHERE user_id = :userID";
 
     $itemStatement = $pdo->prepare($itemQuery);
     $itemStatement->execute([':userID' => $userResponse["ml_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $effectQuery = "    SELECT id, abbr, charges, per_type, use_loc, req_type, requirement
+    $effectQuery = "    SELECT item_effects.abbr, charges, per_type, use_loc, req_type, requirement
                         FROM {$dbName}.item_effects
-                        WHERE item_id = :itemID";
+                        INNER JOIN {$dbName}.items_to_effects ON items_to_effects.effect_abbr = item_effects.abbr
+                        INNER JOIN {$dbName}.items ON items.abbr = items_to_effects.item_abbr
+                        WHERE item_abbr = :itemAbbr";
 
     $effectStatement = $pdo->prepare($effectQuery);
 
     $simUseQuery = "SELECT COUNT(*)
                     FROM {$dbName}.item_uses
                     WHERE 	user_id = :userID
-                        AND effect_id = :effectID
+                        AND effect_abbr = :effectAbbr
                         AND simCode = :simCode";
 
     $simUseStatement = $pdo->prepare($simUseQuery);
@@ -93,17 +95,18 @@ else
     $sceneUseQuery = "  SELECT COUNT(*)
                         FROM {$dbName}.item_uses
                         WHERE 	user_id = :userID
-                            AND effect_id = :effectID
+                            AND effect_abbr = :effectAbbr
                             AND jobCode = :jobCode
                             AND simCode = :simCode";
 
     $sceneUseStatement = $pdo->prepare($sceneUseQuery);
 
-    $itemUseQuery = "   SELECT SUM(charges - count)
+    $itemUseQuery = "   SELECT SUM(item_effects.charges - user_items.count)
                         FROM user_items
-                        INNER JOIN item_effects ON item_effects.item_id = user_items.item_id
+                        INNER JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = user_items.item_abbr
+                        INNER JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr
                         WHERE 	user_id = :userID
-                            AND user_items.item_id = :itemID";
+                            AND user_items.item_abbr = :itemAbbr";
 
     $itemUseStatement = $pdo->prepare($itemUseQuery);
 
@@ -111,7 +114,7 @@ else
 
     foreach($itemResponse as $item)
     {
-        $effectStatement->execute([':itemID' => $item["item_id"]]);
+        $effectStatement->execute([':itemAbbr' => $item["abbr"]]);
         $effectResponse = $effectStatement->fetchAll(PDO::FETCH_ASSOC);
 
         $newEffects = array();
@@ -123,7 +126,7 @@ else
                 case ("sim"):
                     $simUseStatement->execute([
                             ':userID' => $userResponse["ml_id"],
-                            ':effectID' => $effect["id"],
+                            ':effectAbbr' => $effect["abbr"],
                             ':simCode' => $activeCodes["simCode"]
                         ]);
                     $useResponse = $simUseStatement->fetch(PDO::FETCH_COLUMN);
@@ -131,7 +134,7 @@ else
                 case ("scene"):
                     $sceneUseStatement->execute([
                             ':userID' => $userResponse["ml_id"],
-                            ':effectID' => $effect["id"],
+                            ':effectAbbr' => $effect["abbr"],
                             ':jobCode' => $activeCodes["jobCode"],
                             ':simCode' => $activeCodes["simCode"]
                         ]);
@@ -140,7 +143,7 @@ else
                 case ("item"):
                     $itemUseStatement->execute([
                             ':userID' => $userResponse["ml_id"],
-                            ':itemID' => $item["item_id"]
+                            ':itemAbbr' => $item["abbr"]
                         ]);
                     $useResponse = $itemUseStatement->fetch(PDO::FETCH_COLUMN);
                     break;
@@ -154,7 +157,7 @@ else
             $termUseQuery = "   SELECT COUNT(*)
                                 FROM {$dbName}.item_uses
                                 WHERE 	user_id = :userID
-                                    AND effect_id = :effectID
+                                    AND effect_abbr = :effectAbbr
                                     AND jobCode = :jobCode
                                     AND simCode = :simCode
                                     AND terminal_id = :termID";
@@ -162,7 +165,7 @@ else
             $termUseStatement = $pdo->prepare($termUseQuery);
             $termUseStatement->execute([
                     ':userID' => $userResponse["ml_id"],
-                    ':effectID' => $effect["id"],
+                    ':effectAbbr' => $effect["abbr"],
                     ':jobCode' => $activeCodes["jobCode"],
                     ':simCode' => $activeCodes["simCode"],
                     ':termID' => $termID
@@ -190,7 +193,7 @@ else
 
     $actionQuery = "SELECT sim_entries.id, user_id, sim_entries.path, sim_entries.icon, action, newState
                     FROM {$dbName}.sim_user_actions
-                    INNER JOIN {$dbName}.sim_entries ON target_id=sim_entries.id
+                    INNER JOIN {$dbName}.sim_entries ON target_id = sim_entries.id
                     WHERE sim_entries.terminal_id=:termID
                         AND (user_id=:userID
                             OR global=true)
@@ -259,11 +262,12 @@ else
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Items
                                     INNER JOIN (
-                                        SELECT user_id, user_items.item_id, item_effects.id AS effect_id
-                                            FROM {$dbName}.user_items
-                                            INNER JOIN {$dbName}.item_effects ON user_items.item_id=item_effects.item_id
-                                            WHERE user_id=:userID
-                                    ) AS user_effects ON target_id=user_effects.effect_id
+                                        SELECT user_id, user_items.item_abbr, item_effects.abbr AS effect_abbr
+                                        FROM {$dbName}.user_items
+                                        INNER JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = user_items.item_abbr
+                                        INNER JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr
+                                        WHERE user_id=:userID
+                                    ) AS user_effects ON target_id=user_effects.effect_abbr
                                     WHERE UA_Items.target_type='item'
                                         AND UA_Items.newState=:termID
                                         AND UA_Items.user_id=:userID

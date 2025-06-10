@@ -15,4 +15,37 @@ $newLogStatement = $pdo->prepare($newLogQuery);
 $newLogStatement->execute([':termID' => $termID, ':userID' => $userID, ':mask' => ($userMask === "false" ? NULL : $userMask), ':userTags' => $userTags]);
 $newLogID = $pdo->lastInsertId();
 
+//SEND INTERRUPT CODE
+$prevErrLvl = error_reporting(0);
+/*
+use WebSocket;
+try
+{
+    require '../listener/composer/vendor/autoload.php';
+
+    $tempClient = new WebSocket\Client("ws://localhost:8767");
+
+    $tempClient->addMiddleware(new WebSocket\Middleware\CloseHandler());
+    $tempClient->addMiddleware(new WebSocket\Middleware\PingResponder());
+
+    $message = json_encode(array(
+                                    "actionType" => "log",
+                                    "entryID" => intval($newLogID),
+                                    "userID" => intval($userID),
+                                    "newData" => ($userMask === "false" ? NULL : $userMask)
+                                    ));
+
+    $tempClient->text($message);
+
+
+    $tempClient->close();
+}
+catch(Exception $error)
+{
+    //Ignore Errors Here
+}
+*/
+error_reporting($prevErrLvl);
+//////////////////////////////////////////////////////
+
 echo $newLogID;

@@ -125,76 +125,66 @@ CREATE TABLE user_functions (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-/*
-CREATE TABLE user_selfreport (
-    user_id         INT NOT NULL,
-    mlFunction_id   INT NOT NULL,
-    CONSTRAINT userFunction
-        PRIMARY KEY (user_id, mlFunction_id),
-    FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (mlFunction_id)
-        REFERENCES ml_functions(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-);
-*/
+
 CREATE TABLE items (
-    id          INT     AUTO_INCREMENT,
-    name        TEXT    NOT NULL,
-    tier        INT     NOT NULL,
-    category    TEXT    NOT NULL,
+    abbr        VARCHAR(50) NOT NULL UNIQUE,
+    name        TEXT        NOT NULL,
+    tier        INT,
+    category    TEXT        NOT NULL,
     radio       TEXT,
-    abbr        TEXT    NOT NULL,
-    enabled     BOOL    NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (abbr)
 );
 
 CREATE TABLE item_effects (
-    id          INT     AUTO_INCREMENT,
-    item_id     INT     NOT NULL,
-    abbr        TEXT,
-    use_loc     TEXT    NOT NULL,
+    abbr        VARCHAR(50) NOT NULL UNIQUE,
+    use_loc     TEXT        NOT NULL,
     req_type    TEXT,
     requirement TEXT,
     charges     INT,
     per_type    TEXT,
     notes       TEXT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (item_id)
-        REFERENCES items(id)
+    PRIMARY KEY (abbr)
+);
+
+CREATE TABLE items_to_effects (
+    item_abbr   VARCHAR(50) NOT NULL,
+    effect_abbr VARCHAR(50) NOT NULL,
+    FOREIGN KEY (item_abbr)
+        REFERENCES items(abbr)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (effect_abbr)
+        REFERENCES item_effects(abbr)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
 CREATE TABLE user_items (
-    user_id INT NOT NULL,
-    item_id INT NOT NULL,
-    count   INT,
+    user_id     INT         NOT NULL,
+    item_abbr   VARCHAR(50) NOT NULL,
+    count       INT,
     FOREIGN KEY (user_id)
         REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (item_id)
-        REFERENCES items(id)
+    FOREIGN KEY (item_abbr)
+        REFERENCES items(abbr)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
 CREATE TABLE item_uses (
-    user_id     INT     NOT NULL,
-    effect_id   INT     NOT NULL,
-    simCode     TEXT    NOT NULL,
-    jobCode     TEXT    NOT NULL,
-    terminal_id INT     NOT NULL,
+    user_id     INT         NOT NULL,
+    effect_abbr VARCHAR(50) NOT NULL,
+    simCode     TEXT        NOT NULL,
+    jobCode     TEXT        NOT NULL,
+    terminal_id INT         NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (effect_id)
-        REFERENCES item_effects(id)
+    FOREIGN KEY (effect_abbr)
+        REFERENCES item_effects(abbr)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (terminal_id)
@@ -208,7 +198,7 @@ CREATE TABLE sim_user_actions (
     time        TIMESTAMP   NOT NULL,
     user_id     INT         NOT NULL,
     target_type TEXT        NOT NULL,
-    target_id   INT         NOT NULL,
+    target_id   TEXT        NOT NULL,
     action      TEXT        NOT NULL,
     newState    TEXT        NOT NULL,
     cost        INT         NOT NULL,
@@ -1091,52 +1081,73 @@ INSERT INTO ml_functions
 # END TEST FUNCTIONS #
 
 INSERT INTO items
-            (name, tier, category, radio, abbr, enabled)
-    VALUES  ('Budget Cyberdeck',0,'deck','deck','deck_bud',1),
-            ('Budget Remote Access Drive',0,'util',NULL,'brad',1),
-            ('Canopic Jar [Magsweep]',0,'impl',NULL,'impl_mags',1),
-            ('CLEC Fingers',0,'impl',NULL,'impl_clec',1),
-            ('CMM Cocoon',2,'arms',NULL,'cmm',1),
-            ('CMM Widow',2,'arms',NULL,'cmm',1),
-            ('Copycat',0,'cust',NULL,'copycat',1),
-            ('CRD Spider Cyberdeck',1,'deck','deck','deck_crd1',1),
-            ('CRD Spider Cyberdeck',2,'deck','deck','deck_crd2',1),
-            ('CypherSync Beacon',0,'util',NULL,'beac',1),
-            ('DigiPet',0,'util',NULL,'digipet',1),
-            ('FKD DC-17',0,'deck','deck','deck_fkd0',1),
-            ('FKD DC-17',1,'deck','deck','deck_fkd1',1),
-            ('Johnny&#39;s Special Touch',1,'deck','deck','deck_jst',1),
-            ('MM Console',0,'deck','deck','deck_mm',1),
-            ('Nerd&#39;s Safety Glasses',0,'util',NULL,'--',0),
-            ('Pocket Hacker',0,'cust','ph','phack0',1),
-            ('Pocket Hacker',1,'cust','ph','phack1',1),
-            ('Power Glove [Ultra-Hacking 9000]',1,'impl','deck','deck_uh9k',1),
-            ('Shimmerstick',0,'cons',NULL,'shim0',1),
-            ('Shimmerstick',1,'cons',NULL,'shim1',1),
-            ('Vigil',0,'cons',NULL,'vigl0',1),
-            ('Vigil',1,'cons',NULL,'vigl1',1);
+            (abbr, name, tier, category, radio)	
+    VALUES	('cmm_wid','CMM Widow',2,'arms',NULL),
+            ('cmm_coc','CMM Cocoon',2,'arms',NULL),
+            ('copycat','Copycat',0,'cust',NULL),
+            ('phack_0','Pocket Hacker',0,'cust','ph'),
+            ('phack_1','Pocket Hacker',1,'cust','ph'),
+            ('deck_bud','Budget Cyberdeck',0,'deck','deck'),
+            ('deck_crd_1','CRD Spider Cyberdeck',1,'deck','deck'),
+            ('deck_crd_2','CRD Spider Cyberdeck',2,'deck','deck'),
+            ('deck_jst','Johnny&#39;s Special Touch',1,'deck','deck'),
+            ('deck_mm','MM Console',0,'deck','deck'),
+            ('deck_uh9k','Power Glove [Ultra-Hacking 9000]',1,'impl','deck'),
+            ('deck_fkd_0','FKD DC-17',0,'deck','deck'),
+            ('deck_fkd_1','FKD DC-17',1,'deck','deck'),
+            ('brad','Budget Remote Access Drive',0,'util',NULL),
+            ('beac','CypherSync Beacon',0,'util',NULL),
+            ('digi_pet','DigiPet',0,'util',NULL),
+            ('nsg','Nerd&#39;s Safety Glasses',0,'util',NULL),
+            ('impl_clec','CLEC Fingers',0,'impl',NULL),
+            ('impl_mags','Canopic Jar [Magsweep]',0,'impl',NULL),
+            ('shim_0','Shimmerstick',0,'cons',NULL),
+            ('shim_1','Shimmerstick',1,'cons',NULL),
+            ('vigil','Vigil',NULL,'cons',NULL);
 
 INSERT INTO item_effects
-            (item_id, abbr, use_loc, req_type, requirement, charges, per_type, notes)
-    VALUES  (1,'deck_bud','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
-            (2,'brad','before_after','function','Hacking',NULL,NULL,NULL),
-            (3,'impl_mags','init',NULL,NULL,1,'sim','Perform Brick Action / Skip Timer'),
-            (4,'impl_clec','init',NULL,NULL,1,'sim','+1 Hacking'),
-            (5,'cmm_coc','init','function','Slip',1,'scene','+1 Tag'),
-            (6,'cmm_wid','init','function','Slip',1,'scene','+1 Tag'),
-            (7,'copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
-            (8,'deck_crd1','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
-            (9,'deck_crd2','itemTab',NULL,NULL,2,'sim','[DECK] +2 Tags'),
-            (10,'beac','auto_init',NULL,NULL,NULL,NULL,'+1 Hacking'),
-            (11,'pet_play','itemTab',NULL,NULL,1,'sim','[Nothing except adds active effect]'),
-            (11,'pet_use','execute','active_effect','pet_play',1,'scene','Complete Timer'),
-            (14,'deck_jst','auto_action',NULL,NULL,NULL,NULL,'Repeat > Access > All Icons > -1 Tag'),
-            (15,'deck_mm','itemTab',NULL,NULL,2,'sim','[DECK] +1 Tag'),
-            (16,'--','failed_puzzle',NULL,NULL,1,'sim','Re-attempt failed Puzzle'),
-            (17,'phack0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
-            (18,'phack1','itemTab',NULL,NULL,2,'sim','+1 Tag'),
-            (19,'deck_uh9k','auto_init',NULL,NULL,NULL,NULL,'Timer -5s'),
-            (20,'shim0','before_after',NULL,NULL,10,'item',NULL),
-            (21,'shim1','before_after',NULL,NULL,10,'item',NULL),
-            (22,'vigl0','init',NULL,NULL,1,'item',NULL),
-            (23,'vigl1','init',NULL,NULL,1,'item',NULL);
+            (abbr, use_loc, req_type, requirement, charges, per_type, notes)	
+    VALUES	('cmm','init','function','Slip',1,'scene','+1 Tag'),
+            ('copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
+            ('phack_0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
+            ('phack_1','itemTab',NULL,NULL,2,'sim','+1 Tag'),
+            ('deck_bud','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
+            ('deck_crd_1','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
+            ('deck_crd_2','itemTab',NULL,NULL,2,'sim','[DECK] +2 Tags'),
+            ('deck_jst','auto_action',NULL,NULL,NULL,NULL,'Repeat > Access > All Icons > -1 Tag'),
+            ('deck_mm','itemTab',NULL,NULL,2,'sim','[DECK] +1 Tag'),
+            ('deck_uh9k','auto_init',NULL,NULL,NULL,NULL,'Timer -5s'),
+            ('brad','before_after','function','Hacking',NULL,NULL,NULL),
+            ('beac','auto_init',NULL,NULL,NULL,NULL,'+1 Hacking'),
+            ('pet_play','itemTab',NULL,NULL,1,'sim','[Nothing except adds active effect]'),
+            ('pet_use','execute','active_effect','pet_play',1,'scene','Complete Timer'),
+            ('nsg','failed_puzzle',NULL,NULL,1,'sim','Re-attempt failed Puzzle'),
+            ('impl_clec','init',NULL,NULL,1,'sim','+1 Hacking'),
+            ('impl_mags','init',NULL,NULL,1,'sim','Perform Brick Action / Skip Timer'),
+            ('shim_0','before_after',NULL,NULL,10,'item','+1 Tag to Costs; +30s on All Actions'),
+            ('shim_1','before_after',NULL,NULL,10,'item','+1 Tag to Costs; +15s on All Actions'),
+            ('vigil','init',NULL,NULL,1,'item',NULL);
+
+INSERT INTO items_to_effects
+            (item_abbr, effect_abbr)	
+    VALUES	('cmm_wid','cmm'),
+            ('cmm_coc','cmm'),
+            ('copycat','copycat'),
+            ('phack_0','phack_0'),
+            ('phack_1','phack_1'),
+            ('deck_bud','deck_bud'),
+            ('deck_crd_1','deck_crd_1'),
+            ('deck_crd_2','deck_crd_2'),
+            ('deck_jst','deck_jst'),
+            ('deck_mm','deck_mm'),
+            ('deck_uh9k','deck_uh9k'),
+            ('brad','brad'),
+            ('beac','beac'),
+            ('digi_pet','pet_play'),
+            ('digi_pet','pet_use'),
+            ('nsg','nsg'),
+            ('impl_clec','impl_clec'),
+            ('impl_mags','impl_mags'),
+            ('shim_0','shim_0'),
+            ('shim_1','shim_1'),
+            ('vigil','vigil');

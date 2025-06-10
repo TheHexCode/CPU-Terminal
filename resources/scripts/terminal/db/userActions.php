@@ -33,14 +33,6 @@ switch($action)
         $targetType = "terminal";
         break;
     case("Use Deck"):
-        $effectIDQuery = "  SELECT id
-                            FROM {$dbName}.item_effects
-                            WHERE abbr = :effectAbbr";
-        $effectIDStatement = $pdo->prepare($effectIDQuery);
-        $effectIDStatement->execute([':effectAbbr' => $targetID]);
-        
-        $targetID = intval($effectIDStatement->fetch(PDO::FETCH_COLUMN));
-
         $targetType = "item";
         $action = "Item";
         break;

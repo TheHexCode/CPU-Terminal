@@ -65,6 +65,7 @@
       - Budget Remote Access Drive-(X,X,X,X,X)
       - Shimmerstick T0------------(✓,X,✓,✓,✓)
       - Shimmerstick T1------------(✓,X,✓,✓,✓)
+      - Canopic Jar [Magsweep]-----(X,X,X,X,X)
   >> ACTION
     - Copycat----------------------(X,X,X,X,X)
     - DigiPet[2]-------------------(X,X,X,X,X)

@@ -204,7 +204,7 @@ class Timer
                             data:
                             {
                                 userID: callargs["userID"],
-                                effectIDs: callargs["entryID"],
+                                effects: callargs["entryID"],
                                 termID: callargs["newData"]
                             }
                         })
@@ -257,7 +257,7 @@ class Timer
                         data:
                         {
                             userID: callargs["userID"],
-                            effectIDs: payload.getEffect(callargs["entryID"])["id"],
+                            effects: callargs["entryID"],
                             termID: callargs["newData"]
                         }
                     })

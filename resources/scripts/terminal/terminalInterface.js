@@ -364,17 +364,17 @@ function injectUserPayload(userPayload)
 						//	CLEC Fingers
 						//  Vigil T0
 						//  Vigil T1
-						//  Canopic Jar [Magsweep]
 						////////////////////
 						////////////////////
 						//	Shimmerstick T0
 						//  Shimmerstick T1
 						//  Budget Access Remote Drive (REQ: HACKING I)
+						//  Canopic Jar [Magsweep]
 						////////////////////
 
 						let disabled = false;
 
-						let target = $(".initItem[id='" + item.abbr + "Init']")[0];
+						let target = $(".initItem[id='" + effect.abbr + "_init']")[0];
 
 						if(effect.termUses > 0)
 						{
@@ -383,7 +383,7 @@ function injectUserPayload(userPayload)
 							//But they have used it, so set the Active Effect
 							payload.setActiveEffect(effect.abbr, true);
 
-							if((effect.abbr === "shim0") || (effect.abbr === "shim1"))
+							if((effect.abbr === "shim_0") || (effect.abbr === "shim_1"))
 							{
 								$("#shimStatus").attr("src", "resources/images/status/" + effect.abbr + ".png");
 								$("#shimStatus").toggleClass("hidden", $(target).prop("checked"));
@@ -454,13 +454,14 @@ function injectUserPayload(userPayload)
 						//	Shimmerstick T0
 						//  Shimmerstick T1
 						//  Budget Access Remote Drive (REQ: HACKING I)
+						//  Canopic Jar [Magsweep]
 						////////////////////
 
 						// ABILITY TO USE EFFECT NOT DETERMINED BY CHARGES
 						// EX: Budget Access Remote Drive
 						if(effect.charges === null)
 						{							
-							// Add Use Button to Effect String
+							//!! Add Use Button to Effect String
 						}
 						else // ABILITY TO USE IS LIMITED BY CHARGES
 						{
@@ -474,15 +475,15 @@ function injectUserPayload(userPayload)
 								switch(effect.abbr)
 								{
 									case("deck_bud"):
-									case("deck_crd1"):
+									case("deck_crd_1"):
 									case("deck_mm"):
-									case("phack0"):
-									case("phack1"):
+									case("phack_0"):
+									case("phack_1"):
 									{
 										plusTags = 1;
 										break;
 									}
-									case("deck_crd2"):
+									case("deck_crd_2"):
 									{
 										plusTags = 2;
 										break;
@@ -515,6 +516,7 @@ function injectUserPayload(userPayload)
 								////////////////////
 								//	Shimmerstick T0
 								//  Shimmerstick T1
+								//  Canopic Jar [Magsweep]
 								////////////////////
 
 								switch(effect.abbr)
@@ -554,13 +556,18 @@ function injectUserPayload(userPayload)
 
 										break;
 									}
-									case("shim0"):
-									case("shim1"):
+									case("shim_0"):
+									case("shim_1"):
 									{
 										effectString += "<span class='itemActionRow'>" +
 															"<span></span>" +
 															"<button class='shimButton' data-effect='" + effect.abbr + "' onclick='takeAction(this)'>Use on Device</button>" +
 														"</span>";
+										break;
+									}
+									case("impl_mags"):
+									{
+										//!! ADD USE BUTTON
 										break;
 									}
 								}
@@ -666,17 +673,17 @@ function injectUserPayload(userPayload)
 				"</li>"
 			);
 
-			if(payload.getActiveEffect("shim0")) //SHIM [T0] ACTIVE
+			if(payload.getActiveEffect("shim_0")) //SHIM [T0] ACTIVE
 			{
 				$(".shimButton").attr("disabled",true);
-				$(".shimButton[data-effect='shim0']").html("Already Active");
-				$(".shimButton[data-effect='shim1']").html("Other Shimmerstick Active");
+				$(".shimButton[data-effect='shim_0']").html("Already Active");
+				$(".shimButton[data-effect='shim_1']").html("Other Shimmerstick Active");
 			}
-			else if(payload.getActiveEffect("shim1"))  //SHIM [T1] ACTIVE
+			else if(payload.getActiveEffect("shim_1"))  //SHIM [T1] ACTIVE
 			{
 				$(".shimButton").attr("disabled",true);
-				$(".shimButton[data-effect='shim0']").html("Other Shimmerstick Active");
-				$(".shimButton[data-effect='shim1']").html("Already Active");
+				$(".shimButton[data-effect='shim_0']").html("Other Shimmerstick Active");
+				$(".shimButton[data-effect='shim_1']").html("Already Active");
 			}
 		});
 
@@ -888,7 +895,7 @@ function initRadio(target)
 
 function initCheck(target)
 {
-	let effects = payload.getItemEffects(target.id.split("Opt")[0]);
+	let effects = payload.getItemEffects(target.id.split("_opt")[0]);
 
 	effects.forEach(function(effectArray)
 	{
@@ -953,10 +960,10 @@ function initCheck(target)
 
 				break;
 			}
-			case("shim0"): // Shimmerstick T0 (+1 Tag to All Costs, +30s to All Timers)
-			case("shim1"): // Shimmerstick T1 (+1 Tag to All Costs, +15s to All Timers)
+			case("shim_0"): // Shimmerstick T0 (+1 Tag to All Costs, +30s to All Timers)
+			case("shim_1"): // Shimmerstick T1 (+1 Tag to All Costs, +15s to All Timers)
 			{
-				let otherTarget = $("#" + (effect["abbr"] === "shim0" ? "shim1" : "shim0") + "Init")[0];
+				let otherTarget = $("#" + (effect["abbr"] === "shim_0" ? "shim_1" : "shim_0") + "_init")[0];
 				payload.setActiveEffect(effect["abbr"], $(target).prop("checked"));
 
 				$("#" + otherTarget.id + " input").prop("disabled", $(target).prop("checked"));
@@ -965,17 +972,17 @@ function initCheck(target)
 				$("#shimStatus").attr("src", "resources/images/status/" + effect["abbr"] + ".png");
 				$("#shimStatus").toggleClass("hidden", !$(target).prop("checked"));
 
-				if(payload.getActiveEffect("shim0")) //SHIM [T0] ACTIVE
+				if(payload.getActiveEffect("shim_0")) //SHIM [T0] ACTIVE
 				{
 					$(".shimButton").attr("disabled",true);
-					$(".shimButton[data-effect='shim0']").html("Already Active");
-					$(".shimButton[data-effect='shim1']").html("Other Shimmerstick Active");
+					$(".shimButton[data-effect='shim_0']").html("Already Active");
+					$(".shimButton[data-effect='shim_1']").html("Other Shimmerstick Active");
 				}
-				else if(payload.getActiveEffect("shim1"))  //SHIM [T1] ACTIVE
+				else if(payload.getActiveEffect("shim_1"))  //SHIM [T1] ACTIVE
 				{
 					$(".shimButton").attr("disabled",true);
-					$(".shimButton[data-effect='shim0']").html("Other Shimmerstick Active");
-					$(".shimButton[data-effect='shim1']").html("Already Active");
+					$(".shimButton[data-effect='shim_0']").html("Other Shimmerstick Active");
+					$(".shimButton[data-effect='shim_1']").html("Already Active");
 				}
 				else
 				{
@@ -1010,8 +1017,8 @@ function initCheck(target)
 
 				break;
 			}
-			case("vigl0"): // Vigil T0
-			case("vigl1"): // Vigil T1
+			case("vigl_0"): // Vigil T0
+			case("vigl_1"): // Vigil T1
 			{
 
 				break;
@@ -1173,7 +1180,7 @@ function accessTerminal(event)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: payload.getActiveEffectIDs(),
+					effects: payload.getActiveEffects(),
 					termID: session.getTerminalID()
 				}
 			});
@@ -1900,7 +1907,7 @@ function executeAction(actionMap,newData,globalAction)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: payload.getEffect("copycat")["id"],
+					effects: "copycat",
 					termID: session.getTerminalID()
 				}
 			});
@@ -2045,7 +2052,7 @@ function completeAction(actionMap)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: payload.getEffect("pet_use")["id"],
+					effects: "pet_use",
 					termID: session.getTerminalID()
 				}
 			})
@@ -2094,7 +2101,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 				data:
 				{
 					userID: payload.getUserID(),
-					effectIDs: payload.getEffect("deck_jst")["id"],
+					effects: "deck_jst",
 					termID: session.getTerminalID()
 				}
 			})

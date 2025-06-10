@@ -104,7 +104,7 @@ $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute(array_column($mlFuncArray,"name"));
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
-$itemQuery = "  SELECT item_id, count
+$itemQuery = "  SELECT item_abbr, count
                 FROM {$dbName}.user_items
                 WHERE user_id = :userID";
 

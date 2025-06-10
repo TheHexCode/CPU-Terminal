@@ -229,9 +229,9 @@ function processCharInfo(charData)
 
 	charData["items"].forEach(function(item)
 	{
-		let inputID = "#item_" + item["item_id"];
+		let inputID = "#item_" + item["item_abbr"];
 
-		setItemCharges(item["item_id"], item["count"]);
+		setItemCharges(item["item_abbr"], item["count"]);
 
 		$(inputID).prop("checked",true);
 		$("input[name='"+$(inputID).prop("name")+"']").prop("data-active",false);
@@ -246,12 +246,12 @@ function processCharInfo(charData)
 	$(".mlLoginBox").addClass("hidden");
 }
 
-function setItemCharges(itemID, charges)
+function setItemCharges(itemAbbr, charges)
 {
-	$(".itemCount[data-id='" + itemID + "']").attr("data-charges", charges);
-	$(".itemCount[data-id='" + itemID + "'] .countSum").html(charges);
+	$(".itemCount[data-abbr='" + itemAbbr + "']").attr("data-charges", charges);
+	$(".itemCount[data-abbr='" + itemAbbr + "'] .countSum").html(charges);
 
-	let chargeImages = $(".itemCount[data-id='" + itemID + "']").find("img");
+	let chargeImages = $(".itemCount[data-abbr='" + itemAbbr + "']").find("img");
 
 	for(let i = 0; i < charges; i++)
 	{
@@ -264,12 +264,12 @@ function setItemCharges(itemID, charges)
 	}
 
 
-	$(".itemCount[data-id='" + itemID + "']").removeClass("hidden");
+	$(".itemCount[data-abbr='" + itemAbbr + "']").removeClass("hidden");
 }
 
-function changeItemCharges(itemID, change)
+function changeItemCharges(itemAbbr, change)
 {
-	let target = $(".itemCount[data-id='" + itemID + "']")[0];
+	let target = $(".itemCount[data-abbr='" + itemAbbr + "']")[0];
 
 	if(target !== undefined)
 	{
@@ -277,7 +277,7 @@ function changeItemCharges(itemID, change)
 		let maxCharges = $(target).find("img").length;
 		let newCharges = Math.max(0, Math.min(maxCharges, currentCharges + change));
 
-		setItemCharges(itemID, newCharges);
+		setItemCharges(itemAbbr, newCharges);
 	}
 
 }
@@ -293,10 +293,10 @@ function statSubmit(event)
 	let items = [];
 	$(".itemSelect input:checked").each(function(index, item) {
 		let itemPush = {
-			id: Number($(item).attr("data-id"))
+			abbr: $(item).attr("data-abbr")
 		}
 
-		let itemCount = $(".itemCount[data-id=" + $(item).attr("data-id") + "]");
+		let itemCount = $(".itemCount[data-abbr=" + $(item).attr("data-abbr") + "]");
 		
 		itemPush["count"] = (itemCount.length ? Number($(itemCount[0]).attr("data-charges")) : null);
 

@@ -319,9 +319,9 @@ class Payload
         return this.#activeEffects.includes(effectAbbr);
     }
 
-    getActiveEffectIDs()
+    getActiveEffects()
     {
-        let activeEffectIDs = [];
+        let activeEffects = [];
 
         this.#activeEffects.forEach(function(effectAbbr)
         {
@@ -338,10 +338,10 @@ class Payload
                 return effect.abbr === effectAbbr;
             })
 
-            activeEffectIDs.push(targetEffect["id"]);
+            activeEffects.push(targetEffect["abbr"]);
         }, this);
 
-        return activeEffectIDs;
+        return activeEffects;
     }
 
     getActionTime()
@@ -349,8 +349,8 @@ class Payload
         // POSITIVE IS A BUFF; NEGATIVE IS A DEBUFF
         let bd = ((this.getFunction("BACKDOOR") > 0) ? (this.getFunction("BACKDOOR") * 5) + 5 : 0);
         let pgUK9K = (this.getActiveEffect("deck_uh9k") ? 5 : 0);
-        let ssT0 = (this.getActiveEffect("shim0") ? -30 : 0);
-        let ssT1 = (this.getActiveEffect("shim1") ? -15 : 0);
+        let ssT0 = (this.getActiveEffect("shim_0") ? -30 : 0);
+        let ssT1 = (this.getActiveEffect("shim_1") ? -15 : 0);
 
         let actionTime = Math.max(10, 30 - (bd + pgUK9K + ssT0 + ssT1));
 

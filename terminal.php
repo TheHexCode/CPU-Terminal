@@ -179,57 +179,50 @@
 						</div>
 					</div>
 					<div class="initItemList">
-						<div id="cmmInit" class="initItem hidden">
+						<div id="cmm_init" class="initItem hidden">
 							<div class="initHeader">CMM ARMS:</div>
 							<div class="initOption">
-								<input type="checkbox" id="cmmOpt" onclick="initCheck(this)">
-								<label for="cmmOpt">Used Slip this Scene?</label>
+								<input type="checkbox" id="cmm_opt" onclick="initCheck(this)">
+								<label for="cmm_opt">Used Slip this Scene?</label>
 							</div>
 						</div>
-						<div id="impl_clecInit" class="initItem hidden">
+						<div id="impl_clec_init" class="initItem hidden">
 							<div class="initHeader">CLEC FINGERS:</div>
 							<div class="initOption">
-								<input type="checkbox" id="impl_clecOpt" onclick="initCheck(this)">
-								<label for="impl_clecOpt">+1 HACKING (1/Sim)?</label>
+								<input type="checkbox" id="impl_clec_opt" onclick="initCheck(this)">
+								<label for="impl_clec_opt">+1 HACKING (1/Sim)?</label>
 							</div>
 						</div>
-						<li id="shim0Init" class="initItem hidden">
+						<li id="shim_0_init" class="initItem hidden">
 							<div class="initHeader">SHIMMERSTICK [T0]:</div>
 							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
 							<div class="initOption">
-								<input type="checkbox" id="shim0Opt" onclick="initCheck(this)">
-								<label for="shim0Opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
+								<input type="checkbox" id="shim_0_opt" onclick="initCheck(this)">
+								<label for="shim_0_opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
 							</div>
 						</li>
-						<li id="shim1Init" class="initItem hidden">
+						<li id="shim_1_init" class="initItem hidden">
 							<div class="initHeader">SHIMMERSTICK [T1]:</div>
 							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
 							<div class="initOption">
-								<input type="checkbox" id="shim1Opt" onclick="initCheck(this)">
-								<label for="shim1Opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
+								<input type="checkbox" id="shim_1_opt" onclick="initCheck(this)">
+								<label for="shim_1_opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
 							</div>
 						</li>
-						<li id="vigl0Init" class="initItem hidden">
-							<div class="initHeader">VIGIL [T0]:</div>
+						<li id="vigil_init" class="initItem hidden">
+							<div class="initHeader">VIGIL:</div>
 							<div class="initOption">
-								<input type="checkbox" id="vigl0Opt" onclick="initCheck(this)">
-								<label for="vigl0Opt">Consumed dose before Scene?</label>
+								<input type="checkbox" id="vigil_opt" onclick="initCheck(this)">
+								<label for="vigil_opt">Consumed dose before Scene?</label>
 							</div>
 						</li>
-						<li id="vigl1Init" class="initItem hidden">
-							<div class="initHeader">VIGIL [T1]:</div>
-							<div class="initOption">
-								<input type="checkbox" id="vigl1Opt" onclick="initCheck(this)">
-								<label for="vigl1Opt">Consumed dose before Scene?</label>
-							</div>
-						</li>
-						<div id="bradInit" class="initItem hidden">
+						<div id="brad_init" class="initItem hidden">
 							<div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
 							<div class="initOption">
 								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck hidden"><br/>(Can set up later)</span></button>
 							</div>
 						</div>
-						<li id="impl_magsInit" class="initItem hidden">
+						<li id="impl_mags_init" class="initItem hidden">
 							<div class="initHeader">CANOPIC JAR [MAGSWEEP]:</div>
 							<div class="initOption">
 								<button onclick="initAction(this)">Brick Device?</button>
