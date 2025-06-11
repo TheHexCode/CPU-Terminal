@@ -248,7 +248,7 @@ class Timer
                     }
                 });
 
-                if(callargs["actionType"] === "deck")
+                if(callargs["actionType"] === "item")
                 {
                     $.ajax({
                         type: "POST",

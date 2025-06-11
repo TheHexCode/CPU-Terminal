@@ -237,6 +237,7 @@ else
     $remTagsQuery = "   SELECT SUM(tags) AS remTags FROM (
                                 SELECT tags FROM {$dbName}.sim_access_logs
                                     WHERE user_id=:userID
+                                        AND terminal_id=:termID
                                    UNION 
                                 SELECT SUM(sumCost * -1) FROM (
                                     SELECT SUM(cost) AS sumCost
@@ -261,13 +262,15 @@ else
                                    UNION
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Items
-                                    INNER JOIN (
+                                    /* THIS SECTION ONLY SELECTS ITEMS THE PLAYER CURRENTLY HAS EQUIPPED. */
+                                    /* IT IS COMMENTED OUT BECAUSE CERTAIN ABILITIES ALLOW PLAYERS TO SWAP CUSTOMIZATIONS AND STUFF IN GAME, AND THAT MIGHT BE VALID */
+                                    /*INNER JOIN (
                                         SELECT user_id, user_items.item_abbr, item_effects.abbr AS effect_abbr
                                         FROM {$dbName}.user_items
                                         INNER JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = user_items.item_abbr
                                         INNER JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr
                                         WHERE user_id=:userID
-                                    ) AS user_effects ON target_id=user_effects.effect_abbr
+                                    ) AS user_effects ON target_id=user_effects.effect_abbr*/
                                     WHERE UA_Items.target_type='item'
                                         AND UA_Items.newState=:termID
                                         AND UA_Items.user_id=:userID

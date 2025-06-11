@@ -59,14 +59,14 @@
     ✓ DigiPet[1]-------------------(✓,✓,✓,✓,✓)
     > ALSO
       - Budget Remote Access Drive-(X,X,X,X,X)
-      - Shimmerstick T0------------(✓,X,✓,✓,✓)
-      - Shimmerstick T1------------(✓,X,✓,✓,✓)
+      ✓ Shimmerstick T0------------(✓,✓,✓,✓,✓)
+      ✓ Shimmerstick T1------------(✓,✓,✓,✓,✓)
       - Canopic Jar [Magsweep]-----(X,X,X,X,X)
-  >> ACTION
-    - Copycat----------------------(X,X,X,X,X)
+  ✓  ACTION
+    ✓ Copycat----------------------(✓,✓,✓,✓,✓)
     ✓ DigiPet[2]-------------------(✓,✓,✓,✓,✓)
-  >> AUTO-ACTION
-    - Johnny's Special Touch-------(X,X,X,X,X)
+  ✓  AUTO-ACTION
+    ✓ Johnny's Special Touch-------(✓,✓,✓,✓,✓)
     ==========================================
     X FKD DC-17 T0
     X FKD DC-17 T1
@@ -95,8 +95,12 @@
  - Alarm
  - Lock
 
-> DASHBOARD NOT SAVING ENTRY FILE/CONTENTS?
+>!! DASHBOARD NOT SAVING ENTRY FILE/CONTENTS?
  - Something to do with changeEntry not firing when you change the input text
+
+>!! FIRST SLEAZE ACTION SAID 3 TAGS ON BUTTON BUT ONLY COST 2?
+
+>!! EXTRA TAGS FROM TWO TERMINALS?
 
 >> MAKE ICON SCHEMA DATABASED
 
@@ -109,6 +113,10 @@
 ^> FOR ABOVE THREE, ADD CONFIG AREAS TO ADMIN DASHBOARD
 
 > PREVIEW TERMINAL IN DASHBOARD
+
+> ADD ACCESS LOGS IN DASHBOARD
+
+> CREATE MONITORING PAGE FOR TERMINALS
 
 > DIGIPET ANIMATION
 

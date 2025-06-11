@@ -182,7 +182,7 @@
 						<div id="cmm_init" class="initItem hidden">
 							<div class="initHeader">CMM ARMS:</div>
 							<div class="initOption">
-								<input type="checkbox" id="cmm_opt" onclick="initCheck(this)">
+								<input type="checkbox" id="cmm_opt" data-stack="0" onclick="initCheck(this)">
 								<label for="cmm_opt">Used Slip this Scene?</label>
 							</div>
 						</div>
@@ -219,13 +219,13 @@
 						<div id="brad_init" class="initItem hidden">
 							<div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
 							<div class="initOption">
-								<button onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck hidden"><br/>(Can set up later)</span></button>
+								<button data-effect="brad" onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck hidden"><br/>(Can set up later)</span></button>
 							</div>
 						</div>
 						<li id="impl_mags_init" class="initItem hidden">
 							<div class="initHeader">CANOPIC JAR [MAGSWEEP]:</div>
 							<div class="initOption">
-								<button onclick="initAction(this)">Brick Device?</button>
+								<button data-effect="impl_mags" onclick="initAction(this)">Brick Device?</button>
 							</div>
 						</li>
 					</div>
