@@ -357,7 +357,7 @@ class Terminal
 
                 if($entry["type"] === "alarm")
                 {
-                    $prefixIntro = "&#x23F0;&#x269F; ";
+                    $prefixIntro = "&#xf009f; ";
                 }
 
                 $entryString .= '<div id="' . $icon . '-' . $entry["path"] . '" class="entry' . $subClass . '">' .

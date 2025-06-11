@@ -7,7 +7,7 @@ body
 	height: 98vh;
 	margin: 0;
 	padding: 0.5rem;
-	font-family: "BigBlue-TerminalPlus";
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
 	font-size: 1em;
 	background: var(--bg-color);
 	color: var(--fg-color);
@@ -42,7 +42,7 @@ body::after
 
 button
 {
-	font-family: "BigBlue-TerminalPlus";
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
 	background-color: var(--fg-color);
 	color: var(--bg-color);
 	border-color: var(--bg-color);
@@ -338,7 +338,7 @@ footer
 {
 	height: auto;
 	max-width: var(--max-main-width);
-	font-family: "BigBlue-TerminalPlus";
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
 	color: var(--fg-color);
 	background-color: var(--bg-color);
 	border: 0.5rem solid var(--border-color);

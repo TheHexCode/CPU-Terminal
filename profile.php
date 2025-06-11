@@ -118,7 +118,7 @@
 			<div id="charSelectModal" class="modalBox">
 				<div class="modalHeaderRow">
 					<span class="modalHeaderText"></span>
-					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&times;</span>
+					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&#xf1398;</span>
 				</div>
 				<div class="modalBody">
 					<div class="modalBodyText">

@@ -76,7 +76,7 @@ foreach($itemArray as $itemCat)
                                     "<span>USES LEFT: <span class='countSum'>" . $item["max_charges"] . "</span>/" . $item["max_charges"] . "</span>" .
                                 "</div>" .
                                 "<div class='itemCountRow'>" .
-                                    "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", -1)'><b>&lt;&nbsp;&minus;</b></button>" . 
+                                    "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", -1)'><b>&lt;</b>&nbsp;&#x2501;</button>" . 
                                     "<span class='itemImgBox'>";
             
             for($i = 1; $i <= $item["max_charges"]; $i++)
@@ -85,7 +85,7 @@ foreach($itemArray as $itemCat)
             }
                                     
             $itemString .=          "</span>" .
-                                    "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", 1)'>&plus;&nbsp;<b>&gt;</b></button>" .
+                                    "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", 1)'>&#x271A;&nbsp;<b>&gt;</b></button>" .
                                 "</div>" .
                             "</div>";
         }

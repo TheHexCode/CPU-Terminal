@@ -1,20 +1,32 @@
+/*
 @font-face {
 	font-family: "DSEG14-ClassicLight";
 	src: url("../fonts/DSEG14Classic-Light.woff2") format("woff2"),
          url("../fonts/DSEG14Classic-Light.woff") format("woff"),
          url("../fonts/DSEG14Classic-Light.ttf") format("truetype");
 }
+*/
 
 @font-face {
 	font-family: "DSEG14-ClassicRegular";
 	src: url("../fonts/DSEG14Classic-Regular.woff2") format("woff2"),
          url("../fonts/DSEG14Classic-Regular.woff") format("woff"),
          url("../fonts/DSEG14Classic-Regular.ttf") format("truetype");
+		 /* ATTRIBUTION: https://www.keshikan.net/fonts-e.html */
 }
 
+/*
 @font-face {
 	font-family: "BigBlue-TerminalPlus";
 	src: url("../fonts/BigBlue_TerminalPlus.TTF") format("truetype");
+}
+*/
+
+@font-face {
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
+	src: url("../fonts/BigBlueTermPlusNerdFontPropo-Regular.ttf");
+	/* ATTRIBUTION: https://www.nerdfonts.com/font-downloads >> BigBlueTerm Nerd Font */
+	/*    BASED ON: https://int10h.org/blog/2015/12/bigblue-terminal-oldschool-fixed-width-font/ */
 }
 
 :root

@@ -607,7 +607,7 @@ function injectUserPayload(userPayload)
 						{
 							case("copycat"): //COPYCAT
 							{
-								if(effect.uses > effect.charges)
+								if(effect.uses >= effect.charges)
 								{
 									payload.setActiveEffect(effect.abbr, true);
 								}
@@ -627,7 +627,7 @@ function injectUserPayload(userPayload)
 						{
 							case("pet_use"): //DIGIPET_USE
 							{
-								if(effect.uses > 0)
+								if(effect.uses >= effect.charges)
 								{
 									$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
 
@@ -651,7 +651,7 @@ function injectUserPayload(userPayload)
 							{
 								$(".touchedBox").removeClass("hidden");
 
-								if(effect.termUses > 0)
+								if(effect.termUses >= effect.charges)
 								{
 									payload.setActiveEffect(effect.abbr, true);
 								}
@@ -1986,7 +1986,7 @@ function completeAction(actionMap)
 				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["upperAction"]);
 			}
 
-			if(payload.getItem(14)) //JOHNNY'S SPECIAL TOUCH
+			if(payload.getItem("deck_jst")) //JOHNNY'S SPECIAL TOUCH
 			{
 				session.setFunctionState("TOUCHED",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),1);
 				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["upperAction"]);

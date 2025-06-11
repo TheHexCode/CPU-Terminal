@@ -72,6 +72,14 @@
     X FKD DC-17 T1
     X Nerd's Safety Glasses
 
+(Plus: &#x271A;)
+(Minus: &#x2501;)
+(Close X: &#xf1398;)
+(Bell Ring Outline: &#xf009f;)
+(Question: f420)
+(Question: f29c)
+(Help: f0625)
+
 > MAKE ITEM USES INSIDE THE ITEM
   > THAT WAY SHIM & VIGIL EFFECTS ARE ABLE TO BE 1/SCENE
 

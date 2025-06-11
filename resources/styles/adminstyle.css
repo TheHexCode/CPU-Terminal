@@ -203,10 +203,12 @@ h1
     grid-column: contents / buttons;
 }
 
+/*
 .entryID
 {
-    /*grid-column: id / access;*/
+    grid-column: id / access;
 }
+*/
 
 .entryAccess
 {

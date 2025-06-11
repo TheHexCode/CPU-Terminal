@@ -139,12 +139,12 @@
 								EXTRA TAGS?
 							</div>
 							<div class="tagInterface">
-								<button class="extraButton" onMouseUp="updateTags(-1, Session.EXTRA)"><b>&minus;</b></button>
+								<button class="extraButton" onMouseUp="updateTags(-1, Session.EXTRA)">&#x2501;</button>
 								<div class="lcdBox blue">
 									<span id="extTagsBG" class="dseg BG">~~</span>
 									<span id="extTags" class="dseg FG">XX</span>
 								</div>
-								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">&plus;</button>
+								<button class="extraButton" onMouseUp="updateTags(1, Session.EXTRA)">&#x271A;</button>
 							</div>
 							<div id="extraDetails" class="tagDetails">
 							</div>
@@ -596,7 +596,7 @@
 				<div class="modalOverlay hidden"></div>
 				<div class="modalHeaderRow">
 					<span class="modalHeaderText"></span>
-					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&times;</span>
+					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&#xf1398;</span>
 				</div>
 				<div class="modalBody">
 					<div id="modalBodyTimer"class="timerContainer hidden">
