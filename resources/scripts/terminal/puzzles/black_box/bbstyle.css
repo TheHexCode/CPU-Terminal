@@ -1,0 +1,41 @@
+/*
+#bbGrid
+{
+    display: grid;
+    grid-template-rows: repeat(10,auto);
+    grid-template-columns: [start] repeat(10,min-content) [end];
+    row-gap: 0.5rem;
+    background-color: var(--grey);
+    padding: 0.5rem;
+    width: min-content;
+}
+
+.bbRow
+{
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: start / end;
+    column-gap: 0.5rem;
+}
+
+.bbBox
+{
+    height: 50px;
+    width: 50px;
+}
+
+.bbBox.black
+{
+    background-color: var(--black);
+}
+
+.bbBox.red
+{
+    background-color: var(--dimred);
+}
+
+.bbBox.hidden
+{
+    background-color: var(--grey);
+}
+*/

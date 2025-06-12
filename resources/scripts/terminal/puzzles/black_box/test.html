@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>TERMINAL</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="UTF-8">
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
+        <script type="text/javascript" src="./black_box.js"></script>
+        <link rel="stylesheet" type="text/css" href="./bbstyle.css"/>
+	</head>
+	<body>
+        <canvas id="bbGrid"></canvas>
+        <!--
+        <div id="bbGrid">
+            <div class="bbRow" data-row="0">
+                <div class="bbBox hidden" data-col="0"></div>
+                <div class="bbBox red" data-col="1"></div>
+                <div class="bbBox red" data-col="2"></div>
+                <div class="bbBox red" data-col="3"></div>
+                <div class="bbBox red" data-col="4"></div>
+                <div class="bbBox red" data-col="5"></div>
+                <div class="bbBox red" data-col="6"></div>
+                <div class="bbBox red" data-col="7"></div>
+                <div class="bbBox red" data-col="8"></div>
+                <div class="bbBox hidden" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="1">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="2">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="3">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="4">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="5">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="6">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="7">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="8">
+                <div class="bbBox red" data-col="0"></div>
+                <div class="bbBox black" data-col="1"></div>
+                <div class="bbBox black" data-col="2"></div>
+                <div class="bbBox black" data-col="3"></div>
+                <div class="bbBox black" data-col="4"></div>
+                <div class="bbBox black" data-col="5"></div>
+                <div class="bbBox black" data-col="6"></div>
+                <div class="bbBox black" data-col="7"></div>
+                <div class="bbBox black" data-col="8"></div>
+                <div class="bbBox red" data-col="9"></div>
+            </div>
+            <div class="bbRow" data-row="9">
+                <div class="bbBox hidden" data-col="0"></div>
+                <div class="bbBox red" data-col="1"></div>
+                <div class="bbBox red" data-col="2"></div>
+                <div class="bbBox red" data-col="3"></div>
+                <div class="bbBox red" data-col="4"></div>
+                <div class="bbBox red" data-col="5"></div>
+                <div class="bbBox red" data-col="6"></div>
+                <div class="bbBox red" data-col="7"></div>
+                <div class="bbBox red" data-col="8"></div>
+                <div class="bbBox hidden" data-col="9"></div>
+            </div>
+        </div>
+        -->
+    <script>drawGrid()</script>
+    </body>
+</html>
