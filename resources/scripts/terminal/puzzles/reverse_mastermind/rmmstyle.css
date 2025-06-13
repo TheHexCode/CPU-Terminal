@@ -1,0 +1,82 @@
+/*
+    div: rMMBox
+      div: rMMGuessRow
+        |A|A|A|C|::::
+      div: rMMGuessRow
+        |A|D|C|B|::::
+    ...
+      div: rMMAnswerRow
+        |_|_|_|_|
+
+
+
+*/
+
+#rmmBox
+{
+    display: grid;
+    grid-template-columns: [start] 1fr [guesses] min-content [gap] 1rem [markers] min-content [pad] 1fr [end];
+    grid-auto-flow: row;
+    row-gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid black;
+    width: 400px;
+}
+
+.rmmGuessRow
+{
+    grid-column: guesses / gap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 2px;
+    border: 1px solid red;
+}
+
+.rmmGuessChar
+{
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid blue;
+}
+
+.rmmGuessChar img
+{
+    margin: 5px;
+}
+
+.rmmMarkerBox
+{
+    grid-column: markers / pad;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid green;
+}
+
+.rmmMarkerRow
+{
+    display: flex;
+    flex-direction: row;
+    border: 1px solid purple;
+}
+
+.rmmMarkerChar
+{
+    align-content: center;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    border: 1px solid orange;
+}
+
+.rmmGapRow
+{
+    height: 24px;
+    grid-column: guesses / markers;
+}
+
+.rmmAnswerChar
+{
+    padding: 0;
+}
