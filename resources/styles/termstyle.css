@@ -371,7 +371,7 @@ ul
 	row-gap: 0.25rem;
 	align-items: center;
 	padding: 8px;
-	border-image-source: url("../images/borders/corner_border.png");
+	border-image-source: url("/resources/images/borders/corner_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 	height: min-content;
@@ -380,7 +380,7 @@ ul
 .accessBox.blue
 {
 	--fg-color: var(--blue);
-	border-image-source: url("../images/borders/corner_border_ice.png");
+	border-image-source: url("/resources/images/borders/corner_border_ice.png");
 }
 
 .accessTagContainer
@@ -859,7 +859,7 @@ ul
 	flex-direction: column;
 	row-gap: 0.25rem;
 	justify-content: center;
-	border-image-source: url("../images/borders/corner_border.png");
+	border-image-source: url("/resources/images/borders/corner_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 	padding: 0.5rem 0 0.5rem 0;
@@ -911,7 +911,7 @@ ul
 
 .subContBody
 {
-	border-image-source: url("../images/borders/corner_border.png");
+	border-image-source: url("/resources/images/borders/corner_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
 	padding: 16px;
@@ -1146,7 +1146,7 @@ ul
 	justify-content: space-between;
 	align-items: stretch;
 	text-align: center;
-	border-image-source: url("../images/borders/bracket_border.png");
+	border-image-source: url("/resources/images/borders/bracket_border.png");
 	border-image-width: 14px;
 	border-image-slice: 14;
 	padding: 0 14px;
@@ -1154,7 +1154,7 @@ ul
 
 .ice .entryContentsBar
 {
-	border-image-source: url("../images/borders/bracket_border_ice.png");
+	border-image-source: url("/resources/images/borders/bracket_border_ice.png");
 }
 
 .entryContents

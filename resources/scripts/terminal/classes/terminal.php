@@ -31,7 +31,7 @@ class Terminal
             $this->initialEntries = array();
             $this->logEntries = $termResponse["logEntries"];
 
-            $iconFilepath = "resources/schemas/icons.json";
+            $iconFilepath = "./resources/schemas/icons.json";
             $iconFile = fopen($iconFilepath,"r");
             $this->iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
             fclose($iconFile);
@@ -89,7 +89,7 @@ class Terminal
                 if(in_array($icon,$activeIcons,true))
                 {
                     $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(this,\'' . $icon . 'Content\')">' . 
-                                        '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
+                                        '<img src="./resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                     '</button>';
 
                     array_push($subTabs["inactive"],$subTabString);
@@ -97,7 +97,7 @@ class Terminal
                 else
                 {
                     $subTabString = '<button id="' . $icon . 'SubTab" class="subTab disabled">' . 
-                                        '<img src="resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
+                                        '<img src="./resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                     '</button>';
 
                     array_push($subTabs["disabled"],$subTabString);
@@ -398,6 +398,23 @@ class Terminal
             }
 
             return $returnString;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    public function setupPuzzleEntries()
+    {
+        if($this->main === "")
+        {
+            $dbArray = array_filter($this->entries,function ($entry)
+            {
+                return $entry["icon"] === "puzzles";
+            });
+
+            return var_dump($dbArray);
         }
         else
         {

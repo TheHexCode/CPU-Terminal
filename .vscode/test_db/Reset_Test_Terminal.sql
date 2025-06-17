@@ -29,4 +29,5 @@ INSERT INTO sim_entries
 		    (@TermID,'locks','0','entry',0,1,'Test Lock',NULL,'initial'),
 		    (@TermID,'defenses','0','entry',0,1,'Test ADS',NULL,'initial'),
 		    (@TermID,'utilities','0','power',0,1,'Test Power',NULL,'initial'),
-		    (@TermID,'utilities','1','alarm',0,1,'Test Alarm',NULL,'initial');
+		    (@TermID,'utilities','1','alarm',0,1,'Test Alarm',NULL,'initial'),
+			(@TermID,'puzzles','1','rev_mm',NULL,NULL,NULL,NULL,'initial');

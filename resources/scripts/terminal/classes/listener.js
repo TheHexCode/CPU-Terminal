@@ -7,17 +7,17 @@ class Listener
         $.ajax({
             type: "GET",
             dataType: "text",
-            url: "resources/scripts/terminal/listener/listen_test.php",
+            url: "/resources/scripts/terminal/listener/listen_test.php",
             timeout: 0
         })
         .fail(function(ajax)
         {
             console.error(ajax.responseText);
-            $("#serverStatus").attr("src","resources/images/status/server_off.png");
+            $("#serverStatus").attr("src","/resources/images/status/server_off.png");
         })
         .done(function()
         {
-            $("#serverStatus").attr("src","resources/images/status/server_on.png");
+            $("#serverStatus").attr("src","/resources/images/status/server_on.png");
         });
     }
 
@@ -35,7 +35,7 @@ class Listener
         $.ajax({
             type: "GET",
             dataType: "json",
-            url: "resources/scripts/terminal/listener/listen_client.php",
+            url: "/resources/scripts/terminal/listener/listen_client.php",
             timeout: 0
         })
         .fail(function(ajax)
@@ -47,7 +47,7 @@ class Listener
                     break;
                 case(537): // LISTEN SERVER DOWN
                     console.error(ajax.responseText);
-                    $("#serverStatus").attr("src","resources/images/status/server_off.png");
+                    $("#serverStatus").attr("src","/resources/images/status/server_off.png");
                     break;
                 case(200): // PARSER ERROR?
                     if(ajax.statusText === "parsererror")
@@ -66,11 +66,11 @@ class Listener
                         console.error(ajax);
                     }
 
-                    $("#serverStatus").attr("src","resources/images/status/server_off.png");
+                    $("#serverStatus").attr("src","/resources/images/status/server_off.png");
                     break;
                 default: // UNKNOWN ERROR
                     console.error(ajax);
-                    $("#serverStatus").attr("src","resources/images/status/server_off.png");
+                    $("#serverStatus").attr("src","/resources/images/status/server_off.png");
                     break;
             }
         })
@@ -98,7 +98,7 @@ class Listener
             {
                 case("entry"):
                     let entryJSON = $.getJSON(
-                        "resources/scripts/terminal/db/getEntryUpdate.php",
+                        "/resources/scripts/terminal/db/getEntryUpdate.php",
                         {
                             id: entryID,
                             newState: newData,

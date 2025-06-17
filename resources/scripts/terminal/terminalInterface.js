@@ -110,7 +110,7 @@ function submitCode(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/terminal/db/getUser.php",
+		url: "/resources/scripts/terminal/db/getUser.php",
 		data:
 		{
 			userCode: $("#payloadCodeInput")[0].value,
@@ -385,7 +385,7 @@ function injectUserPayload(userPayload)
 
 							if((effect.abbr === "shim_0") || (effect.abbr === "shim_1"))
 							{
-								$("#shimStatus").attr("src", "resources/images/status/" + effect.abbr + ".png");
+								$("#shimStatus").attr("src", "/resources/images/status/" + effect.abbr + ".png");
 								$("#shimStatus").toggleClass("hidden", $(target).prop("checked"));
 							}
 						}
@@ -504,12 +504,12 @@ function injectUserPayload(userPayload)
 								
 								for(let i = 0; i < effect.uses; i++)
 								{
-									effectString += "<img src='resources/images/actions/itemfilled.png' />";
+									effectString += "<img src='/resources/images/actions/itemfilled.png' />";
 								}
 
 								for(let j = 0; j < remCharges; j++)
 								{
-									effectString += "<img src='resources/images/actions/itemopen.png' />";
+									effectString += "<img src='/resources/images/actions/itemopen.png' />";
 								}
 								
 								effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
@@ -538,7 +538,7 @@ function injectUserPayload(userPayload)
 										{
 											if(effect.uses >= effect.charges)
 											{
-												$("#petStatus").attr("src","resources/images/status/pet_ready.png");
+												$("#petStatus").attr("src","/resources/images/status/pet_ready.png");
 
 												effectString += "<span class='itemActionRow'>" +
 																	"<span></span>" +
@@ -549,7 +549,7 @@ function injectUserPayload(userPayload)
 											}
 											else
 											{
-												$("#petStatus").attr("src","resources/images/status/pet_egg.png");
+												$("#petStatus").attr("src","/resources/images/status/pet_egg.png");
 
 												effectString += "<span class='itemActionRow'>" +
 																	"<span></span>" +
@@ -652,7 +652,7 @@ function injectUserPayload(userPayload)
 							{
 								if(effect.uses >= effect.charges)
 								{
-									$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
+									$("#petStatus").attr("src","/resources/images/status/pet_sleep.png");
 
 									payload.setActiveEffect(effect.abbr, true);
 								}
@@ -716,7 +716,7 @@ function injectUserPayload(userPayload)
 			userPayload["prevActions"].forEach(function(entry)
 			{
 				results = $.getJSON(
-					"resources/scripts/terminal/db/getEntryUpdate.php",
+					"/resources/scripts/terminal/db/getEntryUpdate.php",
 					{
 						id: entry["id"],
 						newState: entry["newState"],
@@ -980,7 +980,7 @@ function initCheck(target)
 				$(otherTarget).toggleClass("dimmed", $(target).prop("checked"));
 			}
 
-			$("#shimStatus").attr("src", "resources/images/status/" + effect["abbr"] + ".png");
+			$("#shimStatus").attr("src", "/resources/images/status/" + effect["abbr"] + ".png");
 			$("#shimStatus").toggleClass("hidden", !$(target).prop("checked"));
 
 			if(payload.getActiveEffect("shim_0")) //SHIM [T0] ACTIVE
@@ -1221,7 +1221,7 @@ function accessTerminal(event)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources/scripts/terminal/db/addLogEntry.php",
+				url: "/resources/scripts/terminal/db/addLogEntry.php",
 				data:
 				{
 					termID: session.getTerminalID(),
@@ -1289,7 +1289,7 @@ function submitBMCode(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/terminal/db/getMasher.php",
+		url: "/resources/scripts/terminal/db/getMasher.php",
 		data:
 		{
 			masherCode: $("#masherCodeInput")[0].value,
@@ -1348,7 +1348,7 @@ function injectButtonMasher(masherData)
 					$.ajax({
 						type: "POST",
 						dataType: "json",
-						url: "resources/scripts/terminal/db/userActions.php",
+						url: "/resources/scripts/terminal/db/userActions.php",
 						data:
 						{
 							userID: payload.getUserID(),
@@ -1419,7 +1419,7 @@ function takeAction(target)
 			let entryState = session.getEntryState(entryID);
 
 			let entryJSON = $.getJSON(
-				"resources/scripts/terminal/db/getEntryActions.php",
+				"/resources/scripts/terminal/db/getEntryActions.php",
 				{ id: entryID, state: entryState, action: action }
 			)
 			.done(function() {
@@ -2009,7 +2009,7 @@ function executeAction(actionMap,newData,globalAction)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources/scripts/terminal/db/useItems.php",
+				url: "/resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -2129,7 +2129,7 @@ function completeAction(actionMap)
 				case("deck"):
 				case("phack"):
 				{
-					$(".deckButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","resources/images/actions/itemfilled.png");
+					$(".deckButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","/resources/images/actions/itemfilled.png");
 
 					if(actionMap["remCharges"] <= 0)
 					{
@@ -2145,7 +2145,7 @@ function completeAction(actionMap)
 					let otherEffect = (actionMap["entryID"] === "shim_0" ? "shim_1" : "shim_0");
 					payload.setActiveEffect(actionMap["entryID"],true);
 
-					$("#shimStatus").attr("src", "resources/images/status/" + actionMap["entryID"] + ".png");
+					$("#shimStatus").attr("src", "/resources/images/status/" + actionMap["entryID"] + ".png");
 					$("#shimStatus").removeClass("hidden");
 
 					$(".shimButton").attr("disabled",true);
@@ -2159,7 +2159,7 @@ function completeAction(actionMap)
 		case("pet"):
 		{
 			payload.setActiveEffect("pet_play", true);
-			$("#petStatus").attr("src","resources/images/status/pet_ready.png");
+			$("#petStatus").attr("src","/resources/images/status/pet_ready.png");
 
 			$(".petButton").attr("disabled",true);
 			$(".petButton").html("Played With Already");
@@ -2167,7 +2167,7 @@ function completeAction(actionMap)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources/scripts/terminal/db/useItems.php",
+				url: "/resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -2199,7 +2199,7 @@ function completeAction(actionMap)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources/scripts/terminal/db/useItems.php",
+				url: "/resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),
@@ -2209,7 +2209,7 @@ function completeAction(actionMap)
 			})
 
 			payload.setActiveEffect("pet_use",true);
-			$("#petStatus").attr("src","resources/images/status/pet_sleep.png");
+			$("#petStatus").attr("src","/resources/images/status/pet_sleep.png");
 		}
 	}
 }
@@ -2251,7 +2251,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 			$.ajax({
 				type: "POST",
 				dataType: "json",
-				url: "resources/scripts/terminal/db/useItems.php",
+				url: "/resources/scripts/terminal/db/useItems.php",
 				data:
 				{
 					userID: payload.getUserID(),

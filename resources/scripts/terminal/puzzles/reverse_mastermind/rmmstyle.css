@@ -1,26 +1,29 @@
 /*
     div: rMMBox
       div: rMMGuessRow
-        |A|A|A|C|::::
+      o |A|A|A|C|::::
       div: rMMGuessRow
-        |A|D|C|B|::::
+      o |A|D|C|B|::::
     ...
       div: rMMAnswerRow
         |_|_|_|_|
-
-
-
 */
 
-#rmmBox
+.rmmBox
 {
     display: grid;
-    grid-template-columns: [start] 1fr [guesses] min-content [gap] 1rem [markers] min-content [pad] 1fr [end];
+    grid-template-columns: [start] 1fr [check] minmax(0.25rem, 1rem) [guesses] min-content [gap] minmax(0.25rem, 1rem) [markers] 1fr [end];
     grid-auto-flow: row;
-    row-gap: 0.5rem;
     padding: 0.5rem;
-    border: 1px solid black;
-    width: 400px;
+}
+
+.rmmAnswerCheck,
+.rmmFakeCheck
+{
+    grid-column: start / check;
+    height: clamp(15px,30px,30px);
+    width: clamp(15px,30px,30px);
+    align-self: center;
 }
 
 .rmmGuessRow
@@ -29,16 +32,21 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 2px;
-    border: 1px solid red;
+    padding: 0.7rem;
+    column-gap: 2px;
+    border-image-source: url("/resources/images/borders/corner_border.png");
+	border-image-width: 16px;
+	border-image-slice: 16;
 }
 
 .rmmGuessChar
 {
     text-align: center;
-    width: 40px;
-    height: 40px;
-    border: 1px solid blue;
+    height: clamp(20px,40px,40px);
+    width: clamp(20px,40px,40px);
+    background-color: rgb(from var(--fg-color) r g b / 10%);
+    border: 1px solid var(--fg-color);
+    border-radius: 0.5rem;
 }
 
 .rmmGuessChar img
@@ -48,17 +56,24 @@
 
 .rmmMarkerBox
 {
-    grid-column: markers / pad;
+    grid-column: markers / end;
     display: flex;
     flex-direction: column;
-    border: 1px solid green;
+    width: min-content;
+    justify-content: center;
 }
 
 .rmmMarkerRow
 {
     display: flex;
     flex-direction: row;
-    border: 1px solid purple;
+    border: 1px solid var(--border-color);
+    border-top-width: 0px;
+}
+
+.rmmMarkerRow:first-of-type
+{
+    border: 1px solid var(--border-color);
 }
 
 .rmmMarkerChar
@@ -67,16 +82,46 @@
     text-align: center;
     height: 20px;
     width: 20px;
-    border: 1px solid orange;
+    padding: 1px;
 }
 
-.rmmGapRow
+.rmmMarkerChar:first-of-type
 {
-    height: 24px;
-    grid-column: guesses / markers;
+    border-right: 1px solid var(--border-color);
+}
+
+#rmmAnswerBox
+{
+    padding: 0.5rem;
+    width: 100%;
 }
 
 .rmmAnswerChar
 {
     padding: 0;
+}
+
+.rmmAnswerMarker
+{
+    border: none;
+}
+
+img
+{
+    pointer-events: none;
+    user-select: none;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.rmmSubmitBox
+{
+    grid-column: guesses / gap;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+#rmmSubmitButton
+{
+    width: 100%;
 }

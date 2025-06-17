@@ -21,7 +21,7 @@ CREATE TABLE sim_terminals (
 CREATE TABLE sim_entries (
     id          INT     AUTO_INCREMENT,
     terminal_id INT     NOT NULL,
-    icon        ENUM('files','darkweb','cameras','locks','defenses','utilities')
+    icon        ENUM('files','darkweb','cameras','locks','defenses','utilities','puzzles')
                         NOT NULL,
     path        TEXT    NOT NULL,
     type        TEXT    NOT NULL,

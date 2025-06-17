@@ -8,13 +8,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-		<!--<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-		<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">-->
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<script type="text/javascript" src="resources/scripts/font/fontManip.js"></script>
-		<script type="text/javascript" src="resources/scripts/profile/profileInterface.js"></script>
-        <link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
-		<link rel="stylesheet" type="text/css" href="resources/styles/prostyle.css"/>
+		<script type="text/javascript" src="/resources/scripts/font/fontManip.js"></script>
+		<script type="text/javascript" src="/resources/scripts/profile/profileInterface.js"></script>
+        <link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/prostyle.css"/>
 	</head>
 	<body>
         <div id="main">

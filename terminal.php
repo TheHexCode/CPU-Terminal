@@ -9,14 +9,14 @@
 		<meta charset="UTF-8">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminal/classes/session.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminal/classes/payload.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminal/classes/timer.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminal/classes/listener.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminal/terminalInterface.js"></script>
-		<script type="text/javascript" src="resources/scripts/terminal/classes/gems.js" defer></script>
-		<link rel="stylesheet" type="text/css" href="resources/styles/rootstyle.css"/>
-		<link rel="stylesheet" type="text/css" href="resources/styles/termstyle.css"/>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/session.js"></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/payload.js"></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/timer.js"></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/listener.js"></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/terminalInterface.js"></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/gems.js" defer></script>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/termstyle.css"/>
 	</head>
 	<body>
 		<div id="main"<?php echo $terminal->getMain() ?>>
@@ -37,7 +37,7 @@
 					<img id="shimStatus" class="hidden" src=""/>
 				</div>
 				<!-- CONNECTED USERS? -->
-				<img id="serverStatus" src="resources/images/status/server_on.png"/>
+				<img id="serverStatus" src="/resources/images/status/server_on.png"/>
 			</div>
 			<div id="gemBar">
 				<div id="gemContainer">
@@ -72,7 +72,7 @@
 			</div>
 			<div class="infoBox">
 				<div class="infoTitle">
-					<img id="rigged" class="hidden" src="resources/images/actions/rigged.png"/>
+					<img id="rigged" class="hidden" src="/resources/images/actions/rigged.png"/>
 					<h2 id="termName">
 						<?php echo $terminal->getTerminalName() ?>
 					</h2>
@@ -267,7 +267,7 @@
 						<div class="subTabCol">
 							<div id="termSubTabs" class="subTabInset">
 								<button class="subTab active" onpointerup="openSubTab(this,'logContent')">
-									<img src="resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+									<img src="/resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
 								</button>
 								<?php echo $terminal->setupSubTabButtons() ?>
 							</div>
@@ -438,7 +438,7 @@
 									</div>
 								</div>
 								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("puzzles") ?>
+									<?php echo $terminal->setupPuzzleEntries() ?>
 								</div>
 							</div>
 						</div>
@@ -571,13 +571,13 @@
 						<div class="subTabCol">
 							<div id="deckSubTabs" class="subTabInset">
 								<button class="subTab active" onpointerup="openSubTab(this,'actContent')">
-									<img src="resources/images/subtabs/active.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
+									<img src="/resources/images/subtabs/active.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
 								<button class="subTab inactive" onpointerup="openSubTab(this,'passContent')">
-									<img src="resources/images/subtabs/passive.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
+									<img src="/resources/images/subtabs/passive.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
 								<button class="subTab inactive" onpointerup="openSubTab(this,'itemContent')">
-									<img src="resources/images/subtabs/items.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
+									<img src="/resources/images/subtabs/items.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
 								</button>
 							</div>
 							<div id="deckSubFill" class="subFill"></div>

@@ -151,7 +151,7 @@ class Session
     setEntry(entryID)
     {
         $.getJSON(
-            "resources/scripts/terminal/db/getEntryState.php",
+            "/resources/scripts/terminal/db/getEntryState.php",
             { id: entryID }
         )
         .done(this.#setEntryState.bind(this, entryID));

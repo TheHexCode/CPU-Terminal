@@ -1,5 +1,5 @@
 <?php
-require 'composer/vendor/autoload.php';
+require './composer/vendor/autoload.php';
 use WebSocket;
 
 $client = new WebSocket\Client("ws://localhost:8767");

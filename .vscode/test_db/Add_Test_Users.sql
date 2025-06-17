@@ -2,7 +2,8 @@ USE dbiykpinec1m8s;
 
 INSERT INTO users
             (ml_id, userCode, charName)
-    VALUES  (-1, '333333', 'Test');
+    VALUES  (-1, '333333', 'Test'),
+            (161, '876353', 'Puck');
 
 INSERT INTO user_functions
             (user_id, mlFunction_id, cav_id)
@@ -35,30 +36,28 @@ INSERT INTO user_functions
 INSERT INTO user_items
             (user_id, item_abbr, count)
     VALUES  (-1, 'deck_mm', NULL),
-            (-1, 'cmm', NULL),
-            (-1, 'cmm', NULL),
+            (-1, 'cmm_coc', NULL),
+            (-1, 'cmm_wid', NULL),
             (-1, 'copycat', NULL),
-            (-1, 'phack1', NULL),
+            (-1, 'phack_0', NULL),
             (-1, 'brad', NULL),
             (-1, 'beac', NULL),
-            (-1, 'digipet', NULL),
+            (-1, 'digi_pet', NULL),
             (-1, 'impl_mags', NULL),
             (-1, 'impl_clec', NULL),
-            (-1, 'shim0', 9),
-            (-1, 'shim1', 7),
-            (-1, 'vigl0', NULL),
-            (-1, 'vigl1', NULL),
+            (-1, 'shim_0', 9),
+            (-1, 'shim_1', 7),
+            (-1, 'vigil', NULL),
             (161, 'deck_bud', NULL),
-            (161, 'cmm', NULL),
-            (161, 'cmm', NULL),
+            (161, 'cmm_coc', NULL),
+            (161, 'cmm_wid', NULL),
             (161, 'copycat', NULL),
-            (161, 'phack1', NULL),
+            (161, 'phack_1', NULL),
             (161, 'brad', NULL),
             (161, 'beac', NULL),
-            (161, 'digipet', NULL),
+            (161, 'digi_pet', NULL),
             (161, 'impl_mags', NULL),
             (161, 'impl_clec', NULL),
-            (161, 'shim0', 2),
-            (161, 'shim1', 1),
-            (161, 'vigl0', NULL),
-            (161, 'vigl1', NULL);
+            (161, 'shim_0', 2),
+            (161, 'shim_1', 1),
+            (161, 'vigil', NULL);
