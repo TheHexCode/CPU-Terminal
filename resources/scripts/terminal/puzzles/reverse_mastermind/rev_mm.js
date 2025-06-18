@@ -180,54 +180,60 @@ class ReverseMasterMind
         
         $("#rmmGuessArray").html(guessString);
 
-        $("#rmmAnswerBox").html("<div class='rmmFakeCheck'>" +
+        $("#rmmAnswerBox").html("<div class='rmmTotalCheck'>" +
                                 "</div>" +
                                 "<div class='rmmGuessRow rmmAnswerRow'>" +
-                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null' onpointerdown='cycleBalls(event)'></div>" +
-                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null' onpointerdown='cycleBalls(event)'></div>" +
-                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null' onpointerdown='cycleBalls(event)'></div>" +
-                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null' onpointerdown='cycleBalls(event)'></div>" +
+                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null'></div>" +
+                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null'></div>" +
+                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null'></div>" +
+                                    "<div class='rmmGuessChar rmmAnswerChar' data-ball='null'></div>" +
                                 "</div>" +
                                 "<div class='rmmMarkerBox'>" +
-                                    "<div class='rmmMarkerRow'>" +
+                                    "<div class='rmmMarkerRow rmmAnswerMarkerRow'>" +
                                         "<span class='rmmMarkerChar rmmAnswerMarker'>&nbsp;</span>" +
                                         "<span class='rmmMarkerChar rmmAnswerMarker'>&nbsp;</span>" +
                                     "</div>" +
-                                    "<div class='rmmMarkerRow'>" +
+                                    "<div class='rmmMarkerRow rmmAnswerMarkerRow'>" +
                                         "<span class='rmmMarkerChar rmmAnswerMarker'>&nbsp;</span>" +
                                         "<span class='rmmMarkerChar rmmAnswerMarker'>&nbsp;</span>" +
                                     "</div>" +
                                 "</div>" +
                                 "<div class='rmmSubmitBox'>" +
-                                    "<button id='rmmSubmitButton' onpointerup='submitAnswer()' disabled>Submit Answer</button>" +
+                                    "<button id='rmmSubmitButton' onpointerup='submitAnswer(this)' disabled>Submit Answer</button>" +
                                 "</div>");
 
         $(".rmmAnswerChar").bind("pointerup", function(event)
         {
             event.preventDefault();
 
-            cycleBalls(event.target,"cycle");
-
-            let disabled = false;
-            $(".rmmAnswerChar").each(function(index, char)
+            if($(event.target).attr("disabled") !== "disabled")
             {
-                if(char.dataset["ball"] === "null")
-                {
-                    disabled = true;
-                    return false;
-                }
-            });
+                cycleBalls(event.target,"cycle");
 
-            $("#rmmSubmitButton").attr("disabled", disabled);
+                let disabled = false;
+                $(".rmmAnswerChar").each(function(index, char)
+                {
+                    if(char.dataset["ball"] === "null")
+                    {
+                        disabled = true;
+                        return false;
+                    }
+                });
+
+                $("#rmmSubmitButton").attr("disabled", disabled);
+            }
         });
 
         $(".rmmAnswerChar").bind("contextmenu", function(event)
         {
             event.preventDefault();
 
-            cycleBalls(event.target,"clear");
+            if($(event.target).attr("disabled") !== "disabled")
+            {
+                cycleBalls(event.target,"clear");
 
-            $("#rmmSubmitButton").attr("disabled", true);
+                $("#rmmSubmitButton").attr("disabled", true);
+            }
         });
     }
 
@@ -284,9 +290,20 @@ class ReverseMasterMind
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function sleep(ms)
+{
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function cycleBalls(target, action)
 {
     let newBall = "null";
+
+    $(".checkBorder").addClass("checkFade");
+    sleep(2100).then(() => {
+        $(".checkBorder.checkFade").html("");
+        $(".checkBorder.checkFade").removeClass("checkBorder checkFade");
+    });
 
     if(action === "clear") // Right-click sets to null
     {
@@ -355,33 +372,86 @@ function cycleBalls(target, action)
     }
 }
 
-function submitAnswer()
+function submitAnswer(target)
 {
-    let playerAnswer = [];
-    
-    $(".rmmAnswerChar").each(function(index, char)
+    if($(target).attr("disabled") !== "disabled")
     {
-        playerAnswer.push(char.dataset["ball"]);
-    });
+        $("#rmmSubmitButton, .rmmAnswerChar").attr("disabled", true);
 
-    let totalCorrect = 0;
+        $(".rmmGuessRow").removeClass("checking checkFade");
 
-    $(".rmmAnswerCheck").each(function(index, checkBox)
-    {        
-        if(revMM.checkGuess(index, playerAnswer))
+        $(".rmmAnswerCheck, .rmmTotalCheck").html("");
+        $(".rmmAnswerCheck, .rmmTotalCheck").removeClass("checkBorder");
+
+        let playerAnswer = [];
+        
+        $(".rmmAnswerChar").each(function(index, char)
         {
-            $(checkBox).html("<img src='/resources/images/puzzles/answer_correct.png' />");
-            totalCorrect++;
-        }
-        else
-        {
-            $(checkBox).html("<img src='/resources/images/puzzles/answer_wrong.png' />");
-            return false;
-        }
-    });
+            playerAnswer.push(char.dataset["ball"]);
+        });
+        
+        $(".rmmAnswerRow").addClass("checking");
 
-    if(totalCorrect === $(".rmmAnswerCheck").length)
+        sleep(450).then(() => {
+            $(".rmmTotalCheck").addClass("checkBorder");
+            $(".rmmTotalCheck").html("<svg id='rmmHexLogo' width='29' height='34' xmlns='http://www.w3.org/2000/svg'>" +
+                                        //             width='209' height='229'
+                                        "<mask id='rmmLogoMask'>" +
+                                        //   <polygon points='105,10 195,62 195,167 105,219 15,167 15,62' fill='black' stroke='white' stroke-width='15' />
+                                            "<polygon points='15,1 28,10 28,24 15,33 1,25 1,10' fill='black' stroke='white' stroke-width='2' />" +
+                                        "</mask>" +
+                                        "<foreignObject x='0' y='0' width='29' height='34' mask='url(#rmmLogoMask)'>" +
+                                            "<div id='rmmLogoBG'></div>" +
+                                        "</foreignObject>" +
+                                    "</svg>");
+
+            sleep(900).then(() => {
+                staggerCheck(0, $(".rmmAnswerCheck"), playerAnswer);
+            });
+        });
+    }
+}
+
+function staggerCheck(index, array, playerAnswer)
+{
+    if(index < array.length)
     {
-        console.log("You Win!")
+        let checkBox = array[index];
+
+        $(checkBox).addClass("checkBorder");
+        $($(".rmmGuessRow")[index]).addClass("checking");
+
+        sleep(450).then(() => {
+            if(revMM.checkGuess(index, playerAnswer))
+            {
+                $(checkBox).html("<span class='rmmCheckYes'>✓</span>");
+
+                sleep(450).then(() => {
+                    staggerCheck(index+1, array, playerAnswer);
+                });
+            }
+            else
+            {
+                $(checkBox).html("<span class='rmmCheckNo'>X</span>");
+
+                sleep(450).then(() => {
+                    $(".rmmTotalCheck").html("<span class='rmmCheckNo'>X</span>");
+                    $("#rmmSubmitButton, .rmmAnswerChar").attr("disabled", false);
+
+                    $(".rmmGuessRow.checking").addClass("checkFade");
+                    sleep(2100).then(() => {
+                        $(".rmmGuessRow.checking").removeClass("checking checkFade");
+                    });
+                });
+            }
+        });
+    }
+    else // All are correct
+    {
+        $(".rmmTotalCheck").html("<span class='rmmCheckYes'>✓</span>");
+        sleep(1000).then(() => {
+            console.log("You Win!");
+            // Close Modal
+        });
     }
 }

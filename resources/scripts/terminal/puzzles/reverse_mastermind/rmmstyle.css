@@ -18,12 +18,89 @@
 }
 
 .rmmAnswerCheck,
-.rmmFakeCheck
+.rmmTotalCheck
 {
     grid-column: start / check;
-    height: clamp(15px,30px,30px);
-    width: clamp(15px,30px,30px);
     align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.7rem;
+    height: 30px;
+    width: 30px;
+    font-size: 200%;
+}
+
+.checkBorder
+{
+    border-image-source: url("/resources/images/borders/corner_border.png");
+	border-image-width: 16px;
+	border-image-slice: 16;
+}
+
+.checkBorder.checkFade
+{
+    opacity: 0;
+    transition: opacity 2s linear;
+}
+
+@keyframes rmmLogoSpin
+{
+	from
+	{
+		transform: rotate(0deg);
+	}
+	to
+	{
+		transform: rotate(360deg);
+	}
+}
+
+#rmmLogoBG
+{
+	width: 40px;
+	height: 40px;
+	margin: -4px 0 0 -5px;
+
+	background: conic-gradient(var(--trans-clear), var(--fg-color) 90%, var(--fg-color));
+
+	animation-name: rmmLogoSpin;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+.rmmCheckYes
+{
+    margin-top: 0.3rem;
+}
+
+.rmmCheckNo
+{
+    margin-top: 0.1rem;
+    margin-left: 0.2rem;
+    color: var(--blue);
+}
+
+@keyframes checkZoom
+{
+    from {
+        width: 150%;
+        height: 150%;
+    }
+    to {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.checkChar
+{
+    animation-name: checkZoom;
+    animation-timing-function: ease-in;
+    animation-duration: 0.5s;
+    max-height: 150%;
+    max-width: 150%;
 }
 
 .rmmGuessRow
@@ -34,9 +111,33 @@
     align-items: center;
     padding: 0.7rem;
     column-gap: 2px;
+    z-index: 1;
     border-image-source: url("/resources/images/borders/corner_border.png");
 	border-image-width: 16px;
 	border-image-slice: 16;
+}
+
+.rmmGuessRow.checking::before
+{
+    content: "";
+    background: radial-gradient(
+        ellipse at center,
+        var(--blue) -10%,
+        transparent 70%
+    );
+    z-index: -1;
+    position: absolute;
+    width: 60%;
+    height: 80px;
+    left: 20%;
+    filter: blur(0.3rem);
+}
+
+.rmmGuessRow.checking.checkFade::before
+{
+    content: "";
+    opacity: 0;
+    transition: opacity 2s linear;
 }
 
 .rmmGuessChar
@@ -44,7 +145,7 @@
     text-align: center;
     height: clamp(20px,40px,40px);
     width: clamp(20px,40px,40px);
-    background-color: rgb(from var(--fg-color) r g b / 10%);
+    background-color: rgb(from var(--fg-color) r g b / 20%);
     border: 1px solid var(--fg-color);
     border-radius: 0.5rem;
 }
@@ -63,7 +164,7 @@
     justify-content: center;
 }
 
-.rmmMarkerRow
+.rmmMarkerRow:not(.rmmAnswerMarkerRow)
 {
     display: flex;
     flex-direction: row;
@@ -71,7 +172,7 @@
     border-top-width: 0px;
 }
 
-.rmmMarkerRow:first-of-type
+.rmmMarkerRow:not(.rmmAnswerMarkerRow):first-of-type
 {
     border: 1px solid var(--border-color);
 }
@@ -85,7 +186,7 @@
     padding: 1px;
 }
 
-.rmmMarkerChar:first-of-type
+.rmmMarkerChar:not(.rmmAnswerMarker):first-of-type
 {
     border-right: 1px solid var(--border-color);
 }
@@ -99,11 +200,6 @@
 .rmmAnswerChar
 {
     padding: 0;
-}
-
-.rmmAnswerMarker
-{
-    border: none;
 }
 
 img
