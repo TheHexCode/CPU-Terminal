@@ -36,17 +36,19 @@ class Session
     }
 
     #entryData;
+    #puzzleData;
     #repeatIcons = new Object();
 
     #touched = false;
     #copyableActions = [];
 
-    constructor(termInfo, initialEntries)
+    constructor(termInfo)
     {
         this.#termID = termInfo["termID"];
         this.#termState = termInfo["termState"];
         this.#stateData = termInfo["stateData"];
-        this.#entryData = initialEntries;
+        this.#entryData = termInfo["entries"];
+        this.#puzzleData = termInfo["puzzles"];
 
         switch(this.#termState)
         {
@@ -383,5 +385,10 @@ class Session
     makeActionCopyable(action)
     {
         this.#copyableActions.push(action.toLowerCase());
+    }
+
+    getPuzzle(index)
+    {
+        return this.#puzzleData[index];
     }
 }

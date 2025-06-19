@@ -2,6 +2,8 @@
 var payload = new Payload();
 var taTimer = new Timer("#termAccessTimer");
 var mbTimer = new Timer("#modalBodyTimer");
+/////////////////////////////////////////////////////////////////
+var revMM;
 
 $(document).ready(function()
 {
@@ -307,7 +309,9 @@ function injectUserPayload(userPayload)
 		}
 		else
 		{
-			$("#darkwebSubTab").addClass("hidden");
+			$("#darkwebSubTab").removeClass("inactive");
+			$("#darkwebSubTab").addClass("disabled");
+			$("#darkwebSubTab").attr("onclick","");
 		}
 
 		if(payload.getFunction("KNOWLEDGE"))
@@ -2296,4 +2300,87 @@ function setupAlertModal(bodyText)
 	$("#actionModal .modalButtonRow").attr("data-mode","confirm");
 	
 	$("#modalBG").css("display","flex");
+}
+
+function generatePuzzle(target)
+{
+	let puzzle = session.getPuzzle(target.dataset["id"]);
+
+	switch(puzzle["puzzle_type"])
+	{
+		case("free_rp"):
+		{
+			console.log("Free RP!");
+			break;
+		}
+		case("rev_mm"):
+		{
+			$("#actionModal").attr("data-type", "");
+			$("#actionModal").attr("data-id", "");
+
+			$("#actionModal .modalOverlay").removeClass("blink");
+			$("#actionModal .modalOverlay").addClass("hidden");
+
+			$("#actionModal").width($("#main").width());
+			$("#actionModal").removeClass("ice");
+
+			$("#actionModal .modalHeaderRow").removeClass("dimmed");
+			$("#actionModal .modalHeaderText").html("Reverse Mastermind");
+
+			$("#actionModal .modalBody").removeClass("dimmed");
+			$("#modalBodyTimer").addClass("hidden");
+			$("#actionModal .modalBodyText").html("<div id='rmmGuessArray' class='rmmBox'></div>");
+			$("#actionModal .modalButtonRow").html("<div id='rmmAnswerBox' class='rmmBox'></div>");
+
+			$(".modalBodyText").removeClass("hidden");
+			$("#actionModal .modalButtonRow").removeClass("dimmed");
+
+			revMM = new ReverseMasterMind(4, target.dataset["id"]);
+
+			$("#modalBG").css("display","flex");
+			break;
+		}
+	}
+}
+
+function resolvePuzzle(puzzID)
+{
+	let puzzle = session.getPuzzle(puzzID);
+
+	//cost
+	//repeat
+	//reward_type
+	//reward
+
+	switch(puzzle["reward_type"])
+	{
+		case("tags"):
+		{
+			let tagAmount = Number(puzzle["reward"]);
+
+			session.setCurrentTags(session.getCurrentTags() + tagAmount);
+			Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+			disableExpensiveButtons();
+		}
+		case("item"):
+		{
+			//json.decode(reward).each()
+		}
+	}
+
+	if(puzzle["repeat"] === null)
+	{
+		//No Repeat
+
+		$(".puzzleEntry[data-id='" + puzzID + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox").addClass("dimmed");
+		$(".puzzleSolveButton[data-id='" + puzzID + "']").html("Solved!");
+		$(".puzzleSolveButton[data-id='" + puzzID + "']").attr("disabled", true);
+	}
+	else if(puzzle["repeat"] > 0)
+	{
+		//Mark One Repeat Less
+	}
+	//else Repeat Infinitely (no change)
+
+	closeModal("Success");
 }

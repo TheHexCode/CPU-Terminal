@@ -9,6 +9,7 @@ class Terminal
     private $termState;
     private $stateData;
     private $entries;
+    private $puzzles;
     private $initialEntries;
     private $logEntries;
     private $iconSchema;
@@ -28,6 +29,7 @@ class Terminal
             $this->termState = $termResponse["state"];
             $this->stateData = $termResponse["stateData"];
             $this->entries = $termResponse["entries"];
+            $this->puzzles = $termResponse["puzzles"];
             $this->initialEntries = array();
             $this->logEntries = $termResponse["logEntries"];
 
@@ -80,8 +82,7 @@ class Terminal
             $activeIcons = array_unique(array_column($this->entries,"icon"));
 
             $subTabs = [
-                "inactive" => array(),
-                "disabled" => array()
+                "inactive" => array()
             ];
 
             foreach(array_keys($this->iconSchema) as $icon)
@@ -99,12 +100,19 @@ class Terminal
                     $subTabString = '<button id="' . $icon . 'SubTab" class="subTab disabled">' . 
                                         '<img src="./resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                     '</button>';
-
-                    array_push($subTabs["disabled"],$subTabString);
                 }
             }
 
-            return (implode($subTabs["inactive"]) . implode($subTabs["disabled"]));
+            $puzzTabString = "";
+
+            if(count($this->puzzles) > 0)
+            {
+                $puzzTabString =    '<button id="puzzlesSubTab" class="subTab inactive" onclick="openSubTab(this,\'puzzlesContent\')">' . 
+                                        '<img src="./resources/images/subtabs/puzzles.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
+                                    '</button>';
+            }
+
+            return (implode($subTabs["inactive"]) . $puzzTabString);
         }
         else
         {
@@ -391,11 +399,28 @@ class Terminal
                 array_push($this->initialEntries,$entryData);
             }
 
-            $returnString = join("",$returnArray);
+            $returnString = "<div class='subContModifierBox touchedBox hidden'>" .
+									"<span class='subContModifierTitle'>TOUCHED</span>" .
+									"<div class='subContModifierTouched'>" .
+										"<span class='subContModifierIndicator touchedIndicator dimmed'>TOUCHED</span>" .
+									"</div>" .
+								"</div>" .
+								"<div class='subContModifierBox repeatBox hidden'>" .
+									"<span class='subContModifierTitle'>REPEAT</span>" .
+									"<div class='subContModifierAM'>" .
+										"<span class='subContModifierIndicator repeatIndicatorAccess dimmed'>ACCESS</span>" .
+										"<span class='subContModifierIndicator repeatIndicatorModify dimmed'>MODIFY</span>" .
+									"</div>" .
+								"</div>" .
+								"<div class='subContBody'>";
+
+            $returnString .= join("",$returnArray);
             for($i = 0; $i < count($inIce); $i++)
             {
                 $returnString .= '</div>';
             }
+
+            $returnString .= "</div>";
 
             return $returnString;
         }
@@ -409,12 +434,179 @@ class Terminal
     {
         if($this->main === "")
         {
-            $dbArray = array_filter($this->entries,function ($entry)
-            {
-                return $entry["icon"] === "puzzles";
-            });
+            $returnString = "<div class='subContBody'>";
 
-            return var_dump($dbArray);
+            //!!Add External Tag Add Here
+
+            foreach($this->puzzles as $index=>$puzzle)
+            {
+                // id
+                // puzzle_type
+                // cost
+                // repeat
+                // know_reqs
+                // reward_type
+                // reward
+
+                // >> |Puzzle 0: Hacking Action RP
+                //    |Reward:  [     +1 TAG     ]
+                //    |---------------------------
+                //    |  Knowledge Requirements:
+                //    |[    HACKING & DIGISEC    ]
+                //    |---------------------------
+                //    |XO                 [Solve!]
+                //    |      [Cost: 1 Tag]
+
+                // Title, based on puzzle_type
+                // Reward, based on reward_type and reward (amount/details)
+                // <hr/>
+                // Knowledge Container, based on if know_reqs is not NULL
+                //   Requirement List
+                //   <hr/>
+                // Solve Row
+                //   Repeat Icons
+                //   Solve/Cost Button
+
+                switch($puzzle["puzzle_type"])
+                {
+                    case("free_rp"):
+                    {
+                        $puzzleTitle = "Hacking Action RP";
+                        break;
+                    }
+                    case("rev_mm"):
+                    {
+                        $puzzleTitle = "Reverse Mastermind";
+                        break;
+                    }
+                }
+
+                switch($puzzle["reward_type"])
+                {
+                    case("tags"):
+                    {
+                        $rewardSign = (intval($puzzle["reward"]) >= 0) ? "+" : "";
+                        $rewardPlural = (abs(intval($puzzle["reward"])) === 1) ? "" : "s";
+
+                        $puzzleReward = $rewardSign . $puzzle["reward"] . " Tag" . $rewardPlural;
+                        break;
+                    }
+                    case("item"):
+                    {
+                        break;
+                    }
+                }
+
+                if($puzzle["know_reqs"] === null)
+                {
+                    $puzzleReqBox = "";
+                }
+                else
+                {
+                    $reqList = json_decode($puzzle["know_reqs"]);
+
+                    $puzzleReqBox = '<div class="puzzleReqBox">' .
+                                        '<div class="puzzleReqHeader">Knowledge Requirements:</div>' .
+                                        '<div class="puzzleReqList">';
+
+                    foreach($reqList as $req)
+                    {
+                        $puzzleReqBox .=    '<span>' . $req . '</span>';
+                    }
+
+                    $puzzleReqBox .=    '</div>' .
+                                    '</div>' .
+                                    '<hr/>';
+                }
+
+                if($puzzle["repeat"] === null) // Non-Repeatable
+                {
+                    $puzzleRepeatBox = "<span></span>";
+
+                    $puzzleRepeatEnd = "<span></span>";
+                }
+                else
+                {
+                    if($puzzle["repeat"] > 0)
+                    {
+                        $puzzleRepeatBox = '<div class="puzzleRepeatBox">';
+
+                        for($i = 0; $i < $puzzle["repeat"]; $i++)
+                        {
+                            $puzzleRepeatBox .= '<img src="/resources/images/actions/itemopen.png" />';
+                        }
+
+                        $puzzleRepeatBox .= '</div>';
+                        $puzzleRepeatEnd = "";
+                    }
+                    else // Infinite Repeats
+                    {
+                        $puzzleRepeatBox = '<div class="puzzleRepeatBox">[REPEATABLE]</div>';
+                        $puzzleRepeatEnd = "";
+                    }
+                }
+
+                if($puzzle["cost"] > 0)
+                {
+                    $puzzleSolveText = "Cost: " . $puzzle["costs"];
+                }
+                else
+                {
+                    $puzzleSolveText = "Solve!";
+                }
+
+                //div puzzleEntry (flex-row)
+                //   div puzzleBoxPrefix = >>&nbsp;
+                //   div puzzleBox (flex-column)
+                //       div puzzleTitleRow
+                //           span puzzleTitlePrefix = Puzz #:\
+                //           span puzzleTitle = $puzzleTitle
+                //       div puzzleRewardRow
+                //           span puzzleRewardPrefix = Reward:
+                //           span puzzleReward = [ UNKNOWN ITEM ]
+                //       <hr/>
+                // if (know_reqs !== null)
+                //       div puzzleReqBox (flex-column)
+                //           div puzzleReqHeader = Knowledge Requirements:
+                //           div puzzleReqList = [ HACKING & DIGISEC ]
+                //       <hr/>
+                // end if
+                //   div puzzleSolveRow (flex-row)
+                // if (repeat > 0)
+                //       div puzzleRepeatBox (flex-row)
+                //           img itemopen
+                // else ?if (repeat === null)
+                //       button puzzleSolveButton
+
+                $returnString .=    '<div id="puzzle-' . $index . '" class="puzzleEntry" data-id="' . $index . '">' .
+                                        '<div class="puzzleBoxPrefix">&gt;&gt;&nbsp;</div>' .
+                                        '<div class="puzzleBox">' .
+                                            '<div class="puzzleTitleRow">' .
+                                                '<span class="puzzleTitlePrefix">Puzz ' . $index . ':\\</span>' .
+                                                '<span class="puzzleTitle">' .
+                                                    $puzzleTitle .
+                                                '</span>' .
+                                            '</div>' .
+                                            '<div class="puzzleRewardRow">' .
+                                                '<span class="puzzleRewardPrefix">Reward:&nbsp;</span>' .
+                                                '<span class="puzzleReward">' .
+                                                    $puzzleReward .
+                                                '</span>' .
+                                            '</div>' .
+                                            '<hr/>' .
+                                            $puzzleReqBox .
+                                            '<div class="puzzleSolveRow">' .
+                                                $puzzleRepeatBox .
+                                                '<button class="puzzleSolveButton" data-enabled="true" data-id="' . $index . '" data-cost="' . $puzzle["cost"] . '" onclick="generatePuzzle(this)">' . $puzzleSolveText . '</button>' .
+                                                $puzzleRepeatEnd .
+                                            '</div>' .
+                                        '</div>' . 
+                                    '</div>';
+            }
+
+            $returnString .= "</div>";
+
+            return $returnString;
         }
         else
         {
@@ -429,10 +621,12 @@ class Terminal
             $termInfo = array(
                 "termID" => $this->termID,
                 "termState" => $this->termState,
-                "stateData" => $this->stateData
+                "stateData" => $this->stateData,
+                "entries" => $this->initialEntries,
+                "puzzles" => $this->puzzles
             );
 
-            return "<script>var session = new Session(" . json_encode($termInfo) . ", " . json_encode($this->initialEntries) . ");</script>";
+            return "<script>var session = new Session(" . json_encode($termInfo) . ");</script>";
         }
         else
         {

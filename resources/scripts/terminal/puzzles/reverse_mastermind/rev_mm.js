@@ -11,6 +11,7 @@ class ReverseMasterMind
         "F": "/resources/images/puzzles/f_magenta_circ.png"
     };
 
+    #puzzleID;
     #puzzleIndex; //int
     #pegCount; //int
     #guesses = []; //array
@@ -19,23 +20,25 @@ class ReverseMasterMind
     #guessCount; //int
     #answer; //array
 
-    constructor(pegCount = 4)
+    constructor(pegCount = 4, puzzleID)
     {
         let thisInst = this;
 
         this.#pegCount = pegCount;
+        this.#puzzleID = puzzleID;
         
         $.getJSON("/resources/schemas/four_peg.json", function(puzzleDB) {
             thisInst.#puzzleIndex = Math.floor(Math.random() * puzzleDB.length)
 
             thisInst.#puzzleArray = puzzleDB[thisInst.#puzzleIndex];
 
-            thisInst.#difficulty = thisInst.#puzzleArray["difficulty"]; //!!
+            //thisInst.#difficulty = thisInst.#puzzleArray["difficulty"];
             thisInst.#colorCount = thisInst.#puzzleArray["colorCount"];
-            thisInst.#guessCount = thisInst.#puzzleArray["guesses"].length; //!!
-            thisInst.#answer = thisInst.#puzzleArray["answer"]; //!!
+            //thisInst.#guessCount = thisInst.#puzzleArray["guesses"].length;
+            //thisInst.#answer = thisInst.#puzzleArray["answer"];
             thisInst.#guesses = thisInst.#puzzleArray["guesses"];
 
+            /*
             console.log("puzzleArray: " + thisInst.#puzzleArray);
             console.log(" > puzzleIndex: " + thisInst.#puzzleIndex);
             console.log(" > pegCount: " + thisInst.#pegCount);
@@ -45,6 +48,7 @@ class ReverseMasterMind
             console.log(" > answer: [" + thisInst.#answer + "]");
             console.log(" > guesses: ");
             console.log(thisInst.#guesses);
+            */
 
             thisInst.#shuffleColors();
 
@@ -199,7 +203,7 @@ class ReverseMasterMind
                                     "</div>" +
                                 "</div>" +
                                 "<div class='rmmSubmitBox'>" +
-                                    "<button id='rmmSubmitButton' onpointerup='submitAnswer(this)' disabled>Submit Answer</button>" +
+                                    "<button id='rmmSubmitButton' data-id='" + this.#puzzleID + "' onpointerup='submitAnswer(this)' disabled>Submit Answer</button>" +
                                 "</div>");
 
         $(".rmmAnswerChar").bind("pointerup", function(event)
@@ -374,6 +378,8 @@ function cycleBalls(target, action)
 
 function submitAnswer(target)
 {
+    let puzzID = target.dataset["id"];
+
     if($(target).attr("disabled") !== "disabled")
     {
         $("#rmmSubmitButton, .rmmAnswerChar").attr("disabled", true);
@@ -406,13 +412,13 @@ function submitAnswer(target)
                                     "</svg>");
 
             sleep(900).then(() => {
-                staggerCheck(0, $(".rmmAnswerCheck"), playerAnswer);
+                staggerCheck(0, $(".rmmAnswerCheck"), playerAnswer, puzzID);
             });
         });
     }
 }
 
-function staggerCheck(index, array, playerAnswer)
+function staggerCheck(index, array, playerAnswer, puzzID)
 {
     if(index < array.length)
     {
@@ -427,7 +433,7 @@ function staggerCheck(index, array, playerAnswer)
                 $(checkBox).html("<span class='rmmCheckYes'>✓</span>");
 
                 sleep(450).then(() => {
-                    staggerCheck(index+1, array, playerAnswer);
+                    staggerCheck(index+1, array, playerAnswer, puzzID);
                 });
             }
             else
@@ -450,8 +456,7 @@ function staggerCheck(index, array, playerAnswer)
     {
         $(".rmmTotalCheck").html("<span class='rmmCheckYes'>✓</span>");
         sleep(1000).then(() => {
-            console.log("You Win!");
-            // Close Modal
+            resolvePuzzle(puzzID);
         });
     }
 }

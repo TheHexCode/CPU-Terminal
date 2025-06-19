@@ -1184,6 +1184,106 @@ ul
 	margin: 0.15rem 0 0.15rem 0;
 }
 
+.puzzleEntry
+{
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 2rem;
+}
+
+.puzzleEntry:last-of-type
+{
+	margin-bottom: 0;
+}
+
+.puzzleBox
+{
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.25rem;
+}
+
+.puzzleBox hr
+{
+	margin: 0.25rem 0;
+}
+
+.puzzleTitleRow
+{
+	display: grid;
+	grid-template-columns: [prefix] max-content [gap] 1rem [title] auto [end];
+}
+
+.puzzleTitlePrefix
+{
+	grid-column: prefix / gap;
+}
+
+.puzzleTitle
+{
+	grid-column: title / end;
+}
+
+.puzzleRewardRow
+{
+	display: flex;
+	flex-direction: row;
+}
+
+.puzzleReward
+{
+	display: flex;
+	flex-direction: column;
+	border-image-source: url("/resources/images/borders/bracket_border.png");
+	border-image-width: 14px;
+	border-image-slice: 14;
+	padding: 0 14px;
+	width: 100%;
+	text-align: center;
+}
+
+.puzzleReqBox
+{
+	display: flex;
+	flex-direction: column;
+}
+
+.puzzleReqHeader
+{
+	text-align: center;
+}
+
+.puzzleReqList
+{
+	display: flex;
+	flex-direction: column;
+	border-image-source: url("/resources/images/borders/bracket_border.png");
+	border-image-width: 14px;
+	border-image-slice: 14;
+	padding: 0 14px;
+	text-align: center;
+}
+
+.puzzleSolveRow
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.puzzleRepeatBox
+{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	column-gap: 0.25rem;
+}
+
+.puzzleRepeatBox img
+{
+	margin: 0.25rem 0;
+}
+
 .hackSpacer
 {
 	border-left: 0.5rem solid var(--border-color);

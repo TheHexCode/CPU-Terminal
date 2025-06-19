@@ -25,26 +25,54 @@ else
 {
     if($termResponse['state'] === "bricked")
     {
-        $user_query = $pdo->query(" SELECT charName
-                                    FROM {$dbName}.users
-                                    WHERE ml_id={$termResponse['id']};");
+        $userQuery = "  SELECT charName
+                        FROM {$dbName}.users
+                        WHERE ml_id=:stateData";
 
-        $termResponse['stateData'] = $user_query->fetch(PDO::FETCH_ASSOC)['charName'];
+        $userStatement = $pdo->prepare($userQuery);
+        $userStatement->execute([':stateData' => $termResponse["stateData"]]);
+
+        $termResponse['stateData'] = $userStatement->fetch(PDO::FETCH_COLUMN);
     }
 
-    $entry_query = $pdo->query("SELECT id,icon,path,type,access,modify,title,contents,state
-                                FROM {$dbName}.sim_entries
-                                WHERE sim_entries.terminal_id={$termResponse['id']} ");
-    $entryResponse = $entry_query->fetchAll(PDO::FETCH_ASSOC);
+    ###########################################################################################################
 
-    $log_query = $pdo->query("  SELECT sim_access_logs.id,user_id,users.charName,mask,reassignee,state
-                                FROM {$dbName}.sim_access_logs
-                                LEFT JOIN {$dbName}.users
-                                    ON sim_access_logs.user_id=users.ml_id
-                                WHERE terminal_id={$termResponse['id']}");
-    $logResponse = $log_query->fetchAll(PDO::FETCH_ASSOC);
+    $entryQuery = " SELECT id,icon,path,type,access,modify,title,contents,state
+                    FROM {$dbName}.sim_entries
+                    WHERE terminal_id=:termID";
+
+    $entryStatement = $pdo->prepare($entryQuery);
+    $entryStatement->execute([':termID' => $termResponse["id"]]);
+    $entryResponse = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    ###########################################################################################################
+
+    $puzzleQuery = "SELECT id,puzzle_type,cost,`repeat`,know_reqs,reward_type,reward
+                    FROM {$dbName}.sim_puzzles
+                    WHERE terminal_id=:termID";
+
+    $puzzleStatement = $pdo->prepare($puzzleQuery);
+    $puzzleStatement->execute([':termID' => $termResponse["id"]]);
+
+    $puzzleResponse = $puzzleStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    ###########################################################################################################
+
+    $logQuery = "   SELECT sim_access_logs.id,user_id,users.charName,mask,reassignee,state
+                    FROM {$dbName}.sim_access_logs
+                    LEFT JOIN {$dbName}.users
+                        ON sim_access_logs.user_id=users.ml_id
+                    WHERE terminal_id=:termID";
+
+    $logStatement = $pdo->prepare($logQuery);
+    $logStatement->execute([':termID' => $termResponse["id"]]);
+
+    $logResponse = $logStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    ###########################################################################################################
 
     $termResponse['entries'] = $entryResponse;
+    $termResponse['puzzles'] = $puzzleResponse;
     $termResponse['logEntries'] = $logResponse;
 
     $terminal = new Terminal($termResponse);

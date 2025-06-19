@@ -15,8 +15,10 @@
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/listener.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/terminalInterface.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/gems.js" defer></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/puzzles/reverse_mastermind/rev_mm.js"></script>
 		<link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="/resources/styles/termstyle.css"/>
+		<link rel="stylesheet" type="text/css" href="/resources/scripts/terminal/puzzles/reverse_mastermind/rmmstyle.css"/>
 	</head>
 	<body>
 		<div id="main"<?php echo $terminal->getMain() ?>>
@@ -298,148 +300,43 @@
 								<div class="subContTitleRow">
 									<span class="subContTitle">FILES</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("files") ?>
-								</div>
+								<?php echo $terminal->setupIconEntries("files") ?>
 							</div>
 							<div id="darkwebContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">DARK WEB FILES</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("darkweb") ?>
-								</div>
+								<?php echo $terminal->setupIconEntries("darkweb") ?>
 							</div>
 							<div id="camerasContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">CAMERAS</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("cameras") ?>
-								</div>
+								<?php echo $terminal->setupIconEntries("cameras") ?>
 							</div>
 							<div id="locksContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">LOCKS</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("locks") ?>
-								</div>
+								<?php echo $terminal->setupIconEntries("locks") ?>
 							</div>
 							<div id="defensesContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">AUTOMATED DEFENSIVE SYSTEMS</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("defenses") ?>
-								</div>
+								<?php echo $terminal->setupIconEntries("defenses") ?>
 							</div>
 							<div id="utilitiesContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">UTILITY SYSTEMS</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupIconEntries("utilities") ?>
-								</div>
+								<?php echo $terminal->setupIconEntries("utilities") ?>
 							</div>
 							<div id="puzzlesContent" class="subContent">
 								<div class="subContTitleRow">
 									<span class="subContTitle">PUZZLES</span>
 								</div>
-								<div class="subContModifierBox touchedBox hidden">
-									<span class="subContModifierTitle">TOUCHED</span>
-									<div class="subContModifierTouched">
-										<span class="subContModifierIndicator touchedIndicator dimmed">TOUCHED</span>
-									</div>
-								</div>
-								<div class="subContModifierBox repeatBox hidden">
-									<span class="subContModifierTitle">REPEAT</span>
-									<div class="subContModifierAM">
-										<span class="subContModifierIndicator repeatIndicatorAccess dimmed">ACCESS</span>
-										<span class="subContModifierIndicator repeatIndicatorModify dimmed">MODIFY</span>
-									</div>
-								</div>
-								<div class="subContBody">
-									<?php echo $terminal->setupPuzzleEntries() ?>
-								</div>
+								<?php echo $terminal->setupPuzzleEntries() ?>
 							</div>
 						</div>
 					</div>

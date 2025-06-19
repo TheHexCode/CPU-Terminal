@@ -21,8 +21,7 @@ CREATE TABLE sim_terminals (
 CREATE TABLE sim_entries (
     id          INT     AUTO_INCREMENT,
     terminal_id INT     NOT NULL,
-    icon        ENUM('files','darkweb','cameras','locks','defenses','utilities','puzzles')
-                        NOT NULL,
+    icon        TEXT    NOT NULL, /* ('files','darkweb','cameras','locks','defenses','utilities') */
     path        TEXT    NOT NULL,
     type        TEXT    NOT NULL,
     access      INT,
@@ -30,7 +29,23 @@ CREATE TABLE sim_entries (
     title       TEXT,
     contents    TEXT,
     state       TEXT,
-    previous   TEXT,
+    previous    TEXT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (terminal_id)
+        REFERENCES sim_terminals(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE sim_puzzles (
+    id          INT     AUTO_INCREMENT,
+    terminal_id INT     NOT NULL,
+    puzzle_type TEXT    NOT NULL, /* ('free_rp', 'rev_mm', 'black_box') */
+    cost        INT     NOT NULL,
+    `repeat`    INT,              /* NULL = Non-Repeatable; <=0 = Infinite; >0 = Repeatable Up To # Of Times */
+    know_reqs   TEXT,
+    reward_type TEXT    NOT NULL, /* ('tags', 'item') */
+    reward      TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (terminal_id)
         REFERENCES sim_terminals(id)
