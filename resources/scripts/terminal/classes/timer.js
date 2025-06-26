@@ -50,53 +50,10 @@ class Timer
                 {
                     if(callargs["global"])
                     {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "/resources/scripts/terminal/db/updateTerminal.php",
-                            data:
-                            {
-                                actionType: callargs["actionType"],
-                                entryID: callargs["entryID"],
-                                userID: callargs["userID"],
-                                newData: callargs["newData"],
-                                oldData: callargs["entryState"]
-                            }
-                        });
+                        this.#updateTerminal(callargs);
                     }
 
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/resources/scripts/terminal/db/userActions.php",
-                        data:
-                        {
-                            userID: callargs["userID"],
-                            targetID: callargs["entryID"],
-                            action: callargs["upperAction"],
-                            newState: callargs["newData"],
-                            actionCost: callargs["actionCost"],
-                            global: callargs["global"]
-                        }
-                    });
-                    
-                    //Decks don't use a timer
-                    /*
-                    if(callargs["actionType"] === "item")
-                    {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "/resources/scripts/terminal/db/useItems.php",
-                            data:
-                            {
-                                userID: callargs["userID"],
-                                effectIDs: callargs["entryID"],
-                                termID: callargs["newData"]
-                            }
-                        })
-                    }
-                    */
+                    this.#userActions(callargs);
 
                     if(results !== null)
                     {
@@ -137,7 +94,7 @@ class Timer
                 {
                     results = $.getJSON(
                         "/resources/scripts/terminal/db/getEntryUpdate.php",
-                        { id: callargs["entryID"], newState: callargs["newData"] }
+                        { id: callargs["targetID"], newState: callargs["buttonData"] }
                     );
                 }
             }
@@ -160,54 +117,20 @@ class Timer
             {
                 results = $.getJSON(
                     "/resources/scripts/terminal/db/getEntryUpdate.php",
-                    { id: callargs["entryID"], newState: callargs["newData"] }
+                    { id: callargs["targetID"], newState: callargs["buttonData"] }
                 )
                 .done(function()
                 {
                     if(callargs["global"])
                     {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "/resources/scripts/terminal/db/updateTerminal.php",
-                            data:
-                            {
-                                actionType: callargs["actionType"],
-                                entryID: callargs["entryID"],
-                                newData: callargs["newData"],
-                                oldData: callargs["entryState"]
-                            }
-                        });
+                        this.#updateTerminal(callargs);
                     }
 
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/resources/scripts/terminal/db/userActions.php",
-                        data:
-                        {
-                            userID: callargs["userID"],
-                            targetID: callargs["entryID"],
-                            action: callargs["upperAction"],
-                            newState: callargs["newData"],
-                            actionCost: callargs["actionCost"],
-                            global: callargs["global"]
-                        }
-                    });
+                    this.#userActions(callargs);
 
                     if(callargs["actionType"] === "item")
                     {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "/resources/scripts/terminal/db/useItems.php",
-                            data:
-                            {
-                                userID: callargs["userID"],
-                                effects: callargs["entryID"],
-                                termID: callargs["newData"]
-                            }
-                        })
+                        this.#useItems(callargs);
                     }
 
                     callargs["results"] = results.responseJSON;
@@ -219,48 +142,14 @@ class Timer
             {
                 if(callargs["global"])
                 {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/resources/scripts/terminal/db/updateTerminal.php",
-                        data:
-                        {
-                            actionType: callargs["actionType"],
-                            entryID: callargs["entryID"],
-                            newData: callargs["newData"],
-                            oldData: callargs["entryState"]
-                        }
-                    });
+                    this.#updateTerminal(callargs);
                 }
 
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/resources/scripts/terminal/db/userActions.php",
-                    data:
-                    {
-                        userID: callargs["userID"],
-                        targetID: callargs["entryID"],
-                        action: callargs["upperAction"],
-                        newState: callargs["newData"],
-                        actionCost: callargs["actionCost"],
-                        global: callargs["global"]
-                    }
-                });
+                this.#userActions(callargs);
 
                 if(callargs["actionType"] === "item")
                 {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/resources/scripts/terminal/db/useItems.php",
-                        data:
-                        {
-                            userID: callargs["userID"],
-                            effects: callargs["entryID"],
-                            termID: callargs["newData"]
-                        }
-                    })
+                    this.#useItems(callargs);
                 }
 
                 callback(callargs);
@@ -270,6 +159,57 @@ class Timer
         {
             callback(callargs);
         }
+    }
+
+    #updateTerminal(callargs)
+    {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/updateTerminal.php",
+            data:
+            {
+                actionType: callargs["actionType"],
+                targetID: callargs["targetID"],
+                userID: callargs["userID"],
+                newData: callargs["buttonData"],
+                oldData: callargs["currentState"]
+            }
+        });
+    }
+
+    #userActions(callargs)
+    {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/userActions.php",
+            data:
+            {
+                userID: callargs["userID"],
+                targetID: callargs["targetID"],
+                action: callargs["action"],
+                actionType: callargs["actionType"],
+                newState: callargs["buttonData"],
+                actionCost: callargs["actionCost"],
+                global: callargs["global"]
+            }
+        });
+    }
+
+    #useItems(callargs)
+    {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/useItems.php",
+            data:
+            {
+                userID: callargs["userID"],
+                effects: callargs["targetID"],
+                termID: callargs["buttonData"]
+            }
+        });
     }
 
     pauseTimer()

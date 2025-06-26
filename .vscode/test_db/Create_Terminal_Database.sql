@@ -8,13 +8,14 @@ CREATE TABLE sim_active_codes (
 );
 
 CREATE TABLE sim_terminals (
-    id          INT     AUTO_INCREMENT,
-    slug 		TEXT    NOT NULL,
-    jobCode 	TEXT    NOT NULL,
-    displayName TEXT,
-    access 		INT		NOT NULL,
-	state 		TEXT    NOT NULL,
-	stateData 	INT,
+    id              INT     AUTO_INCREMENT,
+    slug 		    TEXT    NOT NULL,
+    jobCode 	    TEXT    NOT NULL,
+    displayName     TEXT,
+    access 		    INT		NOT NULL,
+	state 		    TEXT    NOT NULL,
+	stateData 	    INT,
+    remoteEnabled   BOOL    NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -46,6 +47,7 @@ CREATE TABLE sim_puzzles (
     know_reqs   TEXT,
     reward_type TEXT    NOT NULL, /* ('tags', 'item') */
     reward      TEXT,
+    global      BOOLEAN NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (terminal_id)
         REFERENCES sim_terminals(id)

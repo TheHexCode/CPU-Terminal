@@ -2,8 +2,8 @@ UPDATE sim_active_codes
 	SET jobCode = 'ABC1234';
 
 INSERT INTO sim_terminals
-			(slug, jobCode, displayName, access, state, stateData)
-     VALUES ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL);
+			(slug, jobCode, displayName, access, state, stateData, remoteEnabled)
+     VALUES ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL, 0);
 
 SET @TermID = 1;
 SET @TermID = LAST_INSERT_ID();
@@ -32,6 +32,6 @@ INSERT INTO sim_entries
 		    (@TermID,'utilities','1','alarm',0,1,'Test Alarm',NULL,'initial');
 
 INSERT INTO sim_puzzles
-			(terminal_id, puzzle_type, cost, `repeat`, know_reqs, reward_type, reward)
-	VALUES	(@TermID, 'free_rp', 0, NULL, NULL, 'tags', '2'),
-			(@TermID, 'rev_mm', 0, NULL, '["Hacking &amp; DigiSec"]', 'tags', '1');
+			(terminal_id, puzzle_type, cost, `repeat`, know_reqs, reward_type, reward, global)
+	VALUES	(@TermID, 'free_rp', 0, NULL, NULL, 'tags', '2', 0),
+			(@TermID, 'rev_mm', 0, NULL, '["Hacking &amp; DigiSec"]', 'tags', '1', 0);

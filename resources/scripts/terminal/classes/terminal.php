@@ -548,7 +548,7 @@ class Terminal
 
                 if($puzzle["cost"] > 0)
                 {
-                    $puzzleSolveText = "Cost: " . $puzzle["costs"];
+                    $puzzleSolveText = "Cost: " . $puzzle["cost"] . " Tag" . ($puzzle["cost"] === 1 ? "" : "s");
                 }
                 else
                 {
@@ -578,7 +578,7 @@ class Terminal
                 // else ?if (repeat === null)
                 //       button puzzleSolveButton
 
-                $returnString .=    '<div id="puzzle-' . $index . '" class="puzzleEntry" data-id="' . $index . '">' .
+                $returnString .=    '<div id="puzzle-' . $puzzle["id"] . '" class="puzzleEntry" data-id="' . $puzzle["id"] . '">' .
                                         '<div class="puzzleBoxPrefix">&gt;&gt;&nbsp;</div>' .
                                         '<div class="puzzleBox">' .
                                             '<div class="puzzleTitleRow">' .
@@ -597,7 +597,7 @@ class Terminal
                                             $puzzleReqBox .
                                             '<div class="puzzleSolveRow">' .
                                                 $puzzleRepeatBox .
-                                                '<button class="puzzleSolveButton" data-enabled="true" data-id="' . $index . '" data-cost="' . $puzzle["cost"] . '" onclick="generatePuzzle(this)">' . $puzzleSolveText . '</button>' .
+                                                '<button class="puzzleSolveButton" data-enabled="true" data-id="' . $puzzle["id"] . '" data-cost="' . $puzzle["cost"] . '" onclick="generatePuzzle(this)">' . $puzzleSolveText . '</button>' .
                                                 $puzzleRepeatEnd .
                                             '</div>' .
                                         '</div>' . 

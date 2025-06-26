@@ -1,9 +1,10 @@
 //var session = new Session(); <- Created by classes\terminal.php
 var payload = new Payload();
 var taTimer = new Timer("#termAccessTimer");
-var mbTimer = new Timer("#modalBodyTimer");
+var actionModal;
 /////////////////////////////////////////////////////////////////
 var revMM;
+/////////////////////////////////////////////////////////////////
 
 $(document).ready(function()
 {
@@ -11,6 +12,8 @@ $(document).ready(function()
 	$(".codeSubmit").attr("disabled", true);
 	$("#terminalButton").attr("disabled",true);
 	$(".initItem input").prop("checked",false);
+
+	actionModal = new Modal(Modal.ACTION);
 
 	Listener.testConnection();
 });
@@ -22,6 +25,18 @@ function tens(numStr)
 	});
 	
 	return tensFormat.format(Number(numStr));
+}
+
+function pluralize(num)
+{
+	if(Math.abs(Number(num)) === 1)
+	{
+		return "";
+	}
+	else
+	{
+		return "s";
+	}
 }
 
 function mmss(secs)
@@ -778,6 +793,15 @@ function injectUserPayload(userPayload)
 				disableExpensiveButtons();
 			});
 
+			userPayload["puzzActions"].forEach(function(puzzle)
+			{
+				console.log({puzzle});
+				if(puzzle["repeat"] <= puzzle["uses"])
+				{
+
+				}
+			});
+
 			if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 			{
 				userPayload["copyables"].forEach(function(copyableAction)
@@ -1357,7 +1381,8 @@ function injectButtonMasher(masherData)
 						{
 							userID: payload.getUserID(),
 							targetID: session.getTerminalID(),
-							action: "Masher",
+							action: "masher",
+							actionType: "masher",
 							newState: session.getMasher("id"),
 							actionCost: session.getMasher("rank") * -1,
 							global: false
@@ -1408,8 +1433,42 @@ function openSubTab(target, contentID)
 function takeAction(target)
 {
 	let action = target.classList[0].split("Button")[0];
-	let upperAction = action.charAt(0).toUpperCase() + action.slice(1);
-	let entryID = target.dataset["id"];
+	let targetID = target.dataset["id"];
+
+	let headerText = "";
+	let executeHeader = "";
+	let bodyText = "";
+	let copycatText = 	(payload.getItem("copycat") && (!payload.getActiveEffect("copycat")) && session.isActionCopyable(action)) ?
+						"<br/><br/>" +
+						"<span class='copycatBox'>" +
+							"<input id='copycatActivate' type='checkbox'/>" +
+							"<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
+						"</span>" : "";
+	let buttonArray = [];
+
+	/*
+	> ACTIONS
+		entry
+	   	 - access
+	   	 - modify
+	  	ice
+	   	 - break
+	   	 - sleaze
+		log
+		 - reass
+		 - wipe
+		active actions
+		 - brick
+		 - rig
+		 - root
+		 - siph(on charge)
+		refresh actions
+		 - ping
+		active items
+		 - deck
+		 - shim
+		 - pet
+	*/
 
 	switch (action)
 	{
@@ -1419,36 +1478,36 @@ function takeAction(target)
 		{
 			$("#load").removeClass("hidden");
 
+			let actionType = "entry";
+			let actionVerb = action.charAt(0).toUpperCase() + action.slice(1);
+			let actionCost = session.getActionCost(targetID,action);
+
 			let entryPath = "#" + $(target).parents(".entry")[0].id;
-			let entryState = session.getEntryState(entryID);
+			let entryName = $(entryPath + " .entryPrefix").text().slice(3,-2);
+			let currentState = session.getEntryState(targetID);
 
 			let entryJSON = $.getJSON(
 				"/resources/scripts/terminal/db/getEntryActions.php",
-				{ id: entryID, state: entryState, action: action }
+				{ id: targetID, state: currentState, action: action }
 			)
 			.done(function() {
-				let actionMap = {
-					userID: payload.getUserID(),
-					actionType: "entry",
-					entryID: entryID,
-					entryState: entryState,
-					actionCost: session.getActionCost(entryID,action),
-					upperAction: upperAction,
-					entryName: $(entryPath + " .entryPrefix").text().slice(3,-2)
-				};
+				Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionCost,session.getCurrentTags());
 
-				Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
-				
-				// MODAL BUTTONS
+				// HEADER TEXT
+				headerText = "Confirm " + actionVerb + " Action";
+				executeHeader = actionVerb + " / " + entryName + " / " + actionCost + " Tag" + pluralize(actionCost);
+
+				// BODY TEXT
+				bodyText = actionVerb + " \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" + copycatText;
+
+				// BUTTON ARRAY
 				let options = entryJSON.responseJSON;
-				let buttons = [];
-		
-				$("#actionModal .modalButtonRow").html("");
+
 				options.forEach(function(option, index)
 				{
-					let buttonID = actionMap["actionType"] + actionMap["entryID"] + action.charAt(0) + index;
+					let buttonID = action + targetID + index;
 					
-					buttons.push({
+					buttonArray.push({
 						id: buttonID,
 						text: option.button,
 						data: option.state,
@@ -1456,9 +1515,23 @@ function takeAction(target)
 					});
 				});
 
-				setupConfirmModal(actionMap,buttons);
-				
-				$("#load").addClass("hidden");
+				let actionMap = {
+					userID: payload.getUserID(),
+					targetID: targetID,
+					action: action,
+					actionType: actionType,
+					actionCost: actionCost,
+					currentState: currentState
+				};
+
+				let confirmMap = {
+					headerText: headerText,
+					bodyText: bodyText,
+					buttonArray: buttonArray,
+					executeHeader: executeHeader
+				};
+
+				actionModal.showConfirmPage(actionMap, confirmMap);
 			});
 
 			break;
@@ -1467,27 +1540,52 @@ function takeAction(target)
 		case "break":
 		case "sleaze":
 		{
+			let actionType = "ice";
+			let actionVerb = action.charAt(0).toUpperCase() + action.slice(1);
+			let actionCost = session.getActionCost(targetID,(action === "break" ? "access" : "modify"));
+
 			let entryPath = "#" + $(target).parents(".entry")[0].id;
+			let entryName = $(entryPath + " .entryPrefix").html().slice(9,-2);
 
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: "ice",
-				entryID: entryID,
-				actionCost: session.getActionCost(entryID,(action === "break" ? "access" : "modify")),
-				upperAction: upperAction,
-				entryName: $(entryPath + " .entryPrefix").html().slice(9,-2)
-			};
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionCost,session.getCurrentTags());
 
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+			// HEADER TEXT
+			headerText = "Confirm " + actionVerb + " Action";
+			executeHeader = actionVerb + " / " + entryName + " / " + actionCost + " Tag" + pluralize(actionCost);
 
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+			// BODY TEXT
+			bodyText = 	actionVerb + " \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" + 
+						(action === "break" ?
+							"<div class='cautionTape'>" +
+								"WARNING: Breaking ICE means tripping it and taking any negative effects it may incur. <em>Sleaze</em> the ICE instead to disable the security, in exchange for Tags." +
+							"</div>" : "") +
+						copycatText;
+
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
 				text: "Confirm",
 				data: action,
 				global: true
 			}];
 
-			setupConfirmModal(actionMap,buttons);
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: targetID,
+				action: action,
+				actionType: actionType,
+				actionCost: actionCost,
+				currentState: "initial"
+			};
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
 			
 			break;
 		}
@@ -1495,27 +1593,54 @@ function takeAction(target)
 		case "reass":
 		case "wipe":
 		{
+			let actionType = "log";
+			let actionVerb = (action === "reass" ? "Reassign" : "Wipe Tracks");
+			let actionCost = session.getActionCost("nonEntry", action);
+
 			let entryPath = "#" + $(target).parents('.logEntry')[0].id;
+			let entryName = $(entryPath + " .logName").html();
 
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: "log",
-				entryID: entryID,
-				actionCost: session.getActionCost("nonEntry",action),
-				upperAction: (action === "reass" ? "Reassign" : "Wipe Tracks"),
-				entryName: $(entryPath + " .logName").html()
-			};
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionCost,session.getCurrentTags());
 
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+			// HEADER TEXT
+			headerText = "Confirm " + actionVerb + " Action";
+			executeHeader = actionVerb + " / " + entryName + " / " + actionCost + " Tag" + pluralize(actionCost);
 
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+			// BODY TEXT
+			bodyText = 	actionVerb.split(" ")[0] + " Log Entry for \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" + 
+						(action === "reass" ?
+							"<br/><br/>" +
+							"<div id='reassName' class='multiLineTextInput'>" +
+								"<label for='reassInput'>New Name to Reassign Log Entry to:</label>" +
+								"<span class='middleText'>(This MAY be used to imitate someone else!)</span>" +
+								"<input type='text' id='reassInput' placeholder='Anonymous User' maxlength='15'></input>" +
+							"</div>" : "") +
+						copycatText;
+
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
 				text: "Confirm",
 				data: null,
 				global: true
 			}];
 
-			setupConfirmModal(actionMap,buttons);
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: targetID,
+				action: action,
+				actionType: actionType,
+				actionCost: actionCost
+			};
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
 
 			break;
 		}
@@ -1524,73 +1649,151 @@ function takeAction(target)
 		case "rig":
 		case "root":
 		{
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: action,
-				entryID: session.getTerminalID(),
-				actionCost: session.getActionCost("nonEntry",action),
-				upperAction: upperAction,
-				entryName: "Device"
-			};
+			let actionType = action;
+			let actionVerb = action.charAt(0).toUpperCase() + action.slice(1);
+			let actionCost = session.getActionCost("nonEntry", action);
 
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionCost,session.getCurrentTags());
 
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+			// HEADER TEXT
+			headerText = "Confirm " + actionVerb + " Action";
+			executeHeader = actionVerb + " / Device / " + actionCost + " Tag" + pluralize(actionCost);
+
+			// BODY TEXT
+			let extraAfterText = "<br/><br/>";
+
+			switch(action)
+			{
+				case "brick":
+				{
+					extraAfterText += "<span class='red'>WARNING: Bricking this Device will render it inoperable until repaired!</span>";
+				}
+				case "rig":
+				{
+					extraAfterText += "<span class='red'>WARNING: Triggering a Rigged Device (by calling \"Room Strike Lock\") will cause all data to be deleted at the end of the Scene!</span>";
+				}
+				case "root":
+				{
+					extraAfterText += "<span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>";
+				}
+			}
+
+			bodyText = 	actionVerb + " Device for " + actionCost + " Tag" + pluralize(actionCost) + "?" + 
+						extraAfterText;
+						// No Copycat
+
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
 				text: "Confirm",
 				data: payload.getUserID(),
 				global: true
 			}];
 
-			setupConfirmModal(actionMap,buttons);
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: session.getTerminalID(),
+				action: action,
+				actionType: actionType,
+				actionCost: actionCost
+			};
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
 
 			break;
 		}
 		case("siph"):
 		{
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: action,
-				entryID: session.getTerminalID(),
-				actionCost: session.getActionCost("nonEntry",action),
-				upperAction: "Siphon Charge",
-				entryName: "Device"
-			};
+			let actionType = action;
+			let actionCost = session.getActionCost("nonEntry", action);
 
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionCost,session.getCurrentTags());
 
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+			// HEADER TEXT
+			headerText = "Confirm Siphon Action";
+			executeHeader = "Siphon Charge / Device / " + actionCost + " Tag" + pluralize(actionCost);
+
+			// BODY TEXT
+			bodyText = 	"Siphon Charge from Device to gain 2 Amps?" + 
+						"<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource.";
+						// No Copycat
+
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
 				text: "Confirm",
 				data: payload.getUserID(),
 				global: false
 			}];
 
-			setupConfirmModal(actionMap,buttons);
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: session.getTerminalID(),
+				action: action,
+				actionType: actionType,
+				actionCost: actionCost
+			};
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
 
 			break;
 		}
+		// Active Refresh Functions
 		case("ping"):
 		{
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: "refresh",
-				entryID: session.getTerminalID(),
-				actionCost: session.getActionCost("nonEntry", "ping"),
-				upperAction: "Refresh",
-				entryName: "Ping Function"
-			};
+			let actionType = "refresh";
+			let actionCost = session.getActionCost("nonEntry", action);
 
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
+			let functionName = action.charAt(0).toUpperCase() + action.slice(1);
 
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"] + action.charAt(0),
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags()-actionCost,session.getCurrentTags());
+
+			// HEADER TEXT
+			headerText = "Confirm Refresh Action";
+			executeHeader = "Refresh / " + functionName + " / " + actionCost + " Tag" + pluralize(actionCost);
+
+			// BODY TEXT
+			bodyText = 	"Refresh \"" + functionName + "\" Function for " + actionCost + " Tag" + pluralize(actionCost) + "?";
+						// No Copycat
+
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
 				text: "Confirm",
-				data: "Ping",
+				data: action,
 				global: false
 			}];
 
-			setupConfirmModal(actionMap,buttons);
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: session.getTerminalID(),
+				action: action,
+				actionType: actionType,
+				actionCost: actionCost
+			};
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
 
 			break;
 		}
@@ -1598,269 +1801,144 @@ function takeAction(target)
 		case ("deck"):
 		case ("shim"):
 		{
+			let actionType = "item";
 			let effect = payload.getEffect(target.dataset["effect"]);
-			let effectCost = Number(target.dataset["plus"]);
 
-			let entryPath = "#" + $(target).parents('.itemItem')[0].id;
+			let effectPlus = Number(target.dataset["plus"]);
+			let actionCost = isNaN(effectPlus) ? 0 : (effectPlus * -1);
 
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: "item",
-				entryID: effect["abbr"],
-				actionCost: (isNaN(effectCost) ? 0 : effectCost * -1),
-				upperAction: "Use",
-				entryName: $(entryPath + " .itemName").html()
-			};
+			let itemPath = "#" + $(target).parents('.itemItem')[0].id;
+			let itemName = $(itemPath + " .itemName").html();
 
-			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags(),session.getCurrentTags()-actionMap["actionCost"]);
+			Gems.updateTagGems(Gems.CONFIRM,session.getCurrentTags(),session.getCurrentTags()-actionCost);
 
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"],
-				text: "Confirm",
-				data: session.getTerminalID(),
-				global: false
-			}];
+			// HEADER TEXT
+			headerText = "Confirm Item Activation";
+			executeHeader = "Activate / Item";
 
-			setupConfirmModal(actionMap,buttons);
+			let totalCharges = null;
+			let remCharges = null;
 
-			break;
-		}
-		case("pet"):
-		{
-			// DIGIPET ACTIVATE IN ITEM TAB
-			let effect = target.dataset["effect"];
-
-			let actionMap = {
-				userID: payload.getUserID(),
-				actionType: action,
-				entryID: effect,
-				actionCost: 0,
-				upperAction: "Play",
-				entryName: "DigiPet"
-			};
-
-			let buttons = [{
-				id: actionMap["actionType"] + actionMap["entryID"],
-				text: "Confirm",
-				data: session.getTerminalID(),
-				global: false
-			}];
-
-			setupConfirmModal(actionMap,buttons);
-
-			break;
-		}
-	}
-}
-
-function setupConfirmModal(actionMap,buttons)
-{
-	// ACTIONMAP REQUIRES:
-	//	- upperAction
-	//	- entryName
-	//	- actionCost
-	//  - actionType < For Interruption
-	//  - entryID < For Interruption
-
-	// BUTTON ARRAY ITEMS REQUIRE:
-	//	- id
-	//	- text
-	//	- data
-	//	- global
-
-	$("#actionModal").attr("data-type", actionMap["actionType"]);
-	$("#actionModal").attr("data-id", actionMap["entryID"]);
-
-	buttons.forEach(function(button)
-	{
-		$("#actionModal .modalButtonRow").append("<button id='" + button.id + "' class='modalButton'>" + button.text + "</button>");
-			
-		$("#" + button.id).bind("pointerup", function()
-		{
-			let buttonData = button.data;
-
-			if(actionMap["upperAction"] === "Reassign")
+			switch(action)
 			{
-				buttonData = ($("#reassInput").val() === "" ? "Anonymous User" : $("#reassInput").val());
-			};
-
-			executeAction(actionMap,buttonData,button.global);
-		});
-	});
-
-	$("#actionModal").width($("#main").width());
-
-	if(actionMap["actionType"] === "ice")
-	{
-		$("#actionModal").addClass("ice");
-	}
-	else
-	{
-		$("#actionModal").removeClass("ice");
-	}
-
-	$("#actionModal .modalHeaderText").html("Confirm " + actionMap["upperAction"] + " Action");
-
-	let extraBeforeText = " ";
-	let extraAfterText = "";
-	let quote = "\"";
-	let costText = " for " + actionMap["actionCost"] + " Tag" + (actionMap["actionCost"] === 1 ? "" : "s");
-
-	let copycatText = 	((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")) && (session.isActionCopyable(actionMap["upperAction"])) ?
-						"<br/><br/>" +
-						"<span class='copycatBox'>" +
-							"<input id='copycatActivate' type='checkbox'/>" +
-							"<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
-						"</span>" : "");
-
-	switch(actionMap["upperAction"])
-	{
-		case("Break"):
-		{
-			extraAfterText = 	"<div class='cautionTape'>" +
-									"WARNING: Breaking ICE means tripping it and taking any negative effects it may incur. <em>Sleaze</em> the ICE instead to disable the security, in exchange for Tags." +
-								"</div>"
-			break;
-		}
-		case("Reassign"):
-		{
-			extraBeforeText = " Log Entry for ";
-			extraAfterText =	"<br/><br/>" +
-								"<div id='reassName' class='multiLineTextInput'>" +
-									"<label for='reassInput'>New Name to Reassign Log Entry to:</label>" +
-									"<span class='middleText'>(This MAY be used to imitate someone else!)</span>" +
-									"<input type='text' id='reassInput' placeholder='Anonymous User' maxlength='15'></input>" +
-								"</div>";
-			break;
-		}
-		case("Wipe Tracks"):
-		{
-			extraBeforeText = " for ";
-			break;
-		}
-		case("Brick"):
-		{
-			quote = "";
-			extraAfterText = "<br/><br/><span class='red'>WARNING: Bricking this Device will render it inoperable until repaired!</span>";
-			break;
-		}
-		case("Rig"):
-		{
-			quote = "";
-			extraAfterText = "<br/><br/><span class='red'>WARNING: Triggering a Rigged Device (by calling \"Room Strike Lock\") will cause all data to be deleted at the end of the Scene!</span>";
-			break;
-		}
-		case("Root"):
-		{
-			quote = "";
-			extraAfterText = "<br/><br/><span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>"
-			break;
-		}
-		case("Siphon Charge"):
-		{
-			quote = "";
-			extraBeforeText = " from ";
-
-			costText += " to gain 2 Amps";
-
-			extraAfterText = "<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource."
-			break;
-		}
-		case("Refresh"):
-		{
-			quote = "";
-			break;
-		}
-		case("Use"):
-		{
-			copycatText = ""; // No copycat for items
-
-			switch(actionMap["entryID"].split("_")[0])
-			{
-				case("brad"):
-				{
-					break;
-				}
 				case("deck"):
-				case("phack"):
 				{
-					// Use + " " + "" + DECK NAME [TX] + "" + to gain 1 Tag + ? + "This item may be used..." + ""
-
-					let effect = payload.getEffect(actionMap["entryID"]);
-
-					let totCharges = effect["charges"];
-					let totCharge_S = (totCharges === 1 ? "" : "s");
-					let remCharges = effect["charges"] - effect["uses"];
-					let remCharge_S = (remCharges === 1 ? "" : "s");
+					totalCharges = effect["charges"];
+					remCharges = effect["charges"] - effect["uses"];
 					let upperPerType = effect["per_type"].charAt(0).toUpperCase() + effect["per_type"].slice(1);
 
-					actionMap["remCharges"] = remCharges - 1;
-					actionMap["usedCharges"] = totCharges - (remCharges - 1);
-
-					quote = "";
-					costText = " to gain +" + (actionMap["actionCost"] * -1) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s");
-
-					extraAfterText = "<br/><br/>This item may be used <b>" + totCharges + "</b> time" + totCharge_S + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + remCharge_S + " left.";
+					// BODY TEXT
+					bodyText = 	"Use " + itemName + " to gain " + (actionCost * -1) + " Tag" + pluralize(actionCost) + "?" +
+								"<br/><br/>This item may be used <b>" + totalCharges + "</b> time" + pluralize(totalCharges) + " per " + upperPerType + ". You have <b>" + remCharges + "</b> use" + pluralize(remCharges) + " left.";
+								// No Copycat
 
 					break;
 				}
 				case("shim"):
 				{
-					// Use + "" + "" + SHIMMERSTICK [TX] + "" + on this Device + ? + "NOTE: Applying..." + ""
+					let extraAfterText = "<br/><br/>";
 
-					quote = "";
-					costText = " on this Device";
-
-					switch(actionMap["entryID"])
+					switch(effect["abbr"])
 					{
 						case("shim_0"):
 						{
-							extraAfterText = 	"<br><br>NOTE:<br/>" +
+							extraAfterText += 	"NOTE:<br/>" +
 												"&nbsp;&nbsp;Applying a Shimmerstick will increase the cost of future Hacking Actions on this device by 1 Tag and their times by +30s.<br/>" +
 												"&nbsp;&nbsp;However, you will be able to accomplish one action remotely.";
 							break;
 						}
 						case("shim_1"):
 						{
-							extraAfterText = 	"<br><br>NOTE:<br/>" +
+							extraAfterText += 	"NOTE:<br/>" +
 												"&nbsp;&nbsp;Applying a Shimmerstick will increase the cost of future Hacking Actions on this device by 1 Tag and their times by +15s.<br/>" +
 												"&nbsp;&nbsp;However, you will be able to accomplish one action remotely.";
 							break;
 						}
 					}
 
-					break;
+					// BODY TEXT
+					bodyText = 	"Use " + itemName + " on this Device?" +
+								extraAfterText;
+								// No Copycat
 				}
 			}
 
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
+				text: "Confirm",
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: effect["abbr"],
+				action: action,
+				actionType: actionType,
+				actionCost: actionCost
+			};
+
+			if((totalCharges !== null) && (remCharges !== null))
+			{
+				actionMap["remCharges"] = remCharges - 1;
+				actionMap["usedCharges"] = totalCharges - (remCharges - 1);
+			}
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
+
 			break;
 		}
-		case("Play"): //pet_play
+		case("pet"):
 		{
-			extraBeforeText = " with ";
-			quote = "";
-			costText = " for this Sim";
+			// DIGIPET ACTIVATE IN ITEM TAB
+			let actionType = "pet_play";
+			let effect = target.dataset["effect"];
+
+			// HEADER TEXT
+			headerText = "Confirm DigiPet Action";
+			executeHeader = "Play / DigiPet";
+
+			// BODY TEXT
+			bodyText = 	"Play with DigiPet for this Sim?";
+						// No Copycat
+
+			// BUTTON ARRAY
+			let buttonArray = [{
+				id: action + targetID,
+				text: "Confirm",
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			let actionMap = {
+				userID: payload.getUserID(),
+				targetID: effect,
+				action: action,
+				actionType: actionType,
+				actionCost: 0
+			};
+
+			let confirmMap = {
+				headerText: headerText,
+				bodyText: bodyText,
+				buttonArray: buttonArray,
+				executeHeader: executeHeader
+			};
+
+			actionModal.showConfirmPage(actionMap, confirmMap);
 
 			break;
-		}		
+		}
 	}
-
-	// upperAction + beforeText + quote + entryName + quote + costText + ? + afterText + copycatText
-	// Access + " " + \" + File 0 + \" + for 1 Tag + ? + "" + copycat
-
-	$("#modalBodyTimer").addClass("hidden");
-	$("#actionModal .modalBodyText").html(
-		actionMap["upperAction"] + extraBeforeText + quote + actionMap["entryName"] + quote + costText + "?" +
-		extraAfterText + copycatText
-	);
-
-	$(".modalBodyText").removeClass("hidden");
-
-	$("#actionModal .modalButtonRow").attr("data-mode","confirm");
-	
-	$("#modalBG").css("display","flex");
 }
-
 
 function closeModal(event)
 {
@@ -1876,33 +1954,13 @@ function closeModal(event)
 	}
 	else if((event.type !== "keyup") || (event.key === "Escape"))
 	{
-		mbTimer.killTimer();
-
-		$("#modalBG").css("display","none");
-
-		$("#actionModal").attr("data-type", "");
-		$("#actionModal").attr("data-id", "");
-		
-		$("#actionModal .modalOverlay").removeClass("blink");
-		$("#actionModal .modalOverlay").addClass("hidden");
-
-		$("#actionModal .modalHeaderRow").removeClass("dimmed");
-		$("#actionModal .modalHeaderText").html("");
-
-		$("#actionModal .modalBody").removeClass("dimmed");
-		$("#modalBodyTimer").addClass("hidden");
-		$("#actionModal .modalBodyText").html("");
-		$(".modalBodyText").addClass("hidden");
-
-		$("#actionModal .modalButtonRow").removeClass("dimmed");
-		$("#actionModal .modalButtonRow").attr("data-mode","none");
-		$("#actionModal .modalButtonRow").html("");
+		actionModal.clearModal();
 
 		Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	}
 }
 
-function executeAction(actionMap,newData,globalAction)
+function executeAction(actionMap, executeHeader)
 {
 	if((!$("#copycatActivate").prop("checked")) && (actionMap["actionType"] !== "item"))
 	{
@@ -1917,94 +1975,37 @@ function executeAction(actionMap,newData,globalAction)
 			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 		}
 
-		$("#actionModal").width($("#main").width());
-
-		$("#actionModal .modalButtonRow").html("");
-		$("#actionModal .modalButtonRow").append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
+		let petStage = null;
 
 		if(payload.getItem("digi_pet"))
 		{
-			if(!payload.getActiveEffect("pet_play")) // Pet: Stage 1
+			if(!payload.getActiveEffect("pet_play")) // Pet: Stage 1 > Unplayed
 			{
-				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton' disabled>YOUR DIGIPET IS STILL UNHATCHED!<br/>PLAY WITH IT TO USE IT!</button>");
+				petStage = 1;
 			}
 			else if(!payload.getActiveEffect("pet_use")) // Pet: Stage 2 > Played This Sim
 			{
-				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>");
+				petStage = 2;
 			}
 			else // Pet: Stage 3 > Used This Scene
 			{
-				$("#actionModal .modalButtonRow").append("<button id='digiPetButton' class='modalbutton' disabled>YOUR DIGIPET IS ALL TUCKERED OUT!<br/>LET IT REST UNTIL NEXT SCENE")
+				petStage = 3;
 			}
 		}
 
-		$("#executeButton").bind("mousedown touchstart", function(event)
-		{
-			event.preventDefault();
+		let executeMap = {
+			headerText: executeHeader,
+			maxTime: maxTime,
+			petStage: petStage
+		};
 
-			if(!$("#executeButton").prop("disabled"))
-			{
-				$("#executeButton").addClass("active");
-
-				actionMap["newData"] = newData;
-				actionMap["global"] = globalAction;
-
-				mbTimer.startTimer(maxTime,completeAction,actionMap);
-			}
-		});
-		$("#executeButton").bind("mouseleave mouseup dragleave touchend", function()
-		{
-			if(!$("#executeButton").prop("disabled"))
-			{
-				$("#executeButton").removeClass("active");
-
-				mbTimer.pauseTimer();
-			}
-		});
-		$("#executeButton").bind("contextmenu", function(event)
-		{
-			if(event.originalEvent.pointerType === "touch")
-			{
-				event.preventDefault();
-				$("#executeButton").trigger("touchstart");
-			}
-		})
-
-		$("#digiPetButton").bind("mouseup", function()
-		{
-			$("#digiPetButton").remove();
-			//!! Dancing Digipet Animation
-			$("#executeButton").prop("disabled", true);
-
-			actionMap["newData"] = newData;
-			actionMap["global"] = globalAction;
-			actionMap["digipet"] = true;
-
-			mbTimer.startTimer(maxTime,completeAction,actionMap);
-		});
-
-		$("#actionModal .modalHeaderText").html(actionMap["upperAction"] + " / " + actionMap["entryName"] + " / " + (actionMap["actionCost"] < 0 ? "+" + (actionMap["actionCost"] * -1) : actionMap["actionCost"]) + " Tag" + (Math.abs(actionMap["actionCost"]) === 1 ? "" : "s"));
-
-		$(".modalBodyText").addClass("hidden");
-		$("#modalBodyTimer .mmss .FG").html(mmss(maxTime));
-		$("#modalBodyTimer .hundsec .FG").html("00");
-		$("#modalBodyTimer").removeClass("hidden");
-
-		$("#actionModal .modalButtonRow").attr("data-mode","execute");
-		
-		$("#load").addClass("hidden");
-		$("#modalBG").css("display","flex");
+		actionModal.showExecutePage(actionMap, executeMap);
 	}
 	else //USING COPYCAT OR AN ITEM
 	{
 		if(actionMap["actionType"] === "item")
 		{
-			actionMap["newData"] = newData;
-			actionMap["global"] = globalAction;
-
-			$("#load").removeClass("hidden");
-
-			mbTimer.skipTimer(completeAction,actionMap);
+			actionModal.skipExecutePage(actionMap);
 		}
 		else //COPYCAT
 		{
@@ -2022,12 +2023,7 @@ function executeAction(actionMap,newData,globalAction)
 				}
 			});
 
-			actionMap["newData"] = newData;
-			actionMap["global"] = globalAction;
-
-			$("#load").removeClass("hidden");
-
-			mbTimer.skipTimer(completeAction,actionMap);
+			actionModal.skipExecutePage(actionMap);
 		}
 	}
 }
@@ -2042,7 +2038,7 @@ function completeAction(actionMap)
 		// actionType
 		// actionCost
 		// dialog (id)
-		// entryID
+		// targetID
 		// entryName
 		// entryPath (entry/ice)
 		// global
@@ -2059,7 +2055,7 @@ function completeAction(actionMap)
 		case("entry"):
 		case("ice"):
 		{
-			session.setEntry(actionMap["entryID"]);
+			session.setEntry(actionMap["targetID"]);
 
 			$(actionMap["results"]["entryPath"] + " > .entryTitleBar > .entryMaskContainer").html(actionMap["results"]["title"]);
 			$(actionMap["results"]["entryPath"] + " > .entryContentsBar > .entryMaskContainer").html(actionMap["results"]["contents"]);
@@ -2069,28 +2065,28 @@ function completeAction(actionMap)
 
 			if(payload.getFunction("REPEAT"))
 			{
-				session.setFunctionState("REPEAT",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),payload.getFunction("REPEAT"));
-				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["upperAction"]);
+				session.setFunctionState("REPEAT",actionMap["targetID"],actionMap["action"].toLowerCase(),payload.getFunction("REPEAT"));
+				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["action"]);
 			}
 
 			if(payload.getItem("deck_jst")) //JOHNNY'S SPECIAL TOUCH
 			{
-				session.setFunctionState("TOUCHED",actionMap["entryID"],actionMap["upperAction"].toLowerCase(),1);
-				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["upperAction"]);
+				session.setFunctionState("TOUCHED",actionMap["targetID"],actionMap["action"].toLowerCase(),1);
+				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["action"]);
 			}
 			break;
 		}
 		case("log"):
 		{
-			if(actionMap["upperAction"] === "Reassign")
+			if(actionMap["action"] === "reass")
 			{
-				$("#log" + actionMap["entryID"] + " > .logName").html(actionMap["newData"]);
+				$("#log" + actionMap["targetID"] + " > .logName").html(actionMap["buttonData"]);
 			}
 			else //WIPE TRACKS
 			{
-				$("#log" + actionMap["entryID"] + " > .logPerson").html("[ERROR:&nbsp;");
-				$("#log" + actionMap["entryID"] + " > .logName").html("ENTRY NOT FOUND]");
-				$("#log" + actionMap["entryID"] + " > .logActions").html("");
+				$("#log" + actionMap["targetID"] + " > .logPerson").html("[ERROR:&nbsp;");
+				$("#log" + actionMap["targetID"] + " > .logName").html("LOG NOT FOUND]");
+				$("#log" + actionMap["targetID"] + " > .logActions").html("");
 			}
 			break;
 		}
@@ -2124,43 +2120,41 @@ function completeAction(actionMap)
 		}
 		case("item"):
 		{
-			switch(actionMap["entryID"].split("_")[0])
+			switch(actionMap["targetID"].split("_")[0])
 			{
-				case("brad"):
-				{
-					break;
-				}
 				case("deck"):
 				case("phack"):
 				{
-					$(".deckButton[data-effect='" + actionMap["entryID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","/resources/images/actions/itemfilled.png");
+					$(".deckButton[data-effect='" + actionMap["targetID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","/resources/images/actions/itemfilled.png");
 
 					if(actionMap["remCharges"] <= 0)
 					{
-						$(".deckButton[data-effect='" + actionMap["entryID"] + "']").prop("disabled", true);
+						$(".deckButton[data-effect='" + actionMap["targetID"] + "']").prop("disabled", true);
 					}
 
-					payload.useItemEffect(actionMap["entryID"]);
+					payload.useItemEffect(actionMap["targetID"]);
 
 					break;
 				}
 				case("shim"):
 				{
-					let otherEffect = (actionMap["entryID"] === "shim_0" ? "shim_1" : "shim_0");
-					payload.setActiveEffect(actionMap["entryID"],true);
+					let otherEffect = (actionMap["targetID"] === "shim_0" ? "shim_1" : "shim_0");
+					payload.setActiveEffect(actionMap["targetID"],true);
 
-					$("#shimStatus").attr("src", "/resources/images/status/" + actionMap["entryID"] + ".png");
+					$("#shimStatus").attr("src", "/resources/images/status/" + actionMap["targetID"] + ".png");
 					$("#shimStatus").removeClass("hidden");
 
 					$(".shimButton").attr("disabled",true);
-					$(".shimButton[data-effect='" + actionMap["entryID"] + "']").html("Already Active");
+					$(".shimButton[data-effect='" + actionMap["targetID"] + "']").html("Already Active");
 					$(".shimButton[data-effect='" + otherEffect + "']").html("Other Shimmerstick Active");
 
 					break;
 				}
 			}
+
+			break;
 		}
-		case("pet"):
+		case("pet_play"):
 		{
 			payload.setActiveEffect("pet_play", true);
 			$("#petStatus").attr("src","/resources/images/status/pet_ready.png");
@@ -2190,9 +2184,9 @@ function completeAction(actionMap)
 
 	if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 	{
-		if((actionMap["upperAction"] !== "Use Deck") && (!session.isActionCopyable(actionMap["upperAction"])))
+		if((actionMap["action"] !== "item") && (!session.isActionCopyable(actionMap["action"])))
 		{
-			session.makeActionCopyable(actionMap["upperAction"]);
+			session.makeActionCopyable(actionMap["action"]);
 		}
 	}
 
@@ -2220,7 +2214,7 @@ function completeAction(actionMap)
 
 function updateEntryCosts(reducer, entryPath, entryAction)
 {
-	if((reducer === "REPEAT") && ((entryAction === "Access") || (entryAction === "Modify")))
+	if((reducer === "REPEAT") && ((entryAction === "access") || (entryAction === "modify")))
 	{
 		let iconID = entryPath.split("-")[0] + "Content";
 
@@ -2233,12 +2227,10 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 			};
 		});
 
-		$(iconID + " .repeatIndicator" + entryAction).removeClass("dimmed");
+		$(iconID + " .repeatIndicator" + entryAction.charAt(0).toUpperCase() + entryAction.slice(1)).removeClass("dimmed");
 	}
-	else if((reducer === "TOUCHED") && (entryAction === "Access"))
+	else if((reducer === "TOUCHED") && (entryAction === "access"))
 	{
-		console.log("Test");
-
 		$("." + entryAction.toLowerCase() + "Button").each(function(index,entryButton){
 			if($(entryButton).html() !== "N/A")
 			{
@@ -2306,38 +2298,45 @@ function generatePuzzle(target)
 {
 	let puzzle = session.getPuzzle(target.dataset["id"]);
 
+	$("#actionModal").attr("data-type", "puzzle");
+	$("#actionModal").attr("data-id", puzzle["id"]);
+
+	$("#actionModal").width($("#main").width());
+
+	actionModal.clearModal();
+
 	switch(puzzle["puzzle_type"])
 	{
 		case("free_rp"):
 		{
-			console.log("Free RP!");
+			/*
+			$("#actionModal .modalHeaderText").html("Hacking Action RP");
+
+			$("#actionModal .modalBody").removeClass("dimmed");
+			$("#modalBodyText").addClass("hidden");
+			$("#actionModal .modalBodyText").html("<div id='rmmGuessArray' class='rmmBox'></div>");
+			$("#actionModal .modalButtonRow").html("<div id='rmmAnswerBox' class='rmmBox'></div>");
+			$(".modalBodyTimer").removeClass("hidden");
+
+			$("#actionModal .modalButtonRow").removeClass("dimmed");
+			*/
+			resolvePuzzle(puzzle["id"]);
+
 			break;
 		}
 		case("rev_mm"):
 		{
-			$("#actionModal").attr("data-type", "");
-			$("#actionModal").attr("data-id", "");
-
-			$("#actionModal .modalOverlay").removeClass("blink");
-			$("#actionModal .modalOverlay").addClass("hidden");
-
-			$("#actionModal").width($("#main").width());
-			$("#actionModal").removeClass("ice");
-
-			$("#actionModal .modalHeaderRow").removeClass("dimmed");
 			$("#actionModal .modalHeaderText").html("Reverse Mastermind");
 
-			$("#actionModal .modalBody").removeClass("dimmed");
-			$("#modalBodyTimer").addClass("hidden");
 			$("#actionModal .modalBodyText").html("<div id='rmmGuessArray' class='rmmBox'></div>");
 			$("#actionModal .modalButtonRow").html("<div id='rmmAnswerBox' class='rmmBox'></div>");
 
-			$(".modalBodyText").removeClass("hidden");
-			$("#actionModal .modalButtonRow").removeClass("dimmed");
+			$("#actionModal .modalBodyText").removeClass("hidden");
 
-			revMM = new ReverseMasterMind(4, target.dataset["id"]);
+			revMM = new ReverseMasterMind(4, puzzle["id"]);
 
 			$("#modalBG").css("display","flex");
+
 			break;
 		}
 	}
@@ -2346,6 +2345,25 @@ function generatePuzzle(target)
 function resolvePuzzle(puzzID)
 {
 	let puzzle = session.getPuzzle(puzzID);
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "/resources/scripts/terminal/db/userActions.php",
+		data:
+		{
+			userID: payload.getUserID(),
+			targetID: puzzle["id"],
+			action: "puzzle",
+			actionType: "puzzle",
+			newState: 1,
+			actionCost: puzzle["cost"],
+			global: puzzle["global"]
+		}
+	});
+
+	//!! INTERRUPT
+	//!! DISABLE ON RELOAD
 
 	//cost
 	//repeat
@@ -2356,31 +2374,51 @@ function resolvePuzzle(puzzID)
 	{
 		case("tags"):
 		{
-			let tagAmount = Number(puzzle["reward"]);
-
-			session.setCurrentTags(session.getCurrentTags() + tagAmount);
+			session.setCurrentTags(session.getCurrentTags() + Number(puzzle["reward"]));
 			Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 			disableExpensiveButtons();
+			break;
 		}
 		case("item"):
 		{
-			//json.decode(reward).each()
+			JSON.parse(puzzle["reward"]).forEach(function (item, index)
+			{
+				$(".puzzleReward")[index].html(item);
+			});
+			break;
 		}
 	}
 
+	dimPuzzle(puzzle);
+
+	closeModal("Success");
+}
+
+function dimPuzzle(puzzle, uses = 1)
+{
 	if(puzzle["repeat"] === null)
 	{
 		//No Repeat
 
-		$(".puzzleEntry[data-id='" + puzzID + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox").addClass("dimmed");
-		$(".puzzleSolveButton[data-id='" + puzzID + "']").html("Solved!");
-		$(".puzzleSolveButton[data-id='" + puzzID + "']").attr("disabled", true);
+		$(".puzzleEntry[data-id='" + puzzle["id"] + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox").addClass("dimmed");
+		$(".puzzleSolveButton[data-id='" + puzzle["id"]+ "']").html("Solved!");
+		$(".puzzleSolveButton[data-id='" + puzzle["id"] + "']").attr("disabled", true);
 	}
 	else if(puzzle["repeat"] > 0)
 	{
-		//Mark One Repeat Less
-	}
-	//else Repeat Infinitely (no change)
+		//Mark X Charge(s) Off
 
-	closeModal("Success");
+		for(let i = 0; i < uses; i++)
+		{
+			$(".puzzleRepeatBox img[src='/resources/images/actions/itemopen.png']")[0].setAttribute("src","/resources/images/actions/itemfilled.png");
+
+			if($(".puzzleRepeatBox img[src='/resources/images/actions/itemopen.png']").length === 0)
+			{
+				$(".puzzleEntry[data-id='" + puzzle["id"] + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox, .puzzleRepeatBox").addClass("dimmed");
+				$(".puzzleSolveButton[data-id='" + puzzle["id"]+ "']").html("Solved!");
+				$(".puzzleSolveButton[data-id='" + puzzle["id"] + "']").attr("disabled", true);
+			}
+		}
+	}
+	//else Repeat Indefinitely (no change)
 }

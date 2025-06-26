@@ -4,6 +4,7 @@ require('dbConnect.php');
 $userID = $_POST["userID"];
 $targetID = $_POST["targetID"];
 $action = $_POST["action"];
+$actionType = $_POST["actionType"];
 $newState = $_POST["newState"];
 $actionCost = $_POST["actionCost"];
 $global = $_POST["global"];
@@ -12,28 +13,28 @@ $actionQuery = "INSERT INTO {$dbName}.sim_user_actions
                             (time, user_id, target_type, target_id, action, newState, cost, global)
                 VALUES ( UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ? )";
 
-switch($action)
+switch($actionType)
 {
-    case("Access"):
-    case("Modify"):
-    case("Break"):
-    case("Sleaze"):
+    case("entry"):
+    case("ice"):
         $targetType = "entry";
         break;
-    case("Reassign"):
-    case("Wipe Tracks"):
+    case("log"):
         $targetType = "log";
         break;
-    case("Brick"):
-    case("Rig"):
-    case("Root"):
-    case("Masher"): //$newState = masher's ID
-    case("Siphon Charge"):
-    case("Refresh"):
+    case("puzzle"):
+        $targetType = "puzzle";
+        break;
+    case("brick"):
+    case("rig"):
+    case("root"):
+    case("masher"): //$newState = masher's ID
+    case("siph"):
+    case("refresh"):
         $targetType = "terminal";
         break;
-    case("Use"):
-    case("Play"):
+    case("item"):
+    case("pet_play"):
         $targetType = "item";
         $action = "Item";
         break;

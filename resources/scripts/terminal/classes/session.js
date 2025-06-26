@@ -387,8 +387,8 @@ class Session
         this.#copyableActions.push(action.toLowerCase());
     }
 
-    getPuzzle(index)
+    getPuzzle(puzzID)
     {
-        return this.#puzzleData[index];
+        return this.#puzzleData.find(puzzle => puzzle.id === Number(puzzID));
     }
 }

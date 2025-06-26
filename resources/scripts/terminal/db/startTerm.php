@@ -4,6 +4,7 @@ require('dbConnect.php');
 include('resources/scripts/terminal/classes/terminal.php');
 
 $termSlug = $_GET["id"];
+$local = $_GET["loc"] ?? false;
 
 $termQuery = "  SELECT id,displayName,access,state,stateData
                 FROM {$dbName}.sim_terminals
@@ -17,12 +18,14 @@ $termResponse = $termStatement->fetch(PDO::FETCH_ASSOC);
 
 if($termResponse === false)
 {
-    echo    "<h1>HTTP ERROR 404: FILE NOT FOUND</h1>";
+    echo "<h1>HTTP ERROR 404: FILE NOT FOUND</h1>";
 
     $terminal = new Terminal($termResponse);
 }
 else
 {
+    echo $local === "";
+
     if($termResponse['state'] === "bricked")
     {
         $userQuery = "  SELECT charName

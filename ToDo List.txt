@@ -132,6 +132,11 @@
     - REVERSE MASTERMIND
     - SLIDING PANELS [?]
     - PICROSS
+ - Need to disable on reload if already done
+ - Interrupt if global
+ - Decrease Repeat (not the Function) amount if done some
+ - Block if without requirements
+ - Test multi-item reward works right
 
 > LOW PRIORITY
     - Resume Timer on mouseenter (only if already started?)

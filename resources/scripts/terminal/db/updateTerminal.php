@@ -2,7 +2,7 @@
 require('dbConnect.php');
 
 $actionType = $_POST["actionType"];
-$entryID = $_POST["entryID"];
+$targetID = $_POST["targetID"];
 $userID = $_POST["userID"];
 $newData = $_POST["newData"];
 $oldData = $_POST["oldData"];
@@ -22,7 +22,7 @@ try
 
     $message = json_encode(array(
                                     "actionType" => (($actionType === "entry" || $actionType === "ice") ? "entry" : $actionType),
-                                    "entryID" => intval($entryID),
+                                    "targetID" => intval($targetID),
                                     "userID" => intval($userID),
                                     "newData" => $newData
                                     ));
@@ -46,71 +46,71 @@ switch($actionType)
     case "ice":
         $updateQuery = "UPDATE {$dbName}.sim_entries
                         SET state = :newData, previous = :oldData
-                        WHERE id = :entryID";
+                        WHERE id = :targetID";
 
         $updateStatement = $pdo->prepare($updateQuery);
 
-        $updateStatement->execute([':newData' => $newData, ':oldData' => $oldData, ':entryID' => $entryID]);
+        $updateStatement->execute([':newData' => $newData, ':oldData' => $oldData, ':targetID' => $targetID]);
         break;
     case "log":
         if($newData === "") // WIPE TRACKS
         {
             $updateQuery = "UPDATE {$dbName}.sim_access_logs
                             SET state = 'wiped'
-                            WHERE id = :entryID";
+                            WHERE id = :targetID";
 
             $updateStatement = $pdo->prepare($updateQuery);
 
-            $updateStatement->execute([':entryID' => $entryID]);
+            $updateStatement->execute([':targetID' => $targetID]);
         }
         else // REASSIGN
         {
             $updateQuery = "UPDATE {$dbName}.sim_access_logs
                             SET reassignee = :newData
-                            WHERE id = :entryID";
+                            WHERE id = :targetID";
 
             $updateStatement = $pdo->prepare($updateQuery);
 
-            $updateStatement->execute([':newData' => $newData, ':entryID' => $entryID]);
+            $updateStatement->execute([':newData' => $newData, ':targetID' => $targetID]);
         }
         break;
     case "brick":
         $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'bricked',
                             stateData = :newData
-                        WHERE id = :entryID";
+                        WHERE id = :targetID";
 
         $updateStatement = $pdo->prepare($updateQuery);
 
-        $updateStatement->execute([':newData' => $newData, ':entryID' => $entryID]);
+        $updateStatement->execute([':newData' => $newData, ':targetID' => $targetID]);
         break;
     case "rig":
         $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'rigged'
-                        WHERE id = :entryID";
+                        WHERE id = :targetID";
 
         $updateStatement = $pdo->prepare($updateQuery);
 
-        $updateStatement->execute([':entryID' => $entryID]);
+        $updateStatement->execute([':targetID' => $targetID]);
         break;
     case "root":
         $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'rooting',
                             stateData = :newData
-                        WHERE id = :entryID";
+                        WHERE id = :targetID";
 
         $updateStatement = $pdo->prepare($updateQuery);
 
-        $updateStatement->execute([':newData' => time(), ':entryID' => $entryID]);
+        $updateStatement->execute([':newData' => time(), ':targetID' => $targetID]);
         break;
     case "rooted":
         $updateQuery = "UPDATE {$dbName}.sim_terminals
                         SET state = 'rooted',
                             stateData = NULL
-                        WHERE id = :entryID";
+                        WHERE id = :targetID";
 
         $updateStatement = $pdo->prepare($updateQuery);
 
-        $updateStatement->execute([':entryID' => $entryID]);
+        $updateStatement->execute([':targetID' => $targetID]);
         break;
 }

@@ -15,10 +15,10 @@ class ReverseMasterMind
     #puzzleIndex; //int
     #pegCount; //int
     #guesses = []; //array
-    #difficulty; //int
+    //#difficulty; //int
     #colorCount; //int
-    #guessCount; //int
-    #answer; //array
+    //#guessCount; //int
+    //#answer; //array
 
     constructor(pegCount = 4, puzzleID)
     {

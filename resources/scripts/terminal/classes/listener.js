@@ -97,6 +97,19 @@ class Listener
             switch(actionType)
             {
                 case("entry"):
+                    let modal = $("#actionModal")[0];
+
+                    if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === entryID))
+                    {
+                        // X OUT MODAL, DISABLE BUTTONS
+                        mbTimer.killTimer();
+
+                        $(modal).children(":not(.modalOverlay)").addClass("dimmed");
+                        $(modal).children(".modalOverlay").removeClass("hidden");
+                        $(modal).children(".modalOverlay").addClass("blink");
+                        $("#actionModal button").prop("disabled", true);
+                    }
+
                     let entryJSON = $.getJSON(
                         "/resources/scripts/terminal/db/getEntryUpdate.php",
                         {
@@ -110,18 +123,6 @@ class Listener
                     .done(function() {
                         //check for open modal that is targeting this entry
                         //if so, X out modal, update, and close modal when update is finished
-                        let modal = $("#actionModal")[0];
-
-                        if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === entryID))
-                        {
-                            // X OUT MODAL, DISABLE BUTTONS
-                            mbTimer.killTimer();
-
-                            $(modal).children(":not(.modalOverlay)").addClass("dimmed");
-                            $(modal).children(".modalOverlay").removeClass("hidden");
-                            $(modal).children(".modalOverlay").addClass("blink");
-                            $("#actionModal button").prop("disabled", true);
-                        }
 
                         let resultJSON = entryJSON.responseJSON;
 
@@ -141,6 +142,10 @@ class Listener
                     //check for open modal that is targeting this log entry
                     //if so, X out modal, update, and close modal
                     // NOTE: THIS NEEDS TO BE TRIGGERED WHEN A NEW USER CONNECTS AND ADDS A NEW LOG!!
+                    break;
+                case("puzzle"):
+                    //Same deal, check for open modal targeting this puzzle
+                    //if so, X out modal, update, and close
                     break;
                 case("brick"):
                     //switch to Bricked terminal, after maybe a second of freeze-up?

@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/listener.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/terminalInterface.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/gems.js" defer></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/modal.js" defer></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/puzzles/reverse_mastermind/rev_mm.js"></script>
 		<link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="/resources/styles/termstyle.css"/>

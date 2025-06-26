@@ -205,6 +205,22 @@ else
 
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
 
+    $puzzleQuery = "SELECT DISTINCT sim_puzzles.id, sim_puzzles.repeat, SUM(newState) as uses
+                    FROM sim_user_actions
+                    INNER JOIN sim_puzzles ON target_id=sim_puzzles.id
+                    WHERE sim_puzzles.terminal_id=:termID
+                        AND (user_id=:userID
+                            OR sim_user_actions.global=true)
+                        AND target_type='puzzle'
+                        AND (sim_puzzles.repeat > 0
+                            OR sim_puzzles.repeat IS NULL)
+                    GROUP BY sim_puzzles.id, sim_puzzles.repeat";
+
+    $puzzleStatement = $pdo->prepare($puzzleQuery);
+    $puzzleStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
+
+    $puzzleResponse = $puzzleStatement->fetchAll(PDO::FETCH_ASSOC);
+
     $masherQuery = "SELECT newState AS id, users.charName AS name, cost AS 'rank'
                     FROM {$dbName}.sim_user_actions
                     INNER JOIN {$dbName}.users ON users.ml_id = sim_user_actions.newState
@@ -263,7 +279,7 @@ else
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Items
                                     /* THIS SECTION ONLY SELECTS ITEMS THE PLAYER CURRENTLY HAS EQUIPPED. */
-                                    /* IT IS COMMENTED OUT BECAUSE CERTAIN ABILITIES ALLOW PLAYERS TO SWAP CUSTOMIZATIONS AND STUFF IN GAME, AND THAT MIGHT BE VALID */
+                                    /* CURRENTLY WE WANT ALL ITEMS TO BE COUNTED, BUT BECAUSE CERTAIN ABILITIES ALLOW PLAYERS TO SWAP CUSTOMIZATIONS AND STUFF IN GAME, MIGHT NEED THIS LATER */
                                     /*INNER JOIN (
                                         SELECT user_id, user_items.item_abbr, item_effects.abbr AS effect_abbr
                                         FROM {$dbName}.user_items
@@ -274,6 +290,21 @@ else
                                     WHERE UA_Items.target_type='item'
                                         AND UA_Items.newState=:termID
                                         AND UA_Items.user_id=:userID
+                                   UNION
+                                    SELECT SUM(UA_Puzz_Cost.cost) AS sumCost
+                                    FROM {$dbName}.sim_user_actions AS UA_Puzz_Cost
+                                    INNER JOIN sim_puzzles ON UA_Puzz_Cost.target_id=sim_puzzles.id
+                                    WHERE UA_Puzz_Cost.target_type='puzzle'
+                                        AND sim_puzzles.terminal_id=:termID
+                                        AND UA_Puzz_Cost.user_id=:userID
+                                   UNION
+                                    SELECT (SUM(reward) * -1) AS sumCost
+                                    FROM {$dbName}.sim_user_actions AS UA_Puzz_Reward
+                                    INNER JOIN sim_puzzles ON UA_Puzz_Reward.target_id=sim_puzzles.id
+                                    WHERE UA_Puzz_Reward.target_type='puzzle'
+                                        AND sim_puzzles.terminal_id=:termID
+                                        AND sim_puzzles.reward_type='tags'
+                                        AND UA_Puzz_Reward.user_id=:userID
                                 ) AS tC
                             ) AS rT";
 
@@ -290,6 +321,7 @@ else
                                     "items" => $newItems,
                                     "hasAccessed" => $hasAccessed,
                                     "prevActions" => $actionResponse,
+                                    "puzzActions" => $puzzleResponse,
                                     "masherData" => ($masherData ? array(
                                                         "id" => intval($masherData["id"]),
                                                         "name" => $masherData["name"],
