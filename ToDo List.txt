@@ -95,9 +95,6 @@
  - Alarm
  - Lock
 
->!! DASHBOARD NOT SAVING ENTRY FILE/CONTENTS?
- - Something to do with changeEntry not firing when you change the input text
-
 >!! EXTRA TAGS FROM TWO TERMINALS?
 
 >> MAKE ICON SCHEMA DATABASED

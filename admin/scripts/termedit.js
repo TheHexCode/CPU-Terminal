@@ -765,7 +765,7 @@ function changeEntry(field, effectIndex = null)
 {
     let icon = $(field).parents(".entryList")[0].dataset["icon"];
     let entryID = $(field).parents(".entry")[0].dataset["id"];
-    let fieldType = field.classList[0].split("entry")[1];
+    let fieldType = field.classList[0].split("entry")[1].toLowerCase();
 
     admTerm.changeEntry(field.value, icon, entryID, fieldType, effectIndex);
 }
