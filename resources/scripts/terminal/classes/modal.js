@@ -114,7 +114,6 @@ class Modal
 
     showExecutePage(actionMap, executeMap)
     {
-        console.log(executeMap);
         $(this.#modal).width($("#main").width());
 
 		$(this.#buttonRow).html("");
@@ -139,7 +138,7 @@ class Modal
             }
         }
 
-        $("#executeButton").on("mousedown touchstart", {this: this}, function(event)
+        $("#executeButton").on("pointerdown", {this: this}, function(event)
 		{
 			event.preventDefault();
 
@@ -150,8 +149,10 @@ class Modal
 				event.data.this.#modalTimer.startTimer(executeMap["maxTime"],completeAction,actionMap);
 			}
 		});
-		$("#executeButton").on("mouseleave mouseup dragleave touchend",  {this: this}, function(event)
+		$("#executeButton").on("pointerup pointerleave pointerout",  {this: this}, function(event)
 		{
+            event.preventDefault();
+
 			if(!$("#executeButton").prop("disabled"))
 			{
 				$("#executeButton").removeClass("active");
@@ -161,14 +162,15 @@ class Modal
 		});
 		$("#executeButton").on("contextmenu",  function(event)
 		{
+            console.log(event);
 			if(event.originalEvent.pointerType === "touch")
 			{
 				event.preventDefault();
-				$("#executeButton").trigger("touchstart");
+				$("#executeButton").trigger("pointerdown");
 			}
 		});
 
-        $("#digiPetButton").on("mouseup", {this: this}, function(event)
+        $("#digiPetButton").on("pointerup", {this: this}, function(event)
 		{
 			$("#digiPetButton").remove();
 			//!! Dancing Digipet Animation
