@@ -228,11 +228,121 @@ CREATE TABLE sim_user_actions (
 );
 
 ####################################################################################################
+###
+###     SELF REPORT
+###
+####################################################################################################
 
-INSERT INTO sim_active_codes
-            (simCode, jobCode)
-    VALUES  ('MAY25', 'ABC1234');
+CREATE TABLE sr_roles (
+    id          INT     AUTO_INCREMENT,
+    name        TEXT    NOT NULL,
+    discovered  BOOL    NOT NULL,
+    PRIMARY KEY (id)
+);
 
+CREATE TABLE sr_paths (
+    id      INT     AUTO_INCREMENT,
+    role_id INT     NOT NULL,
+    name    TEXT    NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (role_id)
+        REFERENCES sr_roles(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE sr_mods (
+    id      INT     AUTO_INCREMENT,
+    name    TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_sources (
+    id      INT     AUTO_INCREMENT,
+    name    TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_keywords (
+    id      INT     AUTO_INCREMENT,
+    name    TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_choice_cats (
+    id              INT     AUTO_INCREMENT,
+    friendly_name   TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_choices (
+    cat_id  INT     NOT NULL,
+    choice  TEXT    NOT NULL,
+    FOREIGN KEY (cat_id)
+        REFERENCES sr_choice_cats(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE sr_know_cats (
+    id              INT     AUTO_INCREMENT,
+    friendly_name   TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_knowledges (
+    id          INT     AUTO_INCREMENT,
+    know_name   TEXT    NOT NULL,
+    is_corp     BOOL    NOT NULL,
+    is_fact     BOOL    NOT NULL,
+    discovered  BOOL    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_functions (
+    id          INT     AUTO_INCREMENT,
+    name        TEXT    NOT NULL,
+    keyworded   BOOL    NOT NULL,
+    type        TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_role_functions (
+    entry_id    INT     NOT NULL,
+    role_id     INT     NOT NULL,
+    path_id     INT,
+    tier        INT     NOT NULL,
+    mod_id      INT,
+    source_id   INT,
+    func_id     INT     NOT NULL,
+    keyword_id  INT,
+    choice_type TEXT,
+    `rank`      INT,
+    FOREIGN KEY (role_id)
+        REFERENCES sr_roles(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (path_id)
+        REFERENCES sr_paths(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (mod_id)
+        REFERENCES sr_mods(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (source_id)
+        REFERENCES sr_sources(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (func_id)
+        REFERENCES sr_functions(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+####################################################################################################
+
+/*
 INSERT INTO cpu_functions
             (name, type, hacking_cat)
     VALUES  ('[UNKNOWN]', 'error', NULL),
@@ -1096,75 +1206,4 @@ INSERT INTO ml_functions
             (1003, 'Button Masher II', 2, 14, NULL, NULL, 5, 4),
             (1004, 'Field Repair I', 1, 41, NULL, NULL, 1, 5);
 # END TEST FUNCTIONS #
-
-INSERT INTO items
-            (abbr, name, tier, category, radio)	
-    VALUES	('cmm_wid','CMM Widow',2,'arms',NULL),
-            ('cmm_coc','CMM Cocoon',2,'arms',NULL),
-            ('copycat','Copycat',0,'cust',NULL),
-            ('phack_0','Pocket Hacker',0,'cust','ph'),
-            ('phack_1','Pocket Hacker',1,'cust','ph'),
-            ('deck_bud','Budget Cyberdeck',0,'deck','deck'),
-            ('deck_crd_1','CRD Spider Cyberdeck',1,'deck','deck'),
-            ('deck_crd_2','CRD Spider Cyberdeck',2,'deck','deck'),
-            ('deck_jst','Johnny&#39;s Special Touch',1,'deck','deck'),
-            ('deck_mm','MM Console',0,'deck','deck'),
-            ('deck_uh9k','Power Glove [Ultra-Hacking 9000]',1,'impl','deck'),
-            ('deck_fkd_0','FKD DC-17',0,'deck','deck'),
-            ('deck_fkd_1','FKD DC-17',1,'deck','deck'),
-            ('brad','Budget Remote Access Drive',0,'util',NULL),
-            ('beac','CypherSync Beacon',0,'util',NULL),
-            ('digi_pet','DigiPet',0,'util',NULL),
-            ('nsg','Nerd&#39;s Safety Glasses',0,'util',NULL),
-            ('impl_clec','CLEC Fingers',0,'impl',NULL),
-            ('impl_mags','Canopic Jar [Magsweep]',0,'impl',NULL),
-            ('shim_0','Shimmerstick',0,'cons',NULL),
-            ('shim_1','Shimmerstick',1,'cons',NULL),
-            ('vigil','Vigil',NULL,'cons',NULL);
-
-INSERT INTO item_effects
-            (abbr, use_loc, req_type, requirement, charges, per_type, notes)	
-    VALUES	('cmm','init','function','Slip',1,'scene','+1 Tag'),
-            ('copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
-            ('phack_0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
-            ('phack_1','itemTab',NULL,NULL,2,'sim','+1 Tag'),
-            ('deck_bud','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
-            ('deck_crd_1','itemTab',NULL,NULL,1,'sim','[DECK] +1 Tag'),
-            ('deck_crd_2','itemTab',NULL,NULL,2,'sim','[DECK] +2 Tags'),
-            ('deck_jst','auto_action',NULL,NULL,NULL,NULL,'Repeat > Access > All Icons > -1 Tag'),
-            ('deck_mm','itemTab',NULL,NULL,2,'sim','[DECK] +1 Tag'),
-            ('deck_uh9k','auto_init',NULL,NULL,NULL,NULL,'Timer -5s'),
-            ('brad','before_after','function','Hacking',NULL,NULL,NULL),
-            ('beac','auto_init',NULL,NULL,NULL,NULL,'+1 Hacking'),
-            ('pet_play','itemTab',NULL,NULL,1,'sim','[Nothing except adds active effect]'),
-            ('pet_use','execute','active_effect','pet_play',1,'scene','Complete Timer'),
-            ('nsg','failed_puzzle',NULL,NULL,1,'sim','Re-attempt failed Puzzle'),
-            ('impl_clec','init',NULL,NULL,1,'sim','+1 Hacking'),
-            ('impl_mags','init',NULL,NULL,1,'sim','Perform Brick Action / Skip Timer'),
-            ('shim_0','before_after',NULL,NULL,10,'item','+1 Tag to Costs; +30s on All Actions'),
-            ('shim_1','before_after',NULL,NULL,10,'item','+1 Tag to Costs; +15s on All Actions'),
-            ('vigil','init',NULL,NULL,1,'item',NULL);
-
-INSERT INTO items_to_effects
-            (item_abbr, effect_abbr)	
-    VALUES	('cmm_wid','cmm'),
-            ('cmm_coc','cmm'),
-            ('copycat','copycat'),
-            ('phack_0','phack_0'),
-            ('phack_1','phack_1'),
-            ('deck_bud','deck_bud'),
-            ('deck_crd_1','deck_crd_1'),
-            ('deck_crd_2','deck_crd_2'),
-            ('deck_jst','deck_jst'),
-            ('deck_mm','deck_mm'),
-            ('deck_uh9k','deck_uh9k'),
-            ('brad','brad'),
-            ('beac','beac'),
-            ('digi_pet','pet_play'),
-            ('digi_pet','pet_use'),
-            ('nsg','nsg'),
-            ('impl_clec','impl_clec'),
-            ('impl_mags','impl_mags'),
-            ('shim_0','shim_0'),
-            ('shim_1','shim_1'),
-            ('vigil','vigil');
+*/
