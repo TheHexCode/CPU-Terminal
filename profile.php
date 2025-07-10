@@ -56,26 +56,9 @@
 						<span class="dseg BG">~~~~~~</span>
 						<span class="dseg FG"></span>
 					</div>
-					<!-- NEW FUNCTIONS --
-					<hr/>
-					<div class="infoRole">
-						<label for="primaryRole">Primary Role:</label>
-						<select id="primaryRole" onchange="roleChange()">
-							<option value="none">-Select-</option>
-							<?php //echo getRoleSelect(); ?>
-							<option value="other">Other</option>
-						</select>
-					</div>
-					<div class="infoRole">
-						<label for="secondaryRole">Secondary Role:</label>
-						<select id="secondaryRole" onchange="roleChange()">
-							<option value="none">-Select-</option>
-							<?php //echo getRoleSelect(); ?>
-							<option value="other">Other</option>
-						</select>
-					</div>-->
 				</div>
 				<div class="zoneBox">
+					<!-- myLarp Functions
 					<h2 id="skillBoxHeader">
 						FUNCTIONS FROM MYLARP PROFILE:
 					</h2>
@@ -95,6 +78,23 @@
 						</div>
 						<ul id="passiveList" class="skillTypeList hidden">
 						</ul>
+					</div>
+					-->
+					<!-- SELF REPORT FUNCTIONS -->
+					<div class="infoRole">
+						<label for="roleSelect">Role:</label>
+						<select id="roleSelect" onchange="roleChange()">
+							<?php echo getRoleSelect($roleArray); ?>
+						</select>
+						<label for="pathSelect">Path:</label>
+						<select id="pathSelect" onchange="pathChange()" disabled>
+							<option value="" selected>--</option>
+							<?php echo getPathSelect($pathArray); ?>
+						</select>
+					</div>
+					<hr/>
+					<div class="roleBox">
+						<?php echo fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray); ?>
 					</div>
 				</div>
 				<div id="itemBox" class="zoneBox">

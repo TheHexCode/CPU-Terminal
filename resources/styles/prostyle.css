@@ -193,14 +193,25 @@ h2
 
 .infoRole label
 {
-	grid-row: 1;
 	grid-column: start / mid;
+	align-self: center;
 }
 
 .infoRole select
 {
-	display: grid;
 	grid-column: mid / end;
+}
+
+h3
+{
+	text-align: center;
+	text-decoration: solid;
+}
+
+h4
+{
+	text-align: center;
+	margin-bottom: 0.5rem;
 }
 
 #profTabContainer

@@ -308,16 +308,17 @@ CREATE TABLE sr_functions (
 );
 
 CREATE TABLE sr_role_functions (
-    entry_id    INT     NOT NULL,
-    role_id     INT     NOT NULL,
-    path_id     INT,
-    tier        INT     NOT NULL,
-    mod_id      INT,
-    source_id   INT,
-    func_id     INT     NOT NULL,
-    keyword_id  INT,
-    choice_type TEXT,
-    `rank`      INT,
+    entry_id        INT     NOT NULL,
+    role_id         INT     NOT NULL,
+    path_id         INT,
+    tier            INT     NOT NULL,
+    mod_id          INT,
+    source_id       INT,
+    func_id         INT     NOT NULL,
+    keyword_id      INT,
+    keyword_type    TEXT,
+    keyword_choose  BOOL,
+    `rank`          INT,
     FOREIGN KEY (role_id)
         REFERENCES sr_roles(id)
         ON UPDATE CASCADE
