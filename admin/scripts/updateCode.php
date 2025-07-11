@@ -8,6 +8,6 @@ $codeQuery = "  UPDATE {$dbName}.sim_active_codes
                 SET jobCode=:newCode";
 
 $codeStatement = $pdo->prepare($codeQuery);
-$codeStatement->execute([':newCode' => $newCode]);
+$codeStatement->execute([':newCode' => strtoupper($newCode)]);
 
 echo json_encode("Success!");
