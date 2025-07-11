@@ -126,7 +126,7 @@ function processLogin(loginData)
 		}
 		else
 		{
-			selectCharacter(loginData["charList"][0]["charID"]);
+			selectCharacter(loginData["charList"][0]);
 		}
 	}
 }
@@ -151,14 +151,15 @@ function closeModal(event)
 	}
 }
 
-function selectCharacter(charID)
+function selectCharacter(char)
 {
 	$("#load").removeClass("hidden");
 	closeModal("selected");
 
 	mlEmail = $("#mlEmail").val();
 	mlPass = $("#mlPass").val();
-	mlCharID = charID;
+	mlCharID = char["charID"];
+	mlCharName = char["charName"];
 
 	$.ajax({
 		type: "POST",
@@ -168,7 +169,8 @@ function selectCharacter(charID)
 		{
 			mlEmail: mlEmail,
 			mlPass: mlPass,
-			mlCharID: mlCharID
+			mlCharID: mlCharID,
+			mlCharName: mlCharName
 		}
 	})
 	.done(function(response)
@@ -187,6 +189,7 @@ function processCharInfo(charData)
 
 	$("#payloadCodeRow .FG").html(charData.userCode);
 
+	/*
 	let funcStrings = {
 		initial: "",
 		active: "",
@@ -226,6 +229,7 @@ function processCharInfo(charData)
 		$("#" + category + "Header").removeClass("hidden");
 		$("#" + category + "List").removeClass("hidden");
 	});
+	*/
 
 	charData["items"].forEach(function(item)
 	{
@@ -244,6 +248,108 @@ function processCharInfo(charData)
 
 	$(".postLogon").removeClass("hidden");
 	$(".mlLoginBox").addClass("hidden");
+}
+
+function changeOrigin(target)
+{
+	let oldValue = $(".originOption input").toArray().find(function(origin)
+	{
+		return $(origin).prop("data-active") === true;
+	}).value;
+
+	$(".originOption input").each(function()
+	{
+		$(this).prop("data-active", false);
+		$("#roleSelect option[value='" + this.value + "']").addClass("hidden");
+	});
+
+	$("#roleSelect option").attr("selected",false);
+	$("#roleSelect option[value='" + target.value + "']").removeClass("hidden");
+	$("#roleSelect option[value='" + target.value + "']").attr("selected", true);
+	$(target).prop("data-active", true);
+
+	changeRole(target, oldValue);
+}
+
+function changeRole(target, wipeOld=null)
+{
+	$(".roleBox").addClass("hidden");
+	$(".pathBox").addClass("hidden");
+	
+	if(wipeOld !== null)
+	{
+		$(".roleBox[data-role='" + wipeOld + "'] input").attr("checked", false);
+		$(".roleBox[data-role='" + target.value + "'] input[disabled]").attr("checked", true);
+	}
+
+	$(".roleBox[data-role='" + target.value + "']").removeClass("hidden");
+
+	if($("#pathSelect option[data-role='" + target.value + "']").length > 0)
+	{
+		$("#pathSelect option").addClass("hidden");
+		$("#pathSelect option[value='']").attr("selected", false);
+		$("#pathSelect option[value='']").prop("selected", false);
+
+		let allPaths = $("#pathSelect option[data-role='" + target.value + "']");
+		$(allPaths).removeClass("hidden");
+
+		let newPath = $(allPaths).toArray().find(function(path)
+		{
+			let pathCount = 0;
+
+			$(".pathBox[data-path='" + path.value + "'] input").each(function(index, input)
+			{
+				if($(input).prop("checked"))
+				{
+					pathCount++;
+				}
+			});
+
+			return (pathCount > 0);
+		}) ?? $(allPaths)[0];
+
+		$(newPath).attr("selected", true);
+		$(newPath).prop("selected", true);
+		$(".pathBox[data-path='" + newPath.value + "']").removeClass("hidden");
+
+		$("#pathSelect").attr("disabled", false);
+	}
+	else
+	{
+		$("#pathSelect option").attr("selected", false);
+		$("#pathSelect option").prop("selected", false);
+		$("#pathSelect option[value='']").removeClass("hidden");
+		$("#pathSelect option[value='']").attr("selected", true);
+		$("#pathSelect option[value='']").prop("selected", true);
+
+		$("#pathSelect").attr("disabled", true);
+	}
+}
+
+function changePath(target)
+{
+	let pathID = target.value;
+	let roleID = $("#pathSelect option[value='" + pathID + "']").attr("data-role");
+
+	$(".pathBox").addClass("hidden");
+	$(".roleBox[data-role='" + roleID + "'] .pathBox input").attr("checked", false);
+	$(".roleBox[data-role='" + roleID + "'] .pathBox input").prop("checked", false);
+
+	$(".pathBox[data-path='" + pathID + "']").removeClass("hidden");
+}
+
+function selectEntry(target)
+{
+	$(".funcChoice[data-entry='" + target.dataset["entry"] + "']").prop("disabled", !target.checked);
+
+	if(target.checked)
+	{
+		
+	}
+	else
+	{
+
+	}
 }
 
 function setItemCharges(itemAbbr, charges)

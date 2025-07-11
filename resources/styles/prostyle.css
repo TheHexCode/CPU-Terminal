@@ -61,12 +61,6 @@ input
 	margin: 0 0.5rem;
 }
 
-h2
-{
-	margin-top: 0;
-	text-decoration: underline;
-}
-
 #main
 {
 	height: 100%;
@@ -197,23 +191,58 @@ h2
 	align-self: center;
 }
 
+.roleBox h2
+{
+	text-decoration: none;
+}
+
 .infoRole select
 {
 	grid-column: mid / end;
 }
 
-h3
+.roleBox
 {
-	text-align: center;
-	text-decoration: solid;
+	width: 100%;
 }
 
-h4
+.pathBox
 {
-	text-align: center;
-	margin-bottom: 0.5rem;
+	width: 100%;
 }
 
+.pathBox h1
+{
+	margin-top: 2rem;
+}
+
+.functionSelect
+{
+	display: grid;
+	grid-template-columns: [start] 10% [label] auto [end];
+	margin: 0.25rem 0;
+}
+
+.functionSelect input
+{
+	grid-column: start / label;
+	align-self: start;
+	height: 0.75rem;
+	width: 0.75rem;
+	margin-top: 0.2rem;
+}
+
+.functionSelect label
+{
+	grid-column: label / end;
+}
+
+.funcChoice
+{
+	margin-left: 0.5rem;
+}
+
+/*
 #profTabContainer
 {
 	display: flex;
@@ -271,6 +300,7 @@ h4
     padding: 0.5rem;
     margin-top: -1rem;
 }
+*/
 
 .itemSection
 {

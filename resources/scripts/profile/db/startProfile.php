@@ -83,9 +83,25 @@ function romanize($num)
 	return $roman;
 }
 
-function getSpeciesRadios()
+function getOriginRadios($roleArray)
 {
+    $origins = array_filter($roleArray, function($role) {
+        return $role["origin"];
+    });
 
+    $originString = "<div id='originGroup'>";
+
+    foreach($origins as $origin)
+    {
+        $originString .=    "<div class='originOption" . ($origin["discovered"] ? "" : " hidden") . "'>" .
+                                "<input type='radio' id='origin" . $origin["id"] . "' name='origins' value='" . $origin["id"] . "'" . ($origin["id"] === 1 ? " checked" : "") . " onclick='changeOrigin(this)'/>" .
+                                "<label for='origin" . $origin["id"] . "'>" . $origin["name"] . "</label>" .
+                            "</div>";
+    }
+
+    $originString .= "</div>";
+
+    return $originString;
 }
 
 function getRoleSelect($roleArray)
@@ -94,7 +110,7 @@ function getRoleSelect($roleArray)
 
     foreach($roleArray as $role)
     {
-        $optionString .= "<option" . ($role["discovered"] ? " " : " class='hidden' ") . "value='" . $role["id"] . "'" . ($role["id"] === 1 ? " selected" : "") . ">" . $role["name"] . "</option>";
+        $optionString .= "<option" . (!($role["discovered"]) || (($role["id"] !== 1) && ($role["origin"])) ? " class='hidden' " : " ") . "value='" . $role["id"] . "'" . ($role["id"] === 1 ? " selected" : "") . ">" . $role["name"] . "</option>";
     }
 
     return $optionString;
@@ -118,121 +134,213 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
 
     foreach($roleArray as $role)
     {
-        $returnString .= "<h3>" . strtoupper($role["name"]) . "</h3>";
-
-        for($tier = 1; $tier <= 5; $tier++)
+        $paths = array_values(array_filter($pathArray,function($path) use ($role)
         {
-            $filteredEntryIDs = array_unique(array_filter(array_map(function ($function) use ($role, $tier)
+            return $path["role_id"] === $role["id"];
+        }));
+
+        $pathIndex = -1;
+
+        $returnString .=    "<div class='roleBox". ($role["id"] === 1 ? "" : " hidden") ."' data-role='" . $role["id"] . "'>" .
+                                "<h1>" . strtoupper($role["name"]) . "</h1>";
+
+        while($pathIndex < count($paths))
+        {
+            $path = $paths[$pathIndex] ?? null;
+
+            if($path)
             {
-                if(($function["role_id"] === $role["id"]) && ($function["tier"] === $tier))
+                $returnString .=    "<div class='pathBox hidden' data-path='" . $path["id"] . "'>" . 
+                                        "<h1>" . strtoupper($path["name"]) . "</h1>";
+            }                                    
+
+            for($tier = 1; $tier <= 5; $tier++)
+            {
+                $filteredEntryIDs = array_unique(array_filter(array_map(function ($function) use ($role, $tier, $path)
                 {
-                    return $function["entry_id"];
+                    if(($function["role_id"] === $role["id"]) && ($function["tier"] === $tier) && ($function["path_id"] === ($path["id"] ?? null)))
+                    {
+                        return $function["entry_id"];
+                    }
+                }, $masterFuncArray)));
+
+                if(count($filteredEntryIDs))
+                {
+                    $returnString .= "<h2>TIER " . romanize($tier) . "</h2>";
                 }
-            }, $masterFuncArray)));
 
-            if(count($filteredEntryIDs))
-            {
-                $returnString .= "<h4>TIER " . romanize($tier) . "</h4>";
-            }
-
-            foreach($filteredEntryIDs as $entryID)
-            {
-                $entryFunctions = array_filter($masterFuncArray, function($function) use ($entryID)
+                foreach($filteredEntryIDs as $entryID)
                 {
-                    return $function["entry_id"] === $entryID;
-                });
-
-                $functionNames = array_map(function($function) use ($sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray)
-                {
-                    $source = $function["source_id"] ? array_filter($sourceArray, function($source) use ($function)
+                    $entryFunctions = array_filter($masterFuncArray, function($function) use ($entryID)
                     {
-                        return $source["id"] === $function["source_id"];
-                    })[0] : null;
+                        return $function["entry_id"] === $entryID;
+                    });
 
-                    $mod = $function["mod_id"] ? array_filter($modArray, function($mod) use ($function)
-                    {
-                        return $mod["id"] === $function["mod_id"];
-                    })[0] : null;
+                    $freeEntry = false;
 
-                    $func = $function["func_id"] ? array_filter($funcArray, function($func) use ($function)
+                    $functionNames = array_map(function($function) use ($sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray, &$freeEntry)
                     {
-                        return $func["id"] === $function["func_id"];
-                    })[0] : null;
-
-                    if($function["keyword_id"] !== null)
-                    {
-                        if($function["keyword_choose"])
+                        $source = $function["source_id"] ? array_values(array_filter($sourceArray, function($source) use ($function)
                         {
-                            switch($function["keyword_type"])
+                            return $source["id"] === $function["source_id"];
+                        }))[0] : null;
+
+                        $mod = $function["mod_id"] ? array_values(array_filter($modArray, function($mod) use ($function)
+                        {
+                            return $mod["id"] === $function["mod_id"];
+                        }))[0] : null;
+
+                        $func = $function["func_id"] ? array_values(array_filter($funcArray, function($func) use ($function)
+                        {
+                            return $func["id"] === $function["func_id"];
+                        }))[0] : null;
+
+                        if($function["keyword_id"] !== null)
+                        {
+                            if($function["keyword_choose"])
                             {
-                                case("misc"):
+                                switch($function["keyword_type"])
                                 {
-                                    $keyword = array_filter($choiceArray, function($choice) use ($function)
+                                    case("misc"):
                                     {
-                                        return $choice["cat_id"] === $function["keyword_id"];
-                                    });
-                                    break;
-                                }
-                                case("know"):
-                                {
-                                    switch($function["keyword"])
-                                    {
-                                        //1 = KNOW_ALL
-                                        case(1):
+                                        $keyword = array_filter($choiceArray, function($choice) use ($function)
                                         {
-                                            break;
-                                        }
-                                        //2 = KNOW_CORP
-                                        case(2):
-                                        {
-                                            break;
-                                        }
-                                        //3 = KNOW_FACT(ION)
-                                        case(3):
-                                        {
-                                            break;
-                                        }
+                                            return $choice["cat_id"] === $function["keyword_id"];
+                                        });
+                                        break;
                                     }
-                                    break;
+                                    case("knowledge"):
+                                    {
+                                        switch($function["keyword_id"])
+                                        {
+                                            //1 = KNOW_ALL
+                                            case(1):
+                                            {
+                                                $keyword = array_filter($knowArray, function($knowledge)
+                                                {
+                                                    return $knowledge["discovered"];
+                                                });
+                                                break;
+                                            }
+                                            //2 = KNOW_CORP
+                                            case(2):
+                                            {
+                                                $keyword = array_filter($knowArray, function($knowledge)
+                                                {
+                                                    return ($knowledge["discovered"]) && ($knowledge["is_corp"]);
+                                                });
+                                                break;
+                                            }
+                                            //3 = KNOW_FACT(ION)
+                                            case(3):
+                                            {
+                                                $keyword = array_filter($knowArray, function($knowledge)
+                                                {
+                                                    return ($knowledge["discovered"]) && ($knowledge["is_fact"]);
+                                                });
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                switch($function["keyword_type"])
+                                {
+                                    case("keyword"):
+                                    {
+                                        $keyword = array_values(array_filter($keywordArray, function($kw) use ($function)
+                                        {
+                                            return $kw["id"] === $function["keyword_id"];
+                                        }))[0]["name"];
+                                        break;
+                                    }
+                                    case("misc"):
+                                    {
+                                        $keyword = array_values(array_filter($choiceArray, function($kw) use ($function)
+                                        {
+                                            return $kw["id"] === $function["keyword_id"];
+                                        }))[0]["name"];
+                                        break;
+                                    }
+                                    case("knowledge"):
+                                    {
+                                        $keyword = array_values(array_filter($knowArray, function($kw) use ($function)
+                                        {
+                                            return $kw["id"] === $function["keyword_id"];
+                                        }))[0]["name"];
+                                        break;
+                                    }
                                 }
                             }
                         }
                         else
                         {
-                            switch($function["keyword_type"])
+                            $keyword = null;
+                        }
+
+                        switch($func["type"])
+                        {
+                            case("charges"):
                             {
-                                case("keyword"):
-                                {
-                                    break;
-                                }
-                                case("misc"):
-                                {
-                                    break;
-                                }
-                                case("know"):
-                                {
-                                    break;
-                                }
+                                $rank = ($function["rank"] ? " x" . $function["rank"] : "");
+                                break;
+                            }
+                            case("ranked"):
+                            {
+                                $rank = ($function["rank"] ? " " . romanize($function["rank"]) : "");
+                                break;
+                            }
+                            default: //unique
+                            {
+                                $rank = "";
+                                break;
                             }
                         }
-                    }
-                    else
-                    {
-                        $keyword = null;
-                    }
 
-                    return ($function[""]);
-                }, $entryFunctions);
+                        if($function["keyword_choose"])
+                        {
+                            $kwString = "<select class='funcChoice' data-entry='" . $function["entry_id"] . "' data-kwType='" . $function["keyword_type"] . "' data-funcType='" . $func["type"] . "' onchange='chooseKeyword(this)' disabled>" .
+                                            "<option class='funcOption' value='blank'>-Select-</option>";
 
-                $returnString .=    "<div class='functionSelect'>" .
-                                        "<input id='func" . $entryID . "' type='checkbox' data-entry='" . $entryID . "' onclick='' />" .
-                                        "<label for='func" . $entryID . "'>" . "FUNCTION NAME" . "</label>" .
-                                    "</div>";
+                            foreach($keyword as $kw)
+                            {
+                                $kwString .= "<option class='funcOption' value='" . ($kw["id"] ?? $kw["choice"]) . "'>" . ($kw["know_name"] ?? $kw["choice"]) . "</option>";
+                            }
+
+                            $kwString .= "</select>";
+                        }
+
+                        $functionName = ($source ? $source["name"] . " " : "") . ($mod ? $mod["name"] . " " : "") . ($func["name"]) .
+                                        ((!($function["keyword_choose"]) && !($keyword === null)) ? " (" . $keyword . ")" : "") . 
+                                        ($function["keyword_choose"] ? $kwString : "") . $rank;
+
+                        $freeEntry = $function["free"];
+
+                        return array("name" => $functionName, "free" => $function["free"], "keyword" => $keyword);
+                    }, $entryFunctions);
+
+                    $returnString .=    "<div class='functionSelect'>" .
+                                            "<input id='func" . $entryID . "' type='checkbox' data-entry='" . $entryID . "' onclick='selectEntry(this)' " . ($freeEntry ? "checked disabled" : "") . "/>" .
+                                            "<label for='func" . $entryID . "'>" . implode(" &<br/>", array_column($functionNames,"name")) . "</label>" .
+                                        "</div>";
+                }
             }
-        }
 
-        return $returnString;
+            if($path)
+            {
+                $returnString .= "</div>";
+            }
+
+            $pathIndex++;
+        }
+        
+        $returnString .= "</div>";
     }
+    
+    return $returnString;
 }
 
 ######################################################################

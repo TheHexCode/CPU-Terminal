@@ -5,7 +5,9 @@ require('../db/setUser.php');
 $mlEmail = $_POST["mlEmail"];
 $mlPass = $_POST["mlPass"];
 $mlCharID = $_POST["mlCharID"];
+$mlCharName = $_POST["mlCharName"];
 
+/*
 $curlHandle = curl_init("https://cpularp.mylarp.dev/scripts/User.login.asp");
 
 $curlOptions = array(
@@ -36,7 +38,7 @@ curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
 $mlCharResponse = json_decode(curl_exec($curlHandle));
 
 curl_close($curlHandle);
-
+*/
 #####################################################################################################################################################
 
 $dbCharQuery = "SELECT * FROM {$dbName}.users
@@ -47,13 +49,13 @@ $dbCharStatement->execute([':mlID' => $mlCharID]);
 
 $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 
-$mlFuncArray = $mlCharResponse->skills;
+//$mlFuncArray = $mlCharResponse->skills;
 
 if($dbCharResponse === false)
 {
     $userCode = generateCode($pdo, $dbName);
 
-    addUser($pdo,$dbName,$mlCharID, $userCode,$mlCharResponse->name,$mlFuncArray);
+    addUser($pdo,$dbName,$mlCharID, $userCode,$mlCharName);
 
     $dbCharStatement = $pdo->prepare($dbCharQuery);
     $dbCharStatement->execute([':mlID' => $mlCharID]);
@@ -64,9 +66,10 @@ else
 {    
     $userCode = $dbCharResponse["userCode"];
 
-    updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharResponse->name, $mlFuncArray);
+    updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharName);
 }
 
+/*
 $functionQuery = "  SELECT DISTINCT	cpu_functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
                                     cpu_functions.type,
@@ -103,6 +106,7 @@ $roleQuery = "  SELECT DISTINCT cpu_roles.name
 $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute(array_column($mlFuncArray,"name"));
 $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
+*/
 
 $itemQuery = "  SELECT item_abbr, count
                 FROM {$dbName}.user_items
@@ -113,7 +117,7 @@ $itemStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
 $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
 echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
-                                "name" => $mlCharResponse->name,
+                                "name" => $mlCharName,
                                 "userCode" => $userCode,
                                 "functions" => $functionResponse,
                                 "roles" => $roleResponse,

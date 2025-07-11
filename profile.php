@@ -42,7 +42,7 @@
                     <button type="submit" form="mlLogin">Log in to myLarp</button>
                 </form>
 			</div>
-			<div class="postLogon hidden"> <!--hidden-->
+			<div class="postLogon"> <!--hidden-->
 				<div class="zoneBox">
 					<div id="payloadCharHeader">
 						SELECTED CHARACTER:
@@ -81,21 +81,22 @@
 					</div>
 					-->
 					<!-- SELF REPORT FUNCTIONS -->
+					<?php echo getOriginRadios($roleArray); ?>
+					<script id="tempScript">$("#origin1").prop("data-active",true);$("#tempScript").remove();</script>
+					<hr/>
 					<div class="infoRole">
 						<label for="roleSelect">Role:</label>
-						<select id="roleSelect" onchange="roleChange()">
+						<select id="roleSelect" onchange="changeRole(this)">
 							<?php echo getRoleSelect($roleArray); ?>
 						</select>
 						<label for="pathSelect">Path:</label>
-						<select id="pathSelect" onchange="pathChange()" disabled>
+						<select id="pathSelect" onchange="changePath(this)" disabled>
 							<option value="" selected>--</option>
 							<?php echo getPathSelect($pathArray); ?>
 						</select>
 					</div>
 					<hr/>
-					<div class="roleBox">
-						<?php echo fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray); ?>
-					</div>
+					<?php echo fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray); ?>
 				</div>
 				<div id="itemBox" class="zoneBox">
 					<?php echo getItemsTab(); ?>

@@ -74,7 +74,7 @@ function generateCode(PDO $pdo, $dbName)
     return implode($newCode);
 }
 
-function addUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCharName, array $charSkills)
+function addUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCharName)
 {
     $newCharQuery = "   INSERT INTO {$dbName}.users
                             (ml_id, userCode, charName)
@@ -83,7 +83,8 @@ function addUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newChar
     $newCharStatement = $pdo->prepare($newCharQuery);
 
     $newCharStatement->execute([':mlID' => $newID, ':userCode' => $newCode, ':charName' => $newCharName]);
-
+    
+    /*
     $userFuncArray = array();
 
     foreach($charSkills as $skill)
@@ -124,9 +125,10 @@ function addUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newChar
 
     $userFuncStatement = $pdo->prepare($userFuncQuery);
     $userFuncStatement->execute($userFuncArray);
+    */
 }
 
-function updateUser(PDO $pdo, $dbName, int $userID, String $charName, array $charSkills)
+function updateUser(PDO $pdo, $dbName, int $userID, String $charName)
 {
     $dbNameQuery = "SELECT charName FROM {$dbName}.users
                     WHERE ml_id = :userID";
@@ -145,8 +147,8 @@ function updateUser(PDO $pdo, $dbName, int $userID, String $charName, array $cha
         $updateNameStatement = $pdo->prepare($updateNameQuery);
         $updateNameStatement->execute([':charName' => $charName, ':userID' => $userID]);
     }
-
     
+    /*
     $deleteQuery = "DELETE FROM {$dbName}.user_functions
                     WHERE user_id = :userID";
 
@@ -193,4 +195,5 @@ function updateUser(PDO $pdo, $dbName, int $userID, String $charName, array $cha
 
     $userFuncStatement = $pdo->prepare($userFuncQuery);
     $userFuncStatement->execute($userFuncArray);
+    */
 }

@@ -237,6 +237,7 @@ CREATE TABLE sr_roles (
     id          INT     AUTO_INCREMENT,
     name        TEXT    NOT NULL,
     discovered  BOOL    NOT NULL,
+    origin      BOOL    NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -312,6 +313,7 @@ CREATE TABLE sr_role_functions (
     role_id         INT     NOT NULL,
     path_id         INT,
     tier            INT     NOT NULL,
+    free            BOOL    NOT NULL,
     mod_id          INT,
     source_id       INT,
     func_id         INT     NOT NULL,
