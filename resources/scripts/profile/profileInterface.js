@@ -341,14 +341,17 @@ function changePath(target)
 function selectEntry(target)
 {
 	$(".funcChoice[data-entry='" + target.dataset["entry"] + "']").prop("disabled", !target.checked);
+}
 
-	if(target.checked)
+function chooseKeyword(target)
+{
+	let entry = target.dataset["entry"];
+	let kwType = target.dataset["kwtype"];
+	let funcType = target.dataset["functype"];
+
+	if(funcType === "unique")
 	{
 		
-	}
-	else
-	{
-
 	}
 }
 

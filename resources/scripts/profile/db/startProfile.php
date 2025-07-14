@@ -180,14 +180,14 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
 
                     $functionNames = array_map(function($function) use ($sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray, &$freeEntry)
                     {
-                        $source = $function["source_id"] ? array_values(array_filter($sourceArray, function($source) use ($function)
-                        {
-                            return $source["id"] === $function["source_id"];
-                        }))[0] : null;
-
                         $mod = $function["mod_id"] ? array_values(array_filter($modArray, function($mod) use ($function)
                         {
                             return $mod["id"] === $function["mod_id"];
+                        }))[0] : null;
+
+                        $source = $function["source_id"] ? array_values(array_filter($sourceArray, function($source) use ($function)
+                        {
+                            return $source["id"] === $function["source_id"];
                         }))[0] : null;
 
                         $func = $function["func_id"] ? array_values(array_filter($funcArray, function($func) use ($function)
@@ -222,21 +222,21 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
                                                 });
                                                 break;
                                             }
-                                            //2 = KNOW_CORP
+                                            //2 = KNOW_FACT(ION)
                                             case(2):
                                             {
                                                 $keyword = array_filter($knowArray, function($knowledge)
                                                 {
-                                                    return ($knowledge["discovered"]) && ($knowledge["is_corp"]);
+                                                    return ($knowledge["discovered"]) && ($knowledge["is_fact"]);
                                                 });
                                                 break;
                                             }
-                                            //3 = KNOW_FACT(ION)
+                                            //3 = KNOW_CORP
                                             case(3):
                                             {
                                                 $keyword = array_filter($knowArray, function($knowledge)
                                                 {
-                                                    return ($knowledge["discovered"]) && ($knowledge["is_fact"]);
+                                                    return ($knowledge["discovered"]) && ($knowledge["is_corp"]);
                                                 });
                                                 break;
                                             }
@@ -261,8 +261,8 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
                                     {
                                         $keyword = array_values(array_filter($choiceArray, function($kw) use ($function)
                                         {
-                                            return $kw["id"] === $function["keyword_id"];
-                                        }))[0]["name"];
+                                            return $kw["cat_id"] === $function["keyword_id"];
+                                        }))[0]["choice"];
                                         break;
                                     }
                                     case("knowledge"):
@@ -270,7 +270,7 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
                                         $keyword = array_values(array_filter($knowArray, function($kw) use ($function)
                                         {
                                             return $kw["id"] === $function["keyword_id"];
-                                        }))[0]["name"];
+                                        }))[0]["know_name"];
                                         break;
                                     }
                                 }
@@ -313,7 +313,7 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
                             $kwString .= "</select>";
                         }
 
-                        $functionName = ($source ? $source["name"] . " " : "") . ($mod ? $mod["name"] . " " : "") . ($func["name"]) .
+                        $functionName = ($mod ? $mod["name"] . " " : "") . ($source ? $source["name"] . " " : "") . ($func["name"]) .
                                         ((!($function["keyword_choose"]) && !($keyword === null)) ? " (" . $keyword . ")" : "") . 
                                         ($function["keyword_choose"] ? $kwString : "") . $rank;
 
