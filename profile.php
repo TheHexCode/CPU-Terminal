@@ -42,7 +42,7 @@
                     <button type="submit" form="mlLogin">Log in to myLarp</button>
                 </form>
 			</div>
-			<div class="postLogon"> <!--hidden-->
+			<div class="postLogon hidden"> <!--hidden-->
 				<div class="zoneBox">
 					<div id="payloadCharHeader">
 						SELECTED CHARACTER:

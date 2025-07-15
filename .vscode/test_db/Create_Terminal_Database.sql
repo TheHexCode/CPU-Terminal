@@ -129,16 +129,17 @@ CREATE TABLE ml_functions (
 
 CREATE TABLE user_functions (
     user_id         INT     NOT NULL,
-    mlFunction_id   INT     NOT NULL,
-    cav_id          TEXT,
+    function_id     INT     NOT NULL,
+    keyword_id      INT,
+    keyword_type    TEXT,
     CONSTRAINT userFunction
-        PRIMARY KEY (user_id, mlFunction_id),
+        PRIMARY KEY (user_id, function_id),
     FOREIGN KEY (user_id)
         REFERENCES users(ml_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (mlFunction_id)
-        REFERENCES ml_functions(id)
+    FOREIGN KEY (function_id)
+        REFERENCES sr_entry_functions(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -356,21 +357,6 @@ CREATE TABLE sr_entry_functions (
         ON DELETE CASCADE,
     FOREIGN KEY (func_id)
         REFERENCES sr_functions(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-);
-
-CREATE TABLE user_entries (
-    user_id         INT NOT NULL,
-    entry_id        INT NOT NULL,
-    keyword_id      INT,
-    keyword_type    TEXT,
-    FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (entry_id)
-        REFERENCES sr_role_functions(entry_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );

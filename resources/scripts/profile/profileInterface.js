@@ -445,45 +445,59 @@ function statSubmit(event)
 
 	$(".roleBox[data-role='" + origin + "'] .entrySelect input:checked:disabled + label .funcName").each(function(index, freeFunc)
 	{
-		let funcID = freeFunc.dataset["id"];
+		let funcID = Number(freeFunc.dataset["id"]);
 		let kwID;
+		let kwType;
 		if($(".funcStatic[data-id='" + funcID + "']").length > 0)
 		{
-			kwID = $(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwid"];
+			kwID = Number($(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwid"]);
+			kwType = $(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwtype"];
 		}
 		else if ($(".funcChoice[data-id='" + funcID + "']").length > 0)
 		{
-			kwID = $(".funcChoice[data-id='" + funcID + "']")[0].value;
+			kwID = Number($(".funcChoice[data-id='" + funcID + "']")[0].value);
+			kwType = $(".funcChoice[data-id='" + funcID + "']")[0].dataset["kwtype"];
 		}
 		else
 		{
 			kwID = null;
+			kwType = null;
 		}
 
-		functions.push([funcID, kwID]);
+		functions.push({
+			"funcID": funcID,
+			"kwType": kwType,
+			"kwID": kwID
+		});
 	});
 
 	$(".entrySelect input:checked:not(:disabled) + label .funcName").each(function(index, func)
 	{
-		let funcID = func.dataset["id"];
+		let funcID = Number(func.dataset["id"]);
 		let kwID;
+		let kwType;
 		if($(".funcStatic[data-id='" + funcID + "']").length > 0)
 		{
-			kwID = $(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwid"];
+			kwID = Number($(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwid"]);
+			kwType = $(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwtype"];
 		}
 		else if ($(".funcChoice[data-id='" + funcID + "']").length > 0)
 		{
-			kwID = $(".funcChoice[data-id='" + funcID + "']")[0].value;
+			kwID = Number($(".funcChoice[data-id='" + funcID + "']")[0].value);
+			kwType = $(".funcChoice[data-id='" + funcID + "']")[0].dataset["kwtype"];
 		}
 		else
 		{
 			kwID = null;
+			kwType = null;
 		}
 
-		functions.push([funcID, kwID]);
+		functions.push({
+			"funcID": funcID,
+			"kwType": kwType,
+			"kwID": kwID
+		});
 	});
-
-	console.log(functions);
 
 	// LIST OF ITEMS
 	let items = [];
@@ -500,15 +514,15 @@ function statSubmit(event)
 		items.push(itemPush);
 	});
 
-/*
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/profile/db/updateInventory.php",
+		url: "resources/scripts/profile/db/updateUser.php",
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),
-			items: items
+			userFunctions: functions,
+			userItems: items
 		}
 	})
 	.done(function()
@@ -519,5 +533,4 @@ function statSubmit(event)
 			$("#saveText").addClass("hidden");
 		},5000);
 	});
-*/
 }

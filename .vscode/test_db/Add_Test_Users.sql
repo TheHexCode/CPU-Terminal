@@ -6,7 +6,7 @@ INSERT INTO users
             (161, '876353', 'Puck');
 
 INSERT INTO user_functions
-            (user_id, mlFunction_id, cav_id)
+            (user_id, function_id, keyword_id, keyword_type)
     VALUES  (-1, 180, NULL),
             (-1, 190, NULL),
             (-1, 176, NULL),
