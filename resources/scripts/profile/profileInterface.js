@@ -189,6 +189,24 @@ function processCharInfo(charData)
 
 	$("#payloadCodeRow .FG").html(charData.userCode);
 
+	charData.discoveries.forEach(function(discovery)
+	{
+		switch(discovery["disc_type"])
+		{
+			case("role"):
+			{
+				$(".originOption input[value='" + discovery["disc_id"] + "']").parent().removeClass("hidden");
+				$("#roleSelect option[value='" + discovery["disc_id"] + "']").removeClass("hidden");
+				break;
+			}
+			case("know"):
+			{
+				$(".funcChoice[data-kwtype='knowledge'] option[value='" + discovery["disc_id"] + "']").removeClass("hidden");
+				break;
+			}
+		}
+	});
+
 	if(charData.origin !== null)
 	{
 		$(".originOption input[value='" + charData.origin + "']").attr("checked", true);
@@ -199,8 +217,6 @@ function processCharInfo(charData)
 
 	charData.functions.forEach(function(func)
 	{
-		console.log(func);
-
 		$(".entrySelect input[data-entry='" + func.entry_id + "']").prop("checked", true);
 		selectEntry($(".entrySelect input[data-entry='" + func.entry_id + "']")[0]);
 

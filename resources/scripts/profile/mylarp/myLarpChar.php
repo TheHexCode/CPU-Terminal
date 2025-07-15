@@ -78,6 +78,13 @@ $functionStatement = $pdo->prepare($functionQuery);
 $functionStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
+$discoQuery = " SELECT * FROM user_discoveries
+                WHERE user_id = :userID";
+
+$discoStatement = $pdo->prepare($discoQuery);
+$discoStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
+$discoResponse = $discoStatement->fetchAll(PDO::FETCH_ASSOC);
+
 /*
 $functionQuery = "  SELECT DISTINCT	cpu_functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
@@ -130,5 +137,6 @@ echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "userCode" => $userCode,
                                 "origin" => $dbCharResponse["origin"],
                                 "functions" => $functionResponse,
+                                "discoveries" => $discoResponse,
                                 //"roles" => $roleResponse,
                                 "items" => $itemResponse ));

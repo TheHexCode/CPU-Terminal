@@ -213,6 +213,7 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
                                         });
 
                                         $keyword = array();
+                                        $undisc = array();
 
                                         foreach($profChoices as $profChoice)
                                         {
@@ -236,6 +237,10 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
                                                 {
                                                     return $knowledge["discovered"];
                                                 });
+                                                $undisc = array_filter($knowArray, function($knowledge)
+                                                {
+                                                    return !$knowledge["discovered"];
+                                                });
                                                 break;
                                             }
                                             //2 = KNOW_FACT(ION)
@@ -245,6 +250,10 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
                                                 {
                                                     return ($knowledge["discovered"]) && ($knowledge["is_fact"]);
                                                 });
+                                                $undisc = array_filter($knowArray, function($knowledge)
+                                                {
+                                                    return (!$knowledge["discovered"]) && ($knowledge["is_fact"]);
+                                                });
                                                 break;
                                             }
                                             //3 = KNOW_CORP
@@ -253,6 +262,10 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
                                                 $keyword = array_filter($knowArray, function($knowledge)
                                                 {
                                                     return ($knowledge["discovered"]) && ($knowledge["is_corp"]);
+                                                });
+                                                $undisc = array_filter($knowArray, function($knowledge)
+                                                {
+                                                    return (!$knowledge["discovered"]) && ($knowledge["is_corp"]);
                                                 });
                                                 break;
                                             }
@@ -320,6 +333,11 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
                             foreach($keyword as $kw)
                             {
                                 $kwString .= "<option class='funcOption' value='" . $kw["id"] . "'>" . $kw["name"] . "</option>";
+                            }
+
+                            foreach($undisc as $ud)
+                            {
+                                $kwString .= "<option class='funcOption hidden' value='" . $ud["id"] . "'>" . $ud["name"] . "</option>";
                             }
 
                             $kwString .= "</select>";
