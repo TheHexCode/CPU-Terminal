@@ -279,7 +279,14 @@ function changeRole(target, wipeOld=null)
 	if(wipeOld !== null)
 	{
 		$(".roleBox[data-role='" + wipeOld + "'] input").attr("checked", false);
+		$(".roleBox[data-role='" + wipeOld + "'] input").prop("checked", false);
+		$(".roleBox[data-role='" + wipeOld + "'] input").each(function(index, input)
+		{
+			selectEntry(input);
+		});
+
 		$(".roleBox[data-role='" + target.value + "'] input[disabled]").attr("checked", true);
+		$(".roleBox[data-role='" + target.value + "'] input[disabled]").prop("checked", true);
 	}
 
 	$(".roleBox[data-role='" + target.value + "']").removeClass("hidden");
@@ -334,24 +341,58 @@ function changePath(target)
 	$(".pathBox").addClass("hidden");
 	$(".roleBox[data-role='" + roleID + "'] .pathBox input").attr("checked", false);
 	$(".roleBox[data-role='" + roleID + "'] .pathBox input").prop("checked", false);
+	$(".roleBox[data-role='" + roleID + "'] .pathBox input").each(function(index, input)
+	{
+		selectEntry(input);
+	});
 
 	$(".pathBox[data-path='" + pathID + "']").removeClass("hidden");
 }
 
 function selectEntry(target)
 {
+	if(!target.checked)
+	{
+		$(".funcChoice[data-entry='" + target.dataset["entry"] + "'] .funcOption[value='blank']").prop("selected", true);
+
+		$(".funcChoice[data-entry='" + target.dataset["entry"] + "']").each(function(index,choiceBox)
+		{
+			chooseKeyword(choiceBox);
+		});
+	}
+
 	$(".funcChoice[data-entry='" + target.dataset["entry"] + "']").prop("disabled", !target.checked);
 }
 
 function chooseKeyword(target)
 {
 	let entry = target.dataset["entry"];
-	let kwType = target.dataset["kwtype"];
+	//let kwType = target.dataset["kwtype"];
 	let funcType = target.dataset["functype"];
+
+	let options = target.options;
+	let selected = $(target).children(".funcOption[value='" + target.value + "']")[0];
 
 	if(funcType === "unique")
 	{
-		
+		$(options).each(function(index, option)
+		{
+			if(!$(option).prop("disabled"))
+			{
+				$(".funcOption[value='" + option.value + "']").prop("disabled", false);
+			}
+			
+			if(option.value != "blank")
+			{
+				$(".funcOption[value='" + target.value + "']").each(function(index, otherOption)
+				{
+					if((otherOption.value !== "blank") && (otherOption !== selected))
+					{
+						$(otherOption).prop("disabled", true);
+					}
+				});
+			}
+		});
 	}
 }
 
@@ -398,9 +439,56 @@ function statSubmit(event)
 	$("#saveText").html("SAVING...");
 	$("#saveText").removeClass("hidden");
 
+	// FUNCTION LIST
+	let origin = $("input[name='origins']:checked").attr("value");
+	let functions = [];
+
+	$(".roleBox[data-role='" + origin + "'] .entrySelect input:checked:disabled + label .funcName").each(function(index, freeFunc)
+	{
+		let funcID = freeFunc.dataset["id"];
+		let kwID;
+		if($(".funcStatic[data-id='" + funcID + "']").length > 0)
+		{
+			kwID = $(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwid"];
+		}
+		else if ($(".funcChoice[data-id='" + funcID + "']").length > 0)
+		{
+			kwID = $(".funcChoice[data-id='" + funcID + "']")[0].value;
+		}
+		else
+		{
+			kwID = null;
+		}
+
+		functions.push([funcID, kwID]);
+	});
+
+	$(".entrySelect input:checked:not(:disabled) + label .funcName").each(function(index, func)
+	{
+		let funcID = func.dataset["id"];
+		let kwID;
+		if($(".funcStatic[data-id='" + funcID + "']").length > 0)
+		{
+			kwID = $(".funcStatic[data-id='" + funcID + "']")[0].dataset["kwid"];
+		}
+		else if ($(".funcChoice[data-id='" + funcID + "']").length > 0)
+		{
+			kwID = $(".funcChoice[data-id='" + funcID + "']")[0].value;
+		}
+		else
+		{
+			kwID = null;
+		}
+
+		functions.push([funcID, kwID]);
+	});
+
+	console.log(functions);
+
 	// LIST OF ITEMS
 	let items = [];
-	$(".itemSelect input:checked").each(function(index, item) {
+	$(".itemSelect input:checked").each(function(index, item)
+	{
 		let itemPush = {
 			abbr: $(item).attr("data-abbr")
 		}
@@ -409,10 +497,10 @@ function statSubmit(event)
 		
 		itemPush["count"] = (itemCount.length ? Number($(itemCount[0]).attr("data-charges")) : null);
 
-
 		items.push(itemPush);
 	});
 
+/*
 	$.ajax({
 		type: "POST",
 		dataType: "json",
@@ -431,4 +519,5 @@ function statSubmit(event)
 			$("#saveText").addClass("hidden");
 		},5000);
 	});
+*/
 }

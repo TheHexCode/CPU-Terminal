@@ -216,14 +216,14 @@ h2
 	margin-top: 2rem;
 }
 
-.functionSelect
+.entrySelect
 {
 	display: grid;
 	grid-template-columns: [start] 10% [label] auto [end];
 	margin: 0.25rem 0;
 }
 
-.functionSelect input
+.entrySelect input
 {
 	grid-column: start / label;
 	align-self: start;
@@ -232,7 +232,7 @@ h2
 	margin-top: 0.2rem;
 }
 
-.functionSelect label
+.entrySelect label
 {
 	grid-column: label / end;
 }

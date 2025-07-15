@@ -1,11 +1,5 @@
 <?php
-
 require('dbConnect.php');
-
-$roleFuncQuery = "SELECT * FROM {$dbName}.sr_role_functions";
-$roleFuncStatement = $pdo->prepare($roleFuncQuery);
-$roleFuncStatement->execute();
-$masterFuncArray = $roleFuncStatement->fetchAll(PDO::FETCH_ASSOC);
 
 $roleQuery = "SELECT * FROM {$dbName}.sr_roles";
 $roleStatement = $pdo->prepare($roleQuery);
@@ -37,15 +31,30 @@ $kwStatement = $pdo->prepare($kwQuery);
 $kwStatement->execute();
 $keywordArray = $kwStatement->fetchAll(PDO::FETCH_ASSOC);
 
-$choiceQuery = "SELECT * FROM {$dbName}.sr_choices";
-$choiceStatement = $pdo->prepare($choiceQuery);
-$choiceStatement->execute();
-$choiceArray = $choiceStatement->fetchAll(PDO::FETCH_ASSOC);
+$profQuery = "SELECT * FROM {$dbName}.sr_proficiencies";
+$profStatement = $pdo->prepare($profQuery);
+$profStatement->execute();
+$profArray = $profStatement->fetchAll(PDO::FETCH_ASSOC);
+
+$profChoiceQuery = "SELECT * FROM {$dbName}.sr_prof_choices";
+$profChoiceStatement = $pdo->prepare($profChoiceQuery);
+$profChoiceStatement->execute();
+$profChoiceArray = $profChoiceStatement->fetchAll(PDO::FETCH_ASSOC);
 
 $knowQuery = "SELECT * FROM {$dbName}.sr_knowledges";
 $knowStatement = $pdo->prepare($knowQuery);
 $knowStatement->execute();
 $knowArray = $knowStatement->fetchAll(PDO::FETCH_ASSOC);
+
+$entryQuery = "SELECT * FROM {$dbName}.sr_entries";
+$entryStatement = $pdo->prepare($entryQuery);
+$entryStatement->execute();
+$entryArray = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
+
+$entryFuncQuery = "SELECT * FROM {$dbName}.sr_entry_functions";
+$entryFuncStatement = $pdo->prepare($entryFuncQuery);
+$entryFuncStatement->execute();
+$entryFuncArray = $entryFuncStatement->fetchAll(PDO::FETCH_ASSOC);
 
 ######################################################################
 
@@ -128,7 +137,7 @@ function getPathSelect($pathArray)
     return $optionString;
 }
 
-function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray)
+function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray)
 {
     $returnString = "";
 
@@ -156,29 +165,24 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
 
             for($tier = 1; $tier <= 5; $tier++)
             {
-                $filteredEntryIDs = array_unique(array_filter(array_map(function ($function) use ($role, $tier, $path)
+                $filteredEntries = array_filter($entryArray,function ($entry) use ($role, $tier, $path)
                 {
-                    if(($function["role_id"] === $role["id"]) && ($function["tier"] === $tier) && ($function["path_id"] === ($path["id"] ?? null)))
-                    {
-                        return $function["entry_id"];
-                    }
-                }, $masterFuncArray)));
+                        return (($entry["role_id"] === $role["id"]) && ($entry["tier"] === $tier) && ($entry["path_id"] === ($path["id"] ?? null)));
+                });
 
-                if(count($filteredEntryIDs))
+                if(count($filteredEntries))
                 {
                     $returnString .= "<h2>TIER " . romanize($tier) . "</h2>";
                 }
 
-                foreach($filteredEntryIDs as $entryID)
+                foreach($filteredEntries as $entry)
                 {
-                    $entryFunctions = array_filter($masterFuncArray, function($function) use ($entryID)
+                    $entryFunctions = array_filter($entryFuncArray, function($function) use ($entry)
                     {
-                        return $function["entry_id"] === $entryID;
+                        return $function["entry_id"] === $entry["id"];
                     });
 
-                    $freeEntry = false;
-
-                    $functionNames = array_map(function($function) use ($sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray, &$freeEntry)
+                    $functionNames = array_map(function($function) use ($modArray, $sourceArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray)
                     {
                         $mod = $function["mod_id"] ? array_values(array_filter($modArray, function($mod) use ($function)
                         {
@@ -197,16 +201,28 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
 
                         if($function["keyword_id"] !== null)
                         {
-                            if($function["keyword_choose"])
+                            if($function["keyword_choose"]) // CHOICE
                             {
                                 switch($function["keyword_type"])
                                 {
-                                    case("misc"):
+                                    case("proficiency"):
                                     {
-                                        $keyword = array_filter($choiceArray, function($choice) use ($function)
+                                        $profChoices = array_filter($profChoiceArray, function($prof) use ($function)
                                         {
-                                            return $choice["cat_id"] === $function["keyword_id"];
+                                            return $prof["cat_id"] === $function["keyword_id"];
                                         });
+
+                                        $keyword = array();
+
+                                        foreach($profChoices as $profChoice)
+                                        {
+                                            $foundProf = array_values(array_filter($profArray,function($prof) use ($profChoice)
+                                            {
+                                                return $prof["id"] === $profChoice["prof_id"];
+                                            }))[0];
+
+                                            array_push($keyword, $foundProf);
+                                        }
                                         break;
                                     }
                                     case("knowledge"):
@@ -245,35 +261,31 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
                                     }
                                 }
                             }
-                            else
+                            else // NO CHOICE
                             {
                                 switch($function["keyword_type"])
                                 {
                                     case("keyword"):
                                     {
-                                        $keyword = array_values(array_filter($keywordArray, function($kw) use ($function)
-                                        {
-                                            return $kw["id"] === $function["keyword_id"];
-                                        }))[0]["name"];
+                                        $targetArray = $keywordArray;
                                         break;
                                     }
-                                    case("misc"):
+                                    case("proficiency"):
                                     {
-                                        $keyword = array_values(array_filter($choiceArray, function($kw) use ($function)
-                                        {
-                                            return $kw["cat_id"] === $function["keyword_id"];
-                                        }))[0]["choice"];
+                                        $targetArray = $profArray;
                                         break;
                                     }
                                     case("knowledge"):
                                     {
-                                        $keyword = array_values(array_filter($knowArray, function($kw) use ($function)
-                                        {
-                                            return $kw["id"] === $function["keyword_id"];
-                                        }))[0]["know_name"];
+                                        $targetArray = $knowArray;
                                         break;
                                     }
                                 }
+
+                                $keyword = array_values(array_filter($targetArray, function($kw) use ($function)
+                                {
+                                    return $kw["id"] === $function["keyword_id"];
+                                }))[0]["name"];
                             }
                         }
                         else
@@ -302,29 +314,35 @@ function fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray,
 
                         if($function["keyword_choose"])
                         {
-                            $kwString = "<select class='funcChoice' data-entry='" . $function["entry_id"] . "' data-kwType='" . $function["keyword_type"] . "' data-funcType='" . $func["type"] . "' onchange='chooseKeyword(this)' disabled>" .
+                            $kwString = "<select class='funcChoice' data-id='" . $function["id"] . "' data-entry='" . $function["entry_id"] . "' data-kwType='" . $function["keyword_type"] . "' data-funcType='" . $func["type"] . "' onchange='chooseKeyword(this)' disabled>" .
                                             "<option class='funcOption' value='blank'>-Select-</option>";
 
                             foreach($keyword as $kw)
                             {
-                                $kwString .= "<option class='funcOption' value='" . ($kw["id"] ?? $kw["choice"]) . "'>" . ($kw["know_name"] ?? $kw["choice"]) . "</option>";
+                                $kwString .= "<option class='funcOption' value='" . $kw["id"] . "'>" . $kw["name"] . "</option>";
                             }
 
                             $kwString .= "</select>";
                         }
+                        else if($function["keyword_id"] !== null) // && implicit !$function["keyword_choose"]
+                        {
+                            $kwString = " <span class='funcStatic' data-id='" . $function["id"] . "' data-entry='" . $function["entry_id"] . "' data-kwType='" . $function["keyword_type"] . "' data-kwID='" . $function["keyword_id"] . "'>(" . $keyword . ")</span>";
+                        }
+                        else
+                        {
+                            $kwString = null;
+                        }
 
-                        $functionName = ($mod ? $mod["name"] . " " : "") . ($source ? $source["name"] . " " : "") . ($func["name"]) .
-                                        ((!($function["keyword_choose"]) && !($keyword === null)) ? " (" . $keyword . ")" : "") . 
-                                        ($function["keyword_choose"] ? $kwString : "") . $rank;
+                        $functionName = "<span id='func" . $function["id"] . "' class='funcName' data-id='" . $function["id"] . "'>" .
+                                            ($mod ? $mod["name"] . " " : "") . ($source ? $source["name"] . " " : "") . ($func["name"]) .($kwString ? $kwString : "") . $rank .
+                                        "</span>";
 
-                        $freeEntry = $function["free"];
-
-                        return array("name" => $functionName, "free" => $function["free"], "keyword" => $keyword);
+                        return array("name" => $functionName, "keyword" => $keyword);
                     }, $entryFunctions);
 
-                    $returnString .=    "<div class='functionSelect'>" .
-                                            "<input id='func" . $entryID . "' type='checkbox' data-entry='" . $entryID . "' onclick='selectEntry(this)' " . ($freeEntry ? "checked disabled" : "") . "/>" .
-                                            "<label for='func" . $entryID . "'>" . implode(" &<br/>", array_column($functionNames,"name")) . "</label>" .
+                    $returnString .=    "<div class='entrySelect'>" .
+                                            "<input id='entry" . $entry["id"] . "' type='checkbox' data-entry='" . $entry["id"] . "' onclick='selectEntry(this)' " . ($entry["free"] ? "checked disabled" : "") . "/>" .
+                                            "<label for='entry" . $entry["id"] . "'>" . implode(" &<br/>", array_column($functionNames,"name")) . "</label>" .
                                         "</div>";
                 }
             }

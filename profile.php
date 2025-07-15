@@ -96,7 +96,7 @@
 						</select>
 					</div>
 					<hr/>
-					<?php echo fillRoleSection($masterFuncArray, $roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $choiceArray, $knowArray); ?>
+					<?php echo fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray); ?>
 				</div>
 				<div id="itemBox" class="zoneBox">
 					<?php echo getItemsTab(); ?>

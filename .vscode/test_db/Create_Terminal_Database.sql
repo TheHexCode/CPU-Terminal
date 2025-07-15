@@ -270,17 +270,23 @@ CREATE TABLE sr_keywords (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE sr_choice_cats (
+CREATE TABLE sr_prof_cats (
     id              INT     AUTO_INCREMENT,
     friendly_name   TEXT    NOT NULL,
     PRIMARY KEY (id)
 );
 
-CREATE TABLE sr_choices (
-    cat_id  INT     NOT NULL,
-    choice  TEXT    NOT NULL,
-    FOREIGN KEY (cat_id)
-        REFERENCES sr_choice_cats(id)
+CREATE TABLE sr_proficiencies (
+    id      INT     AUTO_INCREMENT,
+    name    TEXT    NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sr_prof_choices (
+    cat_id  INT NOT NULL,
+    prof_id INT NOT NULL,
+    FOREIGN KEY (prof_id)
+        REFERENCES sr_proficiencies(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -293,7 +299,7 @@ CREATE TABLE sr_know_cats (
 
 CREATE TABLE sr_knowledges (
     id          INT     AUTO_INCREMENT,
-    know_name   TEXT    NOT NULL,
+    name        TEXT    NOT NULL,
     is_corp     BOOL    NOT NULL,
     is_fact     BOOL    NOT NULL,
     discovered  BOOL    NOT NULL,
@@ -308,12 +314,26 @@ CREATE TABLE sr_functions (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE sr_role_functions (
+CREATE TABLE sr_entries (
+    id      INT     AUTO_INCREMENT,
+    role_id INT     NOT NULL,
+    path_id INT,
+    tier    INT     NOT NULL,
+    free    BOOL    NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (role_id)
+        REFERENCES sr_roles(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (path_id)
+        REFERENCES sr_paths(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE sr_entry_functions (
+    id              INT     AUTO_INCREMENT,
     entry_id        INT     NOT NULL,
-    role_id         INT     NOT NULL,
-    path_id         INT,
-    tier            INT     NOT NULL,
-    free            BOOL    NOT NULL,
     mod_id          INT,
     source_id       INT,
     func_id         INT     NOT NULL,
@@ -321,12 +341,9 @@ CREATE TABLE sr_role_functions (
     keyword_type    TEXT,
     keyword_choose  BOOL,
     `rank`          INT,
-    FOREIGN KEY (role_id)
-        REFERENCES sr_roles(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (path_id)
-        REFERENCES sr_paths(id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (entry_id)
+        REFERENCES sr_entries(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (mod_id)
@@ -339,6 +356,21 @@ CREATE TABLE sr_role_functions (
         ON DELETE CASCADE,
     FOREIGN KEY (func_id)
         REFERENCES sr_functions(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE user_entries (
+    user_id         INT NOT NULL,
+    entry_id        INT NOT NULL,
+    keyword_id      INT,
+    keyword_type    TEXT,
+    FOREIGN KEY (user_id)
+        REFERENCES users(ml_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (entry_id)
+        REFERENCES sr_role_functions(entry_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
