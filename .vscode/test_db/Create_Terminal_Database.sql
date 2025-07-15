@@ -363,6 +363,17 @@ CREATE TABLE user_functions (
         ON DELETE CASCADE
 );
 
+CREATE TABLE user_discoveries (
+    user_id     INT     NOT NULL,
+    disc_type   ENUM('role', 'know')
+                        NOT NULL,
+    disc_id     INT     NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES users(ml_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 ####################################################################################################
 
 /*
