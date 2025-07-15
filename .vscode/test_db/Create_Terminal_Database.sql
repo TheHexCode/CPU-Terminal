@@ -59,6 +59,7 @@ CREATE TABLE users (
     ml_id       INT     NOT NULL UNIQUE,
     userCode    TEXT    NOT NULL,
     charName    TEXT    NOT NULL,
+    origin      INT     NOT NULL,
     PRIMARY KEY (ml_id)
 );
 
@@ -80,7 +81,7 @@ CREATE TABLE sim_access_logs (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-
+/*
 CREATE TABLE cpu_roles (
     id      INT     AUTO_INCREMENT,
     name    TEXT    NOT NULL,
@@ -126,23 +127,7 @@ CREATE TABLE ml_functions (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
-CREATE TABLE user_functions (
-    user_id         INT     NOT NULL,
-    function_id     INT     NOT NULL,
-    keyword_id      INT,
-    keyword_type    TEXT,
-    CONSTRAINT userFunction
-        PRIMARY KEY (user_id, function_id),
-    FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (function_id)
-        REFERENCES sr_entry_functions(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-);
+*/
 
 CREATE TABLE items (
     abbr        VARCHAR(50) NOT NULL UNIQUE,
@@ -357,6 +342,23 @@ CREATE TABLE sr_entry_functions (
         ON DELETE CASCADE,
     FOREIGN KEY (func_id)
         REFERENCES sr_functions(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE user_functions (
+    user_id         INT     NOT NULL,
+    function_id     INT     NOT NULL,
+    keyword_id      INT,
+    keyword_type    TEXT,
+    CONSTRAINT userFunction
+        PRIMARY KEY (user_id, function_id),
+    FOREIGN KEY (user_id)
+        REFERENCES users(ml_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (function_id)
+        REFERENCES sr_entry_functions(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );

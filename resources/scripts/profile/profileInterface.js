@@ -189,6 +189,28 @@ function processCharInfo(charData)
 
 	$("#payloadCodeRow .FG").html(charData.userCode);
 
+	if(charData.origin !== null)
+	{
+		$(".originOption input[value='" + charData.origin + "']").attr("checked", true);
+		$(".originOption input[value='" + charData.origin + "']").prop("checked", true);
+
+		changeOrigin($(".originOption input[value='" + charData.origin + "']")[0]);
+	}
+
+	charData.functions.forEach(function(func)
+	{
+		console.log(func);
+
+		$(".entrySelect input[data-entry='" + func.entry_id + "']").prop("checked", true);
+		selectEntry($(".entrySelect input[data-entry='" + func.entry_id + "']")[0]);
+
+		if($(".funcName[data-id='" + func.function_id + "'] select").length > 0)
+		{
+			$(".funcName[data-id='" + func.function_id + "'] select .funcOption[value='" + (func.keyword_id === 0 ? "blank" : func.keyword_id) + "']").prop("selected", true);
+			chooseKeyword($(".funcName[data-id='" + func.function_id + "'] select")[0]);
+		}
+	});
+
 	/*
 	let funcStrings = {
 		initial: "",
@@ -499,6 +521,8 @@ function statSubmit(event)
 		});
 	});
 
+	let originID = Number($("#roleSelect option[selected]")[0].value);
+
 	// LIST OF ITEMS
 	let items = [];
 	$(".itemSelect input:checked").each(function(index, item)
@@ -521,6 +545,7 @@ function statSubmit(event)
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),
+			userOrigin: originID,
 			userFunctions: functions,
 			userItems: items
 		}

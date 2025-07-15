@@ -69,6 +69,15 @@ else
     updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharName);
 }
 
+$functionQuery = "  SELECT sr_entry_functions.entry_id, function_id, user_functions.keyword_id, user_functions.keyword_type
+                    FROM user_functions
+                    INNER JOIN sr_entry_functions ON sr_entry_functions.id = user_functions.function_id
+                    WHERE user_id = :userID";
+
+$functionStatement = $pdo->prepare($functionQuery);
+$functionStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
+$functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
+
 /*
 $functionQuery = "  SELECT DISTINCT	cpu_functions.name,
                                     SUM(ml_functions.rank) AS 'rank',
@@ -119,6 +128,7 @@ $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "name" => $mlCharName,
                                 "userCode" => $userCode,
-                                //"functions" => $functionResponse,
+                                "origin" => $dbCharResponse["origin"],
+                                "functions" => $functionResponse,
                                 //"roles" => $roleResponse,
                                 "items" => $itemResponse ));

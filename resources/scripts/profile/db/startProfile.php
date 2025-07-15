@@ -398,7 +398,8 @@ $itemQuery = "  SELECT DISTINCT items.abbr,name,tier,category,radio,
                     END AS max_charges
                 FROM {$dbName}.items
                 LEFT JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = items.abbr
-		        LEFT JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr";
+		        LEFT JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr
+                WHERE enabled = 1";
 
 $itemStatement = $pdo->prepare($itemQuery);
 $itemStatement->execute();

@@ -2,13 +2,23 @@
 require('dbConnect.php');
 
 $userID = $_POST["userID"];
+$userOrigin = $_POST["userOrigin"];
 $functionArray = $_POST["userFunctions"];
 $itemArray = $_POST["userItems"] ?? array();
 
 #############################################################################################################################
 
+$originQuery = "UPDATE {$dbName}.users
+                SET origin = :originID
+                WHERE ml_id = :userID";
+
+$originStatement = $pdo->prepare($originQuery);
+$originStatement->execute([':originID' => intval($userOrigin), ':userID' => $userID]);
+
+#############################################################################################################################
+
 $deleteFuncQuery = "DELETE FROM {$dbName}.user_functions
-                WHERE user_id = :userID";
+                    WHERE user_id = :userID";
 
 $deleteFuncStatement = $pdo->prepare($deleteFuncQuery);
 $deleteFuncStatement->execute([':userID' => $userID]);
@@ -28,6 +38,12 @@ $userFuncStatement = $pdo->prepare($userFuncQuery);
 $userFuncStatement->execute($userFuncArray);
 
 #############################################################################################################################
+
+$deleteItemQuery = "DELETE FROM {$dbName}.user_items
+                WHERE user_id = :userID";
+
+$deleteItemStatement = $pdo->prepare($deleteItemQuery);
+$deleteItemStatement->execute([':userID' => $userID]);
 
 $userItemArray = array();
 

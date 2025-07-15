@@ -3,36 +3,36 @@ USE dbiykpinec1m8s;
 
 INSERT INTO sim_active_codes
             (simCode, jobCode)
-    VALUES  ('MAY25', 'ABC1234');
+    VALUES  ('JUL25', 'ABC1234');
 
 INSERT INTO items
-            (abbr, name, tier, category, radio)	
-    VALUES	('cmm_wid','CMM Widow',2,'arms',NULL),
-            ('cmm_coc','CMM Cocoon',2,'arms',NULL),
-            ('copycat','Copycat',0,'cust',NULL),
-            ('phack_0','Pocket Hacker',0,'cust','ph'),
-            ('phack_1','Pocket Hacker',1,'cust','ph'),
-            ('deck_bud','Budget Cyberdeck',0,'deck','deck'),
-            ('deck_crd_1','CRD Spider Cyberdeck',1,'deck','deck'),
-            ('deck_crd_2','CRD Spider Cyberdeck',2,'deck','deck'),
-            ('deck_jst','Johnny&#39;s Special Touch',1,'deck','deck'),
-            ('deck_mm','MM Console',0,'deck','deck'),
-            ('deck_uh9k','Power Glove [Ultra-Hacking 9000]',1,'impl','deck'),
-            ('deck_fkd_0','FKD DC-17',0,'deck','deck'),
-            ('deck_fkd_1','FKD DC-17',1,'deck','deck'),
-            ('brad','Budget Remote Access Drive',0,'util',NULL),
-            ('beac','CypherSync Beacon',0,'util',NULL),
-            ('digi_pet','DigiPet',0,'util',NULL),
-            ('nsg','Nerd&#39;s Safety Glasses',0,'util',NULL),
-            ('impl_clec','CLEC Fingers',0,'impl',NULL),
-            ('impl_mags','Canopic Jar [Magsweep]',0,'impl',NULL),
-            ('shim_0','Shimmerstick',0,'cons',NULL),
-            ('shim_1','Shimmerstick',1,'cons',NULL),
-            ('vigil','Vigil',NULL,'cons',NULL);
+            (abbr, name, tier, category, radio, enabled)	
+    VALUES  ('cmm_wid','CMM Widow',2,'arms',NULL, 1),
+            ('cmm_coc','CMM Cocoon',2,'arms',NULL, 1),
+            ('copycat','Copycat',0,'cust',NULL, 1),
+            ('phack_0','Pocket Hacker',0,'cust','ph', 1),
+            ('phack_1','Pocket Hacker',1,'cust','ph', 1),
+            ('deck_bud','Budget Cyberdeck',0,'deck','deck', 1),
+            ('deck_crd_1','CRD Spider Cyberdeck',1,'deck','deck', 1),
+            ('deck_crd_2','CRD Spider Cyberdeck',2,'deck','deck', 1),
+            ('deck_jst','Johnny&#39;s Special Touch',1,'deck','deck', 1),
+            ('deck_mm','MM Console',0,'deck','deck', 1),
+            ('deck_uh9k','Power Glove [Ultra-Hacking 9000]',1,'impl','deck', 1),
+            ('deck_fkd_0','FKD DC-17',0,'deck','deck', 1),
+            ('deck_fkd_1','FKD DC-17',1,'deck','deck', 1),
+            ('brad','Budget Remote Access Drive',0,'util',NULL, 0),
+            ('beac','CypherSync Beacon',0,'util',NULL, 1),
+            ('digi_pet','DigiPet',0,'util',NULL, 1),
+            ('nsg','Nerd&#39;s Safety Glasses',0,'util',NULL, 1),
+            ('impl_clec','CLEC Fingers',0,'impl',NULL, 1),
+            ('impl_mags','Canopic Jar [Magsweep]',0,'impl',NULL, 0),
+            ('shim_0','Shimmerstick',0,'cons',NULL, 1),
+            ('shim_1','Shimmerstick',1,'cons',NULL, 1),
+            ('vigil','Vigil',NULL,'cons',NULL, 0);
 
 INSERT INTO item_effects
             (abbr, use_loc, req_type, requirement, charges, per_type, notes)	
-    VALUES	('cmm','init','function','Slip',1,'scene','+1 Tag'),
+    VALUES  ('cmm','init','function','Slip',1,'scene','+1 Tag'),
             ('copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
             ('phack_0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
             ('phack_1','itemTab',NULL,NULL,2,'sim','+1 Tag'),
@@ -55,7 +55,7 @@ INSERT INTO item_effects
 
 INSERT INTO items_to_effects
             (item_abbr, effect_abbr)	
-    VALUES	('cmm_wid','cmm'),
+    VALUES  ('cmm_wid','cmm'),
             ('cmm_coc','cmm'),
             ('copycat','copycat'),
             ('phack_0','phack_0'),
