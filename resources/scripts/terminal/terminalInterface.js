@@ -870,7 +870,7 @@ function initRadio(target)
 			{
 				if(payload.getExtraFunction("KNOWLEDGE"))
 				{
-					if(payload.getExtraFunction("KNOWLEDGE")["caviats"].includes("Hacking &amp; DigiSec"))
+					if(payload.getExtraFunction("KNOWLEDGE")["keywords"].includes("Hacking &amp; DigiSec"))
 					{
 						$("#knowItem #disKnow").remove();
 						payload.minusFunction("k_HDS");

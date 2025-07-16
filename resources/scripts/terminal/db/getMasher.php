@@ -28,13 +28,13 @@ if($userResponse === false)
 else
 {
     
-    $masherQuery = "  SELECT SUM(ml_functions.rank) AS bm_rank
-                        FROM {$dbName}.ml_functions
-                        INNER JOIN user_functions ON user_functions.mlFunction_id = ml_functions.id
-                        INNER JOIN cpu_functions ON cpu_functions.id = ml_functions.function_id
-                        WHERE
-                            user_functions.user_id = :masherID
-                            AND cpu_functions.name = 'Button Masher'";
+    $masherQuery = "SELECT SUM(sr_entry_functions.rank) AS bm_rank
+                    FROM sr_entry_functions
+                    INNER JOIN user_functions ON user_functions.function_id = sr_entry_functions.id
+                    INNER JOIN sr_functions ON sr_functions.id = sr_entry_functions.func_id
+                    WHERE
+                        user_functions.user_id = :masherID
+                        AND sr_functions.name = 'Button Masher'";
 
     $masherStatement = $pdo->prepare($masherQuery);
     $masherStatement->execute([':masherID' => $userResponse["ml_id"]]);
@@ -45,7 +45,7 @@ else
                         FROM {$dbName}.sim_user_actions
                         INNER JOIN {$dbName}.sim_terminals ON sim_terminals.id = sim_user_actions.target_id
                         WHERE   sim_terminals.jobCode = :jobCode
-                            AND sim_user_actions.action = 'Masher'
+                            AND sim_user_actions.action = 'masher'
                             AND sim_user_actions.newState = :masherID";
 
     $sceneUseStatement = $pdo->prepare($sceneUseQuery);

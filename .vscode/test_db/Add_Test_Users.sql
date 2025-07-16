@@ -7,31 +7,29 @@ INSERT INTO users
 
 INSERT INTO user_functions
             (user_id, function_id, keyword_id, keyword_type)
-    VALUES  (-1, 180, NULL),
-            (-1, 190, NULL),
-            (-1, 176, NULL),
-            (-1, 199, NULL),
-            (-1, 368, NULL),
-            (-1, 370, NULL),
-            (-1, 376, NULL),
-            (-1, 377, NULL),
-            (-1, 380, NULL),
-            (-1, 389, NULL),
-            (-1, 391, NULL),
-            (-1, 392, NULL),
-            (-1, 394, NULL),
-            (-1, 398, NULL),
-            (-1, 399, NULL);
-
-# 2.0RC TEST FUNCTIONS #
-INSERT INTO user_functions
-            (user_id, mlFunction_id, cav_id)
-    VALUES  (-1, 624, NULL),
-            (-1, 625, NULL),
-            (-1, 626, NULL),
-            (-1, 627, NULL),
-            (-1, 628, NULL);
-# END TEST FUNCTIONS #
+    VALUES  (-1, 5, NULL, NULL),
+            (-1, 10, 11, 'knowledge'),
+            (-1, 13, NULL, NULL),
+            (-1, 126, NULL, NULL),
+            (-1, 205, NULL, NULL),
+            (-1, 207, NULL, NULL),
+            (-1, 214, NULL, NULL),
+            (-1, 215, NULL, NULL),
+            (-1, 217, NULL, NULL),
+            (-1, 219, NULL, NULL),
+            (-1, 224, 5, 'knowledge'),
+            (-1, 230, NULL, NULL),
+            (-1, 232, NULL, NULL),
+            (-1, 233, NULL, NULL),
+            (-1, 236, NULL, NULL),
+            (-1, 239, NULL, NULL),
+            (-1, 241, NULL, NULL),
+            (-1, 287, NULL, NULL),
+            (-1, 293, NULL, NULL),
+            (-1, 430, NULL, NULL),
+            (-1, 438, 12, 'keyword'),
+            (-1, 442, NULL, NULL),
+            (-1, 450, NULL, NULL);
 
 INSERT INTO user_items
             (user_id, item_abbr, count)

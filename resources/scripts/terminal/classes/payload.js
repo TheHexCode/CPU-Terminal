@@ -76,7 +76,7 @@ class Payload
             if(mainFuncIndex !== -1)
             {
                 allFuncs[mainFuncIndex]["rank"] = Number(allFuncs[mainFuncIndex]["rank"]) + Number(xFunc["rank"]);
-                allFuncs[mainFuncIndex]["caviats"] += ";" + xFunc.caviats;
+                allFuncs[mainFuncIndex]["keywords"] += ";" + xFunc.keywords;
             }
             else
             {
@@ -88,17 +88,17 @@ class Payload
 
         if(userFunc !== undefined)
         {
-            if((userFunc.type === "ranked"))
+            if(userFunc.keywords !== null)
+            {
+                return userFunc.keywords;
+            }
+            else if(userFunc.rank !== null)
             {
                 return Number(userFunc.rank);
             }
-            else if((userFunc.type === "collect"))
-            {
-                return userFunc.caviats;
-            }
             else
             {
-                return Boolean(Number(userFunc.rank));
+                return true;
             }
         }
         else
@@ -124,17 +124,18 @@ class Payload
                 
                 if(knowIndex !== -1)
                 {
-                    this.#extraFuncs[knowIndex]["role"] += ";dissim";
-                    this.#extraFuncs[knowIndex]["rank"] = Number(this.#extraFuncs[knowIndex]["rank"]) + 1;
-                    this.#extraFuncs[knowIndex]["caviats"] += ";Hacking &amp; DigiSec";
+                    this.#extraFuncs[knowIndex]["extra"] += "dissim;";
+                    this.#extraFuncs[knowIndex]["keywords"] += ";Hacking &amp; DigiSec";
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Knowledge",
-                        role: "dissim",
-                        rank: 1,
-                        caviats: "Hacking &amp; DigiSec"
+                        rank: null,
+                        type: "unique",
+                        keywords: "Hacking &amp; DigiSec",
+                        hacking_cat: "passive",
+                        extra: "dissim;"
                     });
                 }
                 break;
@@ -145,16 +146,17 @@ class Payload
                 
                 if(asIndex !== -1)
                 {
-                    this.#extraFuncs[asIndex]["role"] += ";poly";
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + 1;
+                    this.#extraFuncs[asIndex]["extra"] += "poly;";
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Alarm Sense",
-                        role: "poly",
-                        rank: 1,
-                        caviats: null
+                        rank: null,
+                        type: "unique",
+                        keywords: null,
+                        hacking_cat: "passive",
+                        extra: "poly;"
                     });
                 }
                 break;
@@ -165,16 +167,18 @@ class Payload
                 
                 if(repIndex !== -1)
                 {
-                    this.#extraFuncs[repIndex]["role"] += ";poly";
+                    this.#extraFuncs[repIndex]["extra"] += "poly;";
                     this.#extraFuncs[repIndex]["rank"] = Number(this.#extraFuncs[repIndex]["rank"]) + 1;
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Repair",
-                        role: "poly",
                         rank: 1,
-                        caviats: null
+                        type: "ranked",
+                        keywords: null,
+                        hacking_cat: "repair",
+                        extra: "poly;"
                     });
                 }
                 break;
@@ -190,11 +194,10 @@ class Payload
             {
                 let knowIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "knowledge");
                 
-                if(Number(knowIndex["rank"]) > 1)
+                if(knowIndex["extra"] !== "dissim;")
                 {
-                    this.#extraFuncs[knowIndex]["role"] = this.#extraFuncs[knowIndex]["role"].replace(";dissim","");
-                    this.#extraFuncs[knowIndex]["rank"] = Number(this.#extraFuncs[knowIndex]["rank"]) - 1;
-                    this.#extraFuncs[knowIndex]["caviats"] = this.#extraFuncs[knowIndex]["caviats"].replace(";Hacking &amp; DigiSec","");
+                    this.#extraFuncs[knowIndex]["extra"] = this.#extraFuncs[knowIndex]["extra"].replace("dissim;","");
+                    this.#extraFuncs[knowIndex]["keywords"] = this.#extraFuncs[knowIndex]["keywords"].replace(";Hacking &amp; DigiSec","");
                 }
                 else
                 {
@@ -206,10 +209,9 @@ class Payload
             {
                 let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
                 
-                if(Number(asIndex["rank"]) > 1)
+                if(knowIndex["extra"] !== "poly;")
                 {
-                    this.#extraFuncs[asIndex]["role"] = this.#extraFuncs[asIndex]["role"].replace(";poly","");
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) - 1;
+                    this.#extraFuncs[asIndex]["extra"] = this.#extraFuncs[asIndex]["extra"].replace("poly;","");
                 }
                 else
                 {
@@ -222,9 +224,9 @@ class Payload
             {
                 let repIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "repair");
                 
-                if(Number(repIndex["rank"]) > 1)
+                if(knowIndex["extra"] !== "poly;")
                 {
-                    this.#extraFuncs[repIndex]["role"] = this.#extraFuncs[repIndex]["role"].replace(";poly","");
+                    this.#extraFuncs[repIndex]["extra"] = this.#extraFuncs[repIndex]["extra"].replace("poly;","");
                     this.#extraFuncs[repIndex]["rank"] = Number(this.#extraFuncs[repIndex]["rank"]) - 1;
                 }
                 else

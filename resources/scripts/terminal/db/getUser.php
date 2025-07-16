@@ -29,39 +29,40 @@ if($userResponse === false)
 else
 {
     
-    $functionQuery = "  SELECT DISTINCT	cpu_functions.name,
-                                        SUM(ml_functions.rank) AS 'rank',
-                                        cpu_functions.type,
+    $functionQuery = "  SELECT DISTINCT	sr_functions.name,
+                                        SUM(sr_entry_functions.rank) AS 'rank',
+                                        sr_functions.type,
+                                        sr_functions.hacking_cat,
                                         GROUP_CONCAT(
                                             CASE
-                                                WHEN ml_functions.cav_type = 'bound'
-                                                    THEN (SELECT cpu_caviats.displayName FROM cpu_caviats WHERE cpu_caviats.id = ml_functions.cav_id)
-                                                WHEN ml_functions.cav_type = 'choice'
-                                                    THEN (SELECT cpu_caviats.displayName FROM cpu_caviats WHERE cpu_caviats.id = user_functions.cav_id)
+                                                WHEN user_functions.keyword_type = 'knowledge'
+                                                    THEN (SELECT sr_knowledges.name FROM sr_knowledges WHERE sr_knowledges.id = user_functions.keyword_id)
+                                                WHEN user_functions.keyword_type = 'proficiency'
+                                                    THEN (SELECT sr_proficiencies.name FROM sr_proficiencies WHERE sr_proficiencies.id = user_functions.keyword_id)
+                                                WHEN user_functions.keyword_type = 'keyword'
+                                                    THEN (SELECT sr_keywords.name FROM sr_keywords WHERE sr_keywords.id = user_functions.keyword_id)
                                                 ELSE NULL
                                             END
                                             SEPARATOR ';'
-                                        ) AS caviats,
-                                        cpu_functions.hacking_cat
-                        FROM {$dbName}.ml_functions
-                        INNER JOIN {$dbName}.user_functions ON user_functions.mlFunction_id = ml_functions.id
-                        INNER JOIN {$dbName}.cpu_functions ON cpu_functions.id = ml_functions.function_id
-                        WHERE
-                            user_functions.user_id = :userID
-                            AND cpu_functions.hacking_cat IS NOT NULL
-                        GROUP BY cpu_functions.name,
-                                cpu_functions.type,
-                                cpu_functions.hacking_cat";
+                                        ) AS keywords
+                        FROM sr_entry_functions
+                        INNER JOIN user_functions ON user_functions.function_id = sr_entry_functions.id
+                        INNER JOIN sr_functions ON sr_functions.id = sr_entry_functions.func_id
+                        WHERE user_functions.user_id = :userID
+                        GROUP BY sr_functions.name,
+                                 sr_functions.type,
+                                 sr_functions.hacking_cat";
     
     $functionStatement = $pdo->prepare($functionQuery);
     $functionStatement->execute([':userID' => $userResponse["ml_id"]]);
     $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $roleQuery = "  SELECT DISTINCT cpu_roles.name
-                    FROM {$dbName}.ml_functions
-                    INNER JOIN {$dbName}.user_functions ON ml_functions.id=user_functions.mlFunction_id
-                    INNER JOIN {$dbName}.cpu_roles ON ml_functions.role_id=cpu_roles.id
-                    WHERE user_id = :userID";
+    $roleQuery = "  SELECT DISTINCT sr_roles.name
+                    FROM user_functions
+                    INNER JOIN sr_entry_functions ON sr_entry_functions.id = user_functions.function_id
+                    INNER JOIN sr_entries ON sr_entries.id = sr_entry_functions.entry_id
+                    INNER JOIN sr_roles ON sr_roles.id = sr_entries.role_id
+                    WHERE user_functions.user_id = :userID";
 
     $roleStatement = $pdo->prepare($roleQuery);
     $roleStatement->execute([':userID' => $userResponse["ml_id"]]);

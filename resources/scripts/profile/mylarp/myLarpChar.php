@@ -69,47 +69,16 @@ else
     updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharName);
 }
 
-$functionQuery = "  SELECT DISTINCT	sr_functions.name,
-                                    SUM(sr_entry_functions.rank) AS 'rank',
-                                    sr_functions.type,
-                                    sr_functions.hacking_cat,
-                                    GROUP_CONCAT(
-                                        CASE
-                                            WHEN user_functions.keyword_type = 'knowledge'
-                                                THEN (SELECT sr_knowledges.name FROM sr_knowledges WHERE sr_knowledges.id = user_functions.keyword_id)
-                                            WHEN user_functions.keyword_type = 'proficiency'
-                                                THEN (SELECT sr_proficiencies.name FROM sr_proficiencies WHERE sr_proficiencies.id = user_functions.keyword_id)
-                                            WHEN user_functions.keyword_type = 'keyword'
-                                                THEN (SELECT sr_keywords.name FROM sr_keywords WHERE sr_keywords.id = user_functions.keyword_id)
-                                            ELSE NULL
-                                        END
-                                        SEPARATOR ';'
-                                    ) AS keywords
-                    FROM {$dbName}.sr_entry_functions
-                    INNER JOIN {$dbName}.user_functions ON user_functions.function_id = sr_entry_functions.id
-                    INNER JOIN {$dbName}.sr_functions ON sr_functions.id = sr_entry_functions.func_id
-                    WHERE
-                        user_functions.user_id = :userID
-                    GROUP BY sr_functions.name,
-                            sr_functions.type,
-                            sr_functions.hacking_cat";
+$functionQuery = "  SELECT sr_entry_functions.entry_id, function_id, user_functions.keyword_id, user_functions.keyword_type
+                    FROM user_functions
+                    INNER JOIN sr_entry_functions ON sr_entry_functions.id = user_functions.function_id
+                    WHERE user_id = :userID";
 
 $functionStatement = $pdo->prepare($functionQuery);
 $functionStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
-$roleQuery = "  SELECT DISTINCT sr_roles.name
-                FROM user_functions
-                INNER JOIN sr_entry_functions ON sr_entry_functions.id = user_functions.function_id
-                INNER JOIN sr_entries ON sr_entries.id = sr_entry_functions.entry_id
-                INNER JOIN sr_roles ON sr_roles.id = sr_entries.role_id
-                WHERE user_functions.user_id = :userID";
-
-$roleStatement = $pdo->prepare($roleQuery);
-$roleStatement->execute([':userID' => $dbCharResponse["ml_id"]]);
-$roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
-
-$discoQuery = " SELECT * FROM {$dbName}.user_discoveries
+$discoQuery = " SELECT * FROM user_discoveries
                 WHERE user_id = :userID";
 
 $discoStatement = $pdo->prepare($discoQuery);
@@ -169,5 +138,5 @@ echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "origin" => $dbCharResponse["origin"],
                                 "functions" => $functionResponse,
                                 "discoveries" => $discoResponse,
-                                "roles" => $roleResponse,
+                                //"roles" => $roleResponse,
                                 "items" => $itemResponse ));
