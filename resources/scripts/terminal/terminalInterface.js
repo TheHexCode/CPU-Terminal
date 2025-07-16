@@ -334,9 +334,9 @@ function injectUserPayload(userPayload)
 			$("#passSeparator").removeClass("hidden");
 			$("#knowItem").removeClass("hidden");
 
-			payload.getFunction("KNOWLEDGE").split(";").forEach(function (caviat)
+			payload.getFunction("KNOWLEDGE").replace("&amp;","&").split(";").forEach(function (keyword)
 			{
-				$("#knowItem > ul").append("<li>" + caviat.toUpperCase() + "</li>");
+				$("#knowItem > ul").append("<li>" + keyword.toUpperCase().replace("&","&amp;") + "</li>");
 			});
 		}
 
