@@ -9,7 +9,7 @@ $oldData = $_POST["oldData"];
 
 //SEND INTERRUPT CODE
 $prevErrLvl = error_reporting(0);
-/*
+
 use WebSocket;
 try
 {
@@ -36,7 +36,7 @@ catch(Exception $error)
 {
     //Ignore Errors Here
 }
-*/
+
 error_reporting($prevErrLvl);
 //////////////////////////////////////////////////////
 

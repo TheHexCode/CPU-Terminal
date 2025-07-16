@@ -63,11 +63,21 @@ class Modal
 		$(this.#buttonRow).html("");
     }
 
+    interruptModal()
+    {
+        this.#modalTimer.killTimer();
+
+        $(this.#modal).children(":not(.modalOverlay)").addClass("dimmed");
+        $(this.#modal).children(".modalOverlay").removeClass("hidden");
+        $(this.#modal).children(".modalOverlay").addClass("blink");
+        $("#" + this.#modal.id + " button").prop("disabled", true);
+    }
+
     showConfirmPage(actionMap, confirmMap)
     {
         this.clearModal();
 
-        $(this.#modal).attr("data-type", actionMap["action"]);
+        $(this.#modal).attr("data-type", actionMap["actionType"]);
 	    $(this.#modal).attr("data-id", actionMap["targetID"]);
 
         if(actionMap["actionType"] === "ice")
@@ -162,7 +172,6 @@ class Modal
 		});
 		$("#executeButton").on("contextmenu",  function(event)
 		{
-            console.log(event);
 			if(event.originalEvent.pointerType === "touch")
 			{
 				event.preventDefault();

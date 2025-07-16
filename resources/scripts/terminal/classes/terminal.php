@@ -227,11 +227,11 @@ class Terminal
 
                     $accessInt = ($entry["state"] === "initial") ?
                                     'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' : 
-                                    'Break: <button class="breakButton" data-enabled="false" disabled="" ">N/A</button>';
+                                    'Break: <button class="breakButton" data-enabled="false" disabled>N/A</button>';
 
                     $modifyInt = ($entry["state"] === "initial") ?
                                     'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
-                                    'Sleaze: <button class="sleazeButton" data-enabled="false" disabled="" ">N/A</button>';
+                                    'Sleaze: <button class="sleazeButton" data-enabled="false" disabled>N/A</button>';
 
                     $titleMask = $entry["title"];
                     $entryData["title"] = $entry["title"];
@@ -267,11 +267,11 @@ class Terminal
 
                     $accessInt = ($stateGuide["access"]["enabled"]) ?
                                     'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
-                                    'Access: <button class="accessButton" data-enabled="false" disabled="" ">N/A</button>';
+                                    'Access: <button class="accessButton" data-enabled="false" disabled>N/A</button>';
 
                     $modifyInt = ($stateGuide["modify"]["enabled"]) ?
                                     'Modify: <button class="modifyButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
-                                    'Modify: <button class="modifyButton" data-enabled="false" disabled="" ">N/A</button>';
+                                    'Modify: <button class="modifyButton" data-enabled="false" disabled>N/A</button>';
 
                     if(gettype($stateGuide["title"]) === "array")
                     {

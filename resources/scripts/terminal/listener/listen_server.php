@@ -27,7 +27,7 @@ $server->onText(function (WebSocket\Server $server, WebSocket\Connection $connec
 	/*
 		{
 			"actionType": enum("entry","log","brick","rig","root","rooted")
-			"entryID": int,
+			"targetID": int,
 			"userID": int,
 			"newData": String
 		}
@@ -36,7 +36,7 @@ $server->onText(function (WebSocket\Server $server, WebSocket\Connection $connec
 
 	$content = json_decode($message->getContent());
 
-	echo "User " . $content->userID . ", " . $content->actionType . " " . $content->entryID . " >> " . $content->newData . ";\n";
+	echo "User " . $content->userID . ", " . $content->actionType . " " . $content->targetID . " >> " . $content->newData . ";\n";
 });
 
 $server->onTick(function(WebSocket\Server $server)

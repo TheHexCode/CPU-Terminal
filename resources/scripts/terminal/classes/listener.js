@@ -84,7 +84,7 @@ class Listener
     #processUpdate(update)
     {
         let actionType = update["actionType"];
-        let entryID = update["entryID"];
+        let targetID = update["targetID"];
         let userID = update["userID"];
         let newData = update["newData"];
 
@@ -93,27 +93,24 @@ class Listener
             //don't need "rig" or "rooted"
 
             console.log(update);
+            let modal;
+            let entryJSON;
 
             switch(actionType)
             {
                 case("entry"):
-                    let modal = $("#actionModal")[0];
+                    modal = $("#actionModal")[0];
 
-                    if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === entryID))
+                    if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === targetID))
                     {
                         // X OUT MODAL, DISABLE BUTTONS
-                        mbTimer.killTimer();
-
-                        $(modal).children(":not(.modalOverlay)").addClass("dimmed");
-                        $(modal).children(".modalOverlay").removeClass("hidden");
-                        $(modal).children(".modalOverlay").addClass("blink");
-                        $("#actionModal button").prop("disabled", true);
+                        actionModal.interruptModal();
                     }
 
-                    let entryJSON = $.getJSON(
+                    entryJSON = $.getJSON(
                         "/resources/scripts/terminal/db/getEntryUpdate.php",
                         {
-                            id: entryID,
+                            id: targetID,
                             newState: newData,
                             action: actionType,
                             actionUser: userID,
@@ -132,7 +129,7 @@ class Listener
                         $(resultJSON["entryPath"] + " > .entryIntContainer > .modifyInterface").html(resultJSON["modify"]);
                         $(resultJSON["entryPath"] + " > .subIce").removeClass("subIce");
 
-                        if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === entryID))
+                        if((($(modal).attr("data-type") === "entry") || ($(modal).attr("data-type") === "ice")) && (Number($(modal).attr("data-id")) === targetID))
                         {
                             closeModal("interrupted");
                         }
@@ -142,6 +139,46 @@ class Listener
                     //check for open modal that is targeting this log entry
                     //if so, X out modal, update, and close modal
                     // NOTE: THIS NEEDS TO BE TRIGGERED WHEN A NEW USER CONNECTS AND ADDS A NEW LOG!!
+
+                    modal = $("#actionModal")[0];
+
+                    if(($(modal).attr("data-type") === "log") && (Number($(modal).attr("data-id")) === targetID))
+                    {
+                        // X OUT MODAL, DISABLE BUTTONS
+                        actionModal.interruptModal();
+                    }
+
+                    //check for open modal that is targeting this entry
+                    //if so, X out modal, update, and close modal when update is finished
+
+                    if($("#log" + targetID).length === 0) //NEW USER
+                    {
+                        $("#logList").append(	'<li id="log' + targetID + '" class="logEntry" data-user="' + userID + '">' +
+                                                    '<span class="logPerson">User:&nbsp;</span><span class="logName">' + newData + '</span>' +
+                                                    (((payload.getFunction("REASSIGN")) || (payload.getFunction("WIPE YOUR TRACKS"))) ? 
+                                                    '<div class="logActions">' +
+                                                        '<hr/>' +
+                                                        (payload.getFunction("REASSIGN") ? '<span class="reassAction buttonItem">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" data-id="' + targetID + '" onclick="takeAction(this)">2 Tags</button></span>' : "") +
+                                                        (payload.getFunction("WIPE YOUR TRACKS") ? '<span class="wipeAction buttonItem">WIPE TRACKS: <button class="wipeButton" data-enabled="true" data-cost="1" data-id="' + targetID + '" onclick="takeAction(this)">1 Tag</button></span>' : "") +
+                                                    '</div>' : "") +
+                                                '</li>');
+                    }
+                    else if(newData === "") //WIPE TRACKS
+                    {
+                        $("#log" + targetID + " > .logPerson").html("[ERROR:&nbsp;");
+                        $("#log" + targetID + " > .logName").html("ENTRY NOT FOUND]");
+                        $("#log" + targetID + " > .logActions").html("");
+                    }
+                    else //REASSIGN
+                    {
+                        $("#log" + targetID + " > .logName").html(newData);
+                    }
+
+                    if(($(modal).attr("data-type") === "log") && (Number($(modal).attr("data-id")) === targetID))
+                    {
+                        closeModal("interrupted");
+                    }
+
                     break;
                 case("puzzle"):
                     //Same deal, check for open modal targeting this puzzle
