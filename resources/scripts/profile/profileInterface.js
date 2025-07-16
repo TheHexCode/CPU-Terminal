@@ -405,7 +405,7 @@ function selectEntry(target)
 function chooseKeyword(target)
 {
 	let entry = target.dataset["entry"];
-	//let kwType = target.dataset["kwtype"];
+	let kwType = target.dataset["kwtype"];
 	let funcType = target.dataset["functype"];
 
 	let options = target.options;
@@ -417,12 +417,12 @@ function chooseKeyword(target)
 		{
 			if(!$(option).prop("disabled"))
 			{
-				$(".funcOption[value='" + option.value + "']").prop("disabled", false);
+				$(".funcChoice[data-kwtype='" + kwType + "'] .funcOption[value='" + option.value + "']").prop("disabled", false);
 			}
 			
 			if(option.value != "blank")
 			{
-				$(".funcOption[value='" + target.value + "']").each(function(index, otherOption)
+				$("funcChoice[data-kwtype='" + kwType + "'] .funcOption[value='" + target.value + "']").each(function(index, otherOption)
 				{
 					if((otherOption.value !== "blank") && (otherOption !== selected))
 					{

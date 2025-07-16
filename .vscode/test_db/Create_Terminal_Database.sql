@@ -297,6 +297,7 @@ CREATE TABLE sr_functions (
     name        TEXT    NOT NULL,
     keyworded   BOOL    NOT NULL,
     type        TEXT    NOT NULL,
+    hacking_cat TEXT,
     PRIMARY KEY (id)
 );
 
