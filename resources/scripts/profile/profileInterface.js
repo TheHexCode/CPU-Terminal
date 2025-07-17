@@ -104,30 +104,23 @@ function processLogin(loginData)
 	{
 		$("#charSelectModal .modalBodyText").html("");
 
-		if(loginData["charList"].count > 1)
+		loginData["charList"].forEach(function(character, index)
 		{
-			loginData["charList"].forEach(function(character, index)
+			let buttonID = "char" + index;
+			$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
+
+			$("#" + buttonID).bind("pointerup", function()
 			{
-				let buttonID = "char" + index;
-				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
-
-				$("#" + buttonID).bind("pointerup", function()
-				{
-					selectCharacter(character["charID"]);
-				});
+				selectCharacter(character);
 			});
-			
-			$("#charSelectModal").width($("#main").width());
+		});
+		
+		$("#charSelectModal").width($("#main").width());
 
-			$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
-			
-			$("#load").addClass("hidden");
-			$("#modalBG").css("display","flex");
-		}
-		else
-		{
-			selectCharacter(loginData["charList"][0]);
-		}
+		$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
+		
+		$("#load").addClass("hidden");
+		$("#modalBG").css("display","flex");
 	}
 }
 
