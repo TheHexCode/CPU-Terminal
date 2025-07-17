@@ -7,6 +7,20 @@ $userID = $_POST["userID"];
 $newData = $_POST["newData"];
 $oldData = $_POST["oldData"];
 
+$userName = null;
+
+if($actionType === "brick")
+{
+    $userQuery = "  SELECT charName
+                    FROM {$dbName}.users
+                    WHERE ml_id=:userID";
+
+    $userStatement = $pdo->prepare($userQuery);
+    $userStatement->execute([':userID' => $userID]);
+
+    $userName = $userStatement->fetch(PDO::FETCH_COLUMN);
+}
+
 //SEND INTERRUPT CODE
 $prevErrLvl = error_reporting(0);
 
@@ -24,7 +38,7 @@ try
                                     "actionType" => (($actionType === "entry" || $actionType === "ice") ? "entry" : $actionType),
                                     "targetID" => intval($targetID),
                                     "userID" => intval($userID),
-                                    "newData" => $newData
+                                    "newData" => $userName ?? $newData
                                     ));
 
     $tempClient->text($message);

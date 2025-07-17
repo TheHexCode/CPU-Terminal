@@ -1667,14 +1667,17 @@ function takeAction(target)
 				case "brick":
 				{
 					extraAfterText += "<span class='red'>WARNING: Bricking this Device will render it inoperable until repaired!</span>";
+					break;
 				}
 				case "rig":
 				{
 					extraAfterText += "<span class='red'>WARNING: Triggering a Rigged Device (by calling \"Room Strike Lock\") will cause all data to be deleted at the end of the Scene!</span>";
+					break;
 				}
 				case "root":
 				{
 					extraAfterText += "<span class='red'>WARNING: Rooting this Device will format all memory disks, deleting all software and data permanently!<br/>Furthermore, Device will be inoperable until appropriate software is re-installed!</span>";
+					break;
 				}
 			}
 

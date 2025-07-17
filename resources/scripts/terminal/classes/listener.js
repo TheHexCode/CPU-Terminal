@@ -138,7 +138,6 @@ class Listener
                 case("log"):
                     //check for open modal that is targeting this log entry
                     //if so, X out modal, update, and close modal
-                    // NOTE: THIS NEEDS TO BE TRIGGERED WHEN A NEW USER CONNECTS AND ADDS A NEW LOG!!
 
                     modal = $("#actionModal")[0];
 
@@ -186,9 +185,19 @@ class Listener
                     break;
                 case("brick"):
                     //switch to Bricked terminal, after maybe a second of freeze-up?
+                    if(targetID === session.getTerminalID())
+                    {
+                        session.brickTerminal(newData);
+                    }
+
                     break;
                 case("root"):
                     //switch to Rooting terminal
+                    if(targetID === session.getTerminalID())
+                    {
+                        session.rootTerminal();
+                    }
+
                     break;
             }
         }
