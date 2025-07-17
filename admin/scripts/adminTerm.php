@@ -12,6 +12,7 @@ class adminTerminal
     private $termState;
     private $stateData;
     private $entries;
+    private $puzzles;
 
     function __construct($pdo, $dbName, $jobCode, $slug)
     {
@@ -58,6 +59,12 @@ class adminTerminal
         $entryStatement = $pdo->prepare($entryQuery);
         $entryStatement->execute([':termID' => $this->termID]);
         $this->entries = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        $puzzleQuery = "SELECT * FROM {$dbName}.sim_puzzles
+                        WHERE terminal_id=:termID";
+        $puzzleStatement = $pdo->prepare($puzzleQuery);
+        $puzzleStatement->execute([':termID' => $this->termID]);
+        $this->puzzles = $puzzleStatement->fetchAll(PDO::FETCH_ASSOC);
 
         $slugQuery = "  SELECT slug
                         FROM {$dbName}.sim_terminals
@@ -283,6 +290,6 @@ class adminTerminal
 
     function displayTerminal()
     {
-        return "<script>var admTerm = new AdminTerminal(" . $this->termID . ", " . json_encode($this->entries) . ");</script>";
+        return "<script>var admTerm = new AdminTerminal(" . $this->termID . ", " . json_encode($this->entries) . ", " . json_encode($this->puzzles) . ");</script>";
     }
 }

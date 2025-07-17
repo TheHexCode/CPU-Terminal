@@ -50,7 +50,7 @@ elseif($action === "SAVE")
     
     $updateStatement = $pdo->prepare($updateQuery);
     $updateStatement->execute([ ':slug' => $terminal["termSlug"],
-                                        ':jobCode' => $terminal["jobCode"],
+                                        ':jobCode' => strtoupper($terminal["jobCode"]),
                                         ':displayName' => $terminal["displayName"],
                                         ':accessCost' => $terminal["termAccess"],
                                         ':termID' => $terminal["termID"]]);

@@ -19,13 +19,13 @@ class AdminTerminal
             "files": [
                 "initial",
                 "read",
-                "copied",
+                "taken",
                 "deleted"
             ],
             "darkweb": [
                 "initial",
                 "read",
-                "copied",
+                "taken",
                 "deleted"
             ],
             "cameras": [
@@ -53,7 +53,7 @@ class AdminTerminal
         "trap": [
             "initial",
             "read",
-            "copied",
+            "taken",
             "deleted"
         ],
         "power": [
@@ -133,12 +133,14 @@ class AdminTerminal
 
     #termID;
     #entryList = [];
+    #puzzles = [];
     #changesPending = false;
 
-    constructor(termID, entries)
+    constructor(termID, entries, puzzles)
     {
         this.#termID = termID;
         this.#entryList = this.#listifyEntries(entries);
+        this.#puzzles = puzzles;
 
         //console.log(this.#entryList);
 
@@ -708,15 +710,17 @@ class AdminTerminal
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-$(window).bind('beforeunload', function()
+$(window).bind('beforeunload', function(event)
 {
+    event.preventDefault();
+
     if(admTerm.areChangesPending())
     {
         return 'Leave page?\nChanges that you have made will not be saved.';
     }
     else
     {
-        return true;
+        return false;
     }
 });
 
