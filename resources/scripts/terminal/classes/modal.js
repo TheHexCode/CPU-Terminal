@@ -124,6 +124,13 @@ class Modal
 
     showExecutePage(actionMap, executeMap)
     {
+        // ACTIONMAP:
+        //  - nothing, just passes through to completeAction
+        // EXECUTEMAP:
+        //  - petStage
+        //  - maxTime
+        //  - headerText
+
         $(this.#modal).width($("#main").width());
 
 		$(this.#buttonRow).html("");

@@ -180,21 +180,24 @@ class Timer
 
     #userActions(callargs)
     {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/resources/scripts/terminal/db/userActions.php",
-            data:
-            {
-                userID: callargs["userID"],
-                targetID: callargs["targetID"],
-                action: callargs["action"],
-                actionType: callargs["actionType"],
-                newState: callargs["buttonData"],
-                actionCost: callargs["actionCost"],
-                global: callargs["global"]
-            }
-        });
+        if(callargs["actionType"] !== "puzzle")
+        {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/resources/scripts/terminal/db/userActions.php",
+                data:
+                {
+                    userID: callargs["userID"],
+                    targetID: callargs["targetID"],
+                    action: callargs["action"],
+                    actionType: callargs["actionType"],
+                    newState: callargs["buttonData"],
+                    actionCost: callargs["actionCost"],
+                    global: callargs["global"]
+                }
+            });
+        }
     }
 
     #useItems(callargs)

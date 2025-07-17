@@ -805,11 +805,7 @@ function injectUserPayload(userPayload)
 
 			userPayload["puzzActions"].forEach(function(puzzle)
 			{
-				console.log({puzzle});
-				if(puzzle["repeat"] <= puzzle["uses"])
-				{
-
-				}
+				dimPuzzle(session.getPuzzle(puzzle["id"]), puzzle["uses"]);
 			});
 
 			if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
@@ -2189,6 +2185,18 @@ function completeAction(actionMap)
 
 			break;
 		}
+		case("puzzle"):
+		{
+			switch(actionMap["action"])
+			{
+				case("free_rp"):
+				{
+					resolvePuzzle(actionMap["puzzID"]);
+
+					break;
+				}
+			}
+		}
 	}
 
 	session.setCurrentTags(session.getCurrentTags() - actionMap["actionCost"]);
@@ -2354,18 +2362,38 @@ function generatePuzzle(target)
 	{
 		case("free_rp"):
 		{
-			/*
-			$("#actionModal .modalHeaderText").html("Hacking Action RP");
+			let actionMap = {
+				action: "free_rp",
+				actionType: "puzzle",
+				actionCost: puzzle["cost"],
+				puzzID: puzzle["id"]
+			};
 
-			$("#actionModal .modalBody").removeClass("dimmed");
-			$("#modalBodyText").addClass("hidden");
-			$("#actionModal .modalBodyText").html("<div id='rmmGuessArray' class='rmmBox'></div>");
-			$("#actionModal .modalButtonRow").html("<div id='rmmAnswerBox' class='rmmBox'></div>");
-			$(".modalBodyTimer").removeClass("hidden");
+			let petStage = null;
 
-			$("#actionModal .modalButtonRow").removeClass("dimmed");
-			*/
-			resolvePuzzle(puzzle["id"]);
+			if(payload.getItem("digi_pet"))
+			{
+				if(!payload.getActiveEffect("pet_play")) // Pet: Stage 1 > Unplayed
+				{
+					petStage = 1;
+				}
+				else if(!payload.getActiveEffect("pet_use")) // Pet: Stage 2 > Played This Sim
+				{
+					petStage = 2;
+				}
+				else // Pet: Stage 3 > Used This Scene
+				{
+					petStage = 3;
+				}
+			}
+
+			let executeMap = {
+				petStage: petStage,
+				maxTime: payload.getActionTime(),
+				headerText: "Hacking Action RP"
+			};
+
+			actionModal.showExecutePage(actionMap, executeMap);
 
 			break;
 		}
@@ -2403,7 +2431,7 @@ function resolvePuzzle(puzzID)
 			actionType: "puzzle",
 			newState: 1,
 			actionCost: puzzle["cost"],
-			global: puzzle["global"]
+			global: puzzle["global"] ?? false
 		}
 	});
 
@@ -2441,13 +2469,14 @@ function resolvePuzzle(puzzID)
 
 function dimPuzzle(puzzle, uses = 1)
 {
-	if(puzzle["repeat"] === null)
+	if(puzzle["repeat"] === 0)
 	{
 		//No Repeat
 
-		$(".puzzleEntry[data-id='" + puzzle["id"] + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox").addClass("dimmed");
+		$(".puzzleEntry[data-id='" + puzzle["id"] + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox, .puzzleSolveButton").addClass("dimmed");
 		$(".puzzleSolveButton[data-id='" + puzzle["id"]+ "']").html("Solved!");
 		$(".puzzleSolveButton[data-id='" + puzzle["id"] + "']").attr("disabled", true);
+		$(".puzzleSolveButton[data-id='" + puzzle["id"] + "']").attr("data-enabled", false);
 	}
 	else if(puzzle["repeat"] > 0)
 	{
@@ -2459,9 +2488,10 @@ function dimPuzzle(puzzle, uses = 1)
 
 			if($(".puzzleRepeatBox img[src='/resources/images/actions/itemopen.png']").length === 0)
 			{
-				$(".puzzleEntry[data-id='" + puzzle["id"] + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox, .puzzleRepeatBox").addClass("dimmed");
+				$(".puzzleEntry[data-id='" + puzzle["id"] + "']").find(".puzzleBoxPrefix, .puzzleTitleRow, .puzzleReqBox, .puzzleRepeatBox, .puzzleSolveButton").addClass("dimmed");
 				$(".puzzleSolveButton[data-id='" + puzzle["id"]+ "']").html("Solved!");
 				$(".puzzleSolveButton[data-id='" + puzzle["id"] + "']").attr("disabled", true);
+				$(".puzzleSolveButton[data-id='" + puzzle["id"] + "']").attr("data-enabled", false);
 			}
 		}
 	}
