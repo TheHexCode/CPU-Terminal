@@ -104,23 +104,30 @@ function processLogin(loginData)
 	{
 		$("#charSelectModal .modalBodyText").html("");
 
-		loginData["charList"].forEach(function(character, index)
+		if(loginData["charList"].length > 1)
 		{
-			let buttonID = "char" + index;
-			$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
-
-			$("#" + buttonID).bind("pointerup", function()
+			loginData["charList"].forEach(function(character, index)
 			{
-				selectCharacter(character);
-			});
-		});
-		
-		$("#charSelectModal").width($("#main").width());
+				let buttonID = "char" + index;
+				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
 
-		$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
-		
-		$("#load").addClass("hidden");
-		$("#modalBG").css("display","flex");
+				$("#" + buttonID).bind("pointerup", function()
+				{
+					selectCharacter(character);
+				});
+			});
+			
+			$("#charSelectModal").width($("#main").width());
+
+			$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
+			
+			$("#load").addClass("hidden");
+			$("#modalBG").css("display","flex");
+		}
+		else
+		{
+			selectCharacter(loginData["charList"][0]);
+		}
 	}
 }
 

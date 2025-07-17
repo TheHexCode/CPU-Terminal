@@ -504,7 +504,8 @@ function injectUserPayload(userPayload)
 								{
 									case("deck_bud"):
 									case("deck_crd_1"):
-									case("deck_mm"):
+									case("deck_mm_0"):
+									case("deck_mm_1"):
 									case("phack_0"):
 									case("phack_1"):
 									{
