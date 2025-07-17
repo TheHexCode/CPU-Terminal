@@ -255,7 +255,7 @@ else
                                 SELECT tags FROM {$dbName}.sim_access_logs
                                     WHERE user_id=:userID
                                         AND terminal_id=:termID
-                                   UNION 
+                                   UNION ALL
                                 SELECT SUM(sumCost * -1) FROM (
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Entries
@@ -263,20 +263,20 @@ else
                                     WHERE UA_Entries.target_type='entry'
                                         AND sim_entries.terminal_id=:termID
                                         AND UA_Entries.user_id=:userID
-                                   UNION
+                                   UNION ALL
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Logs
                                     INNER JOIN {$dbName}.sim_access_logs ON UA_Logs.target_id=sim_access_logs.id
                                     WHERE UA_Logs.target_type='log'
                                         AND sim_access_logs.terminal_id=:termID
                                         AND UA_Logs.user_id=:userID
-                                   UNION
+                                   UNION ALL
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Term
                                     WHERE UA_Term.target_type='terminal'
                                         AND UA_Term.target_id=:termID
                                         AND UA_Term.user_id=:userID
-                                   UNION
+                                   UNION ALL
                                     SELECT SUM(cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Items
                                     /* THIS SECTION ONLY SELECTS ITEMS THE PLAYER CURRENTLY HAS EQUIPPED. */
@@ -291,14 +291,14 @@ else
                                     WHERE UA_Items.target_type='item'
                                         AND UA_Items.newState=:termID
                                         AND UA_Items.user_id=:userID
-                                   UNION
+                                   UNION ALL
                                     SELECT SUM(UA_Puzz_Cost.cost) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Puzz_Cost
                                     INNER JOIN sim_puzzles ON UA_Puzz_Cost.target_id=sim_puzzles.id
                                     WHERE UA_Puzz_Cost.target_type='puzzle'
                                         AND sim_puzzles.terminal_id=:termID
                                         AND UA_Puzz_Cost.user_id=:userID
-                                   UNION
+                                   UNION ALL
                                     SELECT (SUM(reward) * -1) AS sumCost
                                     FROM {$dbName}.sim_user_actions AS UA_Puzz_Reward
                                     INNER JOIN sim_puzzles ON UA_Puzz_Reward.target_id=sim_puzzles.id

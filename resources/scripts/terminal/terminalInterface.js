@@ -27,6 +27,15 @@ function tens(numStr)
 	return tensFormat.format(Number(numStr));
 }
 
+function signed(numStr)
+{
+	var signFormat = new Intl.NumberFormat('en-US', { 
+		signDisplay: "always"
+	});
+
+	return signFormat.format(Number(numStr));
+}
+
 function pluralize(num)
 {
 	if(Math.abs(Number(num)) === 1)
@@ -2263,6 +2272,38 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 			payload.setActiveEffect("deck_jst",true);
 		}
 	}
+}
+
+function changeExternalTags(change)
+{
+	let newAmount = Math.max(-9, Math.min(9, Number($("#externalTags").html()) + change));
+
+	$("#externalTags").html(signed(newAmount));
+}
+
+function submitExternalTags()
+{
+	let externalTags = Number($("#externalTags").html());
+
+	$.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "/resources/scripts/terminal/db/userActions.php",
+		data:
+		{
+			userID: payload.getUserID(),
+			targetID: session.getTerminalID(),
+			action: "external",
+			actionType: "external",
+			newState: null,
+			actionCost: externalTags * -1,
+			global: false
+		}
+	});
+
+	session.setCurrentTags(session.getCurrentTags() + externalTags);
+	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
+	disableExpensiveButtons();
 }
 
 function setupAlertModal(bodyText)

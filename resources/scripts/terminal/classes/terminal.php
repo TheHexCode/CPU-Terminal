@@ -103,14 +103,9 @@ class Terminal
                 }
             }
 
-            $puzzTabString = "";
-
-            if(count($this->puzzles) > 0)
-            {
-                $puzzTabString =    '<button id="puzzlesSubTab" class="subTab inactive" onclick="openSubTab(this,\'puzzlesContent\')">' . 
-                                        '<img src="./resources/images/subtabs/puzzles.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
-                                    '</button>';
-            }
+            $puzzTabString =    '<button id="puzzlesSubTab" class="subTab inactive" onclick="openSubTab(this,\'puzzlesContent\')">' . 
+                                    '<img src="./resources/images/subtabs/puzzles.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
+                                '</button>';
 
             return (implode($subTabs["inactive"]) . $puzzTabString);
         }
@@ -436,7 +431,25 @@ class Terminal
         {
             $returnString = "<div class='subContBody'>";
 
-            //!!Add External Tag Add Here
+            //---------------------------
+            //      External Tags:
+            //    - 0 +       Submit
+            //---------------------------
+
+            $returnString .= "<div class='externalTagBox'>" .
+                                "<div class='externalTagPrefix'>External Tags:</div>" .
+                                "<div class='externalTagButtonRow'>" .
+                                    "<div class='tagInterface'>" .
+                                        "<button id='externalMinus' onpointerup='changeExternalTags(-1)'>-</button>" .
+                                        "<div class='lcdBox blue'>" .
+                                            "<span class='dseg BG'>~~</span>" .
+                                            "<span id='externalTags' class='dseg FG'>+0</span>" .
+                                        "</div>" .
+                                        "<button id='externalPlus' onpointerup='changeExternalTags(1)'>+</button>" .
+                                    "</div>" .
+                                    "<button id='externalSubmit' onpointerup='submitExternalTags()'>Submit</button>" .
+                                "</div>" .
+                            "</div>";
 
             foreach($this->puzzles as $index=>$puzzle)
             {

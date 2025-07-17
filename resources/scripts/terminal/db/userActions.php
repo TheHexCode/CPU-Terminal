@@ -31,6 +31,7 @@ switch($actionType)
     case("masher"): //$newState = masher's ID
     case("siph"):
     case("refresh"):
+    case("external"):
         $targetType = "terminal";
         break;
     case("item"):

@@ -185,11 +185,13 @@ class Listener
                     break;
                 case("brick"):
                     //switch to Bricked terminal, after maybe a second of freeze-up?
-                    if(targetID === session.getTerminalID())
-                    {
-                        session.brickTerminal(newData);
-                    }
-
+                    const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+                    const freezeSleep = async () => {
+                        await sleep(1000);
+                        location.reload();
+                    };
+                    
+                    freezeSleep();
                     break;
                 case("root"):
                     //switch to Rooting terminal

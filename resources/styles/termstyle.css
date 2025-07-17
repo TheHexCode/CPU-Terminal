@@ -431,7 +431,6 @@ ul
 	align-items: center;
 	justify-content: center;
 	column-gap: 0.6rem;
-	width: 100%;
 }
 
 .tagDetails
@@ -1182,6 +1181,40 @@ ul
 {
 	white-space: nowrap;
 	margin: 0.15rem 0 0.15rem 0;
+}
+
+.externalTagBox
+{
+	--fg-color: var(--blue);
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.5rem;
+	border-image-source: url("/resources/images/borders/corner_border_ice.png");
+	border-image-width: 16px;
+	border-image-slice: 16;
+	padding: 16px;
+	margin-bottom: 1rem;
+	color: var(--fg-color);
+}
+
+.externalTagPrefix
+{
+	align-self: center;
+	text-decoration: underline;
+}
+
+.externalTagButtonRow
+{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	row-gap: 0.5rem;
+	justify-content: space-around;
+}
+
+#externalSubmit
+{
+	align-self: center;
 }
 
 .puzzleEntry
