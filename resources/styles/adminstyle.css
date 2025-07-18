@@ -147,7 +147,7 @@ h1
     display: grid;
     grid-template-rows: min-content 1rem min-content min-content;
     grid-auto-rows: min-content;
-    grid-template-columns: [access] min-content [modify] min-content [title] 1fr [contents] 1fr [buttons] min-content [end];
+    grid-template-columns: [access] min-content [modify] min-content [title] 1fr [reqButton] min-content [contents] 1fr [buttons] min-content [end];
     column-gap: 0.25rem;
 }
 
@@ -221,31 +221,52 @@ h1
     grid-column: modify / title;
 }
 
+.puzzleRepeat
+{
+    grid-column: modify / title;
+    display: flex;
+    justify-content: space-around;
+}
+
 .entryTitle
 {
     grid-column: title / contents;
 }
 
-.entryContents
+.puzzleTitle
+{
+    grid-column: title / reqButton;
+}
+
+.entryContents,
+.entryReward
 {
     grid-column: contents / buttons;
 }
 
-.delEntryButton
+.delEntryButton,
+.delPuzzleButton
 {
     background-color: red;
     color: white;
 }
 
 .delEffectButton,
-.delPuzzleButton,
 .addEffectButton,
-.addPuzzleButton
+.addPuzzleReward,
+.delPuzzleReward
 {
     grid-column: buttons / end;
 }
 
-.addEntryButton
+.delPuzzleReq,
+.addPuzzleReq
+{
+    grid-column: reqButton / contents;
+}
+
+.addEntryButton,
+.addPuzzleButton
 {
     margin: 1rem;
 }

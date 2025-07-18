@@ -6,8 +6,20 @@ class AdminTerminal
         "cameras": ["entry"],
         "locks": ["entry"],
         "defenses": ["entry"],
-        "utilities": ["power", "alarm"]
+        "utilities": ["power", "alarm"],
+        "puzzles": ["free_rp", "rev_mm"]
     };
+
+    static #puzzleTypeMap = [
+        {
+            "shorthand": "free_rp",
+            "fullname": "Hacking Action RP"
+        },
+        {
+            "shorthand": "rev_mm",
+            "fullname": "Reverse Mastermind"
+        }
+    ];
 
     static #iconTypeStateMap = {
         "ice": [
@@ -134,13 +146,15 @@ class AdminTerminal
     #termID;
     #entryList = [];
     #puzzles = [];
+    #knowledges = [];
     #changesPending = false;
 
-    constructor(termID, entries, puzzles)
+    constructor(termID, entries, puzzles, knowledges)
     {
         this.#termID = termID;
         this.#entryList = this.#listifyEntries(entries);
         this.#puzzles = puzzles;
+        this.#knowledges = knowledges;
 
         //console.log(this.#entryList);
 
@@ -338,6 +352,18 @@ class AdminTerminal
         return typeListString;
     }
 
+    #getPuzzleTypes(activeType)
+    {
+        let typeListString = "";
+
+        AdminTerminal.#puzzleTypeMap.forEach(function(puzzleType)
+        {
+            typeListString += "<option value='" + puzzleType['shorthand'] + "'" + (activeType === puzzleType["shorthand"] ? " selected" : "") + ">" + puzzleType["fullname"] + "</option>";
+        });
+
+        return typeListString;
+    }
+
     #getTypeStates(icon, type, selectedState)
     {
         let stateList;
@@ -405,51 +431,183 @@ class AdminTerminal
         {
             console.log(puzzle);
             
-            puzzleString =  '<div class="puzzle" data-id="' + puzzle['id'] + '">' +
+            puzzleString += '<div class="puzzle" data-id="' + index + '">' +
                                 '<div class="entryControls">' +
                                     /*'<div class="upControls">' +
                                         '<button>&barwedge;</button>' +
                                         '<button>&wedge;</button>' +
                                     '</div>' + */
-                                    '<button class="delPuzzleButton" data-id="' + puzzle['id'] + '" onclick="deletePuzzle(event)">&#x2716;</button>' +
+                                    '<button class="delPuzzleButton" data-id="' + index + '" onclick="deletePuzzle(event)">&#x2716;</button>' +
                                     /*'<div class="downControls">' +
                                         '<button>&vee;</button>' +
                                         '<button>&veebar;</button>' +
                                     '</div>' + */
                                 '</div>' +
                                 '<div class="entryID">' +
-                                    puzzle['id'] +
+                                    index +
                                 '</div>' +
                                 '<div class="entryGrid">' +
                                     '<div class="entryTypeRow">' +
                                         '<span class="entryTypeLabel">PUZZLE TYPE:</span>' +
-                                        '<select class="entryType" onchange="changeType(this, \'' + puzzle['puzzle_type'] + '\')">' +
-                                            this.#getEntryTypes("puzzle", puzzle['puzzle_type']) +
+                                        '<select class="entryType" onchange="changePuzzleType(this)">' +
+                                            this.#getPuzzleTypes(puzzle['puzzle_type']) +
                                         '</select>' +
-                                        '<span class="entryStateLabel">PUZZLE STATE:</span>' +
-                                        '<select class="entryState" onchange="changeState(this)">' +
-                                            this.#getTypeStates("puzzle", puzzle['puzzle_type'], entry["state"]) +
+                                        '<span class="entryStateLabel">REWARD TYPE</span>' +
+                                        '<select class="entryState" onchange="changeRewardType(this)">' +
+                                            '<option' + (puzzle['reward_type'] === 'tags' ? ' selected' : '') + '>tags</option>' +
+                                            '<option' + (puzzle['reward_type'] === 'item' ? ' selected' : '') + '>item</option>' +
                                         '</select>' +
                                     '</div>' +
                                     '<div class="entryLabelRow">' +
                                         '<span class="entryLabel entryAccess">PUZZLE COST</span>' +
                                         '<span class="entryLabel entryModify">REPEATABLE?</span>' +
-                                        '<span class="entryLabel entryTitle">TIMES REPEATABLE</span>' +
-                                        '<span class="entryLabel entryContents">' + contentsLabel + '</span>' +
+                                        '<span class="entryLabel entryTitle">REQUIREMENTS</span>' +
+                                        '<span class="entryLabel entryContents">REWARD</span>' +
                                     '</div>' +
-                                    '<div class="entryInputRow">' +
-                                        '<input class="entryAccess" type="number" value=' + entry["parsedAccess"] + ' onchange="changeEntry(this)" />' +
-                                        '<input class="entryModify" type="number" value=' + entry["parsedModify"] + ' onchange="changeEntry(this)" />' +
-                                        '<input class="entryTitle" type="text" value=' + entry["parsedTitle"] + ' onchange="changeEntry(this)" />' +
-                                        '<input class="entryContents" type="text" value=' + entry["parsedContents"] +
+                                    this.#getPuzzleInputRows(puzzle, index) +
+                                '</div>' +
+                            '</div>';
+        }, this);
+
+        return puzzleString;
+    }
+
+    #getPuzzleInputRows(puzzle, puzzIndex)
+    {
+        let puzzleString = '<div class="entryInputRow" style="grid-row: 4">' +
+                                '<input class="entryAccess" type="number" data-field="cost" value=' + puzzle['cost'] + ' onchange="changePuzzleNumber(this)" />' +
+                                '<div class="entryModify puzzleRepeat">' +
+                                    '<div>' +
+                                        '<input type="radio" id="inf' + puzzIndex + '" name="repeat' + puzzIndex + '" value="infinite" ' +
+                                            (puzzle['repeat'] === null ? 'checked ' : '') + ' onchange="changeRepeatType(this)" />' +
+                                        '<label for="inf' + puzzIndex + '">&infin;</label>' +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<input type="radio" id="lim' + puzzIndex + '" name="repeat' + puzzIndex + '" value="limited" ' +
+                                            (puzzle['repeat'] >= 1 ? 'checked ' : '') +  'onchange="changeRepeatType(this)" />' +
+                                        '<label for="lim' + puzzIndex + '">Limited</label>' +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<input type="radio" id="no' + puzzIndex + '" name="repeat' + puzzIndex + '" value="no" ' +
+                                            (puzzle['repeat'] === 0 ? 'checked ' : '') + ' onchange="changeRepeatType(this)" />' +
+                                        '<label for="no' + puzzIndex + '">No</label>' +
                                     '</div>' +
                                 '</div>' +
-                            '</div>' +
-                            (entry["type"] === "ice" ?
-                                this.drawEntries(entry["subIce"]) + 
-                                '<button class="addEntryButton" onclick="addIceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
-                            '</div>' : '');
-        }, this);
+                                this.#getPuzzleReq(puzzle['know_reqs'], 0) +
+                                this.#getPuzzleReward(puzzle['reward'], 0) +
+                            '</div>';
+
+        puzzleString +=     '<div class="entryInputRow" style="grid-row: 5">' +
+                                '<span class="entryAccess" style="text-align: right"># OF REPEATS &gt;&gt;</span>' +
+                                '<input class="entryModify" type="number" data-field="repeat" value=' + (puzzle['repeat'] > 0 ? puzzle['repeat'] : null) + ' onchange="changePuzzleNumber(this)" ' +
+                                    (puzzle['repeat'] > 0 ? '' : 'disabled ') + '/>' +
+                                this.#getPuzzleReq(puzzle['know_reqs'], 1) +
+                                this.#getPuzzleReward(puzzle['reward'], 1) +
+                            '</div>';
+
+        for(let i = 2; i <= Math.max((puzzle['know_reqs'] === null ? 0 : puzzle['know_reqs'].length), (Array.isArray(JSON.parse(puzzle['reward'])) ? JSON.parse(puzzle['reward']).length : 0)); i++)
+        {
+            puzzleString += '<div class="entryInputRow" style="grid-row: ' + (i+4) +'">' +
+                                this.#getPuzzleReq(puzzle['know_reqs'], i) +
+                                this.#getPuzzleReward(puzzle['reward'], i) +
+                            '</div>';
+        }
+
+        return puzzleString;
+    }
+
+    #getPuzzleReq(requirements, index)
+    {
+        let know_reqs = JSON.parse(requirements);
+
+        let reqString = '';
+
+        if(know_reqs === null)
+        {
+            if(index === 0)
+            {
+                reqString = '<select class="puzzleTitle" onchange="changePuzzleReq(this)" data-index="' + index + '">';
+                
+                if(index === 0)
+                {
+                    reqString += '<option>None</option>';
+                }
+
+                this.#knowledges.forEach(function(knowledge)
+                {
+                    reqString += "<option" + (((know_reqs !== null) && (know_reqs[index] === knowledge["name"])) ? " selected" : "") + ">" + knowledge["name"] + "</option>";
+                }, this);
+
+                reqString += '</select>';
+            }
+            else if(index === 1)
+            {
+                reqString += '<button class="addPuzzleReq" onclick="addPuzzleReq(event)">&plus;</button>';
+            }
+        }
+        else
+        {
+            if(index < know_reqs.length)
+            {
+                reqString = '<select class="puzzleTitle" onchange="changePuzzleReq(this)" data-index="' + index + '">';
+
+                if(index === 0)
+                {
+                    reqString += '<option>None</option>';
+                }
+
+                this.#knowledges.forEach(function(knowledge)
+                {
+                    reqString += "<option" + (((know_reqs !== null) && (know_reqs[index] === knowledge["name"])) ? " selected" : "") + ">" + knowledge["name"] + "</option>";
+                }, this);
+
+                reqString += '</select>';
+
+                if(index !== 0)
+                {
+                    reqString += '<button class="delPuzzleReq" onclick="delPuzzleReq(event, ' + index + ')">&minus;</button>';
+                }
+            }
+            else if(index === know_reqs.length)
+            {
+                reqString += '<button class="addPuzzleReq" onclick="addPuzzleReq(event)">&plus;</button>';
+            }
+        }
+
+        return reqString;
+    }
+
+    #getPuzzleReward(rewards, index)
+    {
+        let rewardArray = JSON.parse(rewards);
+
+        let rewardString = "";
+
+        if(Array.isArray(rewardArray))
+        {
+            if(index < rewardArray.length)
+            {
+                rewardString += '<input class="entryReward" type="text" value="" onchange="changePuzzleReward(this)" />';
+
+                if(index !== 0)
+                {
+                    rewardString += '<button class="delPuzzleReward" onclick="delPuzzleReward(event, ' + index + ')">&minus;</button>';
+                }
+            }
+            else if(index === rewardArray.length)
+            {
+                rewardString += '<button class="addPuzzleReward" onclick="addPuzzleReward(event)">&plus;</button>';
+            }
+        }
+        else
+        {
+            if(index === 0)
+            {
+                rewardString += '<input class="entryReward" type="number" value=' + Number(rewardArray) + ' onchange="changePuzzleReward(this)" />'
+            }
+        }
+
+        return rewardString;
     }
 
     setMasterChanges()
@@ -482,6 +640,25 @@ class AdminTerminal
         this.#changesPending = true;
 
         $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]));
+    }
+
+    addPuzzle()
+    {
+        let newPuzzle = {
+            puzzle_type: "free_rp",
+            cost: 0,
+            repeat: null,
+            know_reqs: null,
+            reward_type: "tags",
+            reward: "1",
+            global: 0
+        };
+
+        this.#puzzles.push(newPuzzle);
+
+        this.#changesPending = true;
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
     }
 
     addIceEntry(icon, iceID)
@@ -546,6 +723,15 @@ class AdminTerminal
         $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]));
     }
 
+    deletePuzzle(puzzleIndex)
+    {
+        this.#puzzles.splice(puzzleIndex,1);
+
+        this.#changesPending = true;
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
     changeEntry(newValue, icon, id, type, effectIndex)
     {
         let targetEntry = this.#entryList[icon];
@@ -574,6 +760,13 @@ class AdminTerminal
 
             targetEntry["contents"] = JSON.stringify(parsedContents);
         }
+
+        this.#changesPending = true;
+    }
+
+    changePuzzleNumber(puzzleIndex, numberType, newNumber)
+    {
+        this.#puzzles[Number(puzzleIndex)][numberType] = newNumber;
 
         this.#changesPending = true;
     }
@@ -636,6 +829,13 @@ class AdminTerminal
         $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]));
     }
 
+    changePuzzleType(puzzleIndex, newType)
+    {
+        this.#puzzles[Number(puzzleIndex)]["puzzle_type"] = newType;
+
+        this.#changesPending = true;
+    }
+
     changeState(icon, entryID, newSelected)
     {
         let targetEntry = this.#entryList[icon];
@@ -653,6 +853,59 @@ class AdminTerminal
         });
 
         targetEntry["state"] = newSelected;
+
+        this.#changesPending = true;
+    }
+
+    changeRepeat(puzzleIndex, newValue)
+    {
+        let targetPuzz = this.#puzzles[puzzleIndex];
+
+        targetPuzz["repeat"] = newValue;
+
+        this.#changesPending = true;
+        
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
+    changePuzzleReqs(puzzleIndex, newReqs)
+    {
+        let targetPuzz = this.#puzzles[puzzleIndex];
+
+        targetPuzz["know_reqs"] = newReqs;
+
+        this.#changesPending = true;
+    }
+
+    changeRewardType(puzzleIndex, newType)
+    {
+        let targetPuzz = this.#puzzles[puzzleIndex];
+
+        targetPuzz["reward_type"] = newType;
+
+        switch(newType)
+        {
+            case("tags"):
+            {
+                targetPuzz["reward"] = 1;
+                break;
+            }
+            case("item"):
+            {
+                targetPuzz["reward"] = '[""]';
+            }
+        }
+
+        this.#changesPending = true;
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
+    changePuzzleReward(puzzleIndex, newReward)
+    {
+        let targetPuzz = this.#puzzles[puzzleIndex];
+
+        targetPuzz["reward"] = newReward;
 
         this.#changesPending = true;
     }
@@ -711,6 +964,58 @@ class AdminTerminal
         $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]));
     }
 
+    addPuzzleReq(puzzleIndex)
+    {
+        let target = this.#puzzles[Number(puzzleIndex)];
+
+        let targetReqs = JSON.parse(target["know_reqs"]) ?? [];
+
+        targetReqs.push(this.#knowledges[0]["name"]);
+
+        target["know_reqs"] = JSON.stringify(targetReqs);
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
+    delPuzzleReq(puzzleIndex, reqIndex)
+    {
+        let target = this.#puzzles[Number(puzzleIndex)];
+
+        let targetReqs = JSON.parse(target["know_reqs"]);
+
+        targetReqs.splice(reqIndex, 1);
+
+        target["know_reqs"] = JSON.stringify(targetReqs);
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
+    addPuzzleReward(puzzleIndex, rewardIndex)
+    {
+        let target = this.#puzzles[Number(puzzleIndex)];
+
+        let targetRewards = JSON.parse(target["reward"]);
+
+        targetRewards.push("");
+
+        target["reward"] = JSON.stringify(targetRewards);
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
+    delPuzzleReward(puzzleIndex, rewardIndex)
+    {
+        let target = this.#puzzles[Number(puzzleIndex)];
+
+        let targetRewards = JSON.parse(target["reward"]);
+
+        targetRewards.splice(rewardIndex, 1);
+
+        target["reward"] = JSON.stringify(targetRewards);
+
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
     saveTerminal()
     {
         let termInfo = {
@@ -719,7 +1024,8 @@ class AdminTerminal
             "termSlug": $("#termSlug").val(),
             "displayName": $("#termDisplayName").val(),
             "termAccess": Number($("#termAccess").val()),
-            "entries": JSON.stringify(this.#entryList)
+            "entries": JSON.stringify(this.#entryList),
+            "puzzles": JSON.stringify(this.#puzzles)
         };
         
         $.ajax({
@@ -773,10 +1079,6 @@ $(window).bind('beforeunload', function(event)
     {
         return 'Leave page?\nChanges that you have made will not be saved.';
     }
-    else
-    {
-        return false;
-    }
 });
 
 function addEntry(event)
@@ -786,6 +1088,13 @@ function addEntry(event)
     let icon = $(event.target).prev()[0].dataset["icon"];
 
     admTerm.addEntry(icon);
+}
+
+function addPuzzle(event)
+{
+    event.preventDefault();
+
+    admTerm.addPuzzle();
 }
 
 function addIceEntry(event)
@@ -820,6 +1129,25 @@ function deleteEntry(event)
     }
 }
 
+function deletePuzzle(event)
+{
+    event.preventDefault();
+
+    let puzzle = $(event.target).parents(".puzzle")[0];
+    let puzzleIndex = $(puzzle).attr("data-id");
+
+    let confirmText = "Delete puzzle " + puzzleIndex + "? You can recover this puzzle if you refresh the page without saving changes.";
+
+    if (confirm(confirmText) == true)
+    {
+        admTerm.deletePuzzle(puzzleIndex);
+    }
+    else
+    {
+        // CANCEL
+    }
+}
+
 function changeEntry(field, effectIndex = null)
 {
     let icon = $(field).parents(".entryList")[0].dataset["icon"];
@@ -827,6 +1155,18 @@ function changeEntry(field, effectIndex = null)
     let fieldType = field.classList[0].split("entry")[1].toLowerCase();
 
     admTerm.changeEntry(field.value, icon, entryID, fieldType, effectIndex);
+}
+
+function changePuzzleNumber(target)
+{
+    let puzzleIndex = $(target).parents(".puzzle")[0].dataset["id"];
+
+    let minNum = (target.dataset["field"] === "repeat" ? 1 : 0);
+    let newNum = Math.max(target.value, minNum);
+
+    target.value = newNum;
+
+    admTerm.changePuzzleNumber(puzzleIndex, target.dataset["field"], newNum);
 }
 
 function addEffect(event)
@@ -920,6 +1260,14 @@ function changeType(target, oldSelected)
     }
 }
 
+function changePuzzleType(target)
+{
+    let puzzleIndex = $(target).parents(".puzzle")[0].dataset["id"];
+    let newType = target.selectedOptions[0].value;
+
+    admTerm.changePuzzleType(puzzleIndex, newType);
+}
+
 function changeState(target)
 {
     let icon = $(target).parents(".entryList")[0].dataset["icon"];
@@ -927,6 +1275,119 @@ function changeState(target)
     let newSelected = $(target)[0].selectedOptions[0].value;
 
     admTerm.changeState(icon, entryID, newSelected);
+}
+
+function changeRepeatType(target)
+{
+    let puzzleIndex = $(target).parents(".puzzle")[0].dataset["id"];
+    let newValue = null;
+
+    switch(target.value)
+    {
+        case("infinite"):
+        {
+            newValue = null;
+            break;
+        }
+        case("limited"):
+        {
+            newValue = 1;
+            break;
+        }
+        case("no"):
+        {
+            newValue = 0;
+            break;
+        }
+    }
+
+    admTerm.changeRepeat(puzzleIndex, newValue);
+}
+
+function changePuzzleReq(target)
+{
+    let puzzleIndex = $(target).parents(".puzzle")[0].dataset["id"];
+    let reqArray = [];
+
+    $(".puzzle[data-id='" + puzzleIndex + "'] .puzzleTitle").each(function(index, req)
+    {
+        if(req.selectedOptions[0].value !== "None")
+        {
+            reqArray.push(req.selectedOptions[0].value);
+        }
+    });
+
+    let reqString = (reqArray.length === 0 ? null : '["' + reqArray.join('", "') + '"]');
+
+    admTerm.changePuzzleReqs(puzzleIndex, reqString);
+}
+
+function changeRewardType(target)
+{
+    let puzzleIndex = $(target).parents(".puzzle")[0].dataset["id"];
+    let newType = target.selectedOptions[0].value;
+
+    admTerm.changeRewardType(puzzleIndex, newType);
+}
+
+function changePuzzleReward(target)
+{
+    let puzzleIndex = $(target).parents(".puzzle")[0].dataset["id"];
+
+    switch($(target).attr("type"))
+    {
+        case("text"):
+        {
+            let rewardArray = [];
+
+            $(".puzzle[data-id='" + puzzleIndex + "'] .entryReward").each(function(index, reward)
+            {
+                rewardArray.push(reward.value);
+            });
+
+            let rewardString = '["' + rewardArray.join('", "') + '"]'
+
+            admTerm.changePuzzleReward(puzzleIndex, rewardString);
+            break;
+        }
+        case("number"):
+        {
+            let newNum = Math.max(target.value, 1);
+
+            target.value = newNum;
+
+            admTerm.changePuzzleReward(puzzleIndex, newNum);
+            break;
+        }
+    }
+}
+
+function addPuzzleReq(event)
+{
+    event.preventDefault();
+
+    admTerm.addPuzzleReq($(event.target).parents(".puzzle")[0].dataset["id"]);
+}
+
+function delPuzzleReq(event, index)
+{
+    event.preventDefault();
+
+    admTerm.delPuzzleReq($(event.target).parents(".puzzle")[0].dataset["id"], index);
+}
+
+function addPuzzleReward(event)
+{
+    event.preventDefault();
+
+    admTerm.addPuzzleReward($(event.target).parents(".puzzle")[0].dataset["id"]);
+}
+
+function delPuzzleReward(event, index)
+{
+    event.preventDefault();
+
+    admTerm.delPuzzleReward($(event.target).parents(".puzzle")[0].dataset["id"], index);
 }
 
 function saveTerminal(event)
