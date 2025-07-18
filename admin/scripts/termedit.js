@@ -150,6 +150,7 @@ class AdminTerminal
         $(".entryList[data-icon='locks']").html(this.drawEntries(this.#entryList["locks"]));
         $(".entryList[data-icon='defenses']").html(this.drawEntries(this.#entryList["defenses"]));
         $(".entryList[data-icon='utilities']").html(this.drawEntries(this.#entryList["utilities"]));
+        $(".entryList[data-icon='puzzles']").html(this.drawPuzzles(this.puzzles));
     }
 
     areChangesPending()
@@ -177,8 +178,7 @@ class AdminTerminal
             "cameras": [],
             "locks": [],
             "defenses": [],
-            "utilities": [],
-            "puzzles": []
+            "utilities": []
         };
 
         entries.forEach(function(entry)
@@ -394,6 +394,61 @@ class AdminTerminal
             {
                 this.#resetIconPaths(entry["subIce"], entry["path"] + "-");
             }
+        }, this);
+    }
+
+    drawPuzzles()
+    {
+        let puzzleString = "";
+
+        this.#puzzles.forEach(function(puzzle, index)
+        {
+            console.log(puzzle);
+            
+            puzzleString =  '<div class="puzzle" data-id="' + puzzle['id'] + '">' +
+                                '<div class="entryControls">' +
+                                    /*'<div class="upControls">' +
+                                        '<button>&barwedge;</button>' +
+                                        '<button>&wedge;</button>' +
+                                    '</div>' + */
+                                    '<button class="delPuzzleButton" data-id="' + puzzle['id'] + '" onclick="deletePuzzle(event)">&#x2716;</button>' +
+                                    /*'<div class="downControls">' +
+                                        '<button>&vee;</button>' +
+                                        '<button>&veebar;</button>' +
+                                    '</div>' + */
+                                '</div>' +
+                                '<div class="entryID">' +
+                                    puzzle['id'] +
+                                '</div>' +
+                                '<div class="entryGrid">' +
+                                    '<div class="entryTypeRow">' +
+                                        '<span class="entryTypeLabel">PUZZLE TYPE:</span>' +
+                                        '<select class="entryType" onchange="changeType(this, \'' + puzzle['puzzle_type'] + '\')">' +
+                                            this.#getEntryTypes("puzzle", puzzle['puzzle_type']) +
+                                        '</select>' +
+                                        '<span class="entryStateLabel">PUZZLE STATE:</span>' +
+                                        '<select class="entryState" onchange="changeState(this)">' +
+                                            this.#getTypeStates("puzzle", puzzle['puzzle_type'], entry["state"]) +
+                                        '</select>' +
+                                    '</div>' +
+                                    '<div class="entryLabelRow">' +
+                                        '<span class="entryLabel entryAccess">PUZZLE COST</span>' +
+                                        '<span class="entryLabel entryModify">REPEATABLE?</span>' +
+                                        '<span class="entryLabel entryTitle">TIMES REPEATABLE</span>' +
+                                        '<span class="entryLabel entryContents">' + contentsLabel + '</span>' +
+                                    '</div>' +
+                                    '<div class="entryInputRow">' +
+                                        '<input class="entryAccess" type="number" value=' + entry["parsedAccess"] + ' onchange="changeEntry(this)" />' +
+                                        '<input class="entryModify" type="number" value=' + entry["parsedModify"] + ' onchange="changeEntry(this)" />' +
+                                        '<input class="entryTitle" type="text" value=' + entry["parsedTitle"] + ' onchange="changeEntry(this)" />' +
+                                        '<input class="entryContents" type="text" value=' + entry["parsedContents"] +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            (entry["type"] === "ice" ?
+                                this.drawEntries(entry["subIce"]) + 
+                                '<button class="addEntryButton" onclick="addIceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
+                            '</div>' : '');
         }, this);
     }
 

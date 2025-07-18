@@ -82,6 +82,11 @@
                     <div class="entryList" data-icon="utilities"></div>
                     <button class="addEntryButton" onclick="addEntry(event)">&plus;</button>
                 </div>
+                <div>
+                    <h3>PUZZLES:</h3>
+                    <div class="entryList" data-icon="puzzles"></div>
+                    <button class="addPuzzleButton" onclick="addPuzzle(event)">&plus;</button>
+                </div>
             </div>
         </form>
         <?php echo $terminal->displayTerminal(); ?>
