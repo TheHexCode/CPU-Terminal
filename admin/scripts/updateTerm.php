@@ -8,12 +8,12 @@ $terminal = $_POST["terminal"];
 if($action === "CREATE")
 {
     $createQuery = "INSERT INTO {$dbName}.sim_terminals
-                                (slug, jobCode, displayName, access, state)
-                    VALUES (:slug, :jobCode, :displayName, :accessCost, 'active')";
+                                (slug, jobCode, displayName, access, state, remoteEnabled)
+                    VALUES (:slug, :jobCode, :displayName, :accessCost, 'active', 0)";
     
     $createStatement = $pdo->prepare($createQuery);
     $createStatement->execute([ ':slug' => $terminal["termSlug"],
-                                        ':jobCode' => $terminal["jobCode"],
+                                        ':jobCode' => strtoupper($terminal["jobCode"]),
                                         ':displayName' => $terminal["displayName"],
                                         ':accessCost' => $terminal["termAccess"]]);
 
@@ -32,12 +32,15 @@ if($action === "CREATE")
             $entryArray = array_merge($entryArray,getEntries($termID,$icon));
         }
 
-        $insertQuery = "INSERT INTO {$dbName}.sim_entries
-                                    (terminal_id, icon, path, type, access, modify, title, contents, state)
-                        VALUES ( ?,?,?,?,?,?,?,?,? " . str_repeat("), ( ?,?,?,?,?,?,?,?,? ",(count($entryArray) / 9) - 1) . ")";
+        if(!empty($entryArray))
+        {
+            $insertQuery = "INSERT INTO {$dbName}.sim_entries
+                                        (terminal_id, icon, path, type, access, modify, title, contents, state)
+                            VALUES ( ?,?,?,?,?,?,?,?,? " . str_repeat("), ( ?,?,?,?,?,?,?,?,? ",(count($entryArray) / 9) - 1) . ")";
 
-        $insertStatement = $pdo->prepare($insertQuery);
-        $insertStatement->execute($entryArray);
+            $insertStatement = $pdo->prepare($insertQuery);
+            $insertStatement->execute($entryArray);
+        }
     }
 
     if($terminal["puzzles"] !== null)
@@ -46,15 +49,18 @@ if($action === "CREATE")
 
         foreach(json_decode($terminal["puzzles"],true) as $puzzle)
         {
-            array_push($puzzleArray, $termID, $puzzle["puzzle_type"], intval($puzzle["cost"]), ($puzzle["repeat"] === "" ? null : intval($puzzle["repeat"])), $puzzle["know_reqs"], $puzzle["reward_type"], (is_numeric($puzzle["reward"]) ? intval($puzzle["reward"]) : $puzzle["reward"]), 0);
+            array_push($puzzleArray, $termID, $puzzle["puzzle_type"], intval($puzzle["cost"]), (is_numeric($puzzle["repeat"]) ? intval($puzzle["repeat"]) : null), $puzzle["know_reqs"], $puzzle["reward_type"], (is_numeric($puzzle["reward"]) ? intval($puzzle["reward"]) : $puzzle["reward"]), 0);
         };
 
-        $insertQuery = "INSERT INTO {$dbName}.sim_puzzles
-                                    (terminal_id, puzzle_type, cost, `repeat`, know_reqs, reward_type, reward, global)
-                        VALUES ( ?,?,?,?,?,?,?,?" . str_repeat("), ( ?,?,?,?,?,?,?,?", (count($puzzleArray) / 8) - 1) . ")";
+        if(!empty($puzzleArray))
+        {
+            $insertQuery = "INSERT INTO {$dbName}.sim_puzzles
+                                        (terminal_id, puzzle_type, cost, `repeat`, know_reqs, reward_type, reward, global)
+                            VALUES ( ?,?,?,?,?,?,?,?" . str_repeat("), ( ?,?,?,?,?,?,?,?", (count($puzzleArray) / 8) - 1) . ")";
 
-        $insertStatement = $pdo->prepare($insertQuery);
-        $insertStatement->execute($puzzleArray);
+            $insertStatement = $pdo->prepare($insertQuery);
+            $insertStatement->execute($puzzleArray);
+        }
     }
 
     echo json_encode("Success!");
@@ -88,12 +94,15 @@ elseif($action === "SAVE")
             $entryArray = array_merge($entryArray,getEntries($terminal["termID"],$icon));
         }
 
-        $insertQuery = "INSERT INTO {$dbName}.sim_entries
-                                    (terminal_id, icon, path, type, access, modify, title, contents, state)
-                        VALUES ( ?,?,?,?,?,?,?,?,? " . str_repeat("), ( ?,?,?,?,?,?,?,?,? ",(count($entryArray) / 9) - 1) . ")";
+        if(!empty($entryArray))
+        {
+            $insertQuery = "INSERT INTO {$dbName}.sim_entries
+                                        (terminal_id, icon, path, type, access, modify, title, contents, state)
+                            VALUES ( ?,?,?,?,?,?,?,?,? " . str_repeat("), ( ?,?,?,?,?,?,?,?,? ",(count($entryArray) / 9) - 1) . ")";
 
-        $insertStatement = $pdo->prepare($insertQuery);
-        $insertStatement->execute($entryArray);
+            $insertStatement = $pdo->prepare($insertQuery);
+            $insertStatement->execute($entryArray);
+        }
     }
 
     if($terminal["puzzles"] !== null)
@@ -108,15 +117,18 @@ elseif($action === "SAVE")
 
         foreach(json_decode($terminal["puzzles"],true) as $puzzle)
         {
-            array_push($puzzleArray, $terminal["termID"], $puzzle["puzzle_type"], intval($puzzle["cost"]), ($puzzle["repeat"] === "" ? null : intval($puzzle["repeat"])), $puzzle["know_reqs"], $puzzle["reward_type"], (is_numeric($puzzle["reward"]) ? intval($puzzle["reward"]) : $puzzle["reward"]), 0);
+            array_push($puzzleArray, $terminal["termID"], $puzzle["puzzle_type"], intval($puzzle["cost"]), (is_numeric($puzzle["repeat"]) ? intval($puzzle["repeat"]) : null), $puzzle["know_reqs"], $puzzle["reward_type"], (is_numeric($puzzle["reward"]) ? intval($puzzle["reward"]) : $puzzle["reward"]), 0);
         };
         
-        $insertQuery = "INSERT INTO {$dbName}.sim_puzzles
-                                    (terminal_id, puzzle_type, cost, `repeat`, know_reqs, reward_type, reward, global)
-                        VALUES ( ?,?,?,?,?,?,?,?" . str_repeat("), ( ?,?,?,?,?,?,?,?", (count($puzzleArray) / 8) - 1) . ")";
+        if(!empty($puzzleArray))
+        {
+            $insertQuery = "INSERT INTO {$dbName}.sim_puzzles
+                                        (terminal_id, puzzle_type, cost, `repeat`, know_reqs, reward_type, reward, global)
+                            VALUES ( ?,?,?,?,?,?,?,?" . str_repeat("), ( ?,?,?,?,?,?,?,?", (count($puzzleArray) / 8) - 1) . ")";
 
-        $insertStatement = $pdo->prepare($insertQuery);
-        $insertStatement->execute($puzzleArray);
+            $insertStatement = $pdo->prepare($insertQuery);
+            $insertStatement->execute($puzzleArray);
+        }
     }
 
     echo json_encode("Success!");

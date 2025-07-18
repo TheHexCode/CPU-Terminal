@@ -153,8 +153,8 @@ class AdminTerminal
     {
         this.#termID = termID;
         this.#entryList = this.#listifyEntries(entries);
-        this.#puzzles = puzzles;
-        this.#knowledges = knowledges;
+        this.#puzzles = puzzles ?? [];
+        this.#knowledges = knowledges ?? [];
 
         //console.log(this.#entryList);
 
