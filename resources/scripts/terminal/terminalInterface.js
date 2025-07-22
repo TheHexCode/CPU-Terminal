@@ -1523,6 +1523,7 @@ function takeAction(target)
 
 				let actionMap = {
 					userID: payload.getUserID(),
+					terminalID: session.getTerminalID(),
 					targetID: targetID,
 					action: action,
 					actionType: actionType,
@@ -1577,6 +1578,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: targetID,
 				action: action,
 				actionType: actionType,
@@ -1633,6 +1635,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: targetID,
 				action: action,
 				actionType: actionType,
@@ -1701,6 +1704,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: session.getTerminalID(),
 				action: action,
 				actionType: actionType,
@@ -1744,6 +1748,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: session.getTerminalID(),
 				action: action,
 				actionType: actionType,
@@ -1789,6 +1794,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: session.getTerminalID(),
 				action: action,
 				actionType: actionType,
@@ -1882,6 +1888,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: effect["abbr"],
 				action: action,
 				actionType: actionType,
@@ -1929,6 +1936,7 @@ function takeAction(target)
 
 			let actionMap = {
 				userID: payload.getUserID(),
+				terminalID: session.getTerminalID(),
 				targetID: effect,
 				action: action,
 				actionType: actionType,
@@ -2366,7 +2374,8 @@ function generatePuzzle(target)
 				action: "free_rp",
 				actionType: "puzzle",
 				actionCost: puzzle["cost"],
-				puzzID: puzzle["id"]
+				puzzID: puzzle["id"],
+				terminalID: session.getTerminalID(),
 			};
 
 			let petStage = null;

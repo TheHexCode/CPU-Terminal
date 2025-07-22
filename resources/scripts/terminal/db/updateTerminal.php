@@ -2,6 +2,7 @@
 require('dbConnect.php');
 
 $actionType = $_POST["actionType"];
+$termID = $_POST["terminalID"];
 $targetID = $_POST["targetID"];
 $userID = $_POST["userID"];
 $newData = $_POST["newData"];
@@ -21,6 +22,7 @@ try
     $tempClient->addMiddleware(new WebSocket\Middleware\PingResponder());
 
     $message = json_encode(array(
+                                    "termID" => intval($termID),
                                     "actionType" => (($actionType === "entry" || $actionType === "ice") ? "entry" : $actionType),
                                     "targetID" => intval($targetID),
                                     "userID" => intval($userID),
