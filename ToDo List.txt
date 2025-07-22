@@ -88,21 +88,25 @@
     -- Make these blink as they change as well?
  - Discord bot command for turning listen server on/off
  - Discord bot command for changing job code
+  -- Easy: web request to updateCodes.php
+
+> MAKE STATUS BAR / TAG COUNT STICKY!
 
 > LISTENER FOR MISC EFFECTS
  - Database
  - Alarm
  - Lock
 
->!! EXTRA TAGS FROM TWO TERMINALS?
-
 >!! TWO TERMINALS WITH SAME SLUG???
 
 > ITEMS CAN BE CUSTOMIZED/GLITCHED
+  >>> THIS IS A JOB FOR THE ENUM
 
 >> MAKE ICON SCHEMA DATABASED
+  >>> ACTUALLY, ENUM'D
 
 >> MAKE ITEMS DATABASE-ABLE
+  >>> PROBABLY ALSO ENUM'D
 
 >> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
     - ICE > ICE NAME / GRADE > EFFECTS
@@ -114,76 +118,19 @@
 
 > ADD ACCESS LOGS IN DASHBOARD
 
-> ADD PUZZLES TO TERMINAL CREATE / EDIT
-
 > CREATE MONITORING PAGE FOR TERMINALS
+ >> INCLUDING LOOT LOG FOR BLUF
 
 > DIGIPET ANIMATION
 
-> ALLOW SHIMMERSTICK TO BE USED WHENEVER
-  - SAME WITH BRAD
-
 > PUZZLES
- - TYPE
- - REPEATABLE
- - REQUIREMENTS (KNOWLEDGES)
-    - FREE RP FOR 30s
-    - SUDOKU
-    - REVERSE MASTERMIND
-    - SLIDING PANELS [?]
-    - PICROSS
- - Need to disable on reload if already done
- - Interrupt if global
- - Decrease Repeat (not the Function) amount if done some
- - Block if without requirements
  - Test multi-item reward works right
 
 > LOW PRIORITY
-    - Resume Timer on mouseenter (only if already started?)
-    - Write message for empty active/passive
     - Help Popup to say what functions do what (Databaseable)
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
+    - ICE in the middle of stuff has a negative css margin
 
 >> COMPLETED
-    > REVERT TO MYLARP FUNCTION PULL
-    > FIX EXECUTE DOUBLE-CLICK PROBLEM
-    > DECK ACTIONS ARE IMMEDIATE
-    - Make enter submit payload code
-    - BACKDOOR [RANKED]
-        - NOW: IF BACKDOOR > 0: (BACKDOOR * 5) + 5; ELSE 0;
-            RANK 1: (1 * 5) = 5 + 5 = 10
-            RANK 2: (2 * 5) = 10 + 5 = 15
-            RANK 3: (3 * 15) = 15 + 5 = 20
-    - ROOT EXPLOIT
-        NOW ADDS TO EXTRA TAGS INSTEAD OF HACKING FUNCTION
-    - BUTTON MASHER [RANKED]
-      IF YOU HAVE TWO RANKS OR MORE, YOU MAY ASSIST ONE OTHER CHARACTER PER SCENE
-      WHILE ASSISTING, YOU MUST FOLLOW ALL RULES FOR HACKING, AND YOU ADD YOUR RANK IN THIS FUNCTION TO THEIR NUMBER OF TAGS
-      [BUTTON MASHER CODE BOX, POST-CRACK: 1/SCENE, ADD THAT CHARACTER'S RANKS IN BM TO MAIN PLAYER'S TAGS]
-
-      ?> WHAT, EXACTLY, DOES FOLLOW ALL RULES FOR HACKING MEAN?
-            1 - REQUIRES CYBERDECK
-            2 - REQUIRES TWO FREE HANDS
-            3 - MUST ALWAYS BE PRESENT
-      ?> DOES IT REQUIRE 30s TO ACTIVATE ASSISTANCE?
-            - NO
-      ?> CAN THEY ONLY ACTIVATE ASSITANCE AT THE BEGINNING OR ANY TIME?
-            - ANY TIME
-      ?> DO THEY NEED TO STAY WITH THE MAIN HACKER AT THE TERMINAL THE WHOLE TIME OR CAN THEY ACTIVATE AND THEN DIP?
-            - MUST REMAIN, DUE TO RULE 3
-      ?> DOES THE BUTTON MASHER GENERATE AN ACCESS LOG ENTRY?
-            - NO
-    - PING
-      YOU MAY PERFORM A HACKING ACTION FOR 1 TAGS ON ANY DEVICE TO REFRESH THIS FUNCTION
-      [REPEATABLE]
-    - SIPHON CHARGE
-      FOR TWO TAGS, CHARACTER CAN GAIN 2 AMPS
-      [ASSUMING REPEATABLE SINCE IT COSTS TAGS TO DO]
-    - MP INT > Change/interrupt other players
-    - MP INT > Status symbols for listen server Status
-    - DISSIMULATOR ROLE ABILITY
-      CAN ALSO GIVE OUT KNOW[H/DSS]
-    - POLYMATH ROLE ABILITY
-      CAN GIVE ONESELF REPAIR OR ALARM SENSE
