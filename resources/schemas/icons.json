@@ -1,552 +1,787 @@
 {
 	"files":
 	{
-		"title": "FILES",
 		"unit": "File",
-		"states":
+		"types":
 		{
-			"initial":
+			"entry":
 			{
-				"title": false,
-				"contents": false,
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Access File",
-							"state": "read"
-						}
-					]
+					"title": false,
+					"contents": false,
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Access File",
+								"state": "read",
+								"global": false
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take File",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"read":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Copy File",
-							"state": "copied"
-						},
-						{
-							"title": "Delete File",
-							"state": "deleted"
-						}
-					]
+					"title": true,
+					"contents": true,
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take File",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
+				},
+				"taken":
+				{
+					"title": {
+						"if": "user",
+						"true": true,
+						"false": "ERROR"
+					},
+					"contents": {
+						"if": "user",
+						"true": true,
+						"false": "File Removed"
+					},
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
+				{
+					"title": "ERROR",
+					"contents": "File Not Found",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			},
-			"read":
+			"trap":
 			{
-				"title": true,
-				"contents": true,
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": false
+					"title": false,
+					"contents": false,
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Access File",
+								"state": "read",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take File",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"read":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Copy File",
-							"state": "copied"
-						},
-						{
-							"title": "Delete File",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"copied":
-			{
-				"title": true,
-				"contents": true,
-				"globalState": false,
-				"access":
-				{
-					"enabled": false
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "disarmed",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"taken":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Delete File",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"deleted":
-			{
-				"title": "ERROR",
-				"contents": "File Not Found",
-				"globalState": true,
-				"access":
-				{
-					"enabled": false
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "sprung",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"deleted":
 				{
-					"enabled": false
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "sprung",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			}
 		}
 	},
 	"darkweb":
 	{
-		"title": "DARK WEB",
 		"unit": "File",
-		"states":
+		"types":
 		{
-			"initial":
+			"entry":
 			{
-				"title": false,
-				"contents": false,
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Access File",
-							"state": "read"
-						}
-					]
+					"title": false,
+					"contents": false,
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Access File",
+								"state": "read",
+								"global": false
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take File",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"read":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Copy File",
-							"state": "copied"
-						},
-						{
-							"title": "Delete File",
-							"state": "deleted"
-						}
-					]
+					"title": true,
+					"contents": true,
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take File",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
+				},
+				"taken":
+				{
+					"title": {
+						"if": "user",
+						"true": true,
+						"false": "ERROR"
+					},
+					"contents": {
+						"if": "user",
+						"true": true,
+						"false": "File Removed"
+					},
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
+				},
+				"deleted":
+				{
+					"title": "ERROR",
+					"contents": "File Not Found",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			},
-			"read":
+			"trap":
 			{
-				"title": true,
-				"contents": true,
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": false
+					"title": false,
+					"contents": false,
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Access File",
+								"state": "read",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take File",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete File",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"read":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Copy File",
-							"state": "copied"
-						},
-						{
-							"title": "Delete File",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"copied":
-			{
-				"title": true,
-				"contents": true,
-				"globalState": false,
-				"access":
-				{
-					"enabled": false
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "disarmed",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"taken":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Delete File",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"deleted":
-			{
-				"title": "ERROR",
-				"contents": "File Not Found",
-				"globalState": true,
-				"access":
-				{
-					"enabled": false
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "sprung",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"deleted":
 				{
-					"enabled": false
+					"title": "Trap!",
+					"contents": true,
+					"formatting": "sprung",
+					"access":
+					{
+						"enabled": false
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			}
 		}
 	},
 	"cameras":
 	{
-		"title": "CAMERAS",
 		"unit": "Cam",
-		"states":
+		"types":
 		{
-			"initial":
+			"entry":
 			{
-				"title": true,
-				"contents": false,
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "View Feed",
-							"state": "view"
-						},
-						{
-							"title": "Power Down",
-							"state": "disabled"
-						}
-					]
+					"title": true,
+					"contents": false,
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "View Feed",
+								"state": "viewed",
+								"global": false
+							},
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "initial",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take Footage",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete Footage",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"viewed":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Copy Footage",
-							"state": "copied"
-						},
-						{
-							"title": "Delete Footage",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"view":
-			{
-				"title": true,
-				"contents": "Feed Visible",
-				"globalState": false,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power Down",
-							"state": "disabled"
-						}
-					]
+					"title": true,
+					"contents": "Feed Visible",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "viewed",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Take Footage",
+								"state": "taken",
+								"global": true
+							},
+							{
+								"button": "Delete Footage",
+								"state": "deleted",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"disabled":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Copy Footage",
-							"state": "copied"
-						},
-						{
-							"title": "Delete Footage",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"disabled":
-			{
-				"title": true,
-				"contents": "No Power",
-				"globalState": true,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power On",
-							"state": "previous"
-						}
-					]
+					"title": true,
+					"contents": "No Power",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power On",
+								"state": "previous",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"taken":
 				{
-					"enabled": false
-				}
-			},
-			"copied":
-			{
-				"title": true,
-				"contents": "Feed Visible",
-				"globalState": false,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power Down",
-							"state": "disabled"
-						}
-					]
+					"title": true,
+					"contents": {
+						"if": "user",
+						"true": true,
+						"false": "Footage Removed"
+					},
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "taken",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"deleted":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Delete Footage",
-							"state": "deleted"
-						}
-					]
-				}
-			},
-			"deleted":
-			{
-				"title": true,
-				"contents": "FEED ERROR",
-				"globalState": true,
-				"access":
-				{
-					"enabled": false
-				},
-				"modify":
-				{
-					"enabled": false
+					"title": true,
+					"contents": "Footage Not Found",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "taken",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			}
 		}
 	},
 	"locks":
 	{
-		"title": "LOCKS",
 		"unit": "Lock",
-		"states":
+		"types":
 		{
-			"initial":
+			"entry":
 			{
-				"title": true,
-				"contents": "LOCKED",
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Disable Lock",
-							"state": "disabled"
-						}
-					]
+					"title": true,
+					"contents": "LOCKED",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Disable Lock",
+								"state": "disabled",
+								"previous": "initial",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Modify ACL",
+								"state": "friendly",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"disabled":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Modify ACL",
-							"state": "friendly"
-						}
-					]
-				}
-			},
-			"disabled":
-			{
-				"title": true,
-				"contents": "LOCK DISABLED",
-				"globalState": true,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power On",
-							"state": "previous"
-						}
-					]
+					"title": true,
+					"contents": "LOCK DISABLED",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power On",
+								"state": "previous",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"friendly":
 				{
-					"enabled": false
-				}
-			},
-			"friendly":
-			{
-				"title": true,
-				"contents": "ACCESS CONTROL LIST UPDATED",
-				"globalState": true,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Disable Lock",
-							"state": "disabled"
-						}
-					]
-				},
-				"modify":
-				{
-					"enabled": false
+					"title": true,
+					"contents": "ACCESS CONTROL LIST UPDATED",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Disable Lock",
+								"state": "disabled",
+								"previous": "friendly",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			}
 		}
 	},
 	"defenses":
 	{
-		"title": "AUTOMATED DEFENSIVE SYSTEMS",
-		"unit": "Sys",
-		"states":
+		"unit": "ADS",
+		"types":
 		{
-			"initial":
+			"entry":
 			{
-				"title": true,
-				"contents": "ACTIVE",
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power Down",
-							"state": "disabled"
-						}
-					]
+					"title": true,
+					"contents": "ACTIVE",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "initial",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Modify IFF",
+								"state": "friendly",
+								"global": true
+							}
+						]
+					}
 				},
-				"modify":
+				"disabled":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Modify IFF",
-							"state": "friendly"
-						}
-					]
-				}
-			},
-			"disabled":
-			{
-				"title": true,
-				"contents": "NO POWER",
-				"globalState": true,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power On",
-							"state": "previous"
-						}
-					]
+					"title": true,
+					"contents": "NO POWER",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power On",
+								"state": "previous",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"friendly":
 				{
-					"enabled": false
-				}
-			},
-			"friendly":
-			{
-				"title": true,
-				"contents": "TARGET LIST UPDATED",
-				"globalState": true,
-				"access":
-				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power Down",
-							"state": "disabled"
-						}
-					]
-				},
-				"modify":
-				{
-					"enabled": false
+					"title": true,
+					"contents": "TARGET LIST UPDATED",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "friendly",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			}
 		}
 	},
 	"utilities":
 	{
-		"title": "UTILITY SYSTEMS",
 		"unit": "Sys",
-		"states":
+		"types":
 		{
-			"initial":
+			"power":
 			{
-				"title": true,
-				"contents": "ACTIVE",
-				"globalState": false,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power Down",
-							"state": "disabled"
-						}
-					]
+					"title": true,
+					"contents": "ACTIVE",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "initial",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"disabled":
 				{
-					"enabled": false
+					"title": true,
+					"contents": "NO POWER",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power On",
+								"state": "previous",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			},
-			"disabled":
+			"alarm":
 			{
-				"title": true,
-				"contents": "NO POWER",
-				"globalState": true,
-				"access":
+				"initial":
 				{
-					"enabled": true,
-					"actions":
-					[
-						{
-							"title": "Power On",
-							"state": "previous"
-						}
-					]
+					"title": true,
+					"contents": "ACTIVE",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power Down",
+								"state": "disabled",
+								"previous": "initial",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				},
-				"modify":
+				"disabled":
 				{
-					"enabled": false
+					"title": true,
+					"contents": "ALARM DISABLED",
+					"access":
+					{
+						"enabled": true,
+						"actions":
+						[
+							{
+								"button": "Power On",
+								"state": "previous",
+								"global": true
+							}
+						]
+					},
+					"modify":
+					{
+						"enabled": false
+					}
 				}
 			}
 		}
-	},
-	"puzzles":
-	{
-		"title": "PUZZLES",
-		"unit": "Puzzle"
 	}
 }

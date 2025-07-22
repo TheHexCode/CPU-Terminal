@@ -1,0 +1,116 @@
+@font-face {
+	font-family: "DSEG14-ClassicRegular";
+	src: url("/resources/fonts/DSEG14Classic-Regular.woff2") format("woff2"),
+         url("/resources/fonts/DSEG14Classic-Regular.woff") format("woff"),
+         url("/resources/fonts/DSEG14Classic-Regular.ttf") format("truetype");
+		 /* ATTRIBUTION: https://www.keshikan.net/fonts-e.html */
+}
+
+@font-face {
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
+	src: url("/resources/fonts/BigBlueTermPlusNerdFontPropo-Regular.ttf");
+	/* ATTRIBUTION: https://www.nerdfonts.com/font-downloads >> BigBlueTerm Nerd Font */
+	/*    BASED ON: https://int10h.org/blog/2015/12/bigblue-terminal-oldschool-fixed-width-font/ */
+}
+
+:root
+{
+	/* COLORS */
+	--amber: rgb(255,172,0);
+	--blue: rgb(0,210,255);
+	--red: rgb(250,0,0);
+	--dimred: rgb(187,0,0);
+	--black: rgb(10,10,10);
+	--dk-blue: rgb(51,51,68);
+	--dk-red: rgb(17,0,0);
+	--grey: rgb(128,128,128);
+	--dimgrey: rgb(105,105,105);
+	--dodger-blue: rgb(30,144,255);
+	--maroon: rgb(128,0,0);
+	--trans-black: rgba(0,0,0,0.4);
+	--trans-clear: rgba(0,0,0,0);
+
+	--main-fg-color: var(--amber);
+	--main-bg-color: var(--black);
+	--main-border-color: var(--grey);
+	--inactive-border-color: var(--dimgrey);
+	--modal-bg-color: var(--trans-black);
+
+	--ice-fg-color: var(--blue);
+	--ice-bg-color: var(--dk-blue);
+	--ice-border-color: var(--dodger-blue);
+
+	--bricked-fg-color: var(--black);
+	--bricked-bg-color: var(--amber);
+
+	--root-fg-color: var(--red);
+	--root-bg-color: var(--dk-red);
+	--root-border-color: var(--maroon);
+
+	--max-main-width: 400px;
+}
+
+#load
+{
+	--bg-color: var(--modal-bg-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	background: var(--bg-color);
+	z-index: 998;
+}
+
+@keyframes logoSpin
+{
+	from
+	{
+		transform: rotate(0deg);
+	}
+	to
+	{
+		transform: rotate(360deg);
+	}
+}
+
+#logoBG
+{
+	width: 295px;
+	height: 295px;
+	margin: -43px 0 0 -43px;
+
+	background: conic-gradient(var(--trans-clear), var(--fg-color) 90%, var(--fg-color));
+
+	animation-name: logoSpin;
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+#load.hidden
+{
+	display: none;
+}
+
+.dseg
+{
+	font-family: "DSEG14-ClassicRegular";
+}
+
+.BG
+{
+	grid-row: 1;
+	grid-column: 1;
+	opacity: 0.2;
+	text-shadow: none;
+}
+
+.FG
+{
+	grid-row: 1;
+	grid-column: 1;
+}

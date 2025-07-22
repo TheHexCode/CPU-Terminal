@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>TERMINAL</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="UTF-8">
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/termstyle.css"/>
+        <script type="text/javascript" src="./rev_mm.js"></script>
+        <link rel="stylesheet" type="text/css" href="./rmmstyle.css"/>
+	</head>
+	<body>
+		<div id="main">
+			<div id="modalBG">
+				<div id="actionModal" class="modalBox">
+					<div class="modalOverlay hidden"></div>
+					<div class="modalHeaderRow">
+						<span class="modalHeaderText"></span>
+						<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&#xf1398;</span>
+					</div>
+					<div class="modalBody">
+						<div id="modalBodyTimer"class="timerContainer hidden">
+							<div class="lcdBox">
+								<div class="mmss">
+									<span class="dseg BG">~~ ~~</span>
+									<span class="dseg FG">00:00</span>
+								</div>
+								<div class="hundsec">
+									<span class="dseg BG">~~</span>
+									<span class="dseg FG">00</span>
+								</div>
+							</div>
+						</div>
+						<div class="modalBodyText">
+							<div id="rmmGuessArray" class="rmmBox"></div>
+						</div>
+					</div>
+					<div class="modalButtonRow" data-mode="none">
+						<div id="rmmAnswerBox" class="rmmBox"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <script>let revMM = new ReverseMasterMind(4);$("#modalBG").css("display","flex");</script>
+    </body>
+</html>

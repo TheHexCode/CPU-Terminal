@@ -1,34 +1,13 @@
-@font-face {
-	font-family: "DSEG14-ClassicLight";
-	src: url("../fonts/DSEG14Classic-Light.woff2") format("woff2"),
-         url("../fonts/DSEG14Classic-Light.woff") format("woff"),
-         url("../fonts/DSEG14Classic-Light.ttf") format("truetype");
-}
-
-@font-face {
-	font-family: "DSEG14-ClassicRegular";
-	src: url("../fonts/DSEG14Classic-Regular.woff2") format("woff2"),
-         url("../fonts/DSEG14Classic-Regular.woff") format("woff"),
-         url("../fonts/DSEG14Classic-Regular.ttf") format("truetype");
-}
-
-@font-face {
-	font-family: "BigBlue-TerminalPlus";
-	src: url("../fonts/BigBlue_TerminalPlus.TTF") format("truetype");
-}
-
-:root
-{
-	--bg-color: #0A0A0A;
-	--fg-color: #FFAC00;
-}
-
 body
 {
+	--fg-color: var(--main-fg-color);
+	--bg-color: var(--main-bg-color);
+	--border-color: var(--main-border-color);
+
 	height: 98vh;
 	margin: 0;
 	padding: 0.5rem;
-	font-family: "BigBlue-TerminalPlus";
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
 	font-size: 1em;
 	background: var(--bg-color);
 	color: var(--fg-color);
@@ -56,16 +35,6 @@ body::after
 	color: red;
 }
 
-.hidden
-{
-	display: none;
-}
-
-.invisible
-{
-	visibility: hidden;
-}
-
 .dimmed
 {
 	filter: brightness(50%);
@@ -73,7 +42,7 @@ body::after
 
 button
 {
-	font-family: "BigBlue-TerminalPlus";
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
 	background-color: var(--fg-color);
 	color: var(--bg-color);
 	border-color: var(--bg-color);
@@ -87,15 +56,9 @@ button:not(:disabled):not(.profTab):hover
 	box-shadow: 0 0 15px var(--fg-color);
 }
 
-input[type="checkbox"]
+input
 {
-	background-color: var(--bg-color);
-}
-
-h2
-{
-	margin-top: 0;
-	text-decoration: underline;
+	margin: 0 0.5rem;
 }
 
 #main
@@ -107,6 +70,7 @@ h2
 	max-width: 400px;
 	margin: 0 auto;
 }
+
 h1
 {
 	margin: 0;
@@ -123,7 +87,7 @@ h2
 	font-size: 140%;
 }
 
-.infoBox
+.mlLoginBox
 {
 	display: flex;
 	flex-direction: column;
@@ -134,48 +98,151 @@ h2
 	margin-bottom: 0.5rem;
 }
 
-.infoName
+.mlLoginRow
 {
 	display: grid;
 	grid-template-columns: [start] 1rem [tab] auto [end];
 }
 
-.infoName label
+.mlLoginRow label
 {
 	grid-row: 1;
 	grid-column: start / end;
 }
 
-.infoName input
+.mlLoginRow input
 {
 	grid-row: 2;
 	grid-column: tab / end;
 }
 
-.infoRole
+.mlLoginBox button
 {
-	display: grid;
-	grid-template-columns: [start] 50% [mid] auto [end];
+	margin-top: 1rem;
+	width: 100%;
 }
 
-.infoRole label
+.postLogon
 {
-	grid-row: 1;
-	grid-column: start / mid;
-}
-
-.infoRole select
-{
-	display: grid;
-	grid-column: mid / end;
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.5rem;
 }
 
 .zoneBox
 {
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+	border: 0.5rem solid var(--border-color);
+    padding: 0.5rem;
 }
 
+.zoneBox hr
+{
+	width: 100%;
+}
+
+#payloadCharName
+{
+	/* max-width: 368px */
+	/* min-width: 223px? */
+	font-size: clamp(100%,100cqw,200%);
+	text-align: center;
+	margin-bottom: 1rem;
+}
+
+#payloadCodeRow
+{
+	display: grid;
+	background-color: var(--bg-color);
+	border: 2px solid var(--fg-color);
+	border-radius: 0.5rem;
+	padding: 0.5rem;
+}
+
+#payloadCodeRow .BG
+{
+	pointer-events: none;
+	font-size: 200%;
+}
+
+#payloadCodeRow .FG
+{
+	background-color: var(--trans-clear);
+	color: var(--fg-color);
+	text-shadow: none;
+	border: none;
+	font-size: 200%;
+	padding: 0;
+}
+
+.infoRole
+{
+	display: grid;
+	grid-template-columns: [start] 50% [mid] auto [end];
+	width: 100%;
+	padding-top: 0.5rem;
+}
+
+.infoRole label
+{
+	grid-column: start / mid;
+	align-self: center;
+}
+
+.roleBox h2
+{
+	text-decoration: none;
+}
+
+.infoRole select
+{
+	grid-column: mid / end;
+}
+
+.roleBox
+{
+	width: 100%;
+}
+
+.pathBox
+{
+	width: 100%;
+}
+
+.pathBox h1
+{
+	margin-top: 2rem;
+}
+
+.entrySelect
+{
+	display: grid;
+	grid-template-columns: [start] 10% [label] auto [end];
+	margin: 0.25rem 0;
+}
+
+.entrySelect input
+{
+	grid-column: start / label;
+	align-self: start;
+	height: 0.75rem;
+	width: 0.75rem;
+	margin-top: 0.2rem;
+}
+
+.entrySelect label
+{
+	grid-column: label / end;
+}
+
+.funcChoice
+{
+	margin-left: 0.5rem;
+}
+
+/*
 #profTabContainer
 {
 	display: flex;
@@ -227,12 +294,56 @@ h2
 	margin: 0.5rem 0 0 -0.5rem;
 }
 
-
 .profContent
 {
     border: 0.5rem solid grey;
     padding: 0.5rem;
-    margin-top: -0.5rem;
+    margin-top: -1rem;
+}
+*/
+
+.itemSection
+{
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	row-gap: 0.25rem;
+	width: 100%;
+}
+
+.itemSection h2
+{
+	align-self: center;
+}
+
+.itemSelect
+{
+	display: grid;
+	grid-template-columns: [start] min-content [tab] auto [end];
+	width: 100%;
+}
+
+.itemCount
+{
+	grid-column: tab / end;
+	grid-row: 2;
+}
+
+.itemCountRow
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.itemImgBox
+{
+	display: grid;
+	grid-template-columns: repeat(auto-fit,minmax(20px,1fr));
+	row-gap: 0.25rem;
+	justify-items: center;
+	align-content: center;
+	width: 100%;
 }
 
 #saveBar
@@ -243,13 +354,95 @@ h2
 	align-items: flex-end;
 }
 
-.spacer
-{
-	flex-grow: 1;
-}
-
 footer
 {
 	margin-top: auto;
 	align-self: flex-end;
+}
+
+#modalBG
+{
+	display: none;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	z-index: 100;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: clip;
+	background-color: var(--modal-bg-color);
+}
+
+.modalBox
+{
+	height: auto;
+	max-width: var(--max-main-width);
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
+	color: var(--fg-color);
+	background-color: var(--bg-color);
+	border: 0.5rem solid var(--border-color);
+}
+
+.modalHeaderRow
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem;
+	border-width: 0 0 0.5rem 0;
+	border-color: var(--border-color);
+	border-style: solid;
+}
+
+.modalHeaderText
+{
+	text-decoration: underline;
+}
+
+.modalClose {
+	color: var(--fg-color);
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+  
+.modalClose:hover,
+.modalClose:focus {
+	color: var(--bg-color);
+	text-shadow:
+		 2px  2px 5px var(--fg-color),
+		 2px -2px 5px var(--fg-color),
+		-2px -2px 5px var(--fg-color),
+		-2px  2px 5px var(--fg-color);
+	cursor: pointer;
+}
+
+.modalBody
+{
+	padding: 1rem;
+}
+
+.modalBodyText
+{
+	display: flex;
+	flex-direction: column;
+}
+
+.modalButton
+{
+	width: 100%;
+	font-size: 200%;
+}
+
+.hidden
+{
+	display: none;
+}
+
+.invisible
+{
+	visibility: hidden;
 }

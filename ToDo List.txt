@@ -1,72 +1,136 @@
--------------------------------------------------------------------------------------------------------------
+> 2.0
 
-- Make Mask editable in terminal view, and send whatever's there
-- Proper terminal.json/dataCatalog.json/itemCatalog.json errors
-- CSS for checkboxes/radios
+ >> NEW FUNCTIONS
+  - REPAIR
+      CAN BE USED TO REPAIR BRICKED TERMINALS. REQUIRES A WORKSTATION, UNLESS...
+  - FIELD REPAIR
+      FOR EACH RANK OF REPAIR YOU HAVE, YOU MAY ACTIVATE THIS FUNCTION ONCE PER SCENE
+      WHEN ACTIVATING, YOU MAY RAPIDLY REPAIR A BROKEN ITEM ACCORDING TO THE FOLLOWING TABLE:
+        - RANK 1 >> 30s
+        - RANK 2 >> 20s
+        - RANK 3 >> 10s
+      AN ITEM MAY ONLY BENEFIT FROM FIELD REPAIR ONCE PER SCENE, AND IMMEDIATELY BREAKS AT THE END OF THE SCENE IT HAS BENEFITTED FROM FIELD REPAIR
 
-- Subtab Images For:
- ✓- Log -> ">_" or bullet list?
- -- Files
- -- DarkWeb -> Sunglasses?
- -- Camera -> Security Camera?
- -- Locks
- -- Defenses -> Better Bullseye/Crosshairs?
- -- Utilities -> Better Lightning Bolt?
- ✓- Puzzles -> Puzzle Piece
- ✓- Active/Passive/Items
-- Replace RIGGED image
+ >> CHANGED FUNCTIONS
+  - BRICK
+      BRICKED TERMINALS CAN BE REPAIRED FOR 5 MINS?
+      - NOTE: FIELD REPAIR
+      - NOTE: RELIABLE KEYWORD
+      ?> TIER OF TERMINAL? VARIES? DEFAULT?
+        - DEFAULT TIER OF 1
 
-- Import/Export Payload
-- Per Scene Items Cookie
-- Add DigiSec Secret
+ >> NEW ROLE ABILITIES
+  - BASTION ROLE ABILITY
+      CAN USE 2 AMPS TO REFRESH ANY FUNCTION GRANTED BY WEAPONS / ARMOR
+      [WHICH MEANS CMM/WINTON ARMS]
 
--------------------------------------------------------------------------------------------------------------
+> WHAT IF FUNCTIONS HAVE BEEN REFRESHED?
+  - ITEMS CANNOT BE REFRESHED, UNDER NORMAL CIRCUMSTANCES?
 
-- Use POST instead of GET for term info
-- Use SQL Database for term info
-- Have multiplayer updates (like deleting an entry) force updates to people's pages? If someone's copying a file that gets deleted, it should break the timer and go back to standby
-- Themes
-- Make it so that pausing the Rooting process and then refreshing does what it's supposed to. Right now, pausing doesn't update the time until it unpauses, so pausing then refreshing will keep the old time, or will skip to root if time elapses behind the scenes.
-- Rename dataCatalog to sound more like the defining source of truth
+> INVENTORY ✓
+  > MUST:
+    1 - Recognize User Has Item
+    2 - Allow User to Activate Item
+    3 - Remember Item Activation on Terminal
+    4 - Remember Activation For Duration
+    5 - Remember Usage for Scene/Sim/Item
+                                   (1,2,3,4,5)
+  ✓  AUTO-INIT
+    ✓ CipherSync Beacon------------(✓,✓,✓,✓,✓)
+    ✓ Power Glove [UH9K]-----------(✓,✓,✓,✓,✓)
+  >> INIT
+    - Budget Remote Access Drive---(✓,X,X,X,X)
+    ✓ CMM Widow--------------------(✓,✓,✓,✓,✓)
+    ✓ CMM Cocoon-------------------(✓,✓,✓,✓,✓)
+    ✓ Shimmerstick T0--------------(✓,✓,✓,✓,✓)
+    ✓ Shimmerstick T1--------------(✓,✓,✓,✓,✓)
+    ✓ CLEC Fingers-----------------(✓,✓,✓,✓,✓)
+    - Canopic Jar [Magsweep]-------(✓,X,X,X,X)
+    - Vigil T0---------------------(✓,X,X,X,X)
+    - Vigil T1---------------------(✓,X,X,X,X)
+  >> ITEMTAB
+    ✓ Pocket Hacker T0-------------(✓,✓,✓,✓,✓)
+    ✓ Pocket Hacker T1-------------(✓,✓,✓,✓,✓)
+    ✓ Budget Cyberdeck-------------(✓,✓,✓,✓,✓)
+    ✓ CRD Spider Cyberdeck T0------(✓,✓,✓,✓,✓)
+    ✓ CRD Spider Cyberdeck T1------(✓,✓,✓,✓,✓)
+    ✓ MM Console-------------------(✓,✓,✓,✓,✓)
+    ✓ DigiPet[1]-------------------(✓,✓,✓,✓,✓)
+    > ALSO
+      - Budget Remote Access Drive-(X,X,X,X,X)
+      ✓ Shimmerstick T0------------(✓,✓,✓,✓,✓)
+      ✓ Shimmerstick T1------------(✓,✓,✓,✓,✓)
+      - Canopic Jar [Magsweep]-----(X,X,X,X,X)
+  ✓  ACTION
+    ✓ Copycat----------------------(✓,✓,✓,✓,✓)
+    ✓ DigiPet[2]-------------------(✓,✓,✓,✓,✓)
+  ✓  AUTO-ACTION
+    ✓ Johnny's Special Touch-------(✓,✓,✓,✓,✓)
+    ==========================================
+    X FKD DC-17 T0
+    X FKD DC-17 T1
+    X Nerd's Safety Glasses
 
--------------------------------------------------------------------------------------------------------------
+(Plus: &#x271A;)
+(Minus: &#x2501;)
+(Close X: &#xf1398;)
+(Bell Ring Outline: &#xf009f;)
+(Question: f420)
+(Question: f29c)
+(Help: f0625)
 
-- Glitchy look to reassigned names
-- Static Glitchy Animation
-- Static Animation Fadeaway
-- Scrolling codium ipsum animation for Root Device
-- Layered ICE more visually apparent
+> MAKE ITEM USES INSIDE THE ITEM
+  > THAT WAY SHIM & VIGIL EFFECTS ARE ABLE TO BE 1/SCENE
 
+> MULTIPLAYER INTERRUPT
+ - Make changed tab/entry blink for other players
+ - Status symbols for other players (spiders, too?)
+    -- Make these blink as they change as well?
+ - Discord bot command for turning listen server on/off
+ - Discord bot command for changing job code
+  -- Easy: web request to updateCodes.php
 
+> MAKE STATUS BAR / TAG COUNT STICKY!
 
+> LISTENER FOR MISC EFFECTS
+ - Database
+ - Alarm
+ - Lock
 
+>!! TWO TERMINALS WITH SAME SLUG???
 
+> ITEMS CAN BE CUSTOMIZED/GLITCHED
+  >>> THIS IS A JOB FOR THE ENUM
 
+>> MAKE ICON SCHEMA DATABASED
+  >>> ACTUALLY, ENUM'D
 
+>> MAKE ITEMS DATABASE-ABLE
+  >>> PROBABLY ALSO ENUM'D
 
+>> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
+    - ICE > ICE NAME / GRADE > EFFECTS
+    - TRAP > LIST OF EFFECTS
 
-WEAPONS
- - CMM Widow > 1HR > The first time you use Slip in a scnee, gain +1 Tags on the next device you hack
+^> FOR ABOVE THREE, ADD CONFIG AREAS TO ADMIN DASHBOARD
 
-SHIELDS
- - CMM Cocoon > Small Shield > The first time you use Slip in a Scene, gain +1 Tags on the next device you hack
+> PREVIEW TERMINAL IN DASHBOARD
 
-UTILITY
- - Budget Cyberdeck > Cyberdeck > 1xSim: When you activate Hacking, you gain one extra Tag
- - CipherSync Beacon > Hacking Watch > While the stopwatch is running, you may increase your Rank in Hacking by 1
- - CRD Spider Cyberdeck > Cyberdeck > 1xSim: When you active Hacking, you gain one extra Tag
- - MM Console > Cyberdeck > 2xSim: +1 Tag
- - Johnny's Special Touch > Cyberdeck > After the first Access action, every other Access action costs 1 fewer Tag, to a minimum of 0
- - DigiPet > Utility > 1xScene: You can plug your DigiPet into a terminal you have hacked and leave it. It will complete a Hacking Action you have begun. Once you pick up the DigitPet, you can collect any result from it completing the Hacking Action. This does not permit you to do two Hacking Actions simultaneously on the same device.
- - FKD DC-17 > Cyberdeck > 1xScene: You gain +2 Tags on a drone you've already gained Tags on.
- - Nerd's Safety Glasses > Utility > 1xSim: When you fail a puzzle that benefits from/requries a Knowledge, you may reattempt it.
- - Power Glove (Ultra-Hacking 9000) > Arm Implant > All Hacking Actions are 5 seconds faster, to a minimum of 10 seconds.
- - Shimmerstick Tier 0 > Consumable > Hacking Actions cost 1 additional Tag and take 30 seconds longer
- - Shimmerstick Tier 1 > Consumable > "                                 "   and take 15 seconds longer
- - Vigil > Consumable > Use Extra Tags Feature (Max 10 Tags)
- 
-CUSTOMIZATIONS
- - Copycat > Cyberdeck Cust. > 1xSim: You may do an additional action in the same category as an action you've already taken on the device instantly.
- - Pocket Hacker Tier 0 > A/S/W Cust. > 1xSim: You may gain an extra Tag on a device
- - Pocket Hacker Tier 1 > A/S/W Cust. > 2xSim: "", these are the normal cyberdeck bonuses
- 
+> ADD ACCESS LOGS IN DASHBOARD
+
+> CREATE MONITORING PAGE FOR TERMINALS
+ >> INCLUDING LOOT LOG FOR BLUF
+
+> DIGIPET ANIMATION
+
+> PUZZLES
+ - Test multi-item reward works right
+
+> LOW PRIORITY
+    - Help Popup to say what functions do what (Databaseable)
+    - Sync the blend of the reqTags and Gems
+    - Fix ugly "buttonItem" class when window is thin
+    - Fix Extra Tags not blending the negative gems
+    - ICE in the middle of stuff has a negative css margin
+
+>> COMPLETED
