@@ -98,15 +98,16 @@
  - Lock
 
 >!! TWO TERMINALS WITH SAME SLUG???
+>!! ICE SLEAZE SHOWS ONE LESS TAG FOR SOME REASON IN THE CONFIRM/EXECUTE WINDOW
 
 > ITEMS CAN BE CUSTOMIZED/GLITCHED
   >>> THIS IS A JOB FOR THE ENUM
 
 >> MAKE ICON SCHEMA DATABASED
-  >>> ACTUALLY, ENUM'D
+  >>> ACTUALLY, ENUM'D -- PHP
 
 >> MAKE ITEMS DATABASE-ABLE
-  >>> PROBABLY ALSO ENUM'D
+  >>> PROBABLY ALSO ENUM'D -- JS CLASS
 
 >> MAKE ICE/TRAP EFFECTS DATABASE-ABLE
     - ICE > ICE NAME / GRADE > EFFECTS
@@ -126,11 +127,22 @@
 > PUZZLES
  - Test multi-item reward works right
 
+> CREATE TEST TERMINALS FOR USERS
+
+> CREATE USAGE DOCUMENTATION/WIKI
+
+> EDIT FILE
+ >> DESCRIBE CHANGES?
+
+> UPLOAD FILES
+ >> DESCRIBE CONTENTS
+
 > LOW PRIORITY
     - Help Popup to say what functions do what (Databaseable)
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
     - ICE in the middle of stuff has a negative css margin
+    - Shore up profile css (tabs and junk)
 
 >> COMPLETED
