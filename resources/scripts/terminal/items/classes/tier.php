@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 class Tier {
 
-        private array $tieritems = [];
-        private static Tier $tier;
+            private array $tieritems = [];
+            private static Tier $tier;
         
         private function __construct(
 
