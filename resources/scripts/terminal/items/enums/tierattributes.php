@@ -43,7 +43,7 @@ enum TierAttributes {
             TierAttributes::ConnTrustRAD => "ConnTrust Remote Access Drive",
             TierAttributes::DigiPet => "DigiPet",
             TierAttributes::FKD_DC17 => "FKD DC-17",
-            TierAttributes::DeputyHat => "",
+            TierAttributes::DeputyHat => "Deputy's Hat",
             TierAttributes::Vigil => "Vigil",
             TierAttributes::JohnnySpecialTouch => "Johnny's Special Touch",
             TierAttributes::PowerGlove => "Power Glove",
