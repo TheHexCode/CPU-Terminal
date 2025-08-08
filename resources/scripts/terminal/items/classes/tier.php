@@ -9,22 +9,27 @@ class Tier {
         private function __construct(
 
             private TierLevel $tierlevel){
-            $this->buildItem($this->tierlevel->name);
 
         }
 
-    public static function setTierItems(TierLevel $tierlevel){
+    public static function setTierItems(TierLevel $tierlevel): Tier {
 
-        self::$tier = new self($tierlevel);
+        self::$tier = new self($tierlevel)->buildItem();
 
         return self::$tier;
 
     }
 
-    private function buildItem(string $tierlevel) {
+    public function getTierItems(): array {
+
+        return $this->tieritems;
+
+    }
+
+    private function buildItem(): Tier {
 
         $tier = [];
-        $cases = $tierlevel::cases();
+        $cases = $this->tierlevel->name::cases();
 
         foreach($cases as &$case){
             $tier[$case->name] = [
@@ -33,13 +38,15 @@ class Tier {
                 'group' => Attributes::{$case->name}->getOwningGroup(),
                 'flavor' => Attributes::{$case->name}->getFlavorText(),
                 'category' => Attributes::{$case->name}->getCategory(),
-                'benefits' => $case->getBenefits(),
+                //'benefits' => $case->getBenefits(),
             ];
         }
 
         unset($case);
 
         $this->tieritems = $tier;
+
+        return $this;
 
     }
 
