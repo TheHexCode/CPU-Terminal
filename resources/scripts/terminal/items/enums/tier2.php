@@ -7,7 +7,7 @@ enum Tier2 {
     case CMMCocoon;
     case CRDSpiderCyberdeck;
 
-    public function getBenefits(): array {
+    /*public function getBenefits(): array {
 
         $group = match($this){
             
@@ -33,6 +33,6 @@ enum Tier2 {
 
         return $group;
 
-    }
+    }*/
 
 }
