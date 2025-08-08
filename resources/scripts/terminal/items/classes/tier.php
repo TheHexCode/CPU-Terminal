@@ -33,11 +33,11 @@ class Tier {
 
         foreach($cases as &$case){
             $tier[$case->name] = [
-                'name' => TierAttributes::{$case->name}->getName(),
-                'type' => TierAttributes::{$case->name}->getType(),
-                'group' => TierAttributes::{$case->name}->getOwningGroup(),
-                'flavor' => TierAttributes::{$case->name}->getFlavorText(),
-                'category' => TierAttributes::{$case->name}->getCategory(),
+                'name' => ItemAttributes::{$case->name}->getName(),
+                'type' => ItemAttributes::{$case->name}->getType(),
+                'group' => ItemAttributes::{$case->name}->getOwningGroup(),
+                'flavor' => ItemAttributes::{$case->name}->getFlavorText(),
+                'category' => ItemAttributes::{$case->name}->getCategory(),
                 //'benefits' => $case->getBenefits(),
             ];
         }
