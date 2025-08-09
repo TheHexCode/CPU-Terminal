@@ -75,11 +75,10 @@ class ItemFetcher {
             $tier = $this->rawtier[$key];
             $ItemAttributes = \constant(ItemAttributes::class . "::$itemname");
             $tiernum = \preg_replace("/[a-zA-Z]{4}/", 'T', $this->rawtier[$key]);
-            $displayname = $ItemAttributes->getName();
 
             $item["{$itemname}_{$tiernum}"] = [
                 'runfunc' => $itemname,
-                'displayname' => "{$displayname} [{$tiernum}]",
+                'displayname' => "{$ItemAttributes->getName()} [{$tiernum}]",
                 'type' => $ItemAttributes->getType(),
                 'group' => $ItemAttributes->getOwningGroup(),
                 'flavor' => $ItemAttributes->getFlavorText(),
