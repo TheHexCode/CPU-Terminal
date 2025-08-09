@@ -100,7 +100,7 @@ class ItemFetcher {
 
     }
 
-    private function getEnum(object|string $enum, string $case){
+    private function getEnum(object|string $enum, string $case): object {
 
         $enum = new ReflectionEnumUnitCase($enum, $case);
 
