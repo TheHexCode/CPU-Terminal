@@ -9,7 +9,7 @@ class AutoLoader {
             
             $path = \str_replace('\\', '/', $class);
             $file =  __DIR__ . "/{$path}.php"; 
-var_dump(phpversion());
+
             if(\file_exists($file)){
                 require $file;
             }
