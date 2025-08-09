@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Items\Classes;
 
+use ReflectionEnumUnitCase;
 use Items\Enums\{
     ItemAttributes,
     Tier0,
@@ -23,7 +24,6 @@ class ItemFetcher {
                 1 => [
                     'itemname' => 'PocketHacker',
                     'tierlevel' => 'Tier0',
-                    'test' => 'testing'
                 ],
                 2 => [
                     'itemname' => 'PocketHacker',
@@ -72,18 +72,16 @@ class ItemFetcher {
         $item = [];
 
         foreach($this->rawitems as $key => &$itemname){
-            $tier = $this->rawtier[$key];
-            $ItemAttributes = \constant(ItemAttributes::class . "::$itemname");
-            $tiernum = \preg_replace("/[a-zA-Z]{4}/", 'T', $this->rawtier[$key]);
+            [$ItemAttributes, $tiernum, $displayname, $tierlevel] = $this->setValues($itemname, $key);
 
             $item["{$itemname}_{$tiernum}"] = [
                 'runfunc' => $itemname,
-                'displayname' => "{$ItemAttributes->getName()} [{$tiernum}]",
+                'displayname' => $displayname,
                 'type' => $ItemAttributes->getType(),
                 'group' => $ItemAttributes->getOwningGroup(),
                 'flavor' => $ItemAttributes->getFlavorText(),
                 'category' => $ItemAttributes->getCategory(),
-                'benefits' => $this->$tier($itemname),
+                'benefits' => $tierlevel->getValue()->getBenefits(),
             ] + $this->useritems[$key];
         }
 
@@ -95,31 +93,16 @@ class ItemFetcher {
 
     }
 
-    private function Tier0(string $itemname){
+    private function setValues(string $itemname, int $key): array {
 
-        $Tier0 = \constant(Tier0::class . "::$itemname");
-        $benefit = $Tier0->getBenefits();
+        $ItemAttributes = \constant(ItemAttributes::class . "::$itemname");
+        $tiernum = \preg_replace("/[a-zA-Z]{4}/", 'T', $this->rawtier[$key]);
+        $displayname = "{$ItemAttributes->getName()} [{$tiernum}]";
+        $namespace = $this->getNamespace($ItemAttributes, $this->rawtier[$key]);
+        $tierlevel = new ReflectionEnumUnitCase($namespace, $itemname);
 
-        return $benefit;
+        return [$ItemAttributes, $tiernum, $displayname, $tierlevel];
 
-    }
-
-    private function Tier1(string $itemname){
-
-        $Tier1 = \constant(Tier1::class . "::$itemname");
-        $benefit = $Tier1->getBenefits();
-
-        return $benefit;
-        
-    }
-
-    private function Tier2(string $itemname){
-
-        $Tier2 = \constant(Tier2::class . "::$itemname");
-        $benefit = $Tier2->getBenefits();
-
-        return $benefit;
-        
     }
 
     private function getNamespace(ItemAttributes $itemname, string $tierlevel): string {
