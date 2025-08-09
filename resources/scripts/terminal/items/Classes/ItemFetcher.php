@@ -6,7 +6,7 @@ use Items\Enums\ItemAttributes;
 
 class ItemFetcher {
 
-            private array $items;
+            private array $items = [];
             private array $rawitems = [];
             private array $rawtier = [];
             private static ItemFetcher $fetcher;
