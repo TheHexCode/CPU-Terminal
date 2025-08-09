@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace Items\Enums;
 
 enum Tier2 {
 
@@ -7,6 +8,22 @@ enum Tier2 {
     case CMMCocoon;
     case CRDSpiderCyberdeck;
 
+    public function getBenefits(): array {
+
+        $benefit = match($this){
+
+            default => [
+                'no',
+                'wait',
+                'yes',
+                'some fourth thing'
+            ],
+
+        };
+        
+        return $benefit;
+
+    }
     /*public function getBenefits(): array {
 
         $group = match($this){

@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace Items\Enums;
 
 enum Tier1 {
 
@@ -13,5 +14,20 @@ enum Tier1 {
     case PowerGlove;
     case Shimmerstick;
     case Vigil;
+
+    public function getBenefits(): array {
+
+        $benefit = match($this){
+
+            Tier1::PocketHacker => [
+                'tier one benefit',
+                'some other thing',
+            ],
+
+        };
+        
+        return $benefit;
+
+    }
 
 }

@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace Items\Enums;
 
 enum ItemAttributes {
 
@@ -17,7 +18,6 @@ enum ItemAttributes {
     case FKD_DC17;
     case MMConsole;
     case Shimmerstick;
-    case Vigil;
     case CRDSpiderCyberdeck;
     case InfiltratorModScript;
     case JohnnySpecialTouch;
@@ -51,7 +51,8 @@ enum ItemAttributes {
             ItemAttributes::CMMWidow => "CMM Widow", 
             ItemAttributes::CMMCocoon => "CMM Cocoon",
             ItemAttributes::CRDSpiderCyberdeck => "CRD Spider Cyberdeck",
-
+            default => '',
+            
         };
 
         return $name;
@@ -83,6 +84,7 @@ enum ItemAttributes {
             ItemAttributes::CMMWidow => "This tiny firearm is largely meant for support and defensive measures, helping the user get the job done and get away.", 
             ItemAttributes::CMMCocoon => "Light and durable with the best tech available, this shield was specially-designed for elite CMM operatives.",
             ItemAttributes::CRDSpiderCyberdeck => "Immoral corporation? Check. Ominous name? Check. Suspicious user? Check. Up to no good? Definitely.",
+            default => '',
 
         };
 
@@ -98,7 +100,6 @@ enum ItemAttributes {
             ItemAttributes::ConnTrustRAD,
             ItemAttributes::DigiPet,
             ItemAttributes::PocketHacker => "Golden Triangle",
-            ItemAttributes::CorpProtocols => "The Union, Cascadia Plexes",
             ItemAttributes::FKD_DC17,
             ItemAttributes::DriveMe => "Fugi Krupp Dynamics",
             ItemAttributes::BudgetCyberdeck,
@@ -110,11 +111,13 @@ enum ItemAttributes {
             ItemAttributes::MMConsole => "Cybernet Matrix Media",
             ItemAttributes::DebutantalusReporterBadge,
             ItemAttributes::Shimmerstick => "Debutantalus",
+            ItemAttributes::CorpProtocols => "The Union, Cascadia Plexes",
             ItemAttributes::CipherSyncBeacon => "Moggers",
             ItemAttributes::DeputyHat => "The Union, TRI-C.I.",
             ItemAttributes::Vigil => "LAVI",
             ItemAttributes::JohnnySpecialTouch => "The Union",
             ItemAttributes::InfiltratorModScript => "--",
+            default => '',
 
         };
 
@@ -147,7 +150,8 @@ enum ItemAttributes {
             ItemAttributes::CRDSpiderCyberdeck => "utility",
             ItemAttributes::CMMWidow => "weapon", 
             ItemAttributes::CMMCocoon => "shield",
-
+            default => '',
+            
         };
 
         return $category;
@@ -179,7 +183,8 @@ enum ItemAttributes {
             ItemAttributes::InfiltratorModScript => "ModScript",
             ItemAttributes::CMMWidow => "One-Handed Ranged",
             ItemAttributes::CMMCocoon => "Small Shield",
-
+            default => '',
+            
         };
 
         return $type;
