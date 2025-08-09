@@ -2,7 +2,12 @@
 declare(strict_types=1);
 namespace Items\Classes;
 
-use Items\Enums\ItemAttributes;
+use Items\Enums\{
+    ItemAttributes,
+    Tier0,
+    Tier1,
+    Tier2,
+};
 
 class ItemFetcher {
 
@@ -34,9 +39,9 @@ class ItemFetcher {
 
     public static function fetchStart(array $useritems = []): ItemFetcher {
 
-        self::$fetcher = new self($useritems)
-            ->sortData()
-            ->compile();
+        self::$fetcher = new self($useritems);
+        self::$fetcher->sortData();
+        self::$fetcher->compile();
 
         return self::$fetcher;
 
@@ -67,18 +72,19 @@ class ItemFetcher {
         $item = [];
 
         foreach($this->rawitems as $key => &$itemname){
-            $tierlevel = $this->getNamespace(ItemAttributes::{$itemname}, $this->rawtier[$key]);
+            $tier = $this->rawtier[$key];
+            $ItemAttributes = \constant(ItemAttributes::class . "::$itemname");
             $tiernum = \preg_replace("/[a-zA-Z]{4}/", 'T', $this->rawtier[$key]);
-            $finalname = ItemAttributes::{$itemname}->getName();
+            $displayname = $ItemAttributes->getName();
 
             $item["{$itemname}_{$tiernum}"] = [
                 'runfunc' => $itemname,
-                'name' => "{$finalname} [{$tiernum}]",
-                'type' => ItemAttributes::{$itemname}->getType(),
-                'group' => ItemAttributes::{$itemname}->getOwningGroup(),
-                'flavor' => ItemAttributes::{$itemname}->getFlavorText(),
-                'category' => ItemAttributes::{$itemname}->getCategory(),
-                'benefits' => $tierlevel::{$itemname}->getBenefits(),
+                'displayname' => "{$displayname} [{$tiernum}]",
+                'type' => $ItemAttributes->getType(),
+                'group' => $ItemAttributes->getOwningGroup(),
+                'flavor' => $ItemAttributes->getFlavorText(),
+                'category' => $ItemAttributes->getCategory(),
+                'benefits' => $this->$tier($itemname),
             ] + $this->useritems[$key];
         }
 
@@ -88,6 +94,33 @@ class ItemFetcher {
 
         return $this;
 
+    }
+
+    private function Tier0(string $itemname){
+
+        $Tier0 = \constant(Tier0::class . "::$itemname");
+        $benefit = $Tier0->getBenefits();
+
+        return $benefit;
+
+    }
+
+    private function Tier1(string $itemname){
+
+        $Tier1 = \constant(Tier1::class . "::$itemname");
+        $benefit = $Tier1->getBenefits();
+
+        return $benefit;
+        
+    }
+
+    private function Tier2(string $itemname){
+
+        $Tier2 = \constant(Tier2::class . "::$itemname");
+        $benefit = $Tier2->getBenefits();
+
+        return $benefit;
+        
     }
 
     private function getNamespace(ItemAttributes $itemname, string $tierlevel): string {
