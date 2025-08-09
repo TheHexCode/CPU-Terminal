@@ -3,12 +3,7 @@ declare(strict_types=1);
 namespace Items\Classes;
 
 use ReflectionEnumUnitCase;
-use Items\Enums\{
-    ItemAttributes,
-    Tier0,
-    Tier1,
-    Tier2,
-};
+use Items\Enums\ItemAttributes;
 
 class ItemFetcher {
 
@@ -72,7 +67,9 @@ class ItemFetcher {
         $item = [];
 
         foreach($this->rawitems as $key => &$itemname){
-            [$ItemAttributes, $tiernum, $displayname, $tierlevel] = $this->setValues($itemname, $key);
+            [$ItemAttributes, $TierLevel] = $this->setValues($itemname, $key);
+            $tiernum = \preg_replace("/[a-zA-Z]{4}/", 'T', $this->rawtier[$key]);
+            $displayname = "{$ItemAttributes->getName()} [{$tiernum}]";
 
             $item["{$itemname}_{$tiernum}"] = [
                 'runfunc' => $itemname,
@@ -81,7 +78,7 @@ class ItemFetcher {
                 'group' => $ItemAttributes->getOwningGroup(),
                 'flavor' => $ItemAttributes->getFlavorText(),
                 'category' => $ItemAttributes->getCategory(),
-                'benefits' => $tierlevel->getValue()->getBenefits(),
+                'benefits' => $TierLevel->getBenefits(),
             ] + $this->useritems[$key];
         }
 
@@ -95,20 +92,25 @@ class ItemFetcher {
 
     private function setValues(string $itemname, int $key): array {
 
-        $ItemAttributes = \constant(ItemAttributes::class . "::$itemname");
-        $tiernum = \preg_replace("/[a-zA-Z]{4}/", 'T', $this->rawtier[$key]);
-        $displayname = "{$ItemAttributes->getName()} [{$tiernum}]";
-        $namespace = $this->getNamespace($ItemAttributes, $this->rawtier[$key]);
-        $tierlevel = new ReflectionEnumUnitCase($namespace, $itemname);
+        $namespace = $this->getNamespace(ItemAttributes::class, $this->rawtier[$key]);
+        $ItemAttributes = $this->getEnum(ItemAttributes::class, $itemname);
+        $TierLevel = $this->getEnum($namespace, $itemname);
 
-        return [$ItemAttributes, $tiernum, $displayname, $tierlevel];
+        return [$ItemAttributes, $TierLevel];
 
     }
 
-    private function getNamespace(ItemAttributes $itemname, string $tierlevel): string {
+    private function getEnum(object|string $enum, string $case){
 
-        $classname = \get_class($itemname);
-        $namespace = \explode("\\", $classname);
+        $enum = new ReflectionEnumUnitCase($enum, $case);
+
+        return $enum->getValue();
+
+    }
+
+    private function getNamespace(string $itemattributes, string $tierlevel): string {
+
+        $namespace = \explode("\\", $itemattributes);
         \array_pop($namespace);
         $namespace = \implode("\\", $namespace);
 
