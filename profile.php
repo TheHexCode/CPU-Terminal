@@ -29,17 +29,17 @@
 			</div>
 			<h1>PAYLOAD CUSTOMIZATION</h1>
 			<div class="lmLoginBox">
-				<h2>MYLARP LOGIN</h2>
+				<h2>CPU LARPMANAGER LOGIN</h2>
                 <form id="lmLogin" autocomplete="off" onSubmit="lmLogin(event)">
                     <div class="lmLoginRow">
-                        <label for="lmEmail">CPU LarpManager Email:</label>
+                        <label for="lmEmail">Email:</label>
                         <input type="email" id="lmEmail" form="lmLoginForm" onkeyup="lmEnter(event)" required></input>
                     </div>
                     <div class="lmLoginRow">
-                        <label for="lmPass">CPU LarpManager Password:</label>
+                        <label for="lmPass">Password:</label>
                         <input type="password" id="lmPass" form="lmLoginForm" onkeyup="lmEnter(event)" required></input>
                     </div>
-                    <button type="submit" form="lmLogin">Log in to myLarp</button>
+                    <button type="submit" form="lmLogin">Log in to CPU LarpManager</button>
                 </form>
 			</div>
 			<div class="postLogon hidden"> <!--hidden-->
