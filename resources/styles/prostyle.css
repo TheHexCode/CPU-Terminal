@@ -87,7 +87,7 @@ h2
 	font-size: 140%;
 }
 
-.mlLoginBox
+.lmLoginBox
 {
 	display: flex;
 	flex-direction: column;
@@ -98,25 +98,25 @@ h2
 	margin-bottom: 0.5rem;
 }
 
-.mlLoginRow
+.lmLoginRow
 {
 	display: grid;
 	grid-template-columns: [start] 1rem [tab] auto [end];
 }
 
-.mlLoginRow label
+.lmLoginRow label
 {
 	grid-row: 1;
 	grid-column: start / end;
 }
 
-.mlLoginRow input
+.lmLoginRow input
 {
 	grid-row: 2;
 	grid-column: tab / end;
 }
 
-.mlLoginBox button
+.lmLoginBox button
 {
 	margin-top: 1rem;
 	width: 100%;
@@ -408,7 +408,7 @@ footer
 	font-size: 28px;
 	font-weight: bold;
 }
-  
+
 .modalClose:hover,
 .modalClose:focus {
 	color: var(--bg-color);

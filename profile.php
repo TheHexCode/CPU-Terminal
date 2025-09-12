@@ -19,27 +19,27 @@
             <div id="load" class="hidden">
 				<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
 					<mask id="logoMask">
-						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
+						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" />
 					</mask>
-				
+
 					<foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
 						<div id="logoBG"></div>
 					</foreignObject>
 				</svg>
 			</div>
 			<h1>PAYLOAD CUSTOMIZATION</h1>
-			<div class="mlLoginBox">
+			<div class="lmLoginBox">
 				<h2>MYLARP LOGIN</h2>
-                <form id="mlLogin" autocomplete="off" onSubmit="mlLogin(event)">
-                    <div class="mlLoginRow">
-                        <label for="mlEmail">myLarp Email:</label>
-                        <input type="email" id="mlEmail" form="mlLoginForm" onkeyup="mlEnter(event)" required></input>
+                <form id="lmLogin" autocomplete="off" onSubmit="lmLogin(event)">
+                    <div class="lmLoginRow">
+                        <label for="lmEmail">CPU LarpManager Email:</label>
+                        <input type="email" id="lmEmail" form="lmLoginForm" onkeyup="lmEnter(event)" required></input>
                     </div>
-                    <div class="mlLoginRow">
-                        <label for="mlPass">myLarp Password:</label>
-                        <input type="password" id="mlPass" form="mlLoginForm" onkeyup="mlEnter(event)" required></input>
+                    <div class="lmLoginRow">
+                        <label for="lmPass">CPU LarpManager Password:</label>
+                        <input type="password" id="lmPass" form="lmLoginForm" onkeyup="lmEnter(event)" required></input>
                     </div>
-                    <button type="submit" form="mlLogin">Log in to myLarp</button>
+                    <button type="submit" form="lmLogin">Log in to myLarp</button>
                 </form>
 			</div>
 			<div class="postLogon hidden"> <!--hidden-->

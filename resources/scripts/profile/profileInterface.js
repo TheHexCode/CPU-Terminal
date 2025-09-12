@@ -44,21 +44,21 @@ function toggleRadio(radio)
 	}
 }
 
-function mlEnter(event)
+function lmEnter(event)
 {
 	event.preventDefault();
 
 	if(event.key === "Enter")
 	{
-		mlLogin(event);
+		lmLogin(event);
 	}
 }
 
-function mlLogin(event)
+function lmLogin(event)
 {
 	event.preventDefault();
 
-	if(($("#mlEmail").val() === "") || ($("#mlPass").val() === ""))
+	if(($("#lmEmail").val() === "") || ($("#lmPass").val() === ""))
 	{
 		alert("Please fill both fields!");
 	}
@@ -66,24 +66,24 @@ function mlLogin(event)
 	{
 		$("#load").removeClass("hidden");
 
-		$("#mlEmail").prop("readonly",true);
-		$("#mlPass").prop("readonly",true);
-		mlEmail = $("#mlEmail").val();
-		mlPass = $("#mlPass").val();
+		$("#lmEmail").prop("readonly",true);
+		$("#lmPass").prop("readonly",true);
+		lmEmail = $("#lmEmail").val();
+		lmPass = $("#lmPass").val();
 
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "resources/scripts/profile/mylarp/myLarpLogin.php",
+			url: "resources/scripts/profile/larpmanager/lmLogin.php",
 			data:
 			{
-				mlEmail: mlEmail,
-				mlPass: mlPass
+				lmEmail: lmEmail,
+				lmPass: lmPass
 			}
 		})
 		.done(function(response)
 		{
-			processLogin(response);
+			//processLogin(response);
 		});
 	}
 }
@@ -95,8 +95,8 @@ function processLogin(loginData)
 		console.log(loginData);
 		alert("Login Failed! Please Try Again");
 
-		$("#mlEmail").prop("readonly",false);
-		$("#mlPass").prop("readonly",false);
+		$("#lmEmail").prop("readonly",false);
+		$("#lmPass").prop("readonly",false);
 
 		$("#load").addClass("hidden");
 	}
@@ -116,11 +116,11 @@ function processLogin(loginData)
 					selectCharacter(character);
 				});
 			});
-			
+
 			$("#charSelectModal").width($("#main").width());
 
 			$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
-			
+
 			$("#load").addClass("hidden");
 			$("#modalBG").css("display","flex");
 		}
@@ -136,17 +136,17 @@ function closeModal(event)
 	if((event.type !== "keyup") || (event.key === "Escape"))
 	{
 		$("#modalBG").css("display","none");
-		
+
 		$("#charListModal .modalHeaderText").html("");
 
 		$("#charListModal .modalBodyText").html("");
 
 		if(event !== "selected")
 		{
-			$("#mlEmail").prop("readonly",false);
-			$("#mlPass").prop("readonly",false);
+			$("#lmEmail").prop("readonly",false);
+			$("#lmPass").prop("readonly",false);
 
-			$("#mlPass").val("");
+			$("#lmPass").val("");
 		}
 	}
 }
@@ -156,21 +156,21 @@ function selectCharacter(char)
 	$("#load").removeClass("hidden");
 	closeModal("selected");
 
-	mlEmail = $("#mlEmail").val();
-	mlPass = $("#mlPass").val();
-	mlCharID = char["charID"];
-	mlCharName = char["charName"];
+	lmEmail = $("#lmEmail").val();
+	lmPass = $("#lmPass").val();
+	lmCharID = char["charID"];
+	lmCharName = char["charName"];
 
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/profile/mylarp/myLarpChar.php",
+		url: "resources/scripts/profile/larpmanager/lmChar.php",
 		data:
 		{
-			mlEmail: mlEmail,
-			mlPass: mlPass,
-			mlCharID: mlCharID,
-			mlCharName: mlCharName
+			lmEmail: lmEmail,
+			lmPass: lmPass,
+			lmCharID: lmCharID,
+			lmCharName: lmCharName
 		}
 	})
 	.done(function(response)
@@ -282,10 +282,10 @@ function processCharInfo(charData)
 
 	$("#load").addClass("hidden");
 
-	$("#mlPass").val("");
+	$("#lmPass").val("");
 
 	$(".postLogon").removeClass("hidden");
-	$(".mlLoginBox").addClass("hidden");
+	$(".lmLoginBox").addClass("hidden");
 }
 
 function changeOrigin(target)
@@ -313,7 +313,7 @@ function changeRole(target, wipeOld=null)
 {
 	$(".roleBox").addClass("hidden");
 	$(".pathBox").addClass("hidden");
-	
+
 	if(wipeOld !== null)
 	{
 		$(".roleBox[data-role='" + wipeOld + "'] input").attr("checked", false);
@@ -419,7 +419,7 @@ function chooseKeyword(target)
 			{
 				$(".funcChoice[data-kwtype='" + kwType + "'] .funcOption[value='" + option.value + "']").prop("disabled", false);
 			}
-			
+
 			if(option.value != "blank")
 			{
 				$("funcChoice[data-kwtype='" + kwType + "'] .funcOption[value='" + target.value + "']").each(function(index, otherOption)
@@ -548,7 +548,7 @@ function statSubmit(event)
 		}
 
 		let itemCount = $(".itemCount[data-abbr=" + $(item).attr("data-abbr") + "]");
-		
+
 		itemPush["count"] = (itemCount.length ? Number($(itemCount[0]).attr("data-charges")) : null);
 
 		items.push(itemPush);
@@ -569,7 +569,7 @@ function statSubmit(event)
 	.done(function()
 	{
 		$("#saveText").html("SAVED!");
-	
+
 		setTimeout(function(){
 			$("#saveText").addClass("hidden");
 		},5000);
