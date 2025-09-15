@@ -1,12 +1,106 @@
 <!DOCTYPE html>
 <?php
     require('../resources/scripts/terminal/db/dbConnect.php');
-    require ("scripts/adminTerm.php");
 
     $jobCode = htmlentities($_GET["jobCode"] ?? "", ENT_QUOTES, "UTF-8");
     $slug = htmlentities($_GET["slug"] ?? "", ENT_QUOTES, "UTF-8");
 
-    $terminal = new adminTerminal($pdo, $dbName, $jobCode, $slug);
+    $iceQuery = "   SELECT ice_tiers.type, ice_tiers.tier, effect
+                    FROM {$dbName}.ice_effects
+                    INNER JOIN ice_tiers ON ice_tiers.id = ice_effects.tier_id
+                    WHERE tier_id = ice_tiers.id";
+    $iceStatement = $pdo->prepare($iceQuery);
+    $iceStatement->execute();
+    $iceResults = $iceStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $iceArray = array();
+
+    array_map(function($ice) use (&$iceArray) {
+        if((!(array_key_exists($ice["type"], $iceArray))) || (!(array_key_exists($ice["tier"], $iceArray[$ice["type"]]))))
+        {
+            $iceArray[$ice["type"]][$ice["tier"]] = array($ice["effect"]);
+        }
+        else
+        {
+            array_push($iceArray[$ice["type"]][$ice["tier"]],$ice["effect"]);
+        }
+    }, $iceResults);
+
+    $allSlugs = array(
+        "communist",
+        "dorm",
+        "map",
+        "slab",
+        "squeeze"
+    );
+
+    if($jobCode === "" || $slug === "")
+    {
+        $pageTitle = "CREATE";
+        $termID = -1;
+        $jobCode = "";
+        $slug = null;
+        $slugString = "";
+        foreach($allSlugs as $avaiSlug)
+        {
+            $slugString .= "<option>" . $avaiSlug . "</option>";
+        }
+        $displayName = "";
+        $termAccess = "";
+        $entries = array();
+        $termState = 'active';
+        $stateData = null;
+    }
+    else
+    {
+        $pageTitle = "EDIT";
+
+        $terminalQuery = "  SELECT * FROM {$dbName}.sim_terminals
+                            WHERE   jobCode=:jobCode
+                                AND slug=:slug";
+        $terminalStatement = $pdo->prepare($terminalQuery);
+        $terminalStatement->execute([':jobCode' => $jobCode, ':slug' => $slug]);
+        $terminalInfo = $terminalStatement->fetch(PDO::FETCH_ASSOC);
+
+        $termID = $terminalInfo["id"];
+        $displayName = $terminalInfo["displayName"];
+        $termAccess = $terminalInfo["access"];
+        $termState = $terminalInfo["state"];
+        $stateData = $terminalInfo["stateData"];
+
+        $entryQuery = " SELECT icon, path, type, access, modify, title, contents, state
+                        FROM {$dbName}.sim_entries
+                        WHERE terminal_id=:termID";
+        $entryStatement = $pdo->prepare($entryQuery);
+        $entryStatement->execute([':termID' => $termID]);
+        $entries = $entryStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        $puzzleQuery = "SELECT * FROM {$dbName}.sim_puzzles
+                        WHERE terminal_id=:termID";
+        $puzzleStatement = $pdo->prepare($puzzleQuery);
+        $puzzleStatement->execute([':termID' => $termID]);
+        $puzzles = $puzzleStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        $knowQuery = "  SELECT id, name
+                        FROM {$dbName}.sr_knowledges";
+        $knowStatement = $pdo->prepare($knowQuery);
+        $knowStatement->execute();
+        $knowledges = $knowStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        $slugQuery = "  SELECT slug
+                        FROM {$dbName}.sim_terminals
+                        WHERE jobCode=:jobCode";
+        $slugStatement = $pdo->prepare($slugQuery);
+        $slugStatement->execute([':jobCode' => $jobCode]);
+        $takenSlugs = $slugStatement->fetchAll(PDO::FETCH_COLUMN);
+
+        $slugString = "<option>" . $slug . "</option>";
+
+        foreach(array_diff($allSlugs,$takenSlugs) as $avaiSlug)
+        {
+            $slugString .= "<option>" . $avaiSlug . "</option>";
+        }
+    }
 ?>
 <html>
     <head>
@@ -16,28 +110,28 @@
         <script type="text/javascript" src="scripts/termedit.js"></script>
     </head>
     <body>
-        <h1><?php echo $terminal->getPageTitle(); ?> TERMINAL: </h1>
+        <h1><?php echo $pageTitle ?> TERMINAL: </h1>
         <form>
             <div id="termHeader">
                 <div>
                     <div>
                         <label>JOB CODE: </label>
-                        <input id="jobCode" type="text" value="<?php echo $terminal->getJobCode(); ?>" onchange="admTerm.setMasterChanges()" />
+                        <input id="jobCode" type="text" value="<?php echo $jobCode ?>" onchange="admTerm.setMasterChanges()" />
                     </div>
                     <div>
                         <label>TERMINAL CODE: </label>
                         <select id="termSlug" onselect="admTerm.setMasterChanges()">
-                            <?php echo $terminal->getAvailableSlugs(); ?>
+                            <?php echo $slugString; ?>
                         </select>
                     </div>
                     <hr/>
                     <div>
                         <label>TERMINAL DISPLAY NAME: </label>
-                        <input id="termDisplayName" type="text" value="<?php echo $terminal->getTermDisplayName(); ?>" onchange="admTerm.setMasterChanges()" />
+                        <input id="termDisplayName" type="text" value="<?php echo $displayName; ?>" onchange="admTerm.setMasterChanges()" />
                     </div>
                     <div>
                         <label>TERMINAL ACCESS COST: </label>
-                        <input id="termAccess" type="number" value="<?php echo $terminal->getTermAccessCost(); ?>" onchange="admTerm.setMasterChanges()" />
+                        <input id="termAccess" type="number" value="<?php echo $termAccess; ?>" onchange="admTerm.setMasterChanges()" />
                     </div>
                 </div>
                 <div id="termControls">
@@ -89,6 +183,6 @@
                 </div>
             </div>
         </form>
-        <?php echo $terminal->displayTerminal(); ?>
+        <?php echo "<script>var admTerm = new AdminTerminal(" . $termID . ", " . json_encode($entries) . ", " . json_encode($puzzles) . ", " . json_encode($knowledges) .");</script>"; ?>
     </body>
 </html>

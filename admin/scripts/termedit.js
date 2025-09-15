@@ -167,6 +167,11 @@ class AdminTerminal
         $(".entryList[data-icon='puzzles']").html(this.drawPuzzles(this.puzzles));
     }
 
+    setTerminalID(newID)
+    {
+        this.#termID = Number(newID);
+    }
+
     areChangesPending()
     {
         return this.#changesPending;
@@ -330,7 +335,7 @@ class AdminTerminal
                                 '</div>' +
                             '</div>' +
                             (entry["type"] === "ice" ?
-                                this.drawEntries(entry["subIce"]) + 
+                                this.drawEntries(entry["subIce"]) +
                                 '<button class="addEntryButton" onclick="addIceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
                             '</div>' : '');
         }, this);
@@ -430,7 +435,7 @@ class AdminTerminal
         this.#puzzles.forEach(function(puzzle, index)
         {
             console.log(puzzle);
-            
+
             puzzleString += '<div class="puzzle" data-id="' + index + '">' +
                                 '<div class="entryControls">' +
                                     /*'<div class="upControls">' +
@@ -527,7 +532,7 @@ class AdminTerminal
             if(index === 0)
             {
                 reqString = '<select class="puzzleTitle" onchange="changePuzzleReq(this)" data-index="' + index + '">';
-                
+
                 if(index === 0)
                 {
                     reqString += '<option>None</option>';
@@ -864,7 +869,7 @@ class AdminTerminal
         targetPuzz["repeat"] = newValue;
 
         this.#changesPending = true;
-        
+
         $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
     }
 
@@ -1027,7 +1032,7 @@ class AdminTerminal
             "entries": JSON.stringify(this.#entryList),
             "puzzles": JSON.stringify(this.#puzzles)
         };
-        
+
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -1038,11 +1043,12 @@ class AdminTerminal
                 terminal: termInfo
             }
         })
-        .done(function()
+        .done(function(newTermID)
         {
+            admTerm.setTerminalID(newTermID);
             admTerm.clearChanges();
         });
-        
+
     }
 
     deleteTerminal()
@@ -1071,6 +1077,7 @@ class AdminTerminal
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
+/*
 $(window).bind('beforeunload', function(event)
 {
     event.preventDefault();
@@ -1080,6 +1087,7 @@ $(window).bind('beforeunload', function(event)
         return 'Leave page?\nChanges that you have made will not be saved.';
     }
 });
+*/
 
 function addEntry(event)
 {
@@ -1204,7 +1212,7 @@ function changeType(target, oldSelected)
 
     let icon = $(target).parents(".entryList")[0].dataset["icon"];
     let entryID = $(target).parents(".entry")[0].dataset["id"];
-    let oldIndex = $(target).children().filter(function(index, option){return option.value === oldSelected})[0].index 
+    let oldIndex = $(target).children().filter(function(index, option){return option.value === oldSelected})[0].index
     let newSelected = $(target)[0].selectedOptions[0].value;
 
     let oldAtts = admTerm.getIconTypeAlerts(icon, oldSelected);
@@ -1242,9 +1250,9 @@ function changeType(target, oldSelected)
 
     if(alertString.length > 0)
     {
-        let confirmText =   "Change Entry Type to " + newSelected + "?\n\n" + 
-                            "The following fields will be cleared due to differences in the new type: \n" + 
-                            alertString + 
+        let confirmText =   "Change Entry Type to " + newSelected + "?\n\n" +
+                            "The following fields will be cleared due to differences in the new type: \n" +
+                            alertString +
                             " - Entry State\n\n" +
                             "All changes can be reverted by refreshing the page without saving.";
 

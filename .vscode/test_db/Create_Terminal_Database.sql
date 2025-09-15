@@ -19,6 +19,32 @@ CREATE TABLE sim_terminals (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE ice_types (
+    type    VARCHAR(255),
+    PRIMARY KEY (type)
+);
+
+CREATE TABLE ice_tiers (
+    id      INT             AUTO_INCREMENT,
+    type    VARCHAR(255)    NOT NULL,
+    tier    INT             NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (type)
+        REFERENCES ice_types(type)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT ice_type_tier UNIQUE (type, tier)
+)
+
+CREATE TABLE ice_effects (
+    tier_id  INT     NOT NULL,
+    effect  TEXT    NOT NULL,
+    FOREIGN KEY (tier_id)
+        REFERENCES ice_tiers(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE TABLE sim_entries (
     id          INT     AUTO_INCREMENT,
     terminal_id INT     NOT NULL,

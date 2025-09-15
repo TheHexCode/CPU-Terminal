@@ -10,7 +10,7 @@ if($action === "CREATE")
     $createQuery = "INSERT INTO {$dbName}.sim_terminals
                                 (slug, jobCode, displayName, access, state, remoteEnabled)
                     VALUES (:slug, :jobCode, :displayName, :accessCost, 'active', 0)";
-    
+
     $createStatement = $pdo->prepare($createQuery);
     $createStatement->execute([ ':slug' => $terminal["termSlug"],
                                         ':jobCode' => strtoupper($terminal["jobCode"]),
@@ -63,14 +63,14 @@ if($action === "CREATE")
         }
     }
 
-    echo json_encode("Success!");
+    echo json_encode($termID);
 }
 elseif($action === "SAVE")
 {
     $updateQuery = "UPDATE {$dbName}.sim_terminals
                     SET slug=:slug, jobCode=:jobCode, displayName=:displayName, access=:accessCost
                     WHERE id=:termID";
-    
+
     $updateStatement = $pdo->prepare($updateQuery);
     $updateStatement->execute([ ':slug' => $terminal["termSlug"],
                                         ':jobCode' => strtoupper($terminal["jobCode"]),
@@ -82,7 +82,7 @@ elseif($action === "SAVE")
     {
         $deleteQuery = "DELETE from {$dbName}.sim_entries
                         WHERE terminal_id=:termID";
-        
+
         $deleteStatement = $pdo->prepare($deleteQuery);
         $deleteStatement->execute([':termID' => $terminal["termID"]]);
 
@@ -109,7 +109,7 @@ elseif($action === "SAVE")
     {
         $deleteQuery = "DELETE from {$dbName}.sim_puzzles
                         WHERE terminal_id=:termID";
-        
+
         $deleteStatement = $pdo->prepare($deleteQuery);
         $deleteStatement->execute([':termID' => $terminal["termID"]]);
 
@@ -119,7 +119,7 @@ elseif($action === "SAVE")
         {
             array_push($puzzleArray, $terminal["termID"], $puzzle["puzzle_type"], intval($puzzle["cost"]), (is_numeric($puzzle["repeat"]) ? intval($puzzle["repeat"]) : null), $puzzle["know_reqs"], $puzzle["reward_type"], (is_numeric($puzzle["reward"]) ? intval($puzzle["reward"]) : $puzzle["reward"]), 0);
         };
-        
+
         if(!empty($puzzleArray))
         {
             $insertQuery = "INSERT INTO {$dbName}.sim_puzzles
@@ -131,13 +131,13 @@ elseif($action === "SAVE")
         }
     }
 
-    echo json_encode("Success!");
+    echo json_encode($terminal["termID"]);
 }
 else if ($action === "DELETE")
 {
     $deleteQuery = "DELETE FROM {$dbName}.sim_terminals
                     WHERE id=:termID";
-        
+
     $deleteStatement = $pdo->prepare($deleteQuery);
     $deleteStatement->execute([':termID' => $terminal["termID"]]);
 
@@ -147,7 +147,7 @@ else if ($action === "DELETE")
 function getEntries($termID, $entryList)
 {
     $returnArray = array();
-    
+
     foreach($entryList as $entry)
     {
         array_push($returnArray,$termID, $entry["icon"], $entry["path"], strtolower($entry["type"]), $entry["access"], $entry["modify"], $entry["title"], $entry["contents"], $entry["state"]);
