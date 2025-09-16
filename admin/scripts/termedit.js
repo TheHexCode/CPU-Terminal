@@ -147,16 +147,16 @@ class AdminTerminal
     #entryList = [];
     #puzzles = [];
     #knowledges = [];
+    #iceSchema = [];
     #changesPending = false;
 
-    constructor(termID, entries, puzzles, knowledges)
+    constructor(termID, entries, puzzles, knowledges, iceListing)
     {
         this.#termID = termID;
         this.#entryList = this.#listifyEntries(entries);
         this.#puzzles = puzzles ?? [];
         this.#knowledges = knowledges ?? [];
-
-        //console.log(this.#entryList);
+        this.#iceSchema = iceListing;
 
         $(".entryList[data-icon='files']").html(this.drawEntries(this.#entryList["files"]));
         $(".entryList[data-icon='darkweb']").html(this.drawEntries(this.#entryList["darkweb"]));
@@ -265,6 +265,8 @@ class AdminTerminal
 
             entry["parsedAccess"] = '"' + (entry["access"] === null ? 0 : entry["access"]) + '"';
             entry["parsedModify"] = '"' + (entry["modify"] === null ? 0 : entry["modify"]) + '"';
+
+            entry["titleType"] = "text";
             entry["parsedTitle"] = '"' + (entry["title"] === null ? "" : entry["title"]) + '"';
 
             if(entry["type"] === "trap")
@@ -282,7 +284,39 @@ class AdminTerminal
                 contentsLabel = "EFFECTS";
 
                 entry["parsedAccess"] = '"0" disabled';
-                entry["parsedContents"] = this.#getEntryEffects(entry["contents"]);
+
+                entry["titleType"] = "select-select";
+
+                if(entry["title"] === null)
+                {
+                    entry["title"] = Object.keys(this.#iceSchema)[0];
+                }
+
+                if(entry["contents"] === null)
+                {
+                    entry["contents"] = Object.keys(this.#iceSchema[entry["title"]])[0];
+                }
+
+                entry["parsedTitle"] =  '<div class="entryTitle">' +
+                                            '<select class="selectParent" data-id="' + entry["path"] + '" onchange="changeICEType(this)">';
+
+                Object.keys(this.#iceSchema).forEach(function(iceType)
+                {
+                    entry["parsedTitle"] +=     '<option value="' + iceType + '"' + (entry["title"] === iceType ? " selected" : "" ) + '>' + iceType + '</option>';
+                });
+
+                entry["parsedTitle"] +=     '</select>' +
+                                            '<select class="selectChild" data-id="' + entry["path"] + '" onchange="changeICETier(this)">';
+
+                Object.keys(this.#iceSchema[entry["title"]]).forEach(function(iceTier)
+                {
+                    entry["parsedTitle"] +=     '<option value="' + iceTier + '"' + (entry["contents"] === iceTier ? " selected" : "" ) + '>' + iceTier + '</option>';
+                })
+
+                entry["parsedTitle"] +=     '</select>' +
+                                        '</div>';
+
+                entry["parsedContents"] = this.#getICEEffects(entry["title"], entry["contents"]);
             }
             else if((entry["icon"] !== "files") && (entry["icon"] !== "darkweb"))
             {
@@ -329,7 +363,9 @@ class AdminTerminal
                                     '<div class="entryInputRow">' +
                                         '<input class="entryAccess" type="number" value=' + entry["parsedAccess"] + ' onchange="changeEntry(this)" />' +
                                         '<input class="entryModify" type="number" value=' + entry["parsedModify"] + ' onchange="changeEntry(this)" />' +
-                                        '<input class="entryTitle" type="text" value=' + entry["parsedTitle"] + ' onchange="changeEntry(this)" />' +
+                                        (entry["titleType"] === "text" ?
+                                            '<input class="entryTitle" type="text" value=' + entry["parsedTitle"] + ' onchange="changeEntry(this)" />' :
+                                            entry["parsedTitle"]) +
                                         '<input class="entryContents" type="text" value=' + entry["parsedContents"] +
                                     '</div>' +
                                 '</div>' +
@@ -415,6 +451,25 @@ class AdminTerminal
         return effectString;
     }
 
+    #getICEEffects(iceType, iceTier)
+    {
+        let effects = this.#iceSchema[iceType][iceTier];
+
+        //'<input class="entryContents" type="text" value=' + entry["parsedContents"] +
+        let effectString = '"' + effects[0] + '" disabled />';
+
+        for(let i = 1; i < effects.length; i++)
+        {
+            let effectCount = i + 4;
+
+            effectString += '</div>' +
+                            '<div class="entryInputRow" style="grid-row: ' + effectCount + '">' +
+                                '<input class="entryContents" type="text" value="' + effects[i] + '" disabled />';
+        }
+
+        return effectString;
+    }
+
     #resetIconPaths(entries, path = "")
     {
         entries.forEach(function (entry, index)
@@ -434,8 +489,6 @@ class AdminTerminal
 
         this.#puzzles.forEach(function(puzzle, index)
         {
-            console.log(puzzle);
-
             puzzleString += '<div class="puzzle" data-id="' + index + '">' +
                                 '<div class="entryControls">' +
                                     /*'<div class="upControls">' +
@@ -688,8 +741,8 @@ class AdminTerminal
             path: iceID + "-" + targetIce["subIce"].length,
             access: 1,
             modify: 1,
-            title: "",
-            contents: "",
+            title: null,
+            contents: null,
             state: "initial",
             type: AdminTerminal.#iconTypeMap[icon][0],
             subIce: []
@@ -735,6 +788,30 @@ class AdminTerminal
         this.#changesPending = true;
 
         $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
+    }
+
+    changeICEEffects(icon, entryID, parent, child=null)
+    {
+        let targetEntry = this.#entryList[icon];
+
+        entryID.split("-").forEach(function (pathPart, pathIndex, pathArray)
+        {
+            if(pathIndex === pathArray.length-1)
+            {
+                targetEntry = targetEntry[pathPart];
+            }
+            else
+            {
+                targetEntry = targetEntry[pathPart]["subIce"];
+            }
+        });
+
+        targetEntry["title"] = parent;
+        targetEntry["contents"] = child;
+
+        this.#changesPending = true
+
+        $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]))
     }
 
     changeEntry(newValue, icon, id, type, effectIndex)
@@ -825,6 +902,12 @@ class AdminTerminal
             {
                 targetEntry["contents"] = "";
             }
+        }
+
+        if(newSelected === "ice")
+        {
+            targetEntry["title"] = null;
+            targetEntry["contents"] = null;
         }
 
         targetEntry["type"] = newSelected;
@@ -1204,6 +1287,24 @@ function deleteEffect(event, effectIndex)
     {
         // CANCEL
     }
+}
+
+function changeICEType(target)
+{
+    let icon = $(target).parents(".entryList")[0].dataset["icon"];
+    let entryID = $(target).parents(".entry")[0].dataset["id"];
+
+    admTerm.changeICEEffects(icon, entryID, target.selectedOptions[0].value);
+}
+
+function changeICETier(target)
+{
+    let icon = $(target).parents(".entryList")[0].dataset["icon"];
+    let entryID = $(target).parents(".entry")[0].dataset["id"];
+
+    let parent = target.previousSibling;
+
+    admTerm.changeICEEffects(icon, entryID, parent.selectedOptions[0].value, target.selectedOptions[0].value);
 }
 
 function changeType(target, oldSelected)

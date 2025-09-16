@@ -183,6 +183,6 @@
                 </div>
             </div>
         </form>
-        <?php echo "<script>var admTerm = new AdminTerminal(" . $termID . ", " . json_encode($entries) . ", " . json_encode($puzzles) . ", " . json_encode($knowledges) .");</script>"; ?>
+        <?php echo "<script>var admTerm = new AdminTerminal(" . $termID . ", " . json_encode($entries) . ", " . json_encode($puzzles ?? array()) . ", " . json_encode($knowledges ?? array()) . ", " . json_encode($iceArray) . ");</script>"; ?>
     </body>
 </html>
