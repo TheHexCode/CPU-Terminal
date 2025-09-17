@@ -178,6 +178,8 @@ class Terminal
             $inIce = array();
             $outIce = 0;
 
+            $prevEntry = null;
+
             foreach($dbArray as $entry)
             {
                 $entryData = array(
@@ -220,7 +222,8 @@ class Terminal
 
                     $subClass .= " ice";
 
-                    $unit = "ICE " . $unitCode;
+                    //$unit = "ICE " . $unitCode;
+                    $unit = "ICE " . $entry["path"];
 
                     $accessInt = ($entry["state"] === "initial") ?
                                     'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' :
@@ -230,7 +233,7 @@ class Terminal
                                     'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                     'Sleaze: <button class="sleazeButton" data-enabled="false" disabled>N/A</button>';
 
-                    $titleMask = $entry["title"];
+                    $titleMask = $entry["title"] . " " . $entry["contents"];
                     $entryData["title"] = $entry["title"] . " " . $entry["contents"];
 
                     if($entry["state"] === "initial")
@@ -262,7 +265,8 @@ class Terminal
                         return !preg_match('/(' . $icePath . ')/',$entry["path"]);
                     }));
 
-                    $unit = $iconGuide["unit"] . " " . $unitCode;
+                    //$unit = $iconGuide["unit"] . " " . $unitCode;
+                    $unit = $iconGuide["unit"] . " " . $entry["path"];
 
                     $accessInt = ($stateGuide["access"]["enabled"]) ?
                                     'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
@@ -300,7 +304,6 @@ class Terminal
                     }
                     elseif($stateGuide["title"] === true)
                     {
-
                         $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
                         $entryData["title"] = $entry["title"];
                     }
@@ -353,12 +356,23 @@ class Terminal
 
                 $entryString = "";
 
+                /*
                 for($i = 0; $i < $outIce; $i++)
                 {
                     $entryString .= '</div>';
                     array_pop($inIce);
                 }
                 $outIce = 0;
+                */
+
+                $iceDiff = max(0, substr_count($prevEntry["path"] ?? "","-") - substr_count($entry["path"], "-"));
+
+                for($i = 0; $i < $iceDiff; $i++)
+                {
+                    $entryString .= '</div>';
+                }
+
+                $prevEntry = $entry;
 
                 $prefixIntro = ">> ";
 

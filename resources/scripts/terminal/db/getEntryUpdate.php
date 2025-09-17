@@ -60,7 +60,7 @@ if($entry["type"] === "ice")
 
     $spannedContents = "";
 
-    $effectArray = $this->iceSchema[$entry["title"]][$entry["contents"]];
+    $effectArray = $iceSchema[$entry["title"]][$entry["contents"]];
 
     foreach($effectArray as $entryEffect)
     {

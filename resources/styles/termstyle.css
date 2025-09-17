@@ -822,7 +822,7 @@ ul
 .entryTitleBar
 {
 	display: grid;
-	grid-template-columns: min-content 
+	grid-template-columns: min-content
 }
 
 .subContentContainer
@@ -1037,7 +1037,7 @@ ul
 
 .entry.ice
 {
-	margin: 0 -0.5rem -0.5rem -0.5rem;
+	margin: 0 -0.5rem 0.5rem -0.5rem;
 	padding: 0.25rem;
 	color: var(--fg-color);
 	background-color: var(--bg-color);
@@ -1055,7 +1055,7 @@ ul
 
 .entry.ice .entry.ice
 {
-	border-width: 0.5rem 0;
+	border-width: 0.5rem 0 0 0;
 	margin: 0 -0.25rem;
 }
 
@@ -1409,7 +1409,7 @@ footer
 	font-weight: bold;
 	margin-left: 0.5rem;
 }
-  
+
 .modalClose:hover,
 .modalClose:focus {
 	color: var(--bg-color);
