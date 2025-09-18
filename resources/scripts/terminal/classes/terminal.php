@@ -13,6 +13,7 @@ class Terminal
     private $initialEntries;
     private $logEntries;
     private $iconSchema;
+    private $iceSchema;
 
     function __construct($termResponse)
     {
@@ -32,6 +33,7 @@ class Terminal
             $this->puzzles = $termResponse["puzzles"];
             $this->initialEntries = array();
             $this->logEntries = $termResponse["logEntries"];
+            $this->iceSchema = $termResponse["iceSchema"];
 
             $iconFilepath = "./resources/schemas/icons.json";
             $iconFile = fopen($iconFilepath,"r");
@@ -89,7 +91,7 @@ class Terminal
             {
                 if(in_array($icon,$activeIcons,true))
                 {
-                    $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(this,\'' . $icon . 'Content\')">' . 
+                    $subTabString = '<button id="' . $icon . 'SubTab" class="subTab inactive" onclick="openSubTab(this,\'' . $icon . 'Content\')">' .
                                         '<img src="./resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                     '</button>';
 
@@ -97,13 +99,13 @@ class Terminal
                 }
                 else
                 {
-                    $subTabString = '<button id="' . $icon . 'SubTab" class="subTab disabled">' . 
+                    $subTabString = '<button id="' . $icon . 'SubTab" class="subTab disabled">' .
                                         '<img src="./resources/images/subtabs/' . $icon . '.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                     '</button>';
                 }
             }
 
-            $puzzTabString =    '<button id="puzzlesSubTab" class="subTab inactive" onclick="openSubTab(this,\'puzzlesContent\')">' . 
+            $puzzTabString =    '<button id="puzzlesSubTab" class="subTab inactive" onclick="openSubTab(this,\'puzzlesContent\')">' .
                                     '<img src="./resources/images/subtabs/puzzles.png" onerror="this.onerror=null;this.src=\'https://placehold.co/30\'"/>' .
                                 '</button>';
 
@@ -141,7 +143,7 @@ class Terminal
                 {
                     $logHandle = $logEntry["charName"];
                 }
-    
+
                 $logEntryString =   '<li id="log' . $logEntry["id"] . '" class="logEntry" data-user="' . $logEntry["user_id"] . '">' .
                                         '<span class="logPerson">User:&nbsp;</span><span class="logName">' . $logHandle . '</span>' .
                                         '<div class="logActions hidden">' .
@@ -154,7 +156,7 @@ class Terminal
 
             array_push($logArray,$logEntryString);
         }
-        
+
         return implode($logArray);
     }
 
@@ -175,6 +177,8 @@ class Terminal
 
             $inIce = array();
             $outIce = 0;
+
+            $prevEntry = null;
 
             foreach($dbArray as $entry)
             {
@@ -209,7 +213,7 @@ class Terminal
                         $unitCode[$i] = chr(intval($unitCode[$i])+65);
                     }
                 }
-                
+
                 $unitCode = implode($unitCode);
 
                 if($entry["type"] === "ice")
@@ -218,18 +222,19 @@ class Terminal
 
                     $subClass .= " ice";
 
-                    $unit = "ICE " . $unitCode;
+                    //$unit = "ICE " . $unitCode;
+                    $unit = "ICE " . $entry["path"];
 
                     $accessInt = ($entry["state"] === "initial") ?
-                                    'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' : 
+                                    'Break: <button class="breakButton" data-enabled="true" data-cost="0" data-id=' . $entry["id"] . ' onclick="takeAction(this)">0 Tags</button>' :
                                     'Break: <button class="breakButton" data-enabled="false" disabled>N/A</button>';
 
                     $modifyInt = ($entry["state"] === "initial") ?
                                     'Sleaze: <button class="sleazeButton" data-enabled="true" data-cost="' . $entry["modify"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["modify"] . ' Tag' . ((intval($entry["modify"]) === 1) ? '' : 's') . '</button>' :
                                     'Sleaze: <button class="sleazeButton" data-enabled="false" disabled>N/A</button>';
 
-                    $titleMask = $entry["title"];
-                    $entryData["title"] = $entry["title"];
+                    $titleMask = $entry["title"] . " " . $entry["contents"];
+                    $entryData["title"] = $entry["title"] . " " . $entry["contents"];
 
                     if($entry["state"] === "initial")
                     {
@@ -240,14 +245,16 @@ class Terminal
                     {
                         $contentsMask = '<span class="entrySecret">';
 
-                        foreach(json_decode($entry["contents"]) as $entryContent)
+                        $effectArray = $this->iceSchema[$entry["title"]][$entry["contents"]];
+
+                        foreach($effectArray as $entryEffect)
                         {
-                            $contentsMask .= "<span" . ($entry["state"] === "break" ? " class='backstroke' data-text='" . $entryContent . "'" : "") . ">" . $entryContent . "</span>";
+                            $contentsMask .= "<span" . ($entry["state"] === "break" ? " class='backstroke' data-text='" . $entryEffect . "'" : "") . ">" . $entryEffect . "</span>";
                         }
 
                         $contentsMask .= '</span>';
-                        
-                        $entryData["contents"] = $entry["contents"];
+
+                        $entryData["contents"] = json_encode($effectArray);
                     }
                 }
                 else
@@ -258,7 +265,8 @@ class Terminal
                         return !preg_match('/(' . $icePath . ')/',$entry["path"]);
                     }));
 
-                    $unit = $iconGuide["unit"] . " " . $unitCode;
+                    //$unit = $iconGuide["unit"] . " " . $unitCode;
+                    $unit = $iconGuide["unit"] . " " . $entry["path"];
 
                     $accessInt = ($stateGuide["access"]["enabled"]) ?
                                     'Access: <button class="accessButton" data-enabled="true" data-cost="' . $entry["access"] . '" data-id=' . $entry["id"] . ' onclick="takeAction(this)">' . $entry["access"] . ' Tag' . ((intval($entry["access"]) === 1) ? '' : 's') . '</button>' :
@@ -287,8 +295,8 @@ class Terminal
                                 break;
                         }
                     }
-                    
-                    
+
+
                     if($stateGuide["title"] === false)
                     {
                         $titleMask = '<span class="entryMasking">&nbsp;</span>';
@@ -296,7 +304,6 @@ class Terminal
                     }
                     elseif($stateGuide["title"] === true)
                     {
-                        
                         $titleMask = '<span class="entrySecret">' . $entry["title"] . '</span>';
                         $entryData["title"] = $entry["title"];
                     }
@@ -330,7 +337,7 @@ class Terminal
                                 }
 
                                 $contentsMask .= '</span>';
-                                
+
                                 $entryData["contents"] = json_decode($entry["contents"]);
                             }
                         }
@@ -348,13 +355,25 @@ class Terminal
                 }
 
                 $entryString = "";
-
+                /*
                 for($i = 0; $i < $outIce; $i++)
                 {
                     $entryString .= '</div>';
                     array_pop($inIce);
                 }
                 $outIce = 0;
+                */
+                
+                $iceDiff = max(0, substr_count($prevEntry["path"] ?? "","-") - substr_count($entry["path"], "-"));
+
+                for($i = 0; $i < $iceDiff; $i++)
+                {
+                    $entryString .= '</div>';
+                    array_pop($inIce);
+                }
+
+                $prevEntry = $entry;
+                
 
                 $prefixIntro = ">> ";
 
@@ -382,7 +401,7 @@ class Terminal
                                         '<div class="entryInterface modifyInterface">' .
                                             $modifyInt .
                                         '</div>' .
-                                    '</div>' . 
+                                    '</div>' .
                                     '<hr/>';
 
                 if($entry["type"] !== "ice")
@@ -613,7 +632,7 @@ class Terminal
                                                 '<button class="puzzleSolveButton" data-enabled="true" data-id="' . $puzzle["id"] . '" data-cost="' . $puzzle["cost"] . '" onclick="generatePuzzle(this)">' . $puzzleSolveText . '</button>' .
                                                 $puzzleRepeatEnd .
                                             '</div>' .
-                                        '</div>' . 
+                                        '</div>' .
                                     '</div>';
             }
 

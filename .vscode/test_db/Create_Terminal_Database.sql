@@ -1,4 +1,4 @@
--- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
+-- Active: 1746590270449@@REXv5@3306@dbiykpinec1m8s
 
 USE dbiykpinec1m8s;
 
@@ -17,6 +17,32 @@ CREATE TABLE sim_terminals (
 	stateData 	    INT,
     remoteEnabled   BOOL    NOT NULL,
 	PRIMARY KEY (id)
+);
+
+CREATE TABLE ice_types (
+    type    VARCHAR(255),
+    PRIMARY KEY (type)
+);
+
+CREATE TABLE ice_tiers (
+    id      INT             AUTO_INCREMENT,
+    type    VARCHAR(255)    NOT NULL,
+    tier    INT             NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (type)
+        REFERENCES ice_types(type)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT ice_type_tier UNIQUE (type, tier)
+)
+
+CREATE TABLE ice_effects (
+    tier_id  INT     NOT NULL,
+    effect  TEXT    NOT NULL,
+    FOREIGN KEY (tier_id)
+        REFERENCES ice_tiers(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 CREATE TABLE sim_entries (

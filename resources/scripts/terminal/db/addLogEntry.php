@@ -24,12 +24,12 @@ $newLogID = $pdo->lastInsertId();
 
 //SEND INTERRUPT CODE
 $prevErrLvl = error_reporting(0);
-
+/*
+require '../listener/composer/vendor/autoload.php';
 use WebSocket;
+
 try
 {
-    require '../listener/composer/vendor/autoload.php';
-
     $tempClient = new WebSocket\Client("ws://localhost:8767");
 
     $tempClient->addMiddleware(new WebSocket\Middleware\CloseHandler());
@@ -53,5 +53,5 @@ catch(Exception $error)
 }
 error_reporting($prevErrLvl);
 //////////////////////////////////////////////////////
-
+*/
 echo $newLogID;

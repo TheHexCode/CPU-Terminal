@@ -10,7 +10,7 @@ $actionUser = $_GET["actionUser"] ?? null;
 $userID = $_GET["userID"] ?? null;
 $action = $_GET["action"] ?? null;
 
-$entryQuery = " SELECT * FROM {$dbName}.sim_entries 
+$entryQuery = " SELECT * FROM {$dbName}.sim_entries
                 WHERE id=:entryID";
 
 $entryStatement = $pdo->prepare($entryQuery);
@@ -33,24 +33,40 @@ $newEntry["entryPath"] = "#" . $entry["icon"] . "-" . $entry["path"];
 
 if($entry["type"] === "ice")
 {
-    $newEntry["title"] = '<span class="entrySecret' .
-                            (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? ' sprung backstroke" data-text="' . $entry["title"] . '"' : ' disarmed"') .
-                        '>' . $entry["title"] . '</span>';
+    $iceQuery = "   SELECT ice_tiers.type, ice_tiers.tier, effect
+                    FROM {$dbName}.ice_effects
+                    INNER JOIN ice_tiers ON ice_tiers.id = ice_effects.tier_id
+                    WHERE tier_id = ice_tiers.id";
+    $iceStatement = $pdo->prepare($iceQuery);
+    $iceStatement->execute();
+    $iceResults = $iceStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    if(json_decode($entry["contents"]))
-    {
-        $spannedContents = "";
+    $iceSchema = array();
 
-        foreach(json_decode($entry["contents"]) as $entryContent)
+    array_map(function($ice) use (&$iceSchema) {
+        if((!(array_key_exists($ice["type"], $iceSchema))) || (!(array_key_exists($ice["tier"], $iceSchema[$ice["type"]]))))
         {
-            $spannedContents .= "<span" .
-                                    (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? " class='backstroke' data-text='" . $entryContent . "'" : "") .
-                                ">" . $entryContent . "</span>";
+            $iceSchema[$ice["type"]][$ice["tier"]] = array($ice["effect"]);
         }
-    }
-    else
+        else
+        {
+            array_push($iceSchema[$ice["type"]][$ice["tier"]],$ice["effect"]);
+        }
+    }, $iceResults);
+
+    $newEntry["title"] = '<span class="entrySecret' .
+                            (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? ' sprung backstroke" data-text="' . $entry["title"] . ' ' . $entry["contents"] . '"' : ' disarmed"') .
+                        '>' . $entry["title"] . ' ' . $entry["contents"] . '</span>';
+
+    $spannedContents = "";
+
+    $effectArray = $iceSchema[$entry["title"]][$entry["contents"]];
+
+    foreach($effectArray as $entryEffect)
     {
-        $spannedContents = $entry["contents"];
+        $spannedContents .= "<span" .
+                                (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? " class='backstroke' data-text='" . $entryEffect . "'" : "") .
+                            ">" . $entryEffect . "</span>";
     }
 
     $newEntry["contents"] = '<span class="entrySecret' . (((($actionUser === null) || ($actionUser === $userID)) && ($newState === "break")) ? " sprung" : " disarmed") . '">' . $spannedContents . '</span>';

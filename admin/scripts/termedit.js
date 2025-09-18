@@ -147,16 +147,16 @@ class AdminTerminal
     #entryList = [];
     #puzzles = [];
     #knowledges = [];
+    #iceSchema = [];
     #changesPending = false;
 
-    constructor(termID, entries, puzzles, knowledges)
+    constructor(termID, entries, puzzles, knowledges, iceListing)
     {
         this.#termID = termID;
         this.#entryList = this.#listifyEntries(entries);
         this.#puzzles = puzzles ?? [];
         this.#knowledges = knowledges ?? [];
-
-        //console.log(this.#entryList);
+        this.#iceSchema = iceListing;
 
         $(".entryList[data-icon='files']").html(this.drawEntries(this.#entryList["files"]));
         $(".entryList[data-icon='darkweb']").html(this.drawEntries(this.#entryList["darkweb"]));
@@ -165,6 +165,11 @@ class AdminTerminal
         $(".entryList[data-icon='defenses']").html(this.drawEntries(this.#entryList["defenses"]));
         $(".entryList[data-icon='utilities']").html(this.drawEntries(this.#entryList["utilities"]));
         $(".entryList[data-icon='puzzles']").html(this.drawPuzzles(this.puzzles));
+    }
+
+    setTerminalID(newID)
+    {
+        this.#termID = Number(newID);
     }
 
     areChangesPending()
@@ -260,6 +265,8 @@ class AdminTerminal
 
             entry["parsedAccess"] = '"' + (entry["access"] === null ? 0 : entry["access"]) + '"';
             entry["parsedModify"] = '"' + (entry["modify"] === null ? 0 : entry["modify"]) + '"';
+
+            entry["titleType"] = "text";
             entry["parsedTitle"] = '"' + (entry["title"] === null ? "" : entry["title"]) + '"';
 
             if(entry["type"] === "trap")
@@ -277,7 +284,39 @@ class AdminTerminal
                 contentsLabel = "EFFECTS";
 
                 entry["parsedAccess"] = '"0" disabled';
-                entry["parsedContents"] = this.#getEntryEffects(entry["contents"]);
+
+                entry["titleType"] = "select-select";
+
+                if(entry["title"] === null)
+                {
+                    entry["title"] = Object.keys(this.#iceSchema)[0];
+                }
+
+                if(entry["contents"] === null)
+                {
+                    entry["contents"] = Object.keys(this.#iceSchema[entry["title"]])[0];
+                }
+
+                entry["parsedTitle"] =  '<div class="entryTitle">' +
+                                            '<select class="selectParent" data-id="' + entry["path"] + '" onchange="changeICEType(this)">';
+
+                Object.keys(this.#iceSchema).forEach(function(iceType)
+                {
+                    entry["parsedTitle"] +=     '<option value="' + iceType + '"' + (entry["title"] === iceType ? " selected" : "" ) + '>' + iceType + '</option>';
+                });
+
+                entry["parsedTitle"] +=     '</select>' +
+                                            '<select class="selectChild" data-id="' + entry["path"] + '" onchange="changeICETier(this)">';
+
+                Object.keys(this.#iceSchema[entry["title"]]).forEach(function(iceTier)
+                {
+                    entry["parsedTitle"] +=     '<option value="' + iceTier + '"' + (entry["contents"] === iceTier ? " selected" : "" ) + '>' + iceTier + '</option>';
+                })
+
+                entry["parsedTitle"] +=     '</select>' +
+                                        '</div>';
+
+                entry["parsedContents"] = this.#getICEEffects(entry["title"], entry["contents"]);
             }
             else if((entry["icon"] !== "files") && (entry["icon"] !== "darkweb"))
             {
@@ -324,13 +363,15 @@ class AdminTerminal
                                     '<div class="entryInputRow">' +
                                         '<input class="entryAccess" type="number" value=' + entry["parsedAccess"] + ' onchange="changeEntry(this)" />' +
                                         '<input class="entryModify" type="number" value=' + entry["parsedModify"] + ' onchange="changeEntry(this)" />' +
-                                        '<input class="entryTitle" type="text" value=' + entry["parsedTitle"] + ' onchange="changeEntry(this)" />' +
+                                        (entry["titleType"] === "text" ?
+                                            '<input class="entryTitle" type="text" value=' + entry["parsedTitle"] + ' onchange="changeEntry(this)" />' :
+                                            entry["parsedTitle"]) +
                                         '<input class="entryContents" type="text" value=' + entry["parsedContents"] +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
                             (entry["type"] === "ice" ?
-                                this.drawEntries(entry["subIce"]) + 
+                                this.drawEntries(entry["subIce"]) +
                                 '<button class="addEntryButton" onclick="addIceEntry(event)">&plus; Add Entry to ICE ' + entry["path"] + '</button>' +
                             '</div>' : '');
         }, this);
@@ -410,6 +451,25 @@ class AdminTerminal
         return effectString;
     }
 
+    #getICEEffects(iceType, iceTier)
+    {
+        let effects = this.#iceSchema[iceType][iceTier];
+
+        //'<input class="entryContents" type="text" value=' + entry["parsedContents"] +
+        let effectString = '"' + effects[0] + '" disabled />';
+
+        for(let i = 1; i < effects.length; i++)
+        {
+            let effectCount = i + 4;
+
+            effectString += '</div>' +
+                            '<div class="entryInputRow" style="grid-row: ' + effectCount + '">' +
+                                '<input class="entryContents" type="text" value="' + effects[i] + '" disabled />';
+        }
+
+        return effectString;
+    }
+
     #resetIconPaths(entries, path = "")
     {
         entries.forEach(function (entry, index)
@@ -429,8 +489,6 @@ class AdminTerminal
 
         this.#puzzles.forEach(function(puzzle, index)
         {
-            console.log(puzzle);
-            
             puzzleString += '<div class="puzzle" data-id="' + index + '">' +
                                 '<div class="entryControls">' +
                                     /*'<div class="upControls">' +
@@ -527,7 +585,7 @@ class AdminTerminal
             if(index === 0)
             {
                 reqString = '<select class="puzzleTitle" onchange="changePuzzleReq(this)" data-index="' + index + '">';
-                
+
                 if(index === 0)
                 {
                     reqString += '<option>None</option>';
@@ -732,6 +790,30 @@ class AdminTerminal
         $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
     }
 
+    changeICEEffects(icon, entryID, parent, child=null)
+    {
+        let targetEntry = this.#entryList[icon];
+
+        entryID.split("-").forEach(function (pathPart, pathIndex, pathArray)
+        {
+            if(pathIndex === pathArray.length-1)
+            {
+                targetEntry = targetEntry[pathPart];
+            }
+            else
+            {
+                targetEntry = targetEntry[pathPart]["subIce"];
+            }
+        });
+
+        targetEntry["title"] = parent;
+        targetEntry["contents"] = child;
+
+        this.#changesPending = true
+
+        $(".entryList[data-icon='" + icon + "']").html(this.drawEntries(this.#entryList[icon]))
+    }
+
     changeEntry(newValue, icon, id, type, effectIndex)
     {
         let targetEntry = this.#entryList[icon];
@@ -822,6 +904,12 @@ class AdminTerminal
             }
         }
 
+        if(newSelected === "ice")
+        {
+            targetEntry["title"] = null;
+            targetEntry["contents"] = null;
+        }
+
         targetEntry["type"] = newSelected;
 
         this.#changesPending = true;
@@ -864,7 +952,7 @@ class AdminTerminal
         targetPuzz["repeat"] = newValue;
 
         this.#changesPending = true;
-        
+
         $(".entryList[data-icon='puzzles']").html(this.drawPuzzles());
     }
 
@@ -1027,7 +1115,7 @@ class AdminTerminal
             "entries": JSON.stringify(this.#entryList),
             "puzzles": JSON.stringify(this.#puzzles)
         };
-        
+
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -1038,11 +1126,12 @@ class AdminTerminal
                 terminal: termInfo
             }
         })
-        .done(function()
+        .done(function(newTermID)
         {
+            admTerm.setTerminalID(newTermID);
             admTerm.clearChanges();
         });
-        
+
     }
 
     deleteTerminal()
@@ -1071,6 +1160,7 @@ class AdminTerminal
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
+/*
 $(window).bind('beforeunload', function(event)
 {
     event.preventDefault();
@@ -1080,6 +1170,7 @@ $(window).bind('beforeunload', function(event)
         return 'Leave page?\nChanges that you have made will not be saved.';
     }
 });
+*/
 
 function addEntry(event)
 {
@@ -1198,13 +1289,31 @@ function deleteEffect(event, effectIndex)
     }
 }
 
+function changeICEType(target)
+{
+    let icon = $(target).parents(".entryList")[0].dataset["icon"];
+    let entryID = $(target).parents(".entry")[0].dataset["id"];
+
+    admTerm.changeICEEffects(icon, entryID, target.selectedOptions[0].value);
+}
+
+function changeICETier(target)
+{
+    let icon = $(target).parents(".entryList")[0].dataset["icon"];
+    let entryID = $(target).parents(".entry")[0].dataset["id"];
+
+    let parent = target.previousSibling;
+
+    admTerm.changeICEEffects(icon, entryID, parent.selectedOptions[0].value, target.selectedOptions[0].value);
+}
+
 function changeType(target, oldSelected)
 {
     oldSelected = oldSelected;
 
     let icon = $(target).parents(".entryList")[0].dataset["icon"];
     let entryID = $(target).parents(".entry")[0].dataset["id"];
-    let oldIndex = $(target).children().filter(function(index, option){return option.value === oldSelected})[0].index 
+    let oldIndex = $(target).children().filter(function(index, option){return option.value === oldSelected})[0].index
     let newSelected = $(target)[0].selectedOptions[0].value;
 
     let oldAtts = admTerm.getIconTypeAlerts(icon, oldSelected);
@@ -1242,9 +1351,9 @@ function changeType(target, oldSelected)
 
     if(alertString.length > 0)
     {
-        let confirmText =   "Change Entry Type to " + newSelected + "?\n\n" + 
-                            "The following fields will be cleared due to differences in the new type: \n" + 
-                            alertString + 
+        let confirmText =   "Change Entry Type to " + newSelected + "?\n\n" +
+                            "The following fields will be cleared due to differences in the new type: \n" +
+                            alertString +
                             " - Entry State\n\n" +
                             "All changes can be reverted by refreshing the page without saving.";
 

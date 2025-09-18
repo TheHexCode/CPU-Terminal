@@ -74,9 +74,33 @@ else
 
     ###########################################################################################################
 
+    $iceQuery = "   SELECT ice_tiers.type, ice_tiers.tier, effect
+                    FROM {$dbName}.ice_effects
+                    INNER JOIN ice_tiers ON ice_tiers.id = ice_effects.tier_id
+                    WHERE tier_id = ice_tiers.id";
+    $iceStatement = $pdo->prepare($iceQuery);
+    $iceStatement->execute();
+    $iceResults = $iceStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    $iceArray = array();
+
+    array_map(function($ice) use (&$iceArray) {
+        if((!(array_key_exists($ice["type"], $iceArray))) || (!(array_key_exists($ice["tier"], $iceArray[$ice["type"]]))))
+        {
+            $iceArray[$ice["type"]][$ice["tier"]] = array($ice["effect"]);
+        }
+        else
+        {
+            array_push($iceArray[$ice["type"]][$ice["tier"]],$ice["effect"]);
+        }
+    }, $iceResults);
+
+    ###########################################################################################################
+
     $termResponse['entries'] = $entryResponse;
     $termResponse['puzzles'] = $puzzleResponse;
     $termResponse['logEntries'] = $logResponse;
+    $termResponse['iceSchema'] = $iceArray;
 
     $terminal = new Terminal($termResponse);
 }

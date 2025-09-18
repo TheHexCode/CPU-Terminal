@@ -5,8 +5,65 @@ INSERT INTO sim_active_codes
             (simCode, jobCode)
     VALUES  ('JUL25', 'ABC1234');
 
+INSERT INTO ice_types
+            (type)
+    VALUES  ('SNITCHES'),
+            ('STITCHES'),
+            ('KNEE CAPPER'),
+            ('WATCHER'),
+            ('END OF THE LINE'),
+            ('SAPPHIRE SENTRY');
+
+INSERT INTO ice_tiers
+            (type, tier)
+    VALUES  ('SNITCHES', 1),
+            ('SNITCHES', 2),
+            ('STITCHES', 1),
+            ('STITCHES', 2),
+            ('KNEE CAPPER', 1),
+            ('KNEE CAPPER', 2),
+            ('WATCHER', 1),
+            ('WATCHER', 2),
+            ('END OF THE LINE', 1),
+            ('END OF THE LINE', 2),
+            ('SAPPHIRE SENTRY', 1),
+            ('SAPPHIRE SENTRY', 2),
+            ('SAPPHIRE SENTRY', 3);
+
+INSERT INTO ice_effects
+            (tier_id, effect)
+    VALUES  (1, 'ALARM'),
+            (1, 'FEAR'),
+            (2, 'ALARM'),
+            (2, 'FEAR 30s'),
+            (2, 'MARKED'),
+            (3, 'FEAR'),
+            (3, 'BREAK DECK'),
+            (4, 'BURST FEAR'),
+            (4, 'BREAK DECK'),
+            (4, 'BREAK DECK'),
+            (5, 'STRIKE LEG'),
+            (5, 'KNOCKBACK'),
+            (6, 'STRIKE LEG'),
+            (6, 'STRIKE LEG'),
+            (6, 'KNOCKBACK'),
+            (7, 'LOCK'),
+            (7, 'MARKED'),
+            (8, 'LOCK'),
+            (8, 'MARKED'),
+            (8, 'LOCK'),
+            (9, 'FEAR'),
+            (9, 'STRIKE CHEST'),
+            (10, 'FEAR'),
+            (10, 'STRIKE CHEST'),
+            (10, 'FEAR'),
+            (10, 'STRIKE CHEST'),
+            (11, '-10 CREDITS'),
+            (12, '-30 CREDITS'),
+            (13, '-50 CREDITS');
+
 INSERT INTO items
-            (abbr, name, tier, category, radio, enabled)	
+            (abbr, name, tier, category, radio, enabled)
     VALUES  ('cmm_wid','CMM Widow',2,'arms',NULL, 1),
             ('cmm_coc','CMM Cocoon',2,'arms',NULL, 1),
             ('copycat','Copycat',0,'cust',NULL, 1),
@@ -32,7 +89,7 @@ INSERT INTO items
             ('vigil','Vigil',NULL,'cons',NULL, 0);
 
 INSERT INTO item_effects
-            (abbr, use_loc, req_type, requirement, charges, per_type, notes)	
+            (abbr, use_loc, req_type, requirement, charges, per_type, notes)
     VALUES  ('cmm','init','function','Slip',1,'scene','+1 Tag'),
             ('copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
             ('phack_0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
@@ -56,7 +113,7 @@ INSERT INTO item_effects
             ('vigil','init',NULL,NULL,1,'item',NULL);
 
 INSERT INTO items_to_effects
-            (item_abbr, effect_abbr)	
+            (item_abbr, effect_abbr)
     VALUES  ('cmm_wid','cmm'),
             ('cmm_coc','cmm'),
             ('copycat','copycat'),

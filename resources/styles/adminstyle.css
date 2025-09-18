@@ -33,6 +33,19 @@ h1
     font-size: 200%;
 }
 
+.editContainer
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.editBox
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 #termList
 {
     align-self: flex-start;

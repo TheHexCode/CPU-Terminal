@@ -14,8 +14,9 @@ class adminTerminal
     private $entries;
     private $puzzles;
     private $knowledges;
+    private $iceArray;
 
-    function __construct($pdo, $dbName, $jobCode, $slug)
+    function __construct($pdo, $dbName, $jobCode, $slug, $iceArray)
     {
         if($jobCode === "" || $slug === "")
         {
@@ -231,7 +232,7 @@ class adminTerminal
             $entryString .= "</div>";
         }
 
-        return $entryString;
+        #return $entryString;
     }
 
     private function getEntryTypes($icon, $type)
