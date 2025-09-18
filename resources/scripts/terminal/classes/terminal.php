@@ -355,7 +355,6 @@ class Terminal
                 }
 
                 $entryString = "";
-
                 /*
                 for($i = 0; $i < $outIce; $i++)
                 {
@@ -364,15 +363,17 @@ class Terminal
                 }
                 $outIce = 0;
                 */
-
+                
                 $iceDiff = max(0, substr_count($prevEntry["path"] ?? "","-") - substr_count($entry["path"], "-"));
 
                 for($i = 0; $i < $iceDiff; $i++)
                 {
                     $entryString .= '</div>';
+                    array_pop($inIce);
                 }
 
                 $prevEntry = $entry;
+                
 
                 $prefixIntro = ">> ";
 

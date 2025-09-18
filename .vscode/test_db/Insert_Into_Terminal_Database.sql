@@ -7,23 +7,60 @@ INSERT INTO sim_active_codes
 
 INSERT INTO ice_types
             (type)
-    VALUES  ('WATCHER'),
-            ('KNEE BREAKER');
+    VALUES  ('SNITCHES'),
+            ('STITCHES'),
+            ('KNEE CAPPER'),
+            ('WATCHER'),
+            ('END OF THE LINE'),
+            ('SAPPHIRE SENTRY');
 
 INSERT INTO ice_tiers
             (type, tier)
-    VALUES  ('WATCHER', 1),
+    VALUES  ('SNITCHES', 1),
+            ('SNITCHES', 2),
+            ('STITCHES', 1),
+            ('STITCHES', 2),
+            ('KNEE CAPPER', 1),
+            ('KNEE CAPPER', 2),
+            ('WATCHER', 1),
             ('WATCHER', 2),
-            ('KNEE BREAKER', 1);
+            ('END OF THE LINE', 1),
+            ('END OF THE LINE', 2),
+            ('SAPPHIRE SENTRY', 1),
+            ('SAPPHIRE SENTRY', 2),
+            ('SAPPHIRE SENTRY', 3);
 
 INSERT INTO ice_effects
             (tier_id, effect)
     VALUES  (1, 'ALARM'),
-            (1, 'MARK'),
+            (1, 'FEAR'),
             (2, 'ALARM'),
-            (2, 'MARK'),
             (2, 'FEAR 30s'),
-            (3, 'STRIKE TORSO');
+            (2, 'MARKED'),
+            (3, 'FEAR'),
+            (3, 'BREAK DECK'),
+            (4, 'BURST FEAR'),
+            (4, 'BREAK DECK'),
+            (4, 'BREAK DECK'),
+            (5, 'STRIKE LEG'),
+            (5, 'KNOCKBACK'),
+            (6, 'STRIKE LEG'),
+            (6, 'STRIKE LEG'),
+            (6, 'KNOCKBACK'),
+            (7, 'LOCK'),
+            (7, 'MARKED'),
+            (8, 'LOCK'),
+            (8, 'MARKED'),
+            (8, 'LOCK'),
+            (9, 'FEAR'),
+            (9, 'STRIKE CHEST'),
+            (10, 'FEAR'),
+            (10, 'STRIKE CHEST'),
+            (10, 'FEAR'),
+            (10, 'STRIKE CHEST'),
+            (11, '-10 CREDITS'),
+            (12, '-30 CREDITS'),
+            (13, '-50 CREDITS');
 
 INSERT INTO items
             (abbr, name, tier, category, radio, enabled)

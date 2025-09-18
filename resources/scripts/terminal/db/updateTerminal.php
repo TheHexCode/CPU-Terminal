@@ -10,7 +10,7 @@ $oldData = $_POST["oldData"];
 
 //SEND INTERRUPT CODE
 $prevErrLvl = error_reporting(0);
-
+/*
 require '../listener/composer/vendor/autoload.php';
 use WebSocket;
 try
@@ -40,7 +40,7 @@ catch(Exception $error)
 
 error_reporting($prevErrLvl);
 //////////////////////////////////////////////////////
-
+*/
 switch($actionType)
 {
     case "entry":

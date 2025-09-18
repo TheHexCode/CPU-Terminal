@@ -741,8 +741,8 @@ class AdminTerminal
             path: iceID + "-" + targetIce["subIce"].length,
             access: 1,
             modify: 1,
-            title: null,
-            contents: null,
+            title: "",
+            contents: "",
             state: "initial",
             type: AdminTerminal.#iconTypeMap[icon][0],
             subIce: []
