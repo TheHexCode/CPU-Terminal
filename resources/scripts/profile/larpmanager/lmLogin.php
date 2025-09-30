@@ -36,27 +36,9 @@ curl_exec($curlHandle);
 
 ##################################################################################
 
-curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/test/1/character/list/");
+curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/character/list/");
 
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 
-$charListDOM = new DOMDocument();
-@$charListDOM->loadHtml(curl_exec($curlHandle), LIBXML_NOWARNING);
-
-$charList = $charListDOM->getElementById("characters")
-                        ->getElementsByTagName("tbody")
-                        ->item(0)
-                        ->getElementsByTagName("tr");
-
-$charReturn = array();
-
-foreach($charList as $char)
-{
-    $charData = $char->getElementsByTagName("td");
-    array_push($charReturn, array(
-        "charID" => $charData[0]->nodeValue,
-        "charName" => $charData[2]->nodeValue
-    ));
-}
-
-echo json_encode($charReturn);
+# [ { "id": 30, "name": "Puck" } ]
+echo curl_exec($curlHandle);

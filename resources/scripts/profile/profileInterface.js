@@ -83,7 +83,7 @@ function lmLogin(event)
 		})
 		.done(function(response)
 		{
-			//processLogin(response);
+			processLogin(response);
 		});
 	}
 }
@@ -104,12 +104,12 @@ function processLogin(loginData)
 	{
 		$("#charSelectModal .modalBodyText").html("");
 
-		if(loginData["charList"].length > 1)
+		if(loginData.length > 1)
 		{
-			loginData["charList"].forEach(function(character, index)
+			loginData.forEach(function(character, index)
 			{
 				let buttonID = "char" + index;
-				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
+				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["name"] + " ]</button>");
 
 				$("#" + buttonID).bind("pointerup", function()
 				{
@@ -126,7 +126,7 @@ function processLogin(loginData)
 		}
 		else
 		{
-			selectCharacter(loginData["charList"][0]);
+			selectCharacter(loginData[0]);
 		}
 	}
 }
@@ -158,8 +158,8 @@ function selectCharacter(char)
 
 	lmEmail = $("#lmEmail").val();
 	lmPass = $("#lmPass").val();
-	lmCharID = char["charID"];
-	lmCharName = char["charName"];
+	lmCharID = char["id"];
+	lmCharName = char["name"];
 
 	$.ajax({
 		type: "POST",
