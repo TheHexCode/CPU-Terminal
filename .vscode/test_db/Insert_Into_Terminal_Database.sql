@@ -1,4 +1,4 @@
--- Active: 1746590270449@@REXv5@3306@dbiykpinec1m8s
+-- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
 
 USE dbiykpinec1m8s;
 
@@ -7,7 +7,7 @@ INSERT INTO sim_active_codes
     VALUES  ('JUL25', 'ABC1234');
 
 INSERT INTO items
-            (abbr, name, tier, category, radio, enabled)	
+            (abbr, name, tier, category, radio, enabled)
     VALUES  ('cmm_wid','CMM Widow',2,'arms',NULL, 1),
             ('cmm_coc','CMM Cocoon',2,'arms',NULL, 1),
             ('copycat','Copycat',0,'cust',NULL, 1),
@@ -33,7 +33,7 @@ INSERT INTO items
             ('vigil','Vigil',NULL,'cons',NULL, 0);
 
 INSERT INTO item_effects
-            (abbr, use_loc, req_type, requirement, charges, per_type, notes)	
+            (abbr, use_loc, req_type, requirement, charges, per_type, notes)
     VALUES  ('cmm','init','function','Slip',1,'scene','+1 Tag'),
             ('copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
             ('phack_0','itemTab',NULL,NULL,1,'sim','+1 Tag'),
@@ -57,7 +57,7 @@ INSERT INTO item_effects
             ('vigil','init',NULL,NULL,1,'item',NULL);
 
 INSERT INTO items_to_effects
-            (item_abbr, effect_abbr)	
+            (item_abbr, effect_abbr)
     VALUES  ('cmm_wid','cmm'),
             ('cmm_coc','cmm'),
             ('copycat','copycat'),
@@ -88,35 +88,35 @@ INSERT INTO items_to_effects
 ####################################################################################################
 
 INSERT INTO cpu_roles
-            (id, name)
-    VALUES  (1, 'Standard'),
-            (2, 'Advocate'),
-            (3, 'Anthrack'),
-            (4, 'Bastion'),
-            (5, 'Breacher'),
-            (6, 'Dissimulator'),
-            (7, 'Mastermind'),
-            (8, 'Polymath'),
-            (9, 'Revenant'),
-            (10, 'Scoundrel'),
-            (11, 'Slipstream'),
-            (12, 'Trauma Jack'),
-            (13, 'Warden'),
-            (14, 'Scavenger'),
-            (15, 'Centurion'),
-            (16, 'Crime Boss'),
-            (17, 'Investigator'),
-            (18, 'People&#39;s Champion'),
-            (19, 'Veteran'),
-            (20, 'Artificial Intelligence'),
-            (21, 'Barrower'),
-            (22, 'Brawler'),
-            (23, 'Courtesan'),
-            (24, 'CRD Spider'),
-            (25, 'Neon Prophet'),
-            (26, 'Officer'),
-            (27, 'Scalpel'),
-            (28, 'Nova Knight');
+            (id, lm_id, name)
+    VALUES  (1, 11, 'Standard'),
+            (2, 16, 'Advocate'),
+            (3, 54, 'Anthrack'),
+            (4, 93, 'Bastion'),
+            (5, 133, 'Breacher'),
+            (6, 172, 'Dissimulator'),
+            (7, 211, 'Mastermind'),
+            (8, 250, 'Polymath'),
+            (9, 289, 'Revenant'),
+            (10, 328, 'Scoundrel'),
+            (11, 369, 'Slipstream'),
+            (12, 408, 'Trauma Jack'),
+            (13, 447, 'Warden'),
+            (14, 14, 'Scavenger'),
+            (15, 823, 'Centurion'),
+            (16, 824, 'Crime Boss'),
+            (17, 825, 'Investigator'),
+            (18, 826, 'People&#39;s Champion'),
+            (19, 827, 'Veteran'),
+            (20, '13,12', 'Artificial Intelligence'),
+            (21, 571, 'Barrower'),
+            (22, 900, 'Brawler'),
+            (23, 609, 'Courtesan'),
+            (24, 4, 'CRD Spider'),
+            (25, 610, 'Neon Prophet'),
+            (26, 611, 'Officer'),
+            (27, 699, 'Scalpel'),
+            (28, 612, 'Nova Knight');
 
 INSERT INTO cpu_paths
             (id, role_id, name)

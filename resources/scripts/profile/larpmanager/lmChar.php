@@ -1,40 +1,12 @@
 <?php
 
 require('../db/dbConnect.php');
-require('../db/setUser.php');
+require('./dbUser.php');
 
 $lmEmail = $_POST["lmEmail"];
 $lmPass = $_POST["lmPass"];
 $lmCharID = $_POST["lmCharID"];
 $lmCharName = $_POST["lmCharName"];
-
-$dbCharQuery = "SELECT * FROM {$dbName}.users
-                WHERE lm_id = :lmID;";
-
-$dbCharStatement = $pdo->prepare($dbCharQuery);
-$dbCharStatement->execute([':lmID' => $lmCharID]);
-
-$dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
-
-if($dbCharResponse === false)
-{
-    /*
-    $userCode = generateCode($pdo, $dbName);
-
-    addUser($pdo,$dbName,$mlCharID, $userCode,$mlCharName);
-
-    $dbCharStatement = $pdo->prepare($dbCharQuery);
-    $dbCharStatement->execute([':mlID' => $mlCharID]);
-
-    $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
-    */
-}
-else
-{    
-    $userCode = $dbCharResponse["userCode"];
-
-    //updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharName);
-}
 
 ##################################################################################################
 
@@ -77,24 +49,16 @@ curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/c
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 $lmCharacter = json_decode(curl_exec($curlHandle));
 */
-$lmCharacter = json_decode('{ "id": 30, "name": "TestPuck", "abilities": [ { "id": 4, "name": "Roles", "abilities": [ { "id": 7, "name": "Standard Role" } ] }, { "id": 5, "name": "Something Else", "abilities": [ { "id": 2, "name": "Test" }, { "id": 3, "name": "Test 2" } ] }, { "id": 10, "name": "Something New", "abilities": [ { "id": 5, "name": "Test 3" } ] } ] }', true);
+$lmCharacter = json_decode('{ "id": 30, "name": "Puck", "abilities": [ { "id": 4, "name": "Roles", "abilities": [ { "id": 11, "name": "Standard Role" } ] }, { "id": 486, "name": "Something Else", "abilities": [ { "id": 175, "name": "Test" }, { "id": 493, "name": "Test 2" } ] }, { "id": 493, "name": "Something New", "abilities": [ { "id": 320, "name": "Test 3" } ] } ] }', true);
 
-// ROLES / FUNCTIONS
+
 $lmRoleIDs =  array_column(array_filter($lmCharacter["abilities"], function ($ability) {
-    return $ability["id"] === 4;
+    return in_array($ability["id"],array(4,8,31));
 })[0]["abilities"],"id");
 
-$lmFunctionIDs = array_column(array_merge(...array_column(array_filter($lmCharacter["abilities"], function ($ability) {
-    return $ability["id"] !== 4;
+$lmAbilityIDs = array_column(array_merge(...array_column(array_filter($lmCharacter["abilities"], function ($ability) {
+    return !in_array($ability["id"],array(4,8,31));
 }),"abilities")),"id");
-
-$abilityQuery = "SELECT * FROM {$dbName}.cpu_abilities
-                WHERE lm_id = :lmID;";
-
-$abilityStatement = $pdo->prepare($abilityQuery);
-$abilityStatement->execute([':lmID' => $lmCharID]);
-
-$abilityResponse = $abilityStatement->fetch(PDO::FETCH_ASSOC);
 
 // ITEMS
 /*
@@ -103,10 +67,117 @@ curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 $functions = curl_exec($curlHandle);
 */
 
+##################################################################################################
+
+
+##################################################################################################
+
+$dbCharQuery = "SELECT * FROM {$dbName}.users
+                WHERE lm_id = :lmID;";
+
+$dbCharStatement = $pdo->prepare($dbCharQuery);
+$dbCharStatement->execute([':lmID' => $lmCharID]);
+
+$dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
+
+if($dbCharResponse === false)
+{
+    $userCode = generateCode($pdo, $dbName);
+
+    addDBUser($pdo,$dbName,$lmCharID, $userCode,$lmCharName,$lmAbilityIDs);
+
+    $dbCharStatement = $pdo->prepare($dbCharQuery);
+    $dbCharStatement->execute([':lmID' => $lmCharID]);
+
+    $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
+}
+else
+{
+    $userCode = $dbCharResponse["userCode"];
+
+    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmCharName);
+}
+
+##################################################################################################
+
+// ROLES / FUNCTIONS
+
+$roleQuery = "  SELECT DISTINCT cpu_roles.name
+                FROM {$dbName}.cpu_roles
+                WHERE cpu_roles.lm_id IN ( ?" . str_repeat(", ?",count($lmRoleIDs)-1) . " )
+                GROUP BY cpu_roles.name";
+
+$roleStatement = $pdo->prepare($roleQuery);
+$roleStatement->execute($lmRoleIDs);
+
+$roleResponse = $roleStatement->fetch(PDO::FETCH_COLUMN);
+
+$functionQuery = "  SELECT DISTINCT CONCAT_WS(
+                                        ' ',
+                                        (SELECT cpu_mods.name AS `mod` WHERE cpu_mods.id = cpu_ability_functions.mod_id),
+                                        (SELECT cpu_sources.name AS source WHERE cpu_sources.id = cpu_ability_functions.source_id),
+                                        cpu_functions.name
+                                    ) AS function_name,
+                                    SUM(cpu_ability_functions.rank) AS `rank`,
+                                    cpu_functions.type,
+                                    cpu_functions.hacking_cat,
+                                    GROUP_CONCAT(
+                                        CASE
+                                            WHEN cpu_ability_functions.keyword_type IS NOT NULL
+                                            THEN (
+                                                CASE cpu_ability_functions.keyword_choose
+                                                    WHEN TRUE
+                                                    THEN ( '[Choice]' )
+                                                    ELSE (
+                                                        CASE cpu_ability_functions.keyword_type
+                                                            WHEN 'keyword'
+                                                            THEN (
+                                                                SELECT cpu_keywords.name
+                                                                FROM cpu_keywords
+                                                                WHERE cpu_keywords.id = cpu_ability_functions.keyword_id
+                                                            )
+                                                            WHEN 'proficiency'
+                                                            THEN (
+                                                                SELECT cpu_proficiencies.name
+                                                                FROM cpu_proficiencies
+                                                                WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id
+                                                            )
+                                                            WHEN 'knowledge'
+                                                            THEN (
+                                                                SELECT cpu_knowledges.name
+                                                                FROM cpu_knowledges
+                                                                WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id
+                                                            )
+                                                            ELSE NULL
+                                                        END
+                                                    )
+                                                END
+                                            )
+                                            ELSE NULL
+                                        END
+                                    SEPARATOR ';'
+                                    ) AS keyword
+                    FROM {$dbName}.cpu_ability_functions
+                    INNER JOIN cpu_abilities ON cpu_abilities.id = cpu_ability_functions.ability_id
+                    LEFT JOIN cpu_mods ON cpu_mods.id = cpu_ability_functions.mod_id
+                    LEFT JOIN cpu_sources ON cpu_sources.id = cpu_ability_functions.source_id
+                    INNER JOIN cpu_functions ON cpu_functions.id = cpu_ability_functions.func_id
+                    WHERE cpu_abilities.lm_id IN ( ?" . str_repeat(', ?', count($lmAbilityIDs)-1) . " )
+                    GROUP BY 	cpu_ability_functions.mod_id,
+                                cpu_ability_functions.source_id,
+                                cpu_ability_functions.func_id";
+
+$functionStatement = $pdo->prepare($functionQuery);
+$functionStatement->execute($lmAbilityIDs);
+
+$functionResponse = $functionStatement->fetch(PDO::FETCH_ASSOC);
+
+##################################################################################################
 
 echo json_encode(array(  "id" => $dbCharResponse["lm_id"],
                                 "name" => $lmCharName,
                                 "userCode" => $userCode,
-                                "roles" => $roleIDs,
-                                "functions" => $functionIDs,
+                                "roles" => $roleResponse,
+                                "rawAbilIDs" => $lmAbilityIDs,
+                                "functions" => $functionResponse,
                                 /*"items" => $itemResponse*/ ));

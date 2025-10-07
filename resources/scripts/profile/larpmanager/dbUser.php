@@ -68,70 +68,35 @@ function generateCode(PDO $pdo, $dbName)
                 }
             }
         }
-        
+
     } while($invalidCode);
 
     return implode($newCode);
 }
 
-function addUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCharName)
+function addDBUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCharName, array $charAbils)
 {
     $newCharQuery = "   INSERT INTO {$dbName}.users
-                            (ml_id, userCode, charName)
-                        VALUES (:mlID, :userCode, :charName)";
+                            (lm_id, userCode, charName)
+                        VALUES (:lmID, :userCode, :charName)";
 
     $newCharStatement = $pdo->prepare($newCharQuery);
 
-    $newCharStatement->execute([':mlID' => $newID, ':userCode' => $newCode, ':charName' => $newCharName]);
-    
-    /*
-    $userFuncArray = array();
-
-    foreach($charSkills as $skill)
-    {
-        $mlFuncQuery = "SELECT id, cav_type, cav_id
-                            FROM ml_functions
-                            WHERE ml_name = :skillName";
-
-        $mlFuncStatement = $pdo->prepare($mlFuncQuery);
-        $mlFuncStatement->execute([':skillName' => $skill->name]);
-
-        $mlFunc = $mlFuncStatement->fetch(PDO::FETCH_ASSOC);
-
-        if($mlFunc["cav_type"] === "choice")
-        {
-            $skillCav = substr($skill->cav, strpos($skill->cav,":")+1, strpos($skill->cav,";") - strpos($skill->cav,":") - 1);
-
-            $cavQuery = "   SELECT id
-                                FROM cpu_caviats
-                                WHERE ml_name = :cavML";
-            
-            $cavStatement = $pdo->prepare($cavQuery);
-            $cavStatement->execute([':cavML' => $skillCav]);
-
-            $cavID = $cavStatement->fetch(PDO::FETCH_COLUMN);
-        }
-        else
-        {
-            $cavID = NULL;
-        }
-
-        array_push($userFuncArray,$newID, $mlFunc["id"], $cavID);
-    }
-
+    $newCharStatement->execute([':lmID' => $newID, ':userCode' => $newCode, ':charName' => $newCharName]);
+/*
     $userFuncQuery = "  INSERT INTO {$dbName}.user_functions
                             (user_id, mlFunction_id, cav_id)
                         VALUES ( ?,?,? " . str_repeat('), ( ?,?,? ',count($charSkills)-1) . ")";
 
     $userFuncStatement = $pdo->prepare($userFuncQuery);
     $userFuncStatement->execute($userFuncArray);
-    */
+*/
 }
 
-function updateUser(PDO $pdo, $dbName, int $userID, String $charName)
+function updateDBUser(PDO $pdo, $dbName, int $userID, String $charName)
 {
     $dbNameQuery = "SELECT charName FROM {$dbName}.users
-                    WHERE ml_id = :userID";
+                    WHERE lm_id = :userID";
 
     $dbNameStatement = $pdo->prepare($dbNameQuery);
     $dbNameStatement->execute([':userID' => $userID]);
@@ -142,12 +107,12 @@ function updateUser(PDO $pdo, $dbName, int $userID, String $charName)
     {
         $updateNameQuery = "UPDATE {$dbName}.users
                             SET charName = :charName
-                            WHERE ml_id = :userID";
+                            WHERE lm_id = :userID";
 
         $updateNameStatement = $pdo->prepare($updateNameQuery);
         $updateNameStatement->execute([':charName' => $charName, ':userID' => $userID]);
     }
-    
+
     /*
     $deleteQuery = "DELETE FROM {$dbName}.user_functions
                     WHERE user_id = :userID";
@@ -175,7 +140,7 @@ function updateUser(PDO $pdo, $dbName, int $userID, String $charName)
             $cavQuery = "   SELECT id
                                 FROM cpu_caviats
                                 WHERE ml_name = :cavML";
-            
+
             $cavStatement = $pdo->prepare($cavQuery);
             $cavStatement->execute([':cavML' => $skillCav]);
 

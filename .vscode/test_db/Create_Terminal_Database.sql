@@ -1,4 +1,4 @@
--- Active: 1746590270449@@REXv5@3306@dbiykpinec1m8s
+-- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
 
 USE dbiykpinec1m8s;
 
@@ -186,6 +186,7 @@ CREATE TABLE sim_user_actions (
 
 CREATE TABLE cpu_roles (
     id      INT     AUTO_INCREMENT,
+    lm_id   INT     NOT NULL,
     name    TEXT    NOT NULL,
     PRIMARY KEY (id)
 );
@@ -246,7 +247,6 @@ CREATE TABLE cpu_abilities (
     role_id INT     NOT NULL,
     path_id INT,
     tier    INT     NOT NULL,
-    free    BOOL    NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (role_id)
         REFERENCES cpu_roles(id)
@@ -290,6 +290,7 @@ CREATE TABLE cpu_ability_functions (
 CREATE TABLE user_functions (
     user_id         INT     NOT NULL,
     function_id     INT     NOT NULL,
+    keyword_id      INT,
     CONSTRAINT userFunction
         PRIMARY KEY (user_id, function_id),
     FOREIGN KEY (user_id)
