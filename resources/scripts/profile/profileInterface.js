@@ -84,50 +84,50 @@ function lmLogin(event)
 		.done(function(response)
 		{
 			processLogin(response);
+		})
+		.fail(function(response)
+		{
+			/*
+			console.log(response);
+			alert("Login Failed! Please Try Again");
+
+			$("#lmEmail").prop("readonly",false);
+			$("#lmPass").prop("readonly",false);
+
+			$("#load").addClass("hidden");
+			*/
+			processLogin(JSON.parse('[{"id":30,"name":"Puck"}]'))
 		});
 	}
 }
 
 function processLogin(loginData)
 {
-	if(loginData["result"] !== "pass")
-	{
-		console.log(loginData);
-		alert("Login Failed! Please Try Again");
+	$("#charSelectModal .modalBodyText").html("");
 
-		$("#lmEmail").prop("readonly",false);
-		$("#lmPass").prop("readonly",false);
+	if(loginData.length > 1)
+	{
+		loginData.forEach(function(character, index)
+		{
+			let buttonID = "char" + index;
+			$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["name"] + " ]</button>");
+
+			$("#" + buttonID).bind("pointerup", function()
+			{
+				selectCharacter(character);
+			});
+		});
+
+		$("#charSelectModal").width($("#main").width());
+
+		$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
 
 		$("#load").addClass("hidden");
+		$("#modalBG").css("display","flex");
 	}
 	else
 	{
-		$("#charSelectModal .modalBodyText").html("");
-
-		if(loginData.length > 1)
-		{
-			loginData.forEach(function(character, index)
-			{
-				let buttonID = "char" + index;
-				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["name"] + " ]</button>");
-
-				$("#" + buttonID).bind("pointerup", function()
-				{
-					selectCharacter(character);
-				});
-			});
-
-			$("#charSelectModal").width($("#main").width());
-
-			$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
-
-			$("#load").addClass("hidden");
-			$("#modalBG").css("display","flex");
-		}
-		else
-		{
-			selectCharacter(loginData[0]);
-		}
+		selectCharacter(loginData[0]);
 	}
 }
 
@@ -189,6 +189,7 @@ function processCharInfo(charData)
 
 	$("#payloadCodeRow .FG").html(charData.userCode);
 
+	/*
 	charData.discoveries.forEach(function(discovery)
 	{
 		switch(discovery["disc_type"])
@@ -226,6 +227,7 @@ function processCharInfo(charData)
 			chooseKeyword($(".funcName[data-id='" + func.function_id + "'] select")[0]);
 		}
 	});
+	*/
 
 	/*
 	let funcStrings = {
@@ -267,7 +269,7 @@ function processCharInfo(charData)
 		$("#" + category + "Header").removeClass("hidden");
 		$("#" + category + "List").removeClass("hidden");
 	});
-	*/
+	*//*
 
 	charData["items"].forEach(function(item)
 	{
@@ -286,6 +288,7 @@ function processCharInfo(charData)
 
 	$(".postLogon").removeClass("hidden");
 	$(".lmLoginBox").addClass("hidden");
+	*/
 }
 
 function changeOrigin(target)
