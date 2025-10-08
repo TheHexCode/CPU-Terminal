@@ -84,21 +84,34 @@ class Payload
             }
         }, this);
 
-        let userFunc = allFuncs.find(func => func.name.toLowerCase() === funcName.toLowerCase());
-
-        if(userFunc !== undefined)
+        let userFuncs = allFuncs.filter(function(func)
         {
-            if(userFunc.keyword !== null)
+            return func.name.toLowerCase() === funcName.toLowerCase();
+        });
+
+        if(userFuncs.length > 0)
+        {
+            if(userFuncs.length === 1)
             {
-                return userFunc.keyword;
+                if(userFuncs[0].rank !== null)
+                {
+                    return Number(userFuncs[0].rank);
+                }
+                else
+                {
+                    return true;
+                }
             }
-            else if(userFunc.rank !== null)
+            else if(userFuncs.length >= 2)
             {
-                return Number(userFunc.rank);
+                return userFuncs.map(function(func)
+                {
+                    return func.keyword.split(";")[0];
+                }).join(";");
             }
             else
             {
-                return true;
+                return 0;
             }
         }
         else
