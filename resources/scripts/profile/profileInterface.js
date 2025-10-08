@@ -229,12 +229,14 @@ function processCharInfo(charData)
 	});
 	*/
 
-	/*
 	let funcStrings = {
-		initial: "",
-		active: "",
-		passive: ""
+		initial: [],
+		active: [],
+		passive: [],
+		other: []
 	};
+
+	let funcKeywords = [];
 
 	charData.functions.forEach(function(func)
 	{
@@ -243,34 +245,96 @@ function processCharInfo(charData)
 		switch (func.type)
 		{
 			case("ranked"):
+			{
 				postName = " " + romanize(func.rank);
 				break;
-			case("collect"):
+			}
+			case("charges"):
 			{
-				postName = "<ul><li>" + func.caviats.replace(";","</li><li>") + "</li></ul>";
-				break;
+				postName = " x" + func.rank;
 			}
 		}
 
-		let hacking_cat = func.hacking_cat;
-
-		if(func.hacking_cat === "repair")
+		if(func.keyword !== null)
 		{
-			hacking_cat = "passive";
+			let funcKeyword = funcKeywords.find(function(keyworded_func)
+			{
+				return keyworded_func.function_name === func.function_name;
+			});
+
+			if(funcKeyword === undefined)
+			{
+				funcKeywords.push(
+					{
+						"function_name": func.function_name,
+						"keywords": []
+					}
+				);
+
+				funcKeyword = funcKeywords.find(function(keyworded_func)
+				{
+					return keyworded_func.function_name === func.function_name;
+				});
+			};
+
+			keyword_name = func.keyword.split(";");
+
+			keyword = {
+				"keyword_name": keyword_name[0],
+				"count": keyword_name.length
+			}
+
+			funcKeyword["keywords"].push(keyword);
 		}
 
-		funcStrings[hacking_cat] += "<li>" + func.name + postName + "</li>";
+		let hacking_cat = "";
+
+		switch(func.hacking_cat)
+		{
+			case(null):
+			{
+				hacking_cat = "other";
+				break;
+			}
+			case("repair"):
+			{
+				hacking_cat = "passive";
+				break;
+			}
+			default:
+			{
+				hacking_cat = func.hacking_cat;
+				break;
+			}
+		};
+
+		funcStrings[hacking_cat].push("<li>" + func.function_name + postName + "<ul class='lmFuncKWList hidden' data-func='" + func.function_name + "'></ul></li>");
 	});
 
 	Object.keys(funcStrings).forEach(function(category)
 	{
-		$("#" + category + "List").html(funcStrings[category]);
+		uniqueCategory = [...new Set(funcStrings[category])];
+		$("#" + category + "List").html(uniqueCategory.join(""));
 
 		$("#" + category + "Header").removeClass("hidden");
 		$("#" + category + "List").removeClass("hidden");
 	});
-	*//*
 
+	funcKeywords.forEach(function(keyworded_func)
+	{
+		funcList = $(".lmFuncKWList[data-func='" + keyworded_func.function_name + "']");
+		funcList.removeClass("hidden");
+
+		//<li>[Choice] *2</li>
+		//<li>Law</li>
+		keyworded_func["keywords"].forEach(function(keyword)
+		{
+			funcList.append("<li>" + keyword.keyword_name + (keyword.count > 1 ? " *" + keyword.count : "") + "</li>");
+		});
+
+	});
+
+	/*
 	charData["items"].forEach(function(item)
 	{
 		let inputID = "#item_" + item["item_abbr"];
@@ -281,16 +345,15 @@ function processCharInfo(charData)
 		$("input[name='"+$(inputID).prop("name")+"']").prop("data-active",false);
 		$(inputID).prop("data-active",true);
 	});
-
+	*/
 	$("#load").addClass("hidden");
 
 	$("#lmPass").val("");
 
 	$(".postLogon").removeClass("hidden");
 	$(".lmLoginBox").addClass("hidden");
-	*/
 }
-
+/*
 function changeOrigin(target)
 {
 	let oldValue = $(".originOption input").toArray().find(function(origin)
@@ -436,7 +499,7 @@ function chooseKeyword(target)
 		});
 	}
 }
-
+*/
 function setItemCharges(itemAbbr, charges)
 {
 	$(".itemCount[data-abbr='" + itemAbbr + "']").attr("data-charges", charges);
@@ -481,6 +544,7 @@ function statSubmit(event)
 	$("#saveText").removeClass("hidden");
 
 	// FUNCTION LIST
+	/*
 	let origin = $("input[name='origins']:checked").attr("value");
 	let functions = [];
 
@@ -541,7 +605,7 @@ function statSubmit(event)
 	});
 
 	let originID = Number($("#roleSelect option[selected]")[0].value);
-
+	*/
 	// LIST OF ITEMS
 	let items = [];
 	$(".itemSelect input:checked").each(function(index, item)
@@ -560,12 +624,12 @@ function statSubmit(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/profile/db/updateUser.php",
+		url: "resources/scripts/profile/db/updateInventory.php",
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),
-			userOrigin: originID,
-			userFunctions: functions,
+			//userOrigin: originID,
+			//userFunctions: functions,
 			userItems: items
 		}
 	})

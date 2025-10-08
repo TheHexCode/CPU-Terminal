@@ -58,9 +58,9 @@
 					</div>
 				</div>
 				<div class="zoneBox">
-					<!-- myLarp Functions
+					<!-- larpmanager Functions -->
 					<h2 id="skillBoxHeader">
-						FUNCTIONS FROM MYLARP PROFILE:
+						FUNCTIONS FROM LARPMANAGER PROFILE:
 					</h2>
 					<div id="skillTypes">
 						<div id="initialHeader" class="skillTypeHeader hidden">
@@ -78,25 +78,30 @@
 						</div>
 						<ul id="passiveList" class="skillTypeList hidden">
 						</ul>
+						<div id="otherHeader" class="skillTypeHeader hidden">
+							>> NON-HACKING FUNCTIONS
+						</div>
+						<ul id="otherList" class="skillTypeList hidden">
+						</ul>
 					</div>
-					-->
-					<!-- SELF REPORT FUNCTIONS -->
-					<?php echo getOriginRadios($roleArray); ?>
+					<!-- SELF REPORT FUNCTIONS
+					<?php //echo getOriginRadios($roleArray); ?>
 					<script id="tempScript">$("#origin1").prop("data-active",true);$("#tempScript").remove();</script>
 					<hr/>
 					<div class="infoRole">
 						<label for="roleSelect">Role:</label>
 						<select id="roleSelect" onchange="changeRole(this)">
-							<?php echo getRoleSelect($roleArray); ?>
+							<?php //echo getRoleSelect($roleArray); ?>
 						</select>
 						<label for="pathSelect">Path:</label>
 						<select id="pathSelect" onchange="changePath(this)" disabled>
 							<option value="" selected>--</option>
-							<?php echo getPathSelect($pathArray); ?>
+							<?php //echo getPathSelect($pathArray); ?>
 						</select>
 					</div>
 					<hr/>
-					<?php echo fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray); ?>
+					<?php //echo fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray); ?>
+					-->
 				</div>
 				<div id="itemBox" class="zoneBox">
 					<?php echo getItemsTab(); ?>

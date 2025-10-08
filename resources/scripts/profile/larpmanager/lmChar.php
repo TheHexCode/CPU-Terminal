@@ -49,7 +49,91 @@ curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/c
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 $lmCharacter = json_decode(curl_exec($curlHandle));
 */
-$lmCharacter = json_decode('{ "id": 30, "name": "Puck", "abilities": [ { "id": 4, "name": "Roles", "abilities": [ { "id": 11, "name": "Standard Role" } ] }, { "id": 486, "name": "Something Else", "abilities": [ { "id": 175, "name": "Test" }, { "id": 493, "name": "Test 2" } ] }, { "id": 493, "name": "Something New", "abilities": [ { "id": 320, "name": "Test 3" } ] } ] }', true);
+$lmCharacter = json_decode('
+    {
+        "id": 30,
+        "name": "Puck",
+        "abilities":
+        [
+            {
+                "id": 4,
+                "name": "Roles",
+                "abilities":
+                [
+                    {
+                        "id": 11,
+                        "name": "Standard Role"
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "name": "Role 1",
+                "abilities":
+                [
+                    {
+                        "id": 486,
+                        "name": "Test 1"
+                    },
+                    {
+                        "id": 487,
+                        "name": "Test 2"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "name": "Role 2",
+                "abilities":
+                [
+                    {
+                        "id": 488,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 175,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 183,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 404,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 326,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 320,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 305,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 493,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 843,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 59,
+                        "name": "Test 3"
+                    },
+                    {
+                        "id": 62,
+                        "name": "Test 3"
+                    }
+                ]
+            }
+        ]
+    }', true);
 
 
 $lmRoleIDs =  array_column(array_filter($lmCharacter["abilities"], function ($ability) {
@@ -95,7 +179,7 @@ else
 {
     $userCode = $dbCharResponse["userCode"];
 
-    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmCharName);
+    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmCharName, $lmAbilityIDs);
 }
 
 ##################################################################################################
@@ -110,20 +194,35 @@ $roleQuery = "  SELECT DISTINCT cpu_roles.name
 $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute($lmRoleIDs);
 
-$roleResponse = $roleStatement->fetch(PDO::FETCH_COLUMN);
+$roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
 $functionQuery = "  SELECT DISTINCT CONCAT_WS(
                                         ' ',
                                         (SELECT cpu_mods.name AS `mod` WHERE cpu_mods.id = cpu_ability_functions.mod_id),
                                         (SELECT cpu_sources.name AS source WHERE cpu_sources.id = cpu_ability_functions.source_id),
-                                        cpu_functions.name
+                                        cpu_functions.name,
+                                        CASE
+                                            WHEN cpu_functions.type <> 'unique' AND cpu_functions.keyworded
+                                            THEN (
+                                                CASE cpu_ability_functions.keyword_type
+                                                    WHEN 'keyword'
+                                                    THEN ( CONCAT( '(', ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id ), ')' ) )
+                                                    WHEN 'proficiency'
+                                                    THEN ( CONCAT( '(', ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id), ')' ) )
+                                                    WHEN 'knowledge'
+                                                    THEN ( CONCAT( '(', ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id), ')' ) )
+                                                    ELSE NULL
+                                                END
+                                            )
+                                            ELSE NULL
+                                        END
                                     ) AS function_name,
                                     SUM(cpu_ability_functions.rank) AS `rank`,
                                     cpu_functions.type,
                                     cpu_functions.hacking_cat,
                                     GROUP_CONCAT(
                                         CASE
-                                            WHEN cpu_ability_functions.keyword_type IS NOT NULL
+                                            WHEN cpu_functions.type = 'unique' AND cpu_functions.keyworded
                                             THEN (
                                                 CASE cpu_ability_functions.keyword_choose
                                                     WHEN TRUE
@@ -131,23 +230,11 @@ $functionQuery = "  SELECT DISTINCT CONCAT_WS(
                                                     ELSE (
                                                         CASE cpu_ability_functions.keyword_type
                                                             WHEN 'keyword'
-                                                            THEN (
-                                                                SELECT cpu_keywords.name
-                                                                FROM cpu_keywords
-                                                                WHERE cpu_keywords.id = cpu_ability_functions.keyword_id
-                                                            )
+                                                            THEN ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id )
                                                             WHEN 'proficiency'
-                                                            THEN (
-                                                                SELECT cpu_proficiencies.name
-                                                                FROM cpu_proficiencies
-                                                                WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id
-                                                            )
+                                                            THEN ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id )
                                                             WHEN 'knowledge'
-                                                            THEN (
-                                                                SELECT cpu_knowledges.name
-                                                                FROM cpu_knowledges
-                                                                WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id
-                                                            )
+                                                            THEN ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id )
                                                             ELSE NULL
                                                         END
                                                     )
@@ -157,20 +244,23 @@ $functionQuery = "  SELECT DISTINCT CONCAT_WS(
                                         END
                                     SEPARATOR ';'
                                     ) AS keyword
-                    FROM {$dbName}.cpu_ability_functions
+                    FROM cpu_ability_functions
                     INNER JOIN cpu_abilities ON cpu_abilities.id = cpu_ability_functions.ability_id
                     LEFT JOIN cpu_mods ON cpu_mods.id = cpu_ability_functions.mod_id
                     LEFT JOIN cpu_sources ON cpu_sources.id = cpu_ability_functions.source_id
+                    LEFT JOIN cpu_keywords ON cpu_keywords.id = cpu_ability_functions.keyword_id
                     INNER JOIN cpu_functions ON cpu_functions.id = cpu_ability_functions.func_id
                     WHERE cpu_abilities.lm_id IN ( ?" . str_repeat(', ?', count($lmAbilityIDs)-1) . " )
                     GROUP BY 	cpu_ability_functions.mod_id,
                                 cpu_ability_functions.source_id,
-                                cpu_ability_functions.func_id";
+                                cpu_ability_functions.func_id,
+                                cpu_ability_functions.keyword_id,
+                                cpu_ability_functions.keyword_type";
 
 $functionStatement = $pdo->prepare($functionQuery);
 $functionStatement->execute($lmAbilityIDs);
 
-$functionResponse = $functionStatement->fetch(PDO::FETCH_ASSOC);
+$functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
 ##################################################################################################
 
@@ -178,6 +268,5 @@ echo json_encode(array(  "id" => $dbCharResponse["lm_id"],
                                 "name" => $lmCharName,
                                 "userCode" => $userCode,
                                 "roles" => $roleResponse,
-                                "rawAbilIDs" => $lmAbilityIDs,
                                 "functions" => $functionResponse,
                                 /*"items" => $itemResponse*/ ));

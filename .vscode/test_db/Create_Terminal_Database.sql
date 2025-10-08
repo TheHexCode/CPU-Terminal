@@ -62,11 +62,10 @@ CREATE TABLE sim_puzzles (
 );
 
 CREATE TABLE users (
-    ml_id       INT     NOT NULL UNIQUE,
+    lm_id       INT     NOT NULL UNIQUE,
     userCode    TEXT    NOT NULL,
     charName    TEXT    NOT NULL,
-    origin      INT     NOT NULL,
-    PRIMARY KEY (ml_id)
+    PRIMARY KEY (lm_id)
 );
 
 CREATE TABLE sim_access_logs (
@@ -83,7 +82,7 @@ CREATE TABLE sim_access_logs (
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
+        REFERENCES users(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -132,7 +131,7 @@ CREATE TABLE user_items (
     item_abbr   VARCHAR(50) NOT NULL,
     count       INT,
     FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
+        REFERENCES users(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (item_abbr)
@@ -148,7 +147,7 @@ CREATE TABLE item_uses (
     jobCode     TEXT        NOT NULL,
     terminal_id INT         NOT NULL,
     FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
+        REFERENCES users(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (effect_abbr)
@@ -173,7 +172,7 @@ CREATE TABLE sim_user_actions (
     global      BOOLEAN     NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
+        REFERENCES users(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -287,18 +286,18 @@ CREATE TABLE cpu_ability_functions (
         ON DELETE CASCADE
 );
 
-CREATE TABLE user_functions (
+CREATE TABLE user_abilities (
     user_id         INT     NOT NULL,
-    function_id     INT     NOT NULL,
+    ability_id      INT     NOT NULL,
     keyword_id      INT,
     CONSTRAINT userFunction
-        PRIMARY KEY (user_id, function_id),
+        PRIMARY KEY (user_id, ability_id),
     FOREIGN KEY (user_id)
-        REFERENCES users(ml_id)
+        REFERENCES users(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (function_id)
-        REFERENCES cpu_ability_functions(id)
+    FOREIGN KEY (ability_id)
+        REFERENCES cpu_abilities(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
