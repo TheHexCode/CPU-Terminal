@@ -611,7 +611,7 @@ function statSubmit(event)
 	$(".itemSelect input:checked").each(function(index, item)
 	{
 		let itemPush = {
-			abbr: $(item).attr("data-abbr")
+			abbr: $(item).attr("id")
 		}
 
 		let itemCount = $(".itemCount[data-abbr=" + $(item).attr("data-abbr") + "]");
