@@ -39,7 +39,7 @@ class Payload
     {
         return this.#payloadSet;
     }
-    
+
     getUserID()
     {
         return this.#userID;
@@ -76,7 +76,7 @@ class Payload
             if(mainFuncIndex !== -1)
             {
                 allFuncs[mainFuncIndex]["rank"] = Number(allFuncs[mainFuncIndex]["rank"]) + Number(xFunc["rank"]);
-                allFuncs[mainFuncIndex]["keywords"] += ";" + xFunc.keywords;
+                allFuncs[mainFuncIndex]["keyword"] += ";" + xFunc.keyword;
             }
             else
             {
@@ -88,9 +88,9 @@ class Payload
 
         if(userFunc !== undefined)
         {
-            if(userFunc.keywords !== null)
+            if(userFunc.keyword !== null)
             {
-                return userFunc.keywords;
+                return userFunc.keyword;
             }
             else if(userFunc.rank !== null)
             {
@@ -121,11 +121,11 @@ class Payload
             case("k_hds"): // DISSIM
             {
                 let knowIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "knowledge");
-                
+
                 if(knowIndex !== -1)
                 {
                     this.#extraFuncs[knowIndex]["extra"] += "dissim;";
-                    this.#extraFuncs[knowIndex]["keywords"] += ";Hacking &amp; DigiSec";
+                    this.#extraFuncs[knowIndex]["keyword"] += ";Hacking &amp; DigiSec";
                 }
                 else
                 {
@@ -133,7 +133,7 @@ class Payload
                         name: "Knowledge",
                         rank: null,
                         type: "unique",
-                        keywords: "Hacking &amp; DigiSec",
+                        keyword: "Hacking &amp; DigiSec",
                         hacking_cat: "passive",
                         extra: "dissim;"
                     });
@@ -143,7 +143,7 @@ class Payload
             case("alarmsense"): // POLYMATH
             {
                 let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
-                
+
                 if(asIndex !== -1)
                 {
                     this.#extraFuncs[asIndex]["extra"] += "poly;";
@@ -154,7 +154,7 @@ class Payload
                         name: "Alarm Sense",
                         rank: null,
                         type: "unique",
-                        keywords: null,
+                        keyword: null,
                         hacking_cat: "passive",
                         extra: "poly;"
                     });
@@ -164,7 +164,7 @@ class Payload
             case("repair"): // POLYMATH
             {
                 let repIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "repair");
-                
+
                 if(repIndex !== -1)
                 {
                     this.#extraFuncs[repIndex]["extra"] += "poly;";
@@ -176,7 +176,7 @@ class Payload
                         name: "Repair",
                         rank: 1,
                         type: "ranked",
-                        keywords: null,
+                        keyword: null,
                         hacking_cat: "repair",
                         extra: "poly;"
                     });
@@ -193,11 +193,11 @@ class Payload
             case("k_hds"): // DISSIM
             {
                 let knowIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "knowledge");
-                
+
                 if(knowIndex["extra"] !== "dissim;")
                 {
                     this.#extraFuncs[knowIndex]["extra"] = this.#extraFuncs[knowIndex]["extra"].replace("dissim;","");
-                    this.#extraFuncs[knowIndex]["keywords"] = this.#extraFuncs[knowIndex]["keywords"].replace(";Hacking &amp; DigiSec","");
+                    this.#extraFuncs[knowIndex]["keyword"] = this.#extraFuncs[knowIndex]["keyword"].replace(";Hacking &amp; DigiSec","");
                 }
                 else
                 {
@@ -208,7 +208,7 @@ class Payload
             case("alarmsense"): // POLYMATH
             {
                 let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
-                
+
                 if(knowIndex["extra"] !== "poly;")
                 {
                     this.#extraFuncs[asIndex]["extra"] = this.#extraFuncs[asIndex]["extra"].replace("poly;","");
@@ -223,7 +223,7 @@ class Payload
             case("repair"): // POLYMATH
             {
                 let repIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "repair");
-                
+
                 if(knowIndex["extra"] !== "poly;")
                 {
                     this.#extraFuncs[repIndex]["extra"] = this.#extraFuncs[repIndex]["extra"].replace("poly;","");

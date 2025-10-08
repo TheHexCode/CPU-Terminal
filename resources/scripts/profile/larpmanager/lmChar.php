@@ -168,7 +168,7 @@ if($dbCharResponse === false)
 {
     $userCode = generateCode($pdo, $dbName);
 
-    addDBUser($pdo,$dbName,$lmCharID, $userCode,$lmCharName,$lmAbilityIDs);
+    addDBUser($pdo,$dbName,$lmCharID, $userCode,$lmCharName,array_merge($lmRoleIDs, $lmAbilityIDs));
 
     $dbCharStatement = $pdo->prepare($dbCharQuery);
     $dbCharStatement->execute([':lmID' => $lmCharID]);
@@ -179,7 +179,7 @@ else
 {
     $userCode = $dbCharResponse["userCode"];
 
-    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmCharName, $lmAbilityIDs);
+    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmCharName, array_merge($lmRoleIDs, $lmAbilityIDs));
 }
 
 ##################################################################################################
@@ -216,7 +216,7 @@ $functionQuery = "  SELECT DISTINCT CONCAT_WS(
                                             )
                                             ELSE NULL
                                         END
-                                    ) AS function_name,
+                                    ) AS name,
                                     SUM(cpu_ability_functions.rank) AS `rank`,
                                     cpu_functions.type,
                                     cpu_functions.hacking_cat,
@@ -267,6 +267,6 @@ $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 echo json_encode(array(  "id" => $dbCharResponse["lm_id"],
                                 "name" => $lmCharName,
                                 "userCode" => $userCode,
-                                "roles" => $roleResponse,
+                                //"roles" => $roleResponse,
                                 "functions" => $functionResponse,
                                 /*"items" => $itemResponse*/ ));

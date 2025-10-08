@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources/scripts/profile/db/startProfile.php';
+    //require 'resources/scripts/profile/db/startProfile.php';
 ?>
 <html>
 	<head>
@@ -104,7 +104,7 @@
 					-->
 				</div>
 				<div id="itemBox" class="zoneBox">
-					<?php echo getItemsTab(); ?>
+					<?php //echo getItemsTab(); ?>
 				</div>
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>

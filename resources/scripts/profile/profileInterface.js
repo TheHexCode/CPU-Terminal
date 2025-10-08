@@ -259,21 +259,21 @@ function processCharInfo(charData)
 		{
 			let funcKeyword = funcKeywords.find(function(keyworded_func)
 			{
-				return keyworded_func.function_name === func.function_name;
+				return keyworded_func.name === func.name;
 			});
 
 			if(funcKeyword === undefined)
 			{
 				funcKeywords.push(
 					{
-						"function_name": func.function_name,
+						"name": func.name,
 						"keywords": []
 					}
 				);
 
 				funcKeyword = funcKeywords.find(function(keyworded_func)
 				{
-					return keyworded_func.function_name === func.function_name;
+					return keyworded_func.name === func.name;
 				});
 			};
 
@@ -308,7 +308,7 @@ function processCharInfo(charData)
 			}
 		};
 
-		funcStrings[hacking_cat].push("<li>" + func.function_name + postName + "<ul class='lmFuncKWList hidden' data-func='" + func.function_name + "'></ul></li>");
+		funcStrings[hacking_cat].push("<li>" + func.name + postName + "<ul class='lmFuncKWList hidden' data-func='" + func.name + "'></ul></li>");
 	});
 
 	Object.keys(funcStrings).forEach(function(category)
@@ -322,7 +322,7 @@ function processCharInfo(charData)
 
 	funcKeywords.forEach(function(keyworded_func)
 	{
-		funcList = $(".lmFuncKWList[data-func='" + keyworded_func.function_name + "']");
+		funcList = $(".lmFuncKWList[data-func='" + keyworded_func.name + "']");
 		funcList.removeClass("hidden");
 
 		//<li>[Choice] *2</li>

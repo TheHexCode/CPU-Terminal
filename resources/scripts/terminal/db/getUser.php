@@ -14,7 +14,7 @@ $activeStatement = $pdo->prepare($activeQuery);
 $activeStatement->execute();
 $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
 
-$userQuery = "  SELECT ml_id,charName
+$userQuery = "  SELECT lm_id, charName
                 FROM {$dbName}.users
                 WHERE userCode = :userCode";
 
@@ -28,45 +28,89 @@ if($userResponse === false)
 }
 else
 {
-    
-    $functionQuery = "  SELECT DISTINCT	sr_functions.name,
-                                        SUM(sr_entry_functions.rank) AS 'rank',
-                                        sr_functions.type,
-                                        sr_functions.hacking_cat,
-                                        GROUP_CONCAT(
-                                            CASE
-                                                WHEN user_functions.keyword_type = 'knowledge'
-                                                    THEN (SELECT sr_knowledges.name FROM sr_knowledges WHERE sr_knowledges.id = user_functions.keyword_id)
-                                                WHEN user_functions.keyword_type = 'proficiency'
-                                                    THEN (SELECT sr_proficiencies.name FROM sr_proficiencies WHERE sr_proficiencies.id = user_functions.keyword_id)
-                                                WHEN user_functions.keyword_type = 'keyword'
-                                                    THEN (SELECT sr_keywords.name FROM sr_keywords WHERE sr_keywords.id = user_functions.keyword_id)
-                                                ELSE NULL
-                                            END
-                                            SEPARATOR ';'
-                                        ) AS keywords
-                        FROM sr_entry_functions
-                        INNER JOIN user_functions ON user_functions.function_id = sr_entry_functions.id
-                        INNER JOIN sr_functions ON sr_functions.id = sr_entry_functions.func_id
-                        WHERE user_functions.user_id = :userID
-                        GROUP BY sr_functions.name,
-                                 sr_functions.type,
-                                 sr_functions.hacking_cat";
-    
-    $functionStatement = $pdo->prepare($functionQuery);
-    $functionStatement->execute([':userID' => $userResponse["ml_id"]]);
-    $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
+    $abilityQuery = "   SELECT ability_id
+                        FROM {$dbName}.user_abilities
+                        WHERE user_id = :userID";
 
-    $roleQuery = "  SELECT DISTINCT sr_roles.name
-                    FROM user_functions
-                    INNER JOIN sr_entry_functions ON sr_entry_functions.id = user_functions.function_id
-                    INNER JOIN sr_entries ON sr_entries.id = sr_entry_functions.entry_id
-                    INNER JOIN sr_roles ON sr_roles.id = sr_entries.role_id
-                    WHERE user_functions.user_id = :userID";
+    $abilityStatement = $pdo->prepare($abilityQuery);
+    $abilityStatement->execute([':userID' => $userResponse["lm_id"]]);
+    $abilityList = $abilityStatement->fetchAll(PDO::FETCH_COLUMN);
+
+    $roleQuery = "  SELECT DISTINCT cpu_roles.name
+                    FROM {$dbName}.cpu_roles
+                    WHERE cpu_roles.lm_id IN ( ?" . str_repeat(", ?",count($abilityList)-1) . " )
+                    GROUP BY cpu_roles.name";
 
     $roleStatement = $pdo->prepare($roleQuery);
-    $roleStatement->execute([':userID' => $userResponse["ml_id"]]);
+    $roleStatement->execute($abilityList);
+
     $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
+
+    $functionQuery = "  SELECT DISTINCT CONCAT_WS(
+                                            ' ',
+                                            (SELECT cpu_mods.name AS `mod` WHERE cpu_mods.id = cpu_ability_functions.mod_id),
+                                            (SELECT cpu_sources.name AS source WHERE cpu_sources.id = cpu_ability_functions.source_id),
+                                            cpu_functions.name,
+                                            CASE
+                                                WHEN cpu_functions.type <> 'unique' AND cpu_functions.keyworded
+                                                THEN (
+                                                    CASE cpu_ability_functions.keyword_type
+                                                        WHEN 'keyword'
+                                                        THEN ( CONCAT( '(', ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id ), ')' ) )
+                                                        WHEN 'proficiency'
+                                                        THEN ( CONCAT( '(', ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id), ')' ) )
+                                                        WHEN 'knowledge'
+                                                        THEN ( CONCAT( '(', ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id), ')' ) )
+                                                        ELSE NULL
+                                                    END
+                                                )
+                                                ELSE NULL
+                                            END
+                                        ) AS name,
+                                        SUM(cpu_ability_functions.rank) AS `rank`,
+                                        cpu_functions.type,
+                                        cpu_functions.hacking_cat,
+                                        GROUP_CONCAT(
+                                            CASE
+                                                WHEN cpu_functions.type = 'unique' AND cpu_functions.keyworded
+                                                THEN (
+                                                    CASE cpu_ability_functions.keyword_choose
+                                                        WHEN TRUE
+                                                        THEN ( '[Choice]' )
+                                                        ELSE (
+                                                            CASE cpu_ability_functions.keyword_type
+                                                                WHEN 'keyword'
+                                                                THEN ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id )
+                                                                WHEN 'proficiency'
+                                                                THEN ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id )
+                                                                WHEN 'knowledge'
+                                                                THEN ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id )
+                                                                ELSE NULL
+                                                            END
+                                                        )
+                                                    END
+                                                )
+                                                ELSE NULL
+                                            END
+                                        SEPARATOR ';'
+                                        ) AS keyword
+                        FROM cpu_ability_functions
+                        INNER JOIN cpu_abilities ON cpu_abilities.id = cpu_ability_functions.ability_id
+                        LEFT JOIN cpu_mods ON cpu_mods.id = cpu_ability_functions.mod_id
+                        LEFT JOIN cpu_sources ON cpu_sources.id = cpu_ability_functions.source_id
+                        LEFT JOIN cpu_keywords ON cpu_keywords.id = cpu_ability_functions.keyword_id
+                        INNER JOIN cpu_functions ON cpu_functions.id = cpu_ability_functions.func_id
+                        WHERE cpu_abilities.lm_id IN ( ?" . str_repeat(', ?', count($abilityList)-1) . " )
+                        GROUP BY 	cpu_ability_functions.mod_id,
+                                    cpu_ability_functions.source_id,
+                                    cpu_ability_functions.func_id,
+                                    cpu_ability_functions.keyword_id,
+                                    cpu_ability_functions.keyword_type";
+
+    $functionStatement = $pdo->prepare($functionQuery);
+    $functionStatement->execute($abilityList);
+
+    $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $itemQuery = "  SELECT items.abbr, items.name, items.tier, items.category, items.radio
                     FROM {$dbName}.user_items
@@ -74,7 +118,7 @@ else
                     WHERE user_id = :userID";
 
     $itemStatement = $pdo->prepare($itemQuery);
-    $itemStatement->execute([':userID' => $userResponse["ml_id"]]);
+    $itemStatement->execute([':userID' => $userResponse["lm_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $effectQuery = "    SELECT item_effects.abbr, charges, per_type, use_loc, req_type, requirement
@@ -126,7 +170,7 @@ else
             {
                 case ("sim"):
                     $simUseStatement->execute([
-                            ':userID' => $userResponse["ml_id"],
+                            ':userID' => $userResponse["lm_id"],
                             ':effectAbbr' => $effect["abbr"],
                             ':simCode' => $activeCodes["simCode"]
                         ]);
@@ -134,7 +178,7 @@ else
                     break;
                 case ("scene"):
                     $sceneUseStatement->execute([
-                            ':userID' => $userResponse["ml_id"],
+                            ':userID' => $userResponse["lm_id"],
                             ':effectAbbr' => $effect["abbr"],
                             ':jobCode' => $activeCodes["jobCode"],
                             ':simCode' => $activeCodes["simCode"]
@@ -143,7 +187,7 @@ else
                     break;
                 case ("item"):
                     $itemUseStatement->execute([
-                            ':userID' => $userResponse["ml_id"],
+                            ':userID' => $userResponse["lm_id"],
                             ':itemAbbr' => $item["abbr"]
                         ]);
                     $useResponse = $itemUseStatement->fetch(PDO::FETCH_COLUMN);
@@ -165,7 +209,7 @@ else
 
             $termUseStatement = $pdo->prepare($termUseQuery);
             $termUseStatement->execute([
-                    ':userID' => $userResponse["ml_id"],
+                    ':userID' => $userResponse["lm_id"],
                     ':effectAbbr' => $effect["abbr"],
                     ':jobCode' => $activeCodes["jobCode"],
                     ':simCode' => $activeCodes["simCode"],
@@ -189,7 +233,7 @@ else
                         AND terminal_id=:termID";
 
     $accessStatement = $pdo->prepare($accessQuery);
-    $accessStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
+    $accessStatement->execute([':userID' => $userResponse["lm_id"], ':termID' => $termID]);
     $hasAccessed = intval($accessStatement->fetch(PDO::FETCH_COLUMN)) > 0;
 
     $actionQuery = "SELECT sim_entries.id, user_id, sim_entries.path, sim_entries.icon, action, newState
@@ -202,7 +246,7 @@ else
                     ORDER BY time ASC";
 
     $actionStatement = $pdo->prepare($actionQuery);
-    $actionStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
+    $actionStatement->execute([':userID' => $userResponse["lm_id"], ':termID' => $termID]);
 
     $actionResponse = $actionStatement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -218,19 +262,19 @@ else
                     GROUP BY sim_puzzles.id, sim_puzzles.repeat";
 
     $puzzleStatement = $pdo->prepare($puzzleQuery);
-    $puzzleStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
+    $puzzleStatement->execute([':userID' => $userResponse["lm_id"], ':termID' => $termID]);
 
     $puzzleResponse = $puzzleStatement->fetchAll(PDO::FETCH_ASSOC);
 
     $masherQuery = "SELECT newState AS id, users.charName AS name, cost AS 'rank'
                     FROM {$dbName}.sim_user_actions
-                    INNER JOIN {$dbName}.users ON users.ml_id = sim_user_actions.newState
+                    INNER JOIN {$dbName}.users ON users.lm_id = sim_user_actions.newState
                     WHERE target_id = :termID
                         AND user_id = :userID
                         AND action = 'Masher'";
 
     $masherStatement = $pdo->prepare($masherQuery);
-    $masherStatement->execute([':termID' => $termID, ':userID' => $userResponse["ml_id"]]);
+    $masherStatement->execute([':termID' => $termID, ':userID' => $userResponse["lm_id"]]);
 
     $masherData = $masherStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -247,7 +291,7 @@ else
                     ) AS UA";
 
     $copyStatement = $pdo->prepare($copyQuery);
-    $copyStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
+    $copyStatement->execute([':userID' => $userResponse["lm_id"], ':termID' => $termID]);
 
     $copyResponse = $copyStatement->fetchAll(PDO::FETCH_COLUMN);
 
@@ -310,11 +354,11 @@ else
                             ) AS rT";
 
     $remTagsStatement = $pdo->prepare($remTagsQuery);
-    $remTagsStatement->execute([':userID' => $userResponse["ml_id"], ':termID' => $termID]);
+    $remTagsStatement->execute([':userID' => $userResponse["lm_id"], ':termID' => $termID]);
 
     $remTagsResponse = intval($remTagsStatement->fetch(PDO::FETCH_COLUMN));
 
-    echo json_encode(array(  "id" => $userResponse["ml_id"],
+    echo json_encode(array(  "id" => $userResponse["lm_id"],
                                     "name" => $userResponse["charName"],
                                     "userCode" => $userCode,
                                     "functions" => $functionResponse,
