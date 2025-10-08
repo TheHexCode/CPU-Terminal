@@ -1,6 +1,6 @@
 <?php
 require('dbConnect.php');
-
+/*
 $roleQuery = "SELECT * FROM {$dbName}.sr_roles";
 $roleStatement = $pdo->prepare($roleQuery);
 $roleStatement->execute();
@@ -159,9 +159,9 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
 
             if($path)
             {
-                $returnString .=    "<div class='pathBox hidden' data-path='" . $path["id"] . "'>" . 
+                $returnString .=    "<div class='pathBox hidden' data-path='" . $path["id"] . "'>" .
                                         "<h1>" . strtoupper($path["name"]) . "</h1>";
-            }                                    
+            }
 
             for($tier = 1; $tier <= 5; $tier++)
             {
@@ -372,13 +372,13 @@ function fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcA
 
             $pathIndex++;
         }
-        
+
         $returnString .= "</div>";
     }
-    
+
     return $returnString;
 }
-
+*/
 ######################################################################
 
 $itemArray = array(
@@ -416,8 +416,7 @@ $itemQuery = "  SELECT DISTINCT items.abbr,name,tier,category,radio,
                     END AS max_charges
                 FROM {$dbName}.items
                 LEFT JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = items.abbr
-		        LEFT JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr
-                WHERE enabled = 1";
+		        LEFT JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr";
 
 $itemStatement = $pdo->prepare($itemQuery);
 $itemStatement->execute();
@@ -456,14 +455,14 @@ foreach($itemArray as $itemCat)
                                     "<span>USES LEFT: <span class='countSum'>" . $item["max_charges"] . "</span>/" . $item["max_charges"] . "</span>" .
                                 "</div>" .
                                 "<div class='itemCountRow'>" .
-                                    "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", -1)'><b>&lt;</b>&nbsp;&#x2501;</button>" . 
+                                    "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", -1)'><b>&lt;</b>&nbsp;&#x2501;</button>" .
                                     "<span class='itemImgBox'>";
-            
+
             for($i = 1; $i <= $item["max_charges"]; $i++)
             {
                 $itemString .=          "<img src='resources/images/actions/itemopen.png' />";
             }
-                                    
+
             $itemString .=          "</span>" .
                                     "<button onclick='changeItemCharges(\"" . $item["abbr"] . "\", 1)'>&#x271A;&nbsp;<b>&gt;</b></button>" .
                                 "</div>" .

@@ -44,21 +44,21 @@ function toggleRadio(radio)
 	}
 }
 
-function mlEnter(event)
+function lmEnter(event)
 {
 	event.preventDefault();
 
 	if(event.key === "Enter")
 	{
-		mlLogin(event);
+		lmLogin(event);
 	}
 }
 
-function mlLogin(event)
+function lmLogin(event)
 {
 	event.preventDefault();
 
-	if(($("#mlEmail").val() === "") || ($("#mlPass").val() === ""))
+	if(($("#lmEmail").val() === "") || ($("#lmPass").val() === ""))
 	{
 		alert("Please fill both fields!");
 	}
@@ -66,68 +66,68 @@ function mlLogin(event)
 	{
 		$("#load").removeClass("hidden");
 
-		$("#mlEmail").prop("readonly",true);
-		$("#mlPass").prop("readonly",true);
-		mlEmail = $("#mlEmail").val();
-		mlPass = $("#mlPass").val();
+		$("#lmEmail").prop("readonly",true);
+		$("#lmPass").prop("readonly",true);
+		lmEmail = $("#lmEmail").val();
+		lmPass = $("#lmPass").val();
 
 		$.ajax({
 			type: "POST",
 			dataType: "json",
-			url: "resources/scripts/profile/mylarp/myLarpLogin.php",
+			url: "resources/scripts/profile/larpmanager/lmLogin.php",
 			data:
 			{
-				mlEmail: mlEmail,
-				mlPass: mlPass
+				lmEmail: lmEmail,
+				lmPass: lmPass
 			}
 		})
 		.done(function(response)
 		{
 			processLogin(response);
+		})
+		.fail(function(response)
+		{
+			/*
+			console.log(response);
+			alert("Login Failed! Please Try Again");
+
+			$("#lmEmail").prop("readonly",false);
+			$("#lmPass").prop("readonly",false);
+
+			$("#load").addClass("hidden");
+			*/
+			processLogin(JSON.parse('[{"id":30,"name":"Puck"}]'))
 		});
 	}
 }
 
 function processLogin(loginData)
 {
-	if(loginData["result"] !== "pass")
-	{
-		console.log(loginData);
-		alert("Login Failed! Please Try Again");
+	$("#charSelectModal .modalBodyText").html("");
 
-		$("#mlEmail").prop("readonly",false);
-		$("#mlPass").prop("readonly",false);
+	if(loginData.length > 1)
+	{
+		loginData.forEach(function(character, index)
+		{
+			let buttonID = "char" + index;
+			$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["name"] + " ]</button>");
+
+			$("#" + buttonID).bind("pointerup", function()
+			{
+				selectCharacter(character);
+			});
+		});
+
+		$("#charSelectModal").width($("#main").width());
+
+		$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
 
 		$("#load").addClass("hidden");
+		$("#modalBG").css("display","flex");
 	}
 	else
 	{
-		$("#charSelectModal .modalBodyText").html("");
-
-		if(loginData["charList"].length > 1)
-		{
-			loginData["charList"].forEach(function(character, index)
-			{
-				let buttonID = "char" + index;
-				$("#charSelectModal .modalBodyText").append("<button id='" + buttonID + "' class='modalButton'>[ " + character["charName"] + " ]</button>");
-
-				$("#" + buttonID).bind("pointerup", function()
-				{
-					selectCharacter(character);
-				});
-			});
-			
-			$("#charSelectModal").width($("#main").width());
-
-			$("#charSelectModal .modalHeaderText").html("SELECT CHARACTER PROFILE");
-			
-			$("#load").addClass("hidden");
-			$("#modalBG").css("display","flex");
-		}
-		else
-		{
-			selectCharacter(loginData["charList"][0]);
-		}
+		selectCharacter(loginData[0]);
 	}
 }
 
@@ -136,17 +136,17 @@ function closeModal(event)
 	if((event.type !== "keyup") || (event.key === "Escape"))
 	{
 		$("#modalBG").css("display","none");
-		
+
 		$("#charListModal .modalHeaderText").html("");
 
 		$("#charListModal .modalBodyText").html("");
 
 		if(event !== "selected")
 		{
-			$("#mlEmail").prop("readonly",false);
-			$("#mlPass").prop("readonly",false);
+			$("#lmEmail").prop("readonly",false);
+			$("#lmPass").prop("readonly",false);
 
-			$("#mlPass").val("");
+			$("#lmPass").val("");
 		}
 	}
 }
@@ -156,21 +156,21 @@ function selectCharacter(char)
 	$("#load").removeClass("hidden");
 	closeModal("selected");
 
-	mlEmail = $("#mlEmail").val();
-	mlPass = $("#mlPass").val();
-	mlCharID = char["charID"];
-	mlCharName = char["charName"];
+	lmEmail = $("#lmEmail").val();
+	lmPass = $("#lmPass").val();
+	lmCharID = char["id"];
+	lmCharName = char["name"];
 
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/profile/mylarp/myLarpChar.php",
+		url: "resources/scripts/profile/larpmanager/lmChar.php",
 		data:
 		{
-			mlEmail: mlEmail,
-			mlPass: mlPass,
-			mlCharID: mlCharID,
-			mlCharName: mlCharName
+			lmEmail: lmEmail,
+			lmPass: lmPass,
+			lmCharID: lmCharID,
+			lmCharName: lmCharName
 		}
 	})
 	.done(function(response)
@@ -189,6 +189,7 @@ function processCharInfo(charData)
 
 	$("#payloadCodeRow .FG").html(charData.userCode);
 
+	/*
 	charData.discoveries.forEach(function(discovery)
 	{
 		switch(discovery["disc_type"])
@@ -226,13 +227,16 @@ function processCharInfo(charData)
 			chooseKeyword($(".funcName[data-id='" + func.function_id + "'] select")[0]);
 		}
 	});
+	*/
 
-	/*
 	let funcStrings = {
-		initial: "",
-		active: "",
-		passive: ""
+		initial: [],
+		active: [],
+		passive: [],
+		other: []
 	};
+
+	let funcKeywords = [];
 
 	charData.functions.forEach(function(func)
 	{
@@ -241,34 +245,96 @@ function processCharInfo(charData)
 		switch (func.type)
 		{
 			case("ranked"):
+			{
 				postName = " " + romanize(func.rank);
 				break;
-			case("collect"):
+			}
+			case("charges"):
 			{
-				postName = "<ul><li>" + func.caviats.replace(";","</li><li>") + "</li></ul>";
-				break;
+				postName = " x" + func.rank;
 			}
 		}
 
-		let hacking_cat = func.hacking_cat;
-
-		if(func.hacking_cat === "repair")
+		if(func.keyword !== null)
 		{
-			hacking_cat = "passive";
+			let funcKeyword = funcKeywords.find(function(keyworded_func)
+			{
+				return keyworded_func.name === func.name;
+			});
+
+			if(funcKeyword === undefined)
+			{
+				funcKeywords.push(
+					{
+						"name": func.name,
+						"keywords": []
+					}
+				);
+
+				funcKeyword = funcKeywords.find(function(keyworded_func)
+				{
+					return keyworded_func.name === func.name;
+				});
+			};
+
+			keyword_name = func.keyword.split(";");
+
+			keyword = {
+				"keyword_name": keyword_name[0],
+				"count": keyword_name.length
+			}
+
+			funcKeyword["keywords"].push(keyword);
 		}
 
-		funcStrings[hacking_cat] += "<li>" + func.name + postName + "</li>";
+		let hacking_cat = "";
+
+		switch(func.hacking_cat)
+		{
+			case(null):
+			{
+				hacking_cat = "other";
+				break;
+			}
+			case("repair"):
+			{
+				hacking_cat = "passive";
+				break;
+			}
+			default:
+			{
+				hacking_cat = func.hacking_cat;
+				break;
+			}
+		};
+
+		funcStrings[hacking_cat].push("<li>" + func.name + postName + "<ul class='lmFuncKWList hidden' data-func='" + func.name + "'></ul></li>");
 	});
 
 	Object.keys(funcStrings).forEach(function(category)
 	{
-		$("#" + category + "List").html(funcStrings[category]);
+		uniqueCategory = [...new Set(funcStrings[category])];
+		$("#" + category + "List").html(uniqueCategory.join(""));
 
 		$("#" + category + "Header").removeClass("hidden");
 		$("#" + category + "List").removeClass("hidden");
 	});
-	*/
 
+	funcKeywords.forEach(function(keyworded_func)
+	{
+		funcList = $(".lmFuncKWList[data-func='" + keyworded_func.name + "']");
+		funcList.removeClass("hidden");
+
+		//<li>[Choice] *2</li>
+		//<li>Law</li>
+		keyworded_func["keywords"].forEach(function(keyword)
+		{
+			funcList.append("<li>" + keyword.keyword_name + (keyword.count > 1 ? " *" + keyword.count : "") + "</li>");
+		});
+
+	});
+
+	/*
 	charData["items"].forEach(function(item)
 	{
 		let inputID = "#item_" + item["item_abbr"];
@@ -279,15 +345,15 @@ function processCharInfo(charData)
 		$("input[name='"+$(inputID).prop("name")+"']").prop("data-active",false);
 		$(inputID).prop("data-active",true);
 	});
-
+	*/
 	$("#load").addClass("hidden");
 
-	$("#mlPass").val("");
+	$("#lmPass").val("");
 
 	$(".postLogon").removeClass("hidden");
-	$(".mlLoginBox").addClass("hidden");
+	$(".lmLoginBox").addClass("hidden");
 }
-
+/*
 function changeOrigin(target)
 {
 	let oldValue = $(".originOption input").toArray().find(function(origin)
@@ -313,7 +379,7 @@ function changeRole(target, wipeOld=null)
 {
 	$(".roleBox").addClass("hidden");
 	$(".pathBox").addClass("hidden");
-	
+
 	if(wipeOld !== null)
 	{
 		$(".roleBox[data-role='" + wipeOld + "'] input").attr("checked", false);
@@ -419,7 +485,7 @@ function chooseKeyword(target)
 			{
 				$(".funcChoice[data-kwtype='" + kwType + "'] .funcOption[value='" + option.value + "']").prop("disabled", false);
 			}
-			
+
 			if(option.value != "blank")
 			{
 				$("funcChoice[data-kwtype='" + kwType + "'] .funcOption[value='" + target.value + "']").each(function(index, otherOption)
@@ -433,7 +499,7 @@ function chooseKeyword(target)
 		});
 	}
 }
-
+*/
 function setItemCharges(itemAbbr, charges)
 {
 	$(".itemCount[data-abbr='" + itemAbbr + "']").attr("data-charges", charges);
@@ -478,6 +544,7 @@ function statSubmit(event)
 	$("#saveText").removeClass("hidden");
 
 	// FUNCTION LIST
+	/*
 	let origin = $("input[name='origins']:checked").attr("value");
 	let functions = [];
 
@@ -538,7 +605,7 @@ function statSubmit(event)
 	});
 
 	let originID = Number($("#roleSelect option[selected]")[0].value);
-
+	*/
 	// LIST OF ITEMS
 	let items = [];
 	$(".itemSelect input:checked").each(function(index, item)
@@ -548,7 +615,7 @@ function statSubmit(event)
 		}
 
 		let itemCount = $(".itemCount[data-abbr=" + $(item).attr("data-abbr") + "]");
-		
+
 		itemPush["count"] = (itemCount.length ? Number($(itemCount[0]).attr("data-charges")) : null);
 
 		items.push(itemPush);
@@ -557,19 +624,19 @@ function statSubmit(event)
 	$.ajax({
 		type: "POST",
 		dataType: "json",
-		url: "resources/scripts/profile/db/updateUser.php",
+		url: "resources/scripts/profile/db/updateInventory.php",
 		data:
 		{
 			userID: $("#payloadCharName").attr("data-id"),
-			userOrigin: originID,
-			userFunctions: functions,
+			//userOrigin: originID,
+			//userFunctions: functions,
 			userItems: items
 		}
 	})
 	.done(function()
 	{
 		$("#saveText").html("SAVED!");
-	
+
 		setTimeout(function(){
 			$("#saveText").addClass("hidden");
 		},5000);

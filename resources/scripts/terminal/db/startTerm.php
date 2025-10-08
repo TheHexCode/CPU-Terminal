@@ -30,7 +30,7 @@ else
     {
         $userQuery = "  SELECT charName
                         FROM {$dbName}.users
-                        WHERE ml_id=:stateData";
+                        WHERE lm_id=:stateData";
 
         $userStatement = $pdo->prepare($userQuery);
         $userStatement->execute([':stateData' => $termResponse["stateData"]]);
@@ -64,7 +64,7 @@ else
     $logQuery = "   SELECT sim_access_logs.id,user_id,users.charName,mask,reassignee,state
                     FROM {$dbName}.sim_access_logs
                     LEFT JOIN {$dbName}.users
-                        ON sim_access_logs.user_id=users.ml_id
+                        ON sim_access_logs.user_id=users.lm_id
                     WHERE terminal_id=:termID";
 
     $logStatement = $pdo->prepare($logQuery);

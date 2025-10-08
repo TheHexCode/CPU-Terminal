@@ -20,16 +20,16 @@ $(document).ready(function()
 
 function tens(numStr)
 {
-	var tensFormat = new Intl.NumberFormat('en-US', { 
+	var tensFormat = new Intl.NumberFormat('en-US', {
 		minimumIntegerDigits: 2
 	});
-	
+
 	return tensFormat.format(Number(numStr));
 }
 
 function signed(numStr)
 {
-	var signFormat = new Intl.NumberFormat('en-US', { 
+	var signFormat = new Intl.NumberFormat('en-US', {
 		signDisplay: "always"
 	});
 
@@ -183,7 +183,7 @@ function injectUserPayload(userPayload)
 									"<u>CONNECTING USER IDENTIFIED</u>" +
 								"</div>" +
 								"<span>User: " + payload.getHandle() + "</span>" +
-								( payload.getFunction("Mask") ?
+								( payload.getFunction("MASK") ?
 									"<div id='maskName' class='multiLineTextInput'>" +
 										"<label for='payloadMask'>Mask:</label>" +
 										"<span class='middleText'>(This MAY NOT be used to imitate someone else!)</span>" +
@@ -204,7 +204,7 @@ function injectUserPayload(userPayload)
 			$("#terminalButton").html("No Cyberdeck!");
 		}
 		taTimer.startTimer(maxTime,allowAccess);
-				
+
 		//// TAG MANAGEMENT
 
 		// Required Tags
@@ -340,6 +340,7 @@ function injectUserPayload(userPayload)
 
 		if(payload.getFunction("KNOWLEDGE"))
 		{
+			$("#noPassFuncs").addClass("hidden");
 			$("#passSeparator").removeClass("hidden");
 			$("#knowItem").removeClass("hidden");
 
@@ -465,7 +466,7 @@ function injectUserPayload(userPayload)
 						$(target).toggleClass("dimmed", disabled);
 
 						$(target).removeClass("hidden");
-						
+
 						break;
 					}
 				}
@@ -497,7 +498,7 @@ function injectUserPayload(userPayload)
 						// ABILITY TO USE EFFECT NOT DETERMINED BY CHARGES
 						// EX: Budget Access Remote Drive
 						if(effect.charges === null)
-						{							
+						{
 							//!! Add Use Button to Effect String
 						}
 						else // ABILITY TO USE IS LIMITED BY CHARGES
@@ -530,7 +531,7 @@ function injectUserPayload(userPayload)
 
 								effectString += "<span class='itemActionRow'>" +
 													"<span class='itemMarks'>";
-								
+
 								for(let i = 0; i < effect.uses; i++)
 								{
 									effectString += "<img src='/resources/images/actions/itemfilled.png' />";
@@ -540,7 +541,7 @@ function injectUserPayload(userPayload)
 								{
 									effectString += "<img src='/resources/images/actions/itemopen.png' />";
 								}
-								
+
 								effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
 											"</span>" +
 											"<button class='deckButton' data-effect='" + effect.abbr + "' data-plus='" + plusTags + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">+" + plusTags + " Tag" + (plusTags === 1 ? "" : "s") + "</button>" +
@@ -608,7 +609,7 @@ function injectUserPayload(userPayload)
 															"<button class='shimButton' data-effect='" + effect.abbr + "' disabled>No Uses Left!</button>" +
 														"</span>";
 										}
-										
+
 										break;
 									}
 									case("impl_mags"):
@@ -892,7 +893,7 @@ function initRadio(target)
 					$("#polyAS").remove();
 					payload.minusFunction("alarmSense");
 				}
-				
+
 				break;
 			}
 			case("plusRepair"):
@@ -942,7 +943,7 @@ function initRadio(target)
 			case("plusRepair"):
 			{
 				payload.plusFunction("repair");
-				
+
 				break;
 			}
 		}
@@ -1040,7 +1041,7 @@ function initCheck(target)
 				{
 					$(".shimButton[data-effect='shim_0']").html("No Uses Left!");
 				}
-				
+
 				if(Number($("#shim_1_init .useSum").html()) > 0)
 				{
 					$(".shimButton[data-effect='shim_1']").attr("disabled",false);
@@ -1139,7 +1140,7 @@ function updateTags(change, tagType)
 				session.setCurrentTags((change * -1), Session.EXTRA);
 				extTags = session.getCurrentTags(Session.EXTRA);
 			}
-	
+
 			session.setCurrentTags(change, tagType);
 			payTags = session.getCurrentTags(Session.PAYLOAD);
 			break;
@@ -1150,7 +1151,7 @@ function updateTags(change, tagType)
 				session.setCurrentTags((change * -1), Session.EXTRA);
 				extTags = session.getCurrentTags(Session.EXTRA);
 			}
-	
+
 			session.setCurrentTags(change, tagType);
 			session.setExtraTagMin(change);
 
@@ -1251,7 +1252,7 @@ function accessTerminal(event)
 					logMask = $("#payloadMask").val();
 				}
 			}
-			
+
 			$.ajax({
 				type: "POST",
 				dataType: "json",
@@ -1268,7 +1269,7 @@ function accessTerminal(event)
 			{
 				$("#logList").append(	'<li id="log' + logID + '" class="logEntry itsYou" data-user="' + payload.getUserID() + '">' +
 											'<span class="logPerson">You:&nbsp;&nbsp;</span><span class="logName">' + (logMask === false ? payload.getHandle() : logMask) + '</span>' +
-											(((payload.getFunction("REASSIGN")) || (payload.getFunction("WIPE YOUR TRACKS"))) ? 
+											(((payload.getFunction("REASSIGN")) || (payload.getFunction("WIPE YOUR TRACKS"))) ?
 											'<div class="logActions">' +
 												'<hr/>' +
 												(payload.getFunction("REASSIGN") ? '<span class="reassAction buttonItem">REASSIGN: <button class="reassButton" data-enabled="true" data-cost="2" data-id="' + logID + '" onclick="takeAction(this)">2 Tags</button></span>' : "") +
@@ -1418,7 +1419,7 @@ function openTab(target, contentID)
 {
 	$(".hackTab.active").removeClass("active");
 	$(".hackBody.active").removeClass("active");
-	
+
 	$($(target)).addClass("active");
 	$("#" + contentID).addClass("active");
 }
@@ -1430,7 +1431,7 @@ function openSubTab(target, contentID)
     $("#" + $bodyID + " .subTab.active").addClass("inactive");
 	$("#" + $bodyID + " .subTab.active").removeClass("active");
 	$("#" + $bodyID + " .subContent.active").removeClass("active");
-	
+
 	$($(target)).removeClass("inactive");
 	$($(target)).addClass("active");
 	$("#" + contentID).addClass("active");
@@ -1512,7 +1513,7 @@ function takeAction(target)
 				options.forEach(function(option, index)
 				{
 					let buttonID = action + targetID + index;
-					
+
 					buttonArray.push({
 						id: buttonID,
 						text: option.button,
@@ -1561,7 +1562,7 @@ function takeAction(target)
 			executeHeader = actionVerb + " / " + entryName + " / " + actionCost + " Tag" + pluralize(actionCost);
 
 			// BODY TEXT
-			bodyText = 	actionVerb + " \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" + 
+			bodyText = 	actionVerb + " \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" +
 						(action === "break" ?
 							"<div class='cautionTape'>" +
 								"WARNING: Breaking ICE means tripping it and taking any negative effects it may incur. <em>Sleaze</em> the ICE instead to disable the security, in exchange for Tags." +
@@ -1594,7 +1595,7 @@ function takeAction(target)
 			};
 
 			actionModal.showConfirmPage(actionMap, confirmMap);
-			
+
 			break;
 		}
 		// Log Entry
@@ -1615,7 +1616,7 @@ function takeAction(target)
 			executeHeader = actionVerb + " / " + entryName + " / " + actionCost + " Tag" + pluralize(actionCost);
 
 			// BODY TEXT
-			bodyText = 	actionVerb.split(" ")[0] + " Log Entry for \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" + 
+			bodyText = 	actionVerb.split(" ")[0] + " Log Entry for \"" + entryName + "\" for " + actionCost + " Tag" + pluralize(actionCost) + "?" +
 						(action === "reass" ?
 							"<br/><br/>" +
 							"<div id='reassName' class='multiLineTextInput'>" +
@@ -1690,7 +1691,7 @@ function takeAction(target)
 				}
 			}
 
-			bodyText = 	actionVerb + " Device for " + actionCost + " Tag" + pluralize(actionCost) + "?" + 
+			bodyText = 	actionVerb + " Device for " + actionCost + " Tag" + pluralize(actionCost) + "?" +
 						extraAfterText;
 						// No Copycat
 
@@ -1734,7 +1735,7 @@ function takeAction(target)
 			executeHeader = "Siphon Charge / Device / " + actionCost + " Tag" + pluralize(actionCost);
 
 			// BODY TEXT
-			bodyText = 	"Siphon Charge from Device to gain 2 Amps?" + 
+			bodyText = 	"Siphon Charge from Device to gain 2 Amps?" +
 						"<br/><br/>NOTE: \"Amps\" are an external resource not tracked by this OS. Please utilize your own tracking for this resource.";
 						// No Copycat
 
@@ -1966,7 +1967,7 @@ function closeModal(event)
 			await sleep(2000);
 			closeModal("interruptFollowUp");
 		};
-		
+
 		blinkSleep();
 	}
 	else if((event.type !== "keyup") || (event.key === "Escape"))
@@ -2115,7 +2116,7 @@ function completeAction(actionMap)
 				await sleep(1000);
 				location.reload();
 			};
-			
+
 			freezeSleep();
 
 			break;
@@ -2331,7 +2332,7 @@ function setupAlertModal(bodyText)
 	$("#actionModal .modalOverlay").addClass("hidden");
 
 	$("#actionModal .modalButtonRow").html("<button id='okButton' class='modalButton'>OK</button>");
-			
+
 	$("#okButton").bind("pointerup", function()
 	{
 		closeModal("okayed");
@@ -2351,7 +2352,7 @@ function setupAlertModal(bodyText)
 
 	$("#actionModal .modalButtonRow").removeClass("dimmed");
 	$("#actionModal .modalButtonRow").attr("data-mode","confirm");
-	
+
 	$("#modalBG").css("display","flex");
 }
 

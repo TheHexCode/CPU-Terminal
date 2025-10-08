@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources/scripts/profile/db/startProfile.php';
+    //require 'resources/scripts/profile/db/startProfile.php';
 ?>
 <html>
 	<head>
@@ -19,27 +19,27 @@
             <div id="load" class="hidden">
 				<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
 					<mask id="logoMask">
-						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
+						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" />
 					</mask>
-				
+
 					<foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
 						<div id="logoBG"></div>
 					</foreignObject>
 				</svg>
 			</div>
 			<h1>PAYLOAD CUSTOMIZATION</h1>
-			<div class="mlLoginBox">
-				<h2>MYLARP LOGIN</h2>
-                <form id="mlLogin" autocomplete="off" onSubmit="mlLogin(event)">
-                    <div class="mlLoginRow">
-                        <label for="mlEmail">myLarp Email:</label>
-                        <input type="email" id="mlEmail" form="mlLoginForm" onkeyup="mlEnter(event)" required></input>
+			<div class="lmLoginBox">
+				<h2>CPU LARPMANAGER LOGIN</h2>
+                <form id="lmLogin" autocomplete="off" onSubmit="lmLogin(event)">
+                    <div class="lmLoginRow">
+                        <label for="lmEmail">Email:</label>
+                        <input type="email" id="lmEmail" form="lmLoginForm" onkeyup="lmEnter(event)" required></input>
                     </div>
-                    <div class="mlLoginRow">
-                        <label for="mlPass">myLarp Password:</label>
-                        <input type="password" id="mlPass" form="mlLoginForm" onkeyup="mlEnter(event)" required></input>
+                    <div class="lmLoginRow">
+                        <label for="lmPass">Password:</label>
+                        <input type="password" id="lmPass" form="lmLoginForm" onkeyup="lmEnter(event)" required></input>
                     </div>
-                    <button type="submit" form="mlLogin">Log in to myLarp</button>
+                    <button type="submit" form="lmLogin">Log in to CPU LarpManager</button>
                 </form>
 			</div>
 			<div class="postLogon hidden"> <!--hidden-->
@@ -58,9 +58,9 @@
 					</div>
 				</div>
 				<div class="zoneBox">
-					<!-- myLarp Functions
+					<!-- larpmanager Functions -->
 					<h2 id="skillBoxHeader">
-						FUNCTIONS FROM MYLARP PROFILE:
+						FUNCTIONS FROM LARPMANAGER PROFILE:
 					</h2>
 					<div id="skillTypes">
 						<div id="initialHeader" class="skillTypeHeader hidden">
@@ -78,28 +78,33 @@
 						</div>
 						<ul id="passiveList" class="skillTypeList hidden">
 						</ul>
+						<div id="otherHeader" class="skillTypeHeader hidden">
+							>> NON-HACKING FUNCTIONS
+						</div>
+						<ul id="otherList" class="skillTypeList hidden">
+						</ul>
 					</div>
-					-->
-					<!-- SELF REPORT FUNCTIONS -->
-					<?php echo getOriginRadios($roleArray); ?>
+					<!-- SELF REPORT FUNCTIONS
+					<?php //echo getOriginRadios($roleArray); ?>
 					<script id="tempScript">$("#origin1").prop("data-active",true);$("#tempScript").remove();</script>
 					<hr/>
 					<div class="infoRole">
 						<label for="roleSelect">Role:</label>
 						<select id="roleSelect" onchange="changeRole(this)">
-							<?php echo getRoleSelect($roleArray); ?>
+							<?php //echo getRoleSelect($roleArray); ?>
 						</select>
 						<label for="pathSelect">Path:</label>
 						<select id="pathSelect" onchange="changePath(this)" disabled>
 							<option value="" selected>--</option>
-							<?php echo getPathSelect($pathArray); ?>
+							<?php //echo getPathSelect($pathArray); ?>
 						</select>
 					</div>
 					<hr/>
-					<?php echo fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray); ?>
+					<?php //echo fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray); ?>
+					-->
 				</div>
 				<div id="itemBox" class="zoneBox">
-					<?php echo getItemsTab(); ?>
+					<?php //echo getItemsTab(); ?>
 				</div>
 				<div id="saveBar">
 					<span id="saveText" class="hidden">SAVED!</span>

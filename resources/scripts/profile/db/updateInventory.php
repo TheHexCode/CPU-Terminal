@@ -2,7 +2,7 @@
 require('dbConnect.php');
 
 $userID = $_POST["userID"];
-$itemArray = $_POST["items"] ?? array();
+$itemArray = $_POST["userItems"] ?? array();
 
 $deleteQuery = "DELETE FROM {$dbName}.user_items
                 WHERE user_id = :userID";
