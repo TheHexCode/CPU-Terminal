@@ -1,12 +1,14 @@
 [
 	{
 		"name": "cmm_arms",
+		"stacking": true,
 		"input":
 		[
 			{
 				"type": "checkbox",
 				"screen": "crack",
-				"label": "used Slip yet?",
+				"header": "CMM ARMS: ",
+				"label": "Used Slip this Scene?",
 				"activation":
 				[
 					{
@@ -29,6 +31,7 @@
 			{
 				"screen": "confirm",
 				"type": "checkbox",
+				"header": "COPYCAT: ",
 				"label": "want to use?",
 				"activation":
 				[
@@ -212,7 +215,7 @@
 				"label":
 				{
 					"location": "crack_hacking",
-					"label": "[BEACON: +{values:hacking:amount:mult:2}]"
+					"label": "[BEACON:  +{values:hacking:amount}]"
 				}
 			}
 		]
@@ -449,14 +452,14 @@
 		"ph_login":
 		[
 			{
-				"type": "alarm_sense",
+				"type": "plus_alarm_sense",
 				"amount": "values:alarm_sense:amount"
 			}
 		],
 		"term_login":
 		[
 			{
-				"type": "alarm_sense",
+				"type": "plus_alarm_sense",
 				"amount": "values:alarm_sense:amount"
 			}
 		]
@@ -521,6 +524,7 @@
 			{
 				"type": "checkbox",
 				"screen": "ph_login",
+				"header": "SHIMMERSTICK: ",
 				"label": "Consume Shimmerstick?",
 				"activation":
 				[
@@ -539,6 +543,7 @@
 			{
 				"type": "checkbox",
 				"screen": "crack",
+				"header": "SHIMMERSTICK: ",
 				"label": "Apply Shimmerstick?",
 				"activation":
 				[
@@ -594,6 +599,7 @@
 			{
 				"type": "checkbox",
 				"screen": "ph_login",
+				"header": "VIGIL: ",
 				"label": "Consume Vigil?",
 				"activation":
 				[
@@ -612,6 +618,7 @@
 			{
 				"type": "checkbox",
 				"screen": "crack",
+				"header": "VIGIL: ",
 				"label": "Apply Vigil?",
 				"activation":
 				[
@@ -630,6 +637,7 @@
 			{
 				"type": "checkbox",
 				"screen": "ph_login",
+				"header": "DIGITAL SECURITY SECRETS: ",
 				"label": "Burn DigiSec Secret?",
 				"condition":
 				[

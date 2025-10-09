@@ -1,5 +1,8 @@
 class Payload
 {
+    #itemSchema;
+    #effectSchema;
+
     #payloadSet;
 
     #userID;
@@ -7,16 +10,17 @@ class Payload
     #functions;
     #extraFuncs;
     #roles;
-    #items;
-    #activeEffects;
-    #hasDeck;
+    #inventory;
+
+    #cyberdecks;
 
     constructor()
     {
+        this.#inventory = new Inventory();
+
         this.#payloadSet = false;
         this.#extraFuncs = [];
-        this.#activeEffects = [];
-        this.#hasDeck = false;
+        this.#cyberdecks = [];
     }
 
     setPayload(payload)
@@ -25,12 +29,9 @@ class Payload
         this.#handle = payload.name;
         this.#functions = payload.functions;
         this.#roles = payload.roles;
-        this.#items = payload.items;
 
-        if(this.#items.find(item => item.radio === "deck"))
-        {
-            this.#hasDeck = true;
-        }
+        this.#inventory.establishInventory(payload.items);
+        this.#inventory.setupInputs();
 
         this.#payloadSet = true;
     }
@@ -55,9 +56,9 @@ class Payload
         return this.#roles.find(role => role.toLowerCase() === roleName.toLowerCase());
     }
 
-    hasDeck()
+    hasCyberdeck()
     {
-        return this.#hasDeck;
+        return this.#cyberdecks.length > 0;
     }
 
     getFunctionList()
@@ -127,8 +128,9 @@ class Payload
         return extraFunc;
     }
 
-    plusFunction(func)
+    plusFunction(effect_type, plus_amount)
     {
+        /*
         switch(func.toLowerCase())
         {
             case("k_hds"): // DISSIM
@@ -197,6 +199,53 @@ class Payload
                 break;
             }
         }
+        */
+
+        switch(effect_type)
+        {
+            case("plus_hacking"):
+            {
+                let hackIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
+
+                if(hackIndex !== -1)
+                {
+                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) + Number(plus_amount);
+                }
+                else
+                {
+                    this.#extraFuncs.push({
+                        name: "Hacking",
+                        rank: Number(plus_amount),
+                        type: "ranked",
+                        keyword: null,
+                        hacking_cat: "initial"
+                    });
+                }
+
+                updateTags(Number(plus_amount) * 2, Session.HACK);
+                break;
+            }
+            case("plus_alarm_sense"):
+            {
+                let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
+
+                if(asIndex !== -1)
+                {
+                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(plus_amount);
+                }
+                else
+                {
+                    this.#extraFuncs.push({
+                        name: "Alarm Sense",
+                        rank: Number(plus_amount),
+                        type: "ranked",
+                        keyword: null,
+                        hacking_cat: "passive"
+                    });
+                }
+                break;
+            }
+        }
     }
 
     minusFunction(func)
@@ -252,6 +301,29 @@ class Payload
         }
     }
 
+    applyTermLoginEffects()
+    {
+        this.#inventory.applyTermLoginEffects();
+    }
+
+    addCyberdeck(deckSource)
+    {
+        this.#cyberdecks.push(deckSource);
+    }
+
+    toggleItemCheckbox(target)
+    {
+        if($(target).prop("checked"))
+        {
+            this.#inventory.activateEffect(target.id);
+        }
+        else
+        {
+            this.#inventory.deactivateEffect(target.id);
+        }
+    }
+
+/*
     getInventory()
     {
         return this.#items;
@@ -371,4 +443,5 @@ class Payload
 
         return actionTime;
     }
+    */
 }

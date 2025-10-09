@@ -112,15 +112,16 @@ else
 
     $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $itemQuery = "  SELECT items.abbr, items.name, items.tier, items.category, items.radio
+    $itemQuery = "  SELECT  item AS name,
+                            tier
                     FROM {$dbName}.user_items
-                    INNER JOIN {$dbName}.items ON user_items.item_abbr=items.abbr
                     WHERE user_id = :userID";
 
     $itemStatement = $pdo->prepare($itemQuery);
     $itemStatement->execute([':userID' => $userResponse["lm_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
+    /*
     $effectQuery = "    SELECT item_effects.abbr, charges, per_type, use_loc, req_type, requirement
                         FROM {$dbName}.item_effects
                         INNER JOIN {$dbName}.items_to_effects ON items_to_effects.effect_abbr = item_effects.abbr
@@ -224,6 +225,7 @@ else
         $item["effects"] = $newEffects;
         array_push($newItems, $item);
     }
+    */
 
     //////////////////////////////////////////////////////////////////////////////
 
@@ -363,7 +365,7 @@ else
                                     "userCode" => $userCode,
                                     "functions" => $functionResponse,
                                     "roles" => $roleResponse,
-                                    "items" => $newItems,
+                                    "items" => $itemResponse,
                                     "hasAccessed" => $hasAccessed,
                                     "prevActions" => $actionResponse,
                                     "puzzActions" => $puzzleResponse,

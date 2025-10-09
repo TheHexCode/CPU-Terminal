@@ -192,19 +192,6 @@ function injectUserPayload(userPayload)
 									"" )
 							);
 
-		let maxTime = 30; // Functions and Items should not affect this
-
-		if(payload.hasDeck())
-		{
-			$("#terminalButton").html("Cracking Terminal...");
-			$("#terminalButton").removeClass("noPayload");
-		}
-		else
-		{
-			$("#terminalButton").html("No Cyberdeck!");
-		}
-		taTimer.startTimer(maxTime,allowAccess);
-
 		//// TAG MANAGEMENT
 
 		// Required Tags
@@ -363,7 +350,9 @@ function injectUserPayload(userPayload)
 
 		///////////// ITEMS
 
-		if(payload.hasDeck())
+		payload.applyTermLoginEffects();
+
+		if(payload.hasCyberdeck())
 		{
 			$(".hasDeck").removeClass("hidden");
 		}
@@ -372,6 +361,22 @@ function injectUserPayload(userPayload)
 			$(".noDeck").removeClass("hidden");
 		}
 
+		////////////// START TERMACCESS TIMER
+
+		let maxTime = 30; // Functions and Items should not affect this
+
+		if(payload.hasCyberdeck())
+		{
+			$("#terminalButton").html("Cracking Terminal...");
+			$("#terminalButton").removeClass("noPayload");
+		}
+		else
+		{
+			$("#terminalButton").html("No Cyberdeck!");
+		}
+		taTimer.startTimer(maxTime,allowAccess);
+
+		/*
 		payload.getInventory().forEach(function(item)
 		{
 			let effectString = "<hr/>";
@@ -738,6 +743,7 @@ function injectUserPayload(userPayload)
 				$(".shimButton[data-effect='shim_1']").html("Already Active");
 			}
 		});
+		*/
 
 		if(userPayload["hasAccessed"])
 		{
@@ -952,6 +958,7 @@ function initRadio(target)
 
 function initCheck(target)
 {
+	/*
 	let effect = payload.getEffect(target.id.split("_opt")[0]);
 
 	switch(effect["abbr"])
@@ -1054,7 +1061,7 @@ function initCheck(target)
 			}
 
 			//Only need to allow access to Term if user doesn't have a cyberdeck
-			if(!(payload.hasDeck()))
+			if(!(payload.hasCyberdeck()))
 			{
 				if($(target).prop("checked"))
 				{
@@ -1087,6 +1094,8 @@ function initCheck(target)
 			break;
 		}
 	}
+	*/
+	payload.toggleItemCheckbox(target);
 }
 
 function initAction(target)
@@ -1202,7 +1211,7 @@ function updateTags(change, tagType)
 
 function allowAccess()
 {
-	if(payload.hasDeck() || payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1"))
+	if(payload.hasCyberdeck() || payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1"))
 	{
 		$("#terminalButton").html("Access Terminal");
 		$("#terminalButton").attr("disabled",false);

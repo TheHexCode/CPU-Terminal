@@ -10,6 +10,7 @@
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/session.js"></script>
+		<script type="text/javascript" src="/resources/scripts/terminal/classes/inventory.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/payload.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/timer.js"></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/listener.js"></script>
@@ -26,9 +27,9 @@
 			<div id="load" class="hidden">
 				<svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
 					<mask id="logoMask">
-						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
+						<polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" />
 					</mask>
-				
+
 					<foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
 						<div id="logoBG"></div>
 					</foreignObject>
@@ -181,7 +182,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="initItemList">
+					<div id="initItemList" class="initItemList">
 						<div id="cmm_init" class="initItem hidden">
 							<div class="initHeader">CMM ARMS:</div>
 							<div class="initOption">
