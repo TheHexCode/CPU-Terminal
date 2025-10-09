@@ -334,18 +334,17 @@ function processCharInfo(charData)
 
 	});
 
-	/*
 	charData["items"].forEach(function(item)
 	{
-		let inputID = "#item_" + item["item_abbr"];
+		let itemInput = $("input[data-item='" + item["name"] + "'][data-tier='" + item["tier"] + "']")[0];
 
-		setItemCharges(item["item_abbr"], item["count"]);
+		//setItemCharges(item["item_abbr"], item["count"]);
 
-		$(inputID).prop("checked",true);
-		$("input[name='"+$(inputID).prop("name")+"']").prop("data-active",false);
-		$(inputID).prop("data-active",true);
+		$(itemInput).prop("checked",true);
+		$("input[name='"+$(itemInput).prop("name")+"']").prop("data-active",false);
+		$(itemInput).prop("data-active",true);
 	});
-	*/
+
 	$("#load").addClass("hidden");
 
 	$("#lmPass").val("");
@@ -611,12 +610,9 @@ function statSubmit(event)
 	$(".itemSelect input:checked").each(function(index, item)
 	{
 		let itemPush = {
-			abbr: $(item).attr("id")
+			name: $(item).attr("data-item"),
+			tier: $(item).attr("data-tier")
 		}
-
-		let itemCount = $(".itemCount[data-abbr=" + $(item).attr("data-abbr") + "]");
-
-		itemPush["count"] = (itemCount.length ? Number($(itemCount[0]).attr("data-charges")) : null);
 
 		items.push(itemPush);
 	});

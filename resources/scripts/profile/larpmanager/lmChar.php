@@ -144,13 +144,6 @@ $lmAbilityIDs = array_column(array_merge(...array_column(array_filter($lmCharact
     return !in_array($ability["id"],array(4,8,31));
 }),"abilities")),"id");
 
-// ITEMS
-/*
-curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/character/list/");
-curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
-$functions = curl_exec($curlHandle);
-*/
-
 ##################################################################################################
 
 
@@ -262,6 +255,16 @@ $functionStatement->execute($lmAbilityIDs);
 
 $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
+// ITEMS
+$itemQuery = "  SELECT  item AS name,
+                        tier
+                FROM {$dbName}.user_items
+                WHERE user_id = :userID";
+
+$itemStatement = $pdo->prepare($itemQuery);
+$itemStatement->execute([':userID' => $dbCharResponse["lm_id"]]);
+$itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
+
 ##################################################################################################
 
 echo json_encode(array(  "id" => $dbCharResponse["lm_id"],
@@ -269,4 +272,4 @@ echo json_encode(array(  "id" => $dbCharResponse["lm_id"],
                                 "userCode" => $userCode,
                                 //"roles" => $roleResponse,
                                 "functions" => $functionResponse,
-                                /*"items" => $itemResponse*/ ));
+                                "items" => $itemResponse ));

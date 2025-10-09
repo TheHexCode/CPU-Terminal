@@ -24,7 +24,7 @@ $itemArray = array(
                 "items" => array()
             ),
             "implant_arm" => array(
-                "heading" => "IMPLANT, ARM",
+                "heading" => "IMPLANT (ARM)",
                 "items" => array()
             ),
             "consumable" => array(
@@ -112,7 +112,13 @@ foreach($itemArray as $itemCat)
                 })) > 0;
 
                 $itemString .=  "<div class='itemSelect " . ($tagUnique ? "radio" : "check") . "'>" .
-                                    "<input type='" . ($tagUnique ? "radio" : "checkbox") . "' id='" . $itemName . "' form='itemForm'" . ($tagUnique ? " name='" . $item["category"] . "_" . $item["type"]. "' onclick='toggleRadio(this)'" : "") . " >" .
+                                    "<input type='" . ($tagUnique ? "radio" : "checkbox") . "' " .
+                                        "id='" . $itemName . "' " .
+                                        "data-item='" . strtolower($item["name"]) . "' " .
+                                        "data-tier='" . $tier["tier"] . "' " .
+                                        "form='itemForm' " .
+                                        ($tagUnique ? "name='" . $item["category"] . "_" . $item["type"]. "' onclick='toggleRadio(this)' " : " ") .
+                                    ">" .
                                     "<label for='" . $itemName . "'>" . $item["name"] . " [T" . $tier["tier"] . "]</label>";
                 $itemString .=  "</div>"; //itemSelect
             }

@@ -1,4 +1,4 @@
--- Active: 1746590270449@@REXv5@3306@dbiykpinec1m8s
+-- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
 
 USE dbiykpinec1m8s;
 
@@ -154,14 +154,13 @@ CREATE TABLE items_to_effects (
 
 CREATE TABLE user_items (
     user_id     INT         NOT NULL,
-    item_abbr   VARCHAR(50) NOT NULL,
+    item        VARCHAR(50) NOT NULL,
+    tier        INT         NOT NULL,
     count       INT,
+    CONSTRAINT userFunction
+        PRIMARY KEY (user_id, item, tier),
     FOREIGN KEY (user_id)
         REFERENCES users(lm_id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (item_abbr)
-        REFERENCES items(abbr)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
