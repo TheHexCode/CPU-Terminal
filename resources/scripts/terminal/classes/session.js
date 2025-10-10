@@ -25,6 +25,9 @@ class Session
     static DISSIM = "dissim";
     static CLEC = "clec";
 
+    static ITEMS = "items";
+    static FUNCS = "funcs";
+
     #termID;
     #termState;
     #stateData;
@@ -116,15 +119,10 @@ class Session
                 this.#totalTags = newTags;
                 break;
             case(Session.HACK):
-            case(Session.BEACON):
-            case(Session.DISSIM):
-            case(Session.CLEC):
                 this.#payTags[tagType] += newTags;
                 this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);
                 break;
             case(Session.EXTRA):
-            case(Session.REX):
-            case(Session.MASHER):
                 this.#extTags[tagType] += newTags;
                 this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);
                 break;

@@ -7,7 +7,7 @@ $userMask = $_POST["userMask"];
 $userTags = $_POST["userTags"];
 
 $userNameQuery = "  SELECT charName from {$dbName}.users
-                    WHERE ml_id = :userID";
+                    WHERE lm_id = :userID";
 
 $userNameStatement = $pdo->prepare($userNameQuery);
 $userNameStatement->execute([':userID' => $userID]);

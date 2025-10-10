@@ -1,4 +1,4 @@
--- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
+-- Active: 1746590270449@@REXv5@3306@dbiykpinec1m8s
 
 USE dbiykpinec1m8s;
 
@@ -118,7 +118,7 @@ CREATE TABLE sim_access_logs (
 ###     ITEMS
 ###
 ####################################################################################################
-
+/*
 CREATE TABLE items (
     abbr        VARCHAR(50) NOT NULL UNIQUE,
     name        TEXT        NOT NULL,
@@ -151,7 +151,7 @@ CREATE TABLE items_to_effects (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-
+*/
 CREATE TABLE user_items (
     user_id     INT         NOT NULL,
     item        VARCHAR(50) NOT NULL,
@@ -167,16 +167,12 @@ CREATE TABLE user_items (
 
 CREATE TABLE item_uses (
     user_id     INT         NOT NULL,
-    effect_abbr VARCHAR(50) NOT NULL,
+    effect      VARCHAR(50) NOT NULL,
     simCode     TEXT        NOT NULL,
     jobCode     TEXT        NOT NULL,
     terminal_id INT         NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users(lm_id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    FOREIGN KEY (effect_abbr)
-        REFERENCES item_effects(abbr)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     FOREIGN KEY (terminal_id)

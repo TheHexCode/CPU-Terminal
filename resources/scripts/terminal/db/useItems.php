@@ -17,6 +17,25 @@ if($effects !== null)
     $activeStatement->execute();
     $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
 
+    echo var_dump($activeCodes);
+
+    $useQuery = "   INSERT INTO {$dbName}.item_uses
+                                (user_id, effect, simCode, jobCode, terminal_id)
+                        VALUES  (:userID, :effect, :simCode, :jobCode, :termID)";
+    $useStatement = $pdo->prepare($useQuery);
+
+    foreach($effects as $effect)
+    {
+        $useStatement->execute([
+            ':userID' => intval($userID),
+            ':effect' => $effect,
+            ':simCode' => $activeCodes["simCode"],
+            ':jobCode' => $activeCodes["jobCode"],
+            ':termID' => intval($termID)
+        ]);
+    }
+
+    /*
     foreach($effects as $effect)
     {
         $perQuery = "   SELECT per_type
@@ -72,6 +91,7 @@ if($effects !== null)
         $itemUseStatement = $pdo->prepare($itemUseQuery);
         $itemUseStatement->execute([':userID' => $userID, ':effectAbbr' => $effect, ':simCode' => $activeCodes["simCode"], ':jobCode' => $activeCodes["jobCode"], ':termID' => $termID]);
     }
+    */
 }
 
 echo json_encode("Success!");

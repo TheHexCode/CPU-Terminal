@@ -13,6 +13,8 @@ class Payload
     #inventory;
 
     #cyberdecks;
+    #timeMods;
+    #costMods;
 
     constructor()
     {
@@ -21,6 +23,8 @@ class Payload
         this.#payloadSet = false;
         this.#extraFuncs = [];
         this.#cyberdecks = [];
+        this.#timeMods = [];
+        this.#costMods = [];
     }
 
     setPayload(payload)
@@ -301,9 +305,37 @@ class Payload
         }
     }
 
+    setActionTime(timeSource, timeAmount)
+    {
+        this.#timeMods.push(
+            {
+                "source": timeSource,
+                "amount": timeAmount
+            }
+        )
+    }
+
+    getActionTime()
+    {
+        // NEGATIVE TIMEMOD = SHORTER TIMER
+        let timeModification = this.#timeMods.reduce(function(accumulator, timeObject)
+        {
+            accumulator + timeObject.amount;
+        }, 0);
+
+        let actionTime = Math.max(10, 30 + timeModification);
+
+        return actionTime;
+    }
+
     applyTermLoginEffects()
     {
         this.#inventory.applyTermLoginEffects();
+    }
+
+    submitInitialEffects()
+    {
+        this.#inventory.submitInitialEffects();
     }
 
     addCyberdeck(deckSource)
@@ -311,16 +343,17 @@ class Payload
         this.#cyberdecks.push(deckSource);
     }
 
-    toggleItemCheckbox(target)
+    removeCyberdeck(deckSource)
     {
-        if($(target).prop("checked"))
+        this.#cyberdecks.splice(this.#cyberdecks.findIndex(function(source)
         {
-            this.#inventory.activateEffect(target.id);
-        }
-        else
-        {
-            this.#inventory.deactivateEffect(target.id);
-        }
+            return source === deckSource;
+        }), 1);
+    }
+
+    toggleItemCheckbox(target, index)
+    {
+        this.#inventory.toggleEffect(target.id, index, $(target).prop("checked"));
     }
 
 /*
@@ -429,19 +462,6 @@ class Payload
         }, this);
 
         return activeEffects;
-    }
-
-    getActionTime()
-    {
-        // POSITIVE IS A BUFF; NEGATIVE IS A DEBUFF
-        let bd = ((this.getFunction("BACKDOOR") > 0) ? (this.getFunction("BACKDOOR") * 5) + 5 : 0);
-        let pgUK9K = (this.getActiveEffect("deck_uh9k") ? 5 : 0);
-        let ssT0 = (this.getActiveEffect("shim_0") ? -30 : 0);
-        let ssT1 = (this.getActiveEffect("shim_1") ? -15 : 0);
-
-        let actionTime = Math.max(10, 30 - (bd + pgUK9K + ssT0 + ssT1));
-
-        return actionTime;
     }
     */
 }

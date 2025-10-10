@@ -207,7 +207,7 @@ function injectUserPayload(userPayload)
 		)
 
 		updateTags(payload.getFunction("HACKING") * 2, Session.HACK);
-		updateTags(payload.getFunction("ROOT EXPLOIT") * 2, Session.REX);
+		updateTags(payload.getFunction("ROOT EXPLOIT") * 2, Session.FUNCS);
 
 		// Extra Tags + Gems/Remaining Tags
 		updateTags(0,Session.EXTRA);
@@ -814,7 +814,7 @@ function injectUserPayload(userPayload)
 			{
 				dimPuzzle(session.getPuzzle(puzzle["id"]), puzzle["uses"]);
 			});
-
+			/*
 			if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 			{
 				userPayload["copyables"].forEach(function(copyableAction)
@@ -825,7 +825,7 @@ function injectUserPayload(userPayload)
 					}
 				});
 			}
-
+			*/
 			session.setCurrentTags(userPayload["remTags"] + requiredTags);
 
 			if(userPayload["masherData"] !== null)
@@ -956,7 +956,7 @@ function initRadio(target)
 	}
 }
 
-function initCheck(target)
+function initCheck(target, index)
 {
 	/*
 	let effect = payload.getEffect(target.id.split("_opt")[0]);
@@ -1095,7 +1095,7 @@ function initCheck(target)
 		}
 	}
 	*/
-	payload.toggleItemCheckbox(target);
+	payload.toggleItemCheckbox(target, index);
 }
 
 function initAction(target)
@@ -1134,9 +1134,6 @@ function updateTags(change, tagType)
 	switch(tagType)
 	{
 		case(Session.HACK):
-		case(Session.BEACON):
-		case(Session.DISSIM):
-		case(Session.CLEC):
 			newTags = payTags + change;
 
 			if((newTags >= 10) && ($("#hackMax").length === 0))
@@ -1153,15 +1150,15 @@ function updateTags(change, tagType)
 			session.setCurrentTags(change, tagType);
 			payTags = session.getCurrentTags(Session.PAYLOAD);
 			break;
-		case(Session.REX):
-		case(Session.MASHER):
+		case(Session.ITEMS):
+		case(Session.FUNCS):
 			if((session.getCurrentTags() + change) > 99+reqTags)
 			{
 				session.setCurrentTags((change * -1), Session.EXTRA);
 				extTags = session.getCurrentTags(Session.EXTRA);
 			}
 
-			session.setCurrentTags(change, tagType);
+			session.setCurrentTags(change, Session.EXTRA);
 			session.setExtraTagMin(change);
 
 			extTags = session.getCurrentTags(Session.EXTRA);
@@ -1222,6 +1219,11 @@ function accessTerminal(event)
 {
 	if((event === "hasAccessed") || (!event.target.disabled))
 	{
+		if(event !== "hasAccessed")
+		{
+			payload.submitInitialEffects();
+		}
+
 		let reqTags = parseInt($("#reqTags").html());
 
 		session.setCurrentTags(session.getCurrentTags() - reqTags);

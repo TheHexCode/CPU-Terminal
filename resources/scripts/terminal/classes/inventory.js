@@ -8,6 +8,8 @@ class Inventory
     #items;
     #effects;
 
+    #initialActivations;
+
     constructor()
     {
         this.#itemSchema = $.getJSON("/resources/schemas/items.json");
@@ -15,6 +17,7 @@ class Inventory
 
         this.#items = [];
         this.#effects = [];
+        this.#initialActivations = [];
     }
 
     establishInventory(itemList)
@@ -26,7 +29,7 @@ class Inventory
         {
             let proposedItem = this.#itemSchema.find(function(potentialItem)
             {
-                return potentialItem.name.toLowerCase() === dbItem.name.toLowerCase();
+                return potentialItem.name.toLowerCase().replace("&#39;","'") === dbItem.name.toLowerCase();
             });
 
             let proposedTier = proposedItem.tiers.find(function(potentialTier)
@@ -39,7 +42,7 @@ class Inventory
                 let proposedEffect = this.#effectSchema.find(function(potentialEffect)
                 {
                     return potentialEffect.name.toLowerCase() === effect.name.toLowerCase();
-                })
+                }) ?? {};
 
                 if(proposedEffect.stacking)
                 {
@@ -82,15 +85,14 @@ class Inventory
                 "effects": proposedTier.effects
             });
 
-            console.log(this.#effects);
         }, this.#globalThis);
     }
 
-    #displayActivationLabel(effectValues, labelObject)
+    #displayActivationLabel(parentEffect, labelObject)
     {
         let amountPath = labelObject.label.substring(labelObject.label.indexOf("{values:")+1,labelObject.label.indexOf("}")).split(":");
 
-        let amount = effectValues.find(function(value)
+        let amount = parentEffect.values.find(function(value)
         {
             return value.name === amountPath[1];
         })[amountPath[2]];
@@ -101,7 +103,7 @@ class Inventory
             {
                 let parsedLabel = labelObject.label.replace(/{.*?}/, tens(amount));
 
-                $("#extraDetails").append("<span>" + parsedLabel + "</span>");
+                $("#extraDetails").append("<span id='" + parentEffect.effect_name + "'>" + parsedLabel + "</span>");
 
                 break;
             }
@@ -109,30 +111,49 @@ class Inventory
             {
                 let parsedLabel = labelObject.label.replace(/{.*?}/, tens(amount * 2));
 
-                $("#hackDetails").append("<span>" + parsedLabel + "</span>");
+                $("#hackDetails").append("<span id='" + parentEffect.effect_name + "'>" + parsedLabel + "</span>");
                 break;
             }
         }
     }
 
-    #removeActivationLabel(effectValues, labelObject)
+    #removeActivationLabel(parentEffect, labelObject)
+    {
+        switch(labelObject.location)
+        {
+            case("crack_extra"):
+            {
+                $("#extraDetails #" + parentEffect.effect_name).remove();
+
+                break;
+            }
+            case("crack_hacking"):
+            {
+                $("#hackDetails #" + parentEffect.effect_name).remove();
+
+                break;
+            }
+        }
+    }
+
+    #displayActivationIcon(parentEffect, iconPath)
     {
 
     }
 
-    #displayActivationIcon(effectValues, iconPath)
+    #removeActivationIcon(parentEffect, iconPath)
     {
 
     }
 
-    #affectEffect(effectValues, effectDetails)
+    #affectEffect(parentEffect, effectDetails, activate=true)
     {
         let amount = null;
 
         if(Object.keys(effectDetails).includes("amount"))
         {
             let amountPath = effectDetails.amount.split(":");
-            amount = effectValues.find(function(value)
+            amount = parentEffect.values.find(function(value)
             {
                 return value.name === amountPath[1];
             })[amountPath[2]];
@@ -145,32 +166,72 @@ class Inventory
 
         if(Object.keys(effectDetails).includes("label"))
         {
-            this.#displayActivationLabel(effectValues, effectDetails.label);
+            if(activate)
+            {
+                this.#displayActivationLabel(parentEffect, effectDetails.label);
+            }
+            else
+            {
+                this.#removeActivationLabel(parentEffect, effectDetails.label);
+            }
         }
 
         switch(effectDetails.type)
         {
             case("plus_tags"):
             {
-                updateTags(amount, Session.EXTRA);
+                if(activate)
+                {
+                    updateTags(amount, Session.ITEMS);
+                }
+                else
+                {
+                    updateTags(amount * -1, Session.ITEMS);
+                }
                 break;
             }
             case("plus_hacking"):
             case("plus_alarm_sense"):
             {
-                payload.plusFunction(effectDetails.type, amount);
+                if(activate)
+                {
+                    payload.plusFunction(effectDetails.type, amount);
+                }
+                else
+                {
+                    payload.minusFunction(effectDetails.type, amount);
+                }
                 break;
             }
             case("payload_has_cyberdeck"):
             {
-                payload.addCyberdeck(effectDetails.effect_name);
+                if(activate)
+                {
+                    payload.addCyberdeck(parentEffect.effect_name);
+                }
+                else
+                {
+                    payload.removeCyberdeck(parentEffect.effect_name);
+                }
                 break;
             }
             case("action_time"):
             {
-                payload.setActionTime(effectDetails.effect_name, amount);
+                if(activate)
+                {
+                    payload.setActionTime(parentEffect.effect_name, amount);
+                }
+                else
+                {
+                    payload.setActionTime(parentEffect.effect_name, amount * -1);
+                }
                 break;
             }
+        }
+
+        if(activate)
+        {
+            this.#initialActivations.push(parentEffect.effect_name);
         }
     }
 
@@ -183,7 +244,7 @@ class Inventory
 
         inputEffects.forEach(function(mainEffect)
         {
-            mainEffect.input.forEach(function(inEffect)
+            mainEffect.input.forEach(function(inEffect, index)
             {
                 // button
                 switch(inEffect.type)
@@ -212,7 +273,7 @@ class Inventory
                                 let inputHTML = '<div class="initItem">' +
                                                     '<div class="initHeader">' + inEffect.header + '</div>' +
                                                     '<div class="initOption">' +
-                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this)">' +
+                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')">' +
                                                         '<label for="' + mainEffect.effect_name + '">' + inEffect.label + "</label>" +
                                                     '</div>' +
                                                 '</div>'
@@ -226,12 +287,12 @@ class Inventory
                                 let inputHTML = '<div class="initItem">' +
                                                     '<div class="initHeader">' + inEffect.header + '</div>' +
                                                     '<div class="initOption">' +
-                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this)">' +
+                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')">' +
                                                         '<label for="' + mainEffect.effect_name + '">' + inEffect.label + "</label>" +
                                                     '</div>' +
-                                                '</div>'
+                                                '</div>';
 
-                                $("#initItemList").append(inputHTML);
+                                //$("#initItemList").append(inputHTML);
                                 break;
                             }
                         }
@@ -246,14 +307,17 @@ class Inventory
         });
     }
 
-    activateEffect(target_id)
+    toggleEffect(target_id, target_index, activate)
     {
+        let targetEffect = this.#effects.find(function(effect)
+        {
+            return effect.effect_name === target_id;
+        });
 
-    }
-
-    deactivateEffect(target_id)
-    {
-
+        targetEffect.input[target_index].activation.forEach(function(activation)
+        {
+            this.#affectEffect(targetEffect, activation, activate);
+        }, this.#globalThis);
     }
 
     applyTermLoginEffects()
@@ -276,7 +340,7 @@ class Inventory
 
                 if(condition_passed)
                 {
-                    this.#affectEffect(mainEffect.values, tlEffect);
+                    this.#affectEffect(mainEffect, tlEffect);
                 }
             }, this.#globalThis);
         }, this.#globalThis);
@@ -289,6 +353,21 @@ class Inventory
         decks.forEach(function(deck)
         {
             payload.addCyberdeck(deck.item_name);
+        });
+    }
+
+    submitInitialEffects()
+    {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/useItems.php",
+            data:
+            {
+                userID: payload.getUserID(),
+                effects: [...new Set(this.#initialActivations)],
+                termID: session.getTerminalID()
+            }
         });
     }
 }

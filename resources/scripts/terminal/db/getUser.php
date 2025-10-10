@@ -129,24 +129,36 @@ else
                         WHERE item_abbr = :itemAbbr";
 
     $effectStatement = $pdo->prepare($effectQuery);
+    */
 
-    $simUseQuery = "SELECT COUNT(*)
-                    FROM {$dbName}.item_uses
-                    WHERE 	user_id = :userID
-                        AND effect_abbr = :effectAbbr
-                        AND simCode = :simCode";
-
-    $simUseStatement = $pdo->prepare($simUseQuery);
-
-    $sceneUseQuery = "  SELECT COUNT(*)
+    $itemUseQuery = "   SELECT DISTINCT effect,
+                                        ( SELECT COUNT(*)
+                                        WHERE user_id = :userID
+                                            AND simCode = :simCode
+                                        ) AS simUses,
+                                        ( SELECT COUNT(*)
+                                        WHERE user_id = :userID
+                                            AND jobCode = :jobCode
+                                        ) AS jobUses,
+                                        ( SELECT COUNT(*)
+                                        WHERE user_id = :userID
+                                            AND terminal_id = :termID
+                                        ) AS termUses
                         FROM {$dbName}.item_uses
-                        WHERE 	user_id = :userID
-                            AND effect_abbr = :effectAbbr
-                            AND jobCode = :jobCode
-                            AND simCode = :simCode";
+                        GROUP BY user_id,
+                                effect,
+                                simCode,
+                                jobCode,
+                                terminal_id";
 
-    $sceneUseStatement = $pdo->prepare($sceneUseQuery);
+    $itemUseStatement = $pdo->prepare($itemUseQuery);
+    $itemUseStatement->execute([':userID' => $userResponse["lm_id"],
+                                        ':simCode' => $activeCodes["simCode"],
+                                        ':jobCode' => $activeCodes["jobCode"],
+                                        ':termID' => $termID]);
+    $itemUseResponse = $itemUseStatement->fetchAll(PDO::FETCH_ASSOC);
 
+/*
     $itemUseQuery = "   SELECT SUM(item_effects.charges - user_items.count)
                         FROM user_items
                         INNER JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = user_items.item_abbr
@@ -225,8 +237,7 @@ else
         $item["effects"] = $newEffects;
         array_push($newItems, $item);
     }
-    */
-
+*/
     //////////////////////////////////////////////////////////////////////////////
 
     $accessQuery = "SELECT COUNT(user_id)
@@ -366,6 +377,7 @@ else
                                     "functions" => $functionResponse,
                                     "roles" => $roleResponse,
                                     "items" => $itemResponse,
+                                    "itemUses" => $itemUseResponse,
                                     "hasAccessed" => $hasAccessed,
                                     "prevActions" => $actionResponse,
                                     "puzzActions" => $puzzleResponse,

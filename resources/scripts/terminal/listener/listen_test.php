@@ -1,4 +1,5 @@
 <?php
+/*
 require './composer/vendor/autoload.php';
 use WebSocket;
 
@@ -31,3 +32,4 @@ catch(Exception $error)
 }
 
 $client->close();
+*/
