@@ -34,7 +34,7 @@ class Payload
         this.#functions = payload.functions;
         this.#roles = payload.roles;
 
-        this.#inventory.establishInventory(payload.items);
+        this.#inventory.establishInventory(payload.items, payload.itemUses);
         this.#inventory.setupInputs();
 
         this.#payloadSet = true;

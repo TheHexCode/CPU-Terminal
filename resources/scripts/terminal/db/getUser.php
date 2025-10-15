@@ -143,7 +143,10 @@ else
                                         ( SELECT COUNT(*)
                                         WHERE user_id = :userID
                                             AND terminal_id = :termID
-                                        ) AS termUses
+                                        ) AS termUses,
+                                        ( SELECT COUNT(*)
+                                        WHERE user_id = :userID
+                                        ) AS itemUses
                         FROM {$dbName}.item_uses
                         GROUP BY user_id,
                                 effect,

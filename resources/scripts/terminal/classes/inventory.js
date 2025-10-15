@@ -20,7 +20,7 @@ class Inventory
         this.#initialActivations = [];
     }
 
-    establishInventory(itemList)
+    establishInventory(itemList, itemUses)
     {
         this.#itemSchema = this.#itemSchema.responseJSON;
         this.#effectSchema = this.#effectSchema.responseJSON;
@@ -50,7 +50,7 @@ class Inventory
 
                     effect.values.forEach(function(value)
                     {
-                        value["stack"] = 1;
+                        value["stack"] = value.amount;
                     });
                 }
                 else
@@ -61,17 +61,58 @@ class Inventory
                 proposedEffect["values"] = effect.values ?? null;
                 proposedEffect["charges"] = effect.charges ?? null;
                 proposedEffect["perType"] = effect.perType ?? null;
+                proposedEffect["itemCat"] = proposedItem.category;
+                proposedEffect["itemType"] = proposedItem.type;
 
-                let extantEffect = this.#effects.find((effect) => {return effect.effect_name === proposedEffect.effect_name});
+                let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
+
                 if(extantEffect === undefined)
                 {
-                    this.#effects.push(proposedEffect);
+                    let usedItem = itemUses.find(function(itemEffect)
+                    {
+                        return itemEffect.effect === proposedEffect["effect_name"];
+                    }, this.#globalThis);
+
+                    if(usedItem !== undefined)
+                    {
+                        switch(proposedEffect["perType"])
+                        {
+                            case("sim"):
+                            {
+                                proposedEffect["uses"] = usedItem["simUses"];
+                                break;
+                            }
+                            case("scene"):
+                            {
+                                proposedEffect["uses"] = usedItem["jobUses"];
+                                break;
+                            }
+                            case("term"):
+                            {
+                                proposedEffect["uses"] = usedItem["termUses"];
+                                break;
+                            }
+                            case("item"):
+                            default:
+                            {
+                                proposedEffect["uses"] = usedItem["itemUses"];
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        proposedEffect["uses"] = 0;
+                    }
+
+                    this.#effects.push(structuredClone(proposedEffect));
                 }
                 else
                 {
-                    extantEffect.values.forEach(function(value)
+                    extantEffect.values.forEach(function(extantValue)
                     {
-                        value["stack"] += 1;
+                        let propValue = proposedEffect.values.find((proposedValue) => {return proposedValue.name === extantValue.name;});
+                        extantValue["stack"] += propValue.amount;
                     });
                 }
             }, this.#globalThis);
@@ -88,14 +129,90 @@ class Inventory
         }, this.#globalThis);
     }
 
+    #checkCondition()
+    {
+        // array of conditions
+            // left
+                // payload:roles [Array]
+                // payload:effects [Array]
+                // payload:functions:XXX [Array Key]
+                // terminal:effects:remote_enabled [Array Key]
+            // operation
+                // contains [Arrays]
+                // not_contains [Arrays]
+                // greater_than [Numbers]
+                // equals [Numbers / Strings / Boolean]
+                // not_equals [Numbers / Strings / Boolean]
+            // right
+                // String
+                // Number
+                // Boolean
+            // effect
+                // Number
+            // rejection_label
+                // String
+    }
+
+    #parseLabel(parentEffect, labelString)
+    {
+        let parseMatches = labelString.match(/{.*?}/g);
+
+        console.log(parentEffect);
+
+        parseMatches.forEach(function(match)
+        {
+            let modifier = (match.split("!")[1] ?? "}").split("}")[0];
+            let pathArray = match.split("!")[0].split("{")[1].split("}")[0].split(":");
+
+            console.log(modifier);
+            console.log(pathArray);
+
+            let result = 0;
+
+            switch(pathArray[0])
+            {
+                case("values"):
+                {
+                    result = parentEffect.values.find(function(value)
+                    {
+                        return value.name === pathArray[1];
+                    })[pathArray[2]];
+                    break;
+                }
+                case("charges"):
+                {
+                    result = parentEffect.charges - parentEffect.uses;
+                    break;
+                }
+            }
+
+            switch(modifier)
+            {
+                case("plurality"):
+                {
+                    result = (result !== 1 ? "s" : "")
+                }
+            }
+
+            labelString = labelString.replace(match, result);
+        });
+
+        console.log(labelString);
+        return labelString;
+    }
+
     #displayActivationLabel(parentEffect, labelObject)
     {
-        let amountPath = labelObject.label.substring(labelObject.label.indexOf("{values:")+1,labelObject.label.indexOf("}")).split(":");
+        let amount = null;
 
-        let amount = parentEffect.values.find(function(value)
+        if(Object.keys(parentEffect).includes("stack"))
         {
-            return value.name === amountPath[1];
-        })[amountPath[2]];
+            amount = parentEffect["stack"];
+        }
+        else
+        {
+            amount = this.#parseLabel(parentEffect, labelObject.label);
+        }
 
         switch(labelObject.location)
         {
@@ -152,16 +269,30 @@ class Inventory
 
         if(Object.keys(effectDetails).includes("amount"))
         {
-            let amountPath = effectDetails.amount.split(":");
-            amount = parentEffect.values.find(function(value)
+            if(Object.keys(effectDetails).includes("stack"))
             {
-                return value.name === amountPath[1];
-            })[amountPath[2]];
+                amount = effectDetails["stack"];
+            }
+            else
+            {
+                let amountPath = effectDetails.amount.split(":");
+                amount = parentEffect.values.find(function(value)
+                {
+                    return value.name === amountPath[1];
+                })[amountPath[2]];
+            }
         }
 
         if(Object.keys(effectDetails).includes("icon"))
         {
-            this.#displayActivationIcon(effectDetails.icon);
+            if(activate)
+            {
+                this.#displayActivationIcon(parentEffect, effectDetails.icon);
+            }
+            else
+            {
+                this.#removeActivationIcon(parentEffect, effectDetails.icon);
+            }
         }
 
         if(Object.keys(effectDetails).includes("label"))
@@ -237,17 +368,23 @@ class Inventory
 
     setupInputs()
     {
-        let inputEffects = this.#effects.filter(function(potentialEffect)
+        let inputHavingEffects = this.#effects.filter(function(potentialEffect)
         {
             return Object.keys(potentialEffect).includes("input");
         });
 
-        inputEffects.forEach(function(mainEffect)
+        inputHavingEffects.forEach(function(mainEffect)
         {
-            mainEffect.input.forEach(function(inEffect, index)
+            let disabled = false;
+
+            if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
             {
-                // button
-                switch(inEffect.type)
+                disabled = true;
+            }
+
+            mainEffect.input.forEach(function(inputEntry, index)
+            {
+                switch(inputEntry.type)
                 {
                     case("checkbox"):
                     {
@@ -266,17 +403,17 @@ class Inventory
                                     // action_time
                                     // payload_has_cyberdeck
                                     // pop-up
-                        switch(inEffect.screen)
+                        switch(inputEntry.screen)
                         {
                             case("crack"):
                             {
-                                let inputHTML = '<div class="initItem">' +
-                                                    '<div class="initHeader">' + inEffect.header + '</div>' +
+                                let inputHTML = '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
+                                                    '<div class="initHeader">' + inputEntry.header + '</div>' +
                                                     '<div class="initOption">' +
-                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')">' +
-                                                        '<label for="' + mainEffect.effect_name + '">' + inEffect.label + "</label>" +
+                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')"' + (disabled ? ' disabled' : '') + '>' +
+                                                        '<label for="' + mainEffect.effect_name + '">' + inputEntry.label + "</label>" +
                                                     '</div>' +
-                                                '</div>'
+                                                '</div>';
 
                                 $("#initItemList").append(inputHTML);
 
@@ -284,11 +421,11 @@ class Inventory
                             }
                             case("confirm"):
                             {
-                                let inputHTML = '<div class="initItem">' +
-                                                    '<div class="initHeader">' + inEffect.header + '</div>' +
+                                let inputHTML = '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
+                                                    '<div class="initHeader">' + inputEntry.header + '</div>' +
                                                     '<div class="initOption">' +
-                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')">' +
-                                                        '<label for="' + mainEffect.effect_name + '">' + inEffect.label + "</label>" +
+                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')"' + (disabled ? ' disabled' : '') + '>' +
+                                                        '<label for="' + mainEffect.effect_name + '">' + inputEntry.label + "</label>" +
                                                     '</div>' +
                                                 '</div>';
 
@@ -300,11 +437,148 @@ class Inventory
                     }
                     case("button"):
                     {
+                        // button
+                            // screen:
+                                // inventory
+                                // crack
+                                // execute
+                            // condition: []
+                            // cost:
+                                // type
+                                    // dynamic
+                                // base [for dynamic]
+                                // condition [for dynamic]: []
+                            // label:
+                                // +{amount}...{plurality}
+                            // confirm:
+                                // body
+                                    // {charges}...{charges!plurality}
+                                // button
+                                    // Confirm
+                                // timer
+                                    // type
+                                        // skip
+                                        // static [not affected by actionTime]
+                                        // action [affected by actionTime]
+                                    // seconds [for static / action]
+                                        // 30
+                            // activation: []
+                                // type
+                                    // plus_tags
+                                    // terminal_effect
+                                    // payload_effect
+                                    // complete_timer
+                                    // action_cost
+                                    // action_time
+                                    // payload_has_cyberdeck
+                                    // pop-up
+                                // amount [for plus_tags && action_* && pop_up]
+                                // name [for *_effect]
+                                // value [for payload_has_cyberdeck]
+                        switch(inputEntry.screen)
+                        {
+                            case("inventory"):
+                            {
+                                $("#noItems").addClass("hidden");
+
+                                let itemCat = null;
+                                switch(mainEffect["itemCat"])
+                                {
+                                    case("arms"):
+                                    {
+                                        itemCat = "arms";
+                                        break;
+                                    }
+                                    case("customization"):
+                                    {
+                                        itemCat = "cust";
+                                        break;
+                                    }
+                                    default:
+                                    {
+                                        switch(mainEffect["itemType"])
+                                        {
+                                            case("cyberdeck"):
+                                            {
+                                                itemCat = "deck";
+                                                break;
+                                            }
+                                            case("implant_arm"):
+                                            {
+                                                itemCat = "impl";
+                                                break;
+                                            }
+                                            case("consumable"):
+                                            case("consumable_drug"):
+                                            {
+                                                itemCat = "cons";
+                                                break;
+                                            }
+                                        }
+                                        $(".itemCat[data-cat='" + itemCat + "']").removeClass("hidden");
+                                        break;
+                                    }
+                                }
+                                /*
+                                    effectString += "<span class='itemActionRow'>" +
+                                                        "<span class='itemMarks'>";
+
+                                    for(let i = 0; i < effect.uses; i++)
+                                    {
+                                        effectString += "<img src='/resources/images/actions/itemfilled.png' />";
+                                    }
+
+                                    for(let j = 0; j < remCharges; j++)
+                                    {
+                                        effectString += "<img src='/resources/images/actions/itemopen.png' />";
+                                    }
+
+                                    effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
+                                                "</span>" +
+                                                "<button class='deckButton' data-effect='" + effect.abbr + "' data-plus='" + plusTags + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">+" + plusTags + " Tag" + (plusTags === 1 ? "" : "s") + "</button>" +
+                                            "</span>"
+                                */
+                               console.log(mainEffect);
+                               console.log(inputEntry);
+                                let buttonHTML = "<span class='itemActionRow'>" +
+                                                        "<span class='itemMarks'>";
+
+                                if(mainEffect["charges"] !== null)
+                                {
+                                    for(let i = 0; i < mainEffect["uses"]; i++)
+                                    {
+                                        buttonHTML += "<img src='/resources/images/actions/itemfilled.png' />";
+                                    }
+
+                                    for(let j = mainEffect["uses"]; j < mainEffect["charges"]; j++)
+                                    {
+                                        buttonHTML += "<img src='/resources/images/actions/itemopen.png' />";
+                                    }
+
+                                    buttonHTML +=   "<span>per " + (mainEffect["perType"] === "sim" ? "Sim" : "Scene") + "</span>" +
+                                                "</span>";
+                                }
+
+                                console.log(inputEntry["label"]);
+
+                                buttonHTML += "<button class='deckButton' data-effect='" + "effect.abbr" + "' data-plus='" + "plusTags" + "' onclick='takeAction(this)' " + '(remCharges === 0 ? "disabled" : "")' + ">" + this.#parseLabel(mainEffect, inputEntry["label"]) + "</button>" +
+                                            "</span>";
+                                break;
+                            }
+                            case("crack"):
+                            {
+                                break;
+                            }
+                            case("execute"):
+                            {
+                                break;
+                            }
+                        }
                         break;
                     }
                 }
-            });
-        });
+            }, this.#globalThis);
+        }, this.#globalThis);
     }
 
     toggleEffect(target_id, target_index, activate)
@@ -322,25 +596,32 @@ class Inventory
 
     applyTermLoginEffects()
     {
-        let termLoginEffects = this.#effects.filter(function(potentialEffect)
+        let termLoginHavingEffects = this.#effects.filter(function(potentialEffect)
         {
             return Object.keys(potentialEffect).includes("term_login");
         });
 
-        termLoginEffects.forEach(function(mainEffect)
+        termLoginHavingEffects.forEach(function(mainEffect)
         {
-            mainEffect.term_login.forEach(function(tlEffect)
+            let disabled = false;
+
+            if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
+            {
+                disabled = true;
+            }
+
+            mainEffect.term_login.forEach(function(tlEntry)
             {
                 let condition_passed = true;
 
-                if(Object.keys(tlEffect).includes("condition"))
+                if(Object.keys(tlEntry).includes("condition"))
                 {
                     //pass
                 }
 
-                if(condition_passed)
+                if(condition_passed && !disabled)
                 {
-                    this.#affectEffect(mainEffect, tlEffect);
+                    this.#affectEffect(mainEffect, tlEntry);
                 }
             }, this.#globalThis);
         }, this.#globalThis);

@@ -85,7 +85,17 @@
 		"type": "cyberdeck",
 		"flavor": "",
 		"owner": "",
-		"instance": "corp_name",
+		"instance":
+		[
+			{
+				"name": "corp_name",
+				"options":
+				[
+					"Winton",
+					"Kruger"
+				]
+			}
+		],
 		"tags": [],
 		"tiers":
 		[
@@ -568,7 +578,7 @@
 							}
 						],
 						"charges": 1,
-						"perType": "device"
+						"perType": "term"
 					}
 				]
 			}
@@ -740,7 +750,7 @@
 							}
 						],
 						"charges": 1,
-						"perType": "device"
+						"perType": "term"
 					}
 				]
 			},
@@ -767,7 +777,7 @@
 							}
 						],
 						"charges": 1,
-						"perType": "device"
+						"perType": "term"
 					}
 				]
 			}

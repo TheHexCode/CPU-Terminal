@@ -28,48 +28,16 @@
   - ITEMS CANNOT BE REFRESHED, UNDER NORMAL CIRCUMSTANCES?
 
 > INVENTORY ✓
-  > MUST:
-    1 - Recognize User Has Item
-    2 - Allow User to Activate Item
-    3 - Remember Item Activation on Terminal
-    4 - Remember Activation For Duration
-    5 - Remember Usage for Scene/Sim/Item
-                                   (1,2,3,4,5)
-  ✓  AUTO-INIT
-    ✓ CipherSync Beacon------------(✓,✓,✓,✓,✓)
-    ✓ Power Glove [UH9K]-----------(✓,✓,✓,✓,✓)
-  >> INIT
-    - Budget Remote Access Drive---(✓,X,X,X,X)
-    ✓ CMM Widow--------------------(✓,✓,✓,✓,✓)
-    ✓ CMM Cocoon-------------------(✓,✓,✓,✓,✓)
-    ✓ Shimmerstick T0--------------(✓,✓,✓,✓,✓)
-    ✓ Shimmerstick T1--------------(✓,✓,✓,✓,✓)
-    ✓ CLEC Fingers-----------------(✓,✓,✓,✓,✓)
-    - Canopic Jar [Magsweep]-------(✓,X,X,X,X)
-    - Vigil T0---------------------(✓,X,X,X,X)
-    - Vigil T1---------------------(✓,X,X,X,X)
-  >> ITEMTAB
-    ✓ Pocket Hacker T0-------------(✓,✓,✓,✓,✓)
-    ✓ Pocket Hacker T1-------------(✓,✓,✓,✓,✓)
-    ✓ Budget Cyberdeck-------------(✓,✓,✓,✓,✓)
-    ✓ CRD Spider Cyberdeck T0------(✓,✓,✓,✓,✓)
-    ✓ CRD Spider Cyberdeck T1------(✓,✓,✓,✓,✓)
-    ✓ MM Console-------------------(✓,✓,✓,✓,✓)
-    ✓ DigiPet[1]-------------------(✓,✓,✓,✓,✓)
-    > ALSO
-      - Budget Remote Access Drive-(X,X,X,X,X)
-      ✓ Shimmerstick T0------------(✓,✓,✓,✓,✓)
-      ✓ Shimmerstick T1------------(✓,✓,✓,✓,✓)
-      - Canopic Jar [Magsweep]-----(X,X,X,X,X)
-  ✓  ACTION
-    ✓ Copycat----------------------(✓,✓,✓,✓,✓)
-    ✓ DigiPet[2]-------------------(✓,✓,✓,✓,✓)
-  ✓  AUTO-ACTION
-    ✓ Johnny's Special Touch-------(✓,✓,✓,✓,✓)
-    ==========================================
-    X FKD DC-17 T0
-    X FKD DC-17 T1
-    X Nerd's Safety Glasses
+  > MAKE VALIDATOR FOR ITEMS.JSON AND EFFECTS.JSON
+  > Copycat -- condition
+  > Corp Protocols
+    - Display options
+    - Selecting an option adds more instances of the item
+    - Saving saves all of the instances
+    - Condition is checked
+  > Deputy's Hat
+    - Need clarification on rules
+  > Buttons
 
 (Plus: &#x271A;)
 (Minus: &#x2501;)
@@ -142,7 +110,6 @@
     - Sync the blend of the reqTags and Gems
     - Fix ugly "buttonItem" class when window is thin
     - Fix Extra Tags not blending the negative gems
-    - ICE in the middle of stuff has a negative css margin
     - Shore up profile css (tabs and junk)
 
 >> COMPLETED
