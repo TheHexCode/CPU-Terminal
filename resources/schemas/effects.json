@@ -17,7 +17,7 @@
 						"label":
 						{
 							"location": "crack_extra",
-							"label": "[CMM ARMS:+{values:tags:amount}]"
+							"label": "[CMM ARMS:+{values:tags:amount!tens}]"
 						}
 					}
 				]
@@ -79,7 +79,7 @@
 				"label":
 				{
 					"location": "crack_extra",
-					"label": "[CORP PCL:+{values:tags:amount}]"
+					"label": "[CORP PCL:+{values:tags:amount!tens}]"
 				},
 				"condition":
 				[
@@ -219,7 +219,7 @@
 				"label":
 				{
 					"location": "crack_hacking",
-					"label": "[BEACON:&nbsp;&nbsp;+{values:hacking:amount}]"
+					"label": "[BEACON:&nbsp;&nbsp;+{values:hacking:amount*2!tens}]"
 				}
 			}
 		]

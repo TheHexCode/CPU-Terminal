@@ -164,19 +164,58 @@ class Inventory
             let modifier = (match.split("!")[1] ?? "}").split("}")[0];
             let pathArray = match.split("!")[0].split("{")[1].split("}")[0].split(":");
 
-            console.log(modifier);
-            console.log(pathArray);
-
             let result = 0;
 
             switch(pathArray[0])
             {
                 case("values"):
                 {
-                    result = parentEffect.values.find(function(value)
+                    let resultValue = parentEffect.values.find(function(value)
                     {
                         return value.name === pathArray[1];
-                    })[pathArray[2]];
+                    });
+
+                    if(Object.keys(resultValue).includes("stack"))
+                    {
+                        result = resultValue["stack"];
+                    }
+                    else
+                    {
+                        let mult = Number(pathArray[2].split("*")[1]);
+                        let div = Number(pathArray[2].split("/")[1]);
+                        let add = Number(pathArray[2].split("+")[1]);
+                        let subt = Number(pathArray[2].split("-")[1]);
+
+                        switch(false)
+                        {
+                            case(Number.isNaN(mult)):
+                            {
+                                console.log()
+                                result = resultValue[pathArray[2].split("*")[0]] * mult;
+                                break;
+                            }
+                            case(Number.isNaN(div)):
+                            {
+                                result = resultValue[pathArray[2].split("/")[0]] / div;
+                                break;
+                            }
+                            case(Number.isNaN(add)):
+                            {
+                                result = resultValue[pathArray[2].split("+")[0]] + add;
+                                break;
+                            }
+                            case(Number.isNaN(subt)):
+                            {
+                                result = resultValue[pathArray[2].split("-")[0]] - subt;
+                                break;
+                            }
+                            default:
+                            {
+                                result = resultValue[pathArray[2]];
+                                break;
+                            }
+                        }
+                    }
                     break;
                 }
                 case("charges"):
@@ -191,43 +230,34 @@ class Inventory
                 case("plurality"):
                 {
                     result = (result !== 1 ? "s" : "")
+                    break;
+                }
+                case("tens"):
+                {
+                    result = tens(result);
+                    break;
                 }
             }
 
             labelString = labelString.replace(match, result);
         });
 
-        console.log(labelString);
         return labelString;
     }
 
     #displayActivationLabel(parentEffect, labelObject)
     {
-        let amount = null;
-
-        if(Object.keys(parentEffect).includes("stack"))
-        {
-            amount = parentEffect["stack"];
-        }
-        else
-        {
-            amount = this.#parseLabel(parentEffect, labelObject.label);
-        }
+        let parsedLabel = this.#parseLabel(parentEffect, labelObject.label);
 
         switch(labelObject.location)
         {
             case("crack_extra"):
             {
-                let parsedLabel = labelObject.label.replace(/{.*?}/, tens(amount));
-
                 $("#extraDetails").append("<span id='" + parentEffect.effect_name + "'>" + parsedLabel + "</span>");
-
                 break;
             }
             case("crack_hacking"):
             {
-                let parsedLabel = labelObject.label.replace(/{.*?}/, tens(amount * 2));
-
                 $("#hackDetails").append("<span id='" + parentEffect.effect_name + "'>" + parsedLabel + "</span>");
                 break;
             }
@@ -241,13 +271,11 @@ class Inventory
             case("crack_extra"):
             {
                 $("#extraDetails #" + parentEffect.effect_name).remove();
-
                 break;
             }
             case("crack_hacking"):
             {
                 $("#hackDetails #" + parentEffect.effect_name).remove();
-
                 break;
             }
         }
@@ -559,10 +587,12 @@ class Inventory
                                                 "</span>";
                                 }
 
-                                console.log(inputEntry["label"]);
-
                                 buttonHTML += "<button class='deckButton' data-effect='" + "effect.abbr" + "' data-plus='" + "plusTags" + "' onclick='takeAction(this)' " + '(remCharges === 0 ? "disabled" : "")' + ">" + this.#parseLabel(mainEffect, inputEntry["label"]) + "</button>" +
                                             "</span>";
+
+                                $(".itemCat[data-cat='" + itemCat + "'] .itemList").append("<li>" + buttonHTML + "</li>");
+
+                                
                                 break;
                             }
                             case("crack"):
@@ -574,6 +604,7 @@ class Inventory
                                 break;
                             }
                         }
+
                         break;
                     }
                 }
