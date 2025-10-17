@@ -55,14 +55,12 @@ class Inventory
                 }
                 else
                 {
-                    proposedEffect["effect_name"] = effect.name.toLowerCase() + "_t" + proposedTier.tier;
+                    proposedEffect["effect_name"] = effect.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier;
                 }
 
                 proposedEffect["values"] = effect.values ?? null;
                 proposedEffect["charges"] = effect.charges ?? null;
                 proposedEffect["perType"] = effect.perType ?? null;
-                proposedEffect["itemCat"] = proposedItem.category;
-                proposedEffect["itemType"] = proposedItem.type;
 
                 let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
 
@@ -106,6 +104,16 @@ class Inventory
                     }
 
                     this.#effects.push(structuredClone(proposedEffect));
+
+                    if(Object.keys(proposedItem).includes("dataEffectString"))
+                    {
+                        proposedItem["dataEffectString"] += "!" + proposedEffect["effect_name"] + ";"
+                    }
+                    else
+                    {
+                        proposedItem["dataEffectString"] = "!" + proposedEffect["effect_name"] + ";"
+                    }
+
                 }
                 else
                 {
@@ -118,15 +126,67 @@ class Inventory
             }, this.#globalThis);
 
             this.#items.push({
-                "item_name": proposedItem.name.toLowerCase() + "_t" + proposedTier.tier,
-                "display_name": proposedItem.name,
+                "item_name": proposedItem.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier,
+                "tier": proposedTier.tier,
+                "display_name": proposedItem.name + " [T" + proposedTier.tier + "]",
                 "category": proposedItem.category,
                 "type": proposedItem.type,
                 "tags": proposedItem.tags,
-                "effects": proposedTier.effects
+                "effects": proposedTier.effects,
+                "dataEffect": proposedItem.dataEffectString
             });
 
         }, this.#globalThis);
+
+        this.#items.forEach(function(item)
+        {
+            $("#noItems").addClass("hidden");
+
+            let itemCat = null;
+            switch(item["category"])
+            {
+                case("arms"):
+                {
+                    itemCat = "arms";
+                    break;
+                }
+                case("customization"):
+                {
+                    itemCat = "cust";
+                    break;
+                }
+                default:
+                {
+                    switch(item["type"])
+                    {
+                        case("cyberdeck"):
+                        {
+                            itemCat = "deck";
+                            break;
+                        }
+                        case("implant_arm"):
+                        {
+                            itemCat = "impl";
+                            break;
+                        }
+                        case("consumable"):
+                        case("consumable_drug"):
+                        {
+                            itemCat = "cons";
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            $(".itemCat[data-cat='" + itemCat + "']").removeClass("hidden");
+
+            $(".itemCat[data-cat='" + itemCat + "'] > .itemList").append(
+                            "<li id='" + item["item_name"] + "' class='itemItem'>" +
+                                "<span class='itemName'>" + item["display_name"] + "</span>" +
+                                "<span class='itemActions' data-effect='" + item["dataEffect"] + "'></span>" +
+                            "</li>");
+        });
     }
 
     #checkCondition()
@@ -190,7 +250,6 @@ class Inventory
                         {
                             case(Number.isNaN(mult)):
                             {
-                                console.log()
                                 result = resultValue[pathArray[2].split("*")[0]] * mult;
                                 break;
                             }
@@ -507,46 +566,6 @@ class Inventory
                         {
                             case("inventory"):
                             {
-                                $("#noItems").addClass("hidden");
-
-                                let itemCat = null;
-                                switch(mainEffect["itemCat"])
-                                {
-                                    case("arms"):
-                                    {
-                                        itemCat = "arms";
-                                        break;
-                                    }
-                                    case("customization"):
-                                    {
-                                        itemCat = "cust";
-                                        break;
-                                    }
-                                    default:
-                                    {
-                                        switch(mainEffect["itemType"])
-                                        {
-                                            case("cyberdeck"):
-                                            {
-                                                itemCat = "deck";
-                                                break;
-                                            }
-                                            case("implant_arm"):
-                                            {
-                                                itemCat = "impl";
-                                                break;
-                                            }
-                                            case("consumable"):
-                                            case("consumable_drug"):
-                                            {
-                                                itemCat = "cons";
-                                                break;
-                                            }
-                                        }
-                                        $(".itemCat[data-cat='" + itemCat + "']").removeClass("hidden");
-                                        break;
-                                    }
-                                }
                                 /*
                                     effectString += "<span class='itemActionRow'>" +
                                                         "<span class='itemMarks'>";
@@ -590,9 +609,8 @@ class Inventory
                                 buttonHTML += "<button class='deckButton' data-effect='" + "effect.abbr" + "' data-plus='" + "plusTags" + "' onclick='takeAction(this)' " + '(remCharges === 0 ? "disabled" : "")' + ">" + this.#parseLabel(mainEffect, inputEntry["label"]) + "</button>" +
                                             "</span>";
 
-                                $(".itemCat[data-cat='" + itemCat + "'] .itemList").append("<li>" + buttonHTML + "</li>");
+                                $(".itemItem > .itemActions[data-effect*='!" + mainEffect["effect_name"] + ";']").append(buttonHTML);
 
-                                
                                 break;
                             }
                             case("crack"):

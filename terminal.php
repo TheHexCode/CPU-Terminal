@@ -85,7 +85,7 @@
 				<div id="rootingTimer" class="timerContainer hidden">
 					<div class="lcdBox">
 						<div class="mmss">
-							<span class="dseg BG">~~ ~~</span>
+							<span class="dseg BG">~~:~~</span>
 							<span class="dseg FG"></span>
 						</div>
 						<div class="hundsec">
@@ -249,7 +249,7 @@
 				<div id="termAccessTimer" class="timerContainer">
 					<div class="lcdBox">
 						<div class="mmss">
-							<span class="dseg BG">~~ ~~</span>
+							<span class="dseg BG">~~:~~</span>
 							<span class="dseg FG">00:30</span>
 						</div>
 						<div class="hundsec">
@@ -501,7 +501,7 @@
 					<div id="modalBodyTimer"class="timerContainer hidden">
 						<div class="lcdBox">
 							<div class="mmss">
-								<span class="dseg BG">~~ ~~</span>
+								<span class="dseg BG">~~:~~</span>
 								<span class="dseg FG">00:00</span>
 							</div>
 							<div class="hundsec">
