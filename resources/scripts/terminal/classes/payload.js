@@ -356,6 +356,16 @@ class Payload
         this.#inventory.toggleEffect(target.id, index, $(target).prop("checked"));
     }
 
+    useItem(target, index)
+    {
+        this.#inventory.useItem(target.id, index);
+    }
+
+    executeItem(actionMap)
+    {
+        this.#inventory.executeItem(actionMap);
+    }
+
 /*
     getInventory()
     {

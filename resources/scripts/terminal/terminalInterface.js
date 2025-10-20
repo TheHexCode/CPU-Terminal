@@ -1448,6 +1448,11 @@ function openSubTab(target, contentID)
 	$("#" + contentID).addClass("active");
 }
 
+function useItem(target, index)
+{
+	payload.useItem(target, index);
+}
+
 function takeAction(target)
 {
 	let action = target.classList[0].split("Button")[0];
@@ -1456,12 +1461,14 @@ function takeAction(target)
 	let headerText = "";
 	let executeHeader = "";
 	let bodyText = "";
+	/*
 	let copycatText = 	(payload.getItem("copycat") && (!payload.getActiveEffect("copycat")) && session.isActionCopyable(action)) ?
 						"<br/><br/>" +
 						"<span class='copycatBox'>" +
 							"<input id='copycatActivate' type='checkbox'/>" +
 							"<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
 						"</span>" : "";
+	*/
 	let buttonArray = [];
 
 	/*
@@ -1825,6 +1832,7 @@ function takeAction(target)
 			break;
 		}
 		// Item Activations
+		/*
 		case ("deck"):
 		case ("shim"):
 		{
@@ -1966,6 +1974,7 @@ function takeAction(target)
 
 			break;
 		}
+			*/
 	}
 }
 

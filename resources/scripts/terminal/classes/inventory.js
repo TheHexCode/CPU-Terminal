@@ -61,6 +61,7 @@ class Inventory
                 proposedEffect["values"] = effect.values ?? null;
                 proposedEffect["charges"] = effect.charges ?? null;
                 proposedEffect["perType"] = effect.perType ?? null;
+                proposedEffect["displayName"] = proposedItem.name + " [T" + proposedTier.tier + "]";
 
                 let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
 
@@ -277,9 +278,24 @@ class Inventory
                     }
                     break;
                 }
-                case("charges"):
+                case("remainCharges"):
                 {
                     result = parentEffect.charges - parentEffect.uses;
+                    break;
+                }
+                case("totalCharges"):
+                {
+                    result = parentEffect.charges;
+                    break;
+                }
+                case("perType"):
+                {
+                    result = parentEffect.perType;
+                    break;
+                }
+                case("displayName"):
+                {
+                    result = parentEffect.displayName;
                     break;
                 }
             }
@@ -350,7 +366,7 @@ class Inventory
 
     }
 
-    #affectEffect(parentEffect, effectDetails, activate=true)
+    #activateEffect(parentEffect, effectDetails, activate=true)
     {
         let amount = null;
 
@@ -585,10 +601,10 @@ class Inventory
                                                 "<button class='deckButton' data-effect='" + effect.abbr + "' data-plus='" + plusTags + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">+" + plusTags + " Tag" + (plusTags === 1 ? "" : "s") + "</button>" +
                                             "</span>"
                                 */
-                               console.log(mainEffect);
-                               console.log(inputEntry);
                                 let buttonHTML = "<span class='itemActionRow'>" +
                                                         "<span class='itemMarks'>";
+
+                                let remCharges = 100;
 
                                 if(mainEffect["charges"] !== null)
                                 {
@@ -604,9 +620,10 @@ class Inventory
 
                                     buttonHTML +=   "<span>per " + (mainEffect["perType"] === "sim" ? "Sim" : "Scene") + "</span>" +
                                                 "</span>";
+                                    remCharges = mainEffect["charges"] - mainEffect["uses"];
                                 }
 
-                                buttonHTML += "<button class='deckButton' data-effect='" + "effect.abbr" + "' data-plus='" + "plusTags" + "' onclick='takeAction(this)' " + '(remCharges === 0 ? "disabled" : "")' + ">" + this.#parseLabel(mainEffect, inputEntry["label"]) + "</button>" +
+                                buttonHTML += "<button id='" + mainEffect.effect_name + "' class='sideItemButton' onclick='useItem(this," + index + ")' " + (remCharges <= 0 ? "disabled" : "") + ">" + this.#parseLabel(mainEffect, inputEntry["label"]) + "</button>" +
                                             "</span>";
 
                                 $(".itemItem > .itemActions[data-effect*='!" + mainEffect["effect_name"] + ";']").append(buttonHTML);
@@ -639,8 +656,76 @@ class Inventory
 
         targetEffect.input[target_index].activation.forEach(function(activation)
         {
-            this.#affectEffect(targetEffect, activation, activate);
+            this.#activateEffect(targetEffect, activation, activate);
         }, this.#globalThis);
+    }
+
+    useItem(target_id, target_index)
+    {
+        let targetEffect = this.#effects.find(function(effect)
+        {
+            return effect.effect_name === target_id;
+        });
+
+        let targetInput = targetEffect.input[target_index];
+
+        if(Object.keys(targetInput).includes("confirm"))
+        {
+            let buttonArray = [{
+				id: target_id + "_" + target_index,
+				text: targetInput["confirm"]["button"],
+				data: session.getTerminalID(),
+				global: false
+			}];
+
+			let actionMap = {
+                targetEffect: targetEffect,
+                targetInput: targetInput,
+				targetID: targetEffect["effect_name"],
+				action: "item",
+				actionType: "item"
+			};
+
+			let confirmMap = {
+				headerText: "Confirm Item Activation",
+				bodyText: this.#parseLabel(targetEffect, targetInput["confirm"]["body"]),
+				buttonArray: buttonArray
+			};
+
+            actionModal.showConfirmPage(actionMap, confirmMap, true);
+        }
+        else
+        {
+        }
+    }
+
+    executeItem(actionMap)
+    {
+        let maxTime = 30;
+
+        switch(actionMap["targetInput"]["confirm"]["timer"]["type"])
+        {
+            case("skip"):
+            {
+                break;
+            }
+            case("static"):
+            {
+                break;
+            }
+            case("action"):
+            {
+                break;
+            }
+        }
+
+        let executeMap = {
+            petStage: null,
+            headerText: "Activate / Item",
+            maxTime: 0
+        }
+
+        actionModal.showExecutePage(actionMap, executeMap, true);
     }
 
     applyTermLoginEffects()
@@ -670,7 +755,7 @@ class Inventory
 
                 if(condition_passed && !disabled)
                 {
-                    this.#affectEffect(mainEffect, tlEntry);
+                    this.#activateEffect(mainEffect, tlEntry);
                 }
             }, this.#globalThis);
         }, this.#globalThis);

@@ -1,7 +1,7 @@
 class Modal
 {
     static ACTION = "action";
-    
+
     #modalType;
     #background;
     #modal;
@@ -32,7 +32,7 @@ class Modal
     #displayModal()
     {
         $(this.#modal).width($("#main").width());
-        
+
 		$("#load").addClass("hidden");
         $(this.#background).css("display","flex");
     }
@@ -46,7 +46,7 @@ class Modal
 		$(this.#modal).attr("data-type", "");
 		$(this.#modal).attr("data-id", "");
         $(this.#modal).removeClass("ice");
-		
+
 		$(this.#overlay).removeClass("blink");
 		$(this.#overlay).addClass("hidden");
 
@@ -73,8 +73,24 @@ class Modal
         $("#" + this.#modal.id + " button").prop("disabled", true);
     }
 
-    showConfirmPage(actionMap, confirmMap)
+    showConfirmPage(actionMap, confirmMap, itemExecute=false)
     {
+        /********************************
+         ACTION MAP OBJECT:
+          - action
+          - actionType
+          - targetID
+         CONFIRM MAP OBJECT:
+          - headerText
+          - bodyText
+          - buttonArray: []
+            - id
+            - text
+            - data
+            - global
+          - executeHeader
+        *********************************/
+
         this.clearModal();
 
         $(this.#modal).attr("data-type", actionMap["actionType"]);
@@ -92,17 +108,10 @@ class Modal
 
         $(this.#buttonRow).attr("data-mode","confirm");
 
-        /********************************
-         BUTTON ARRAY ITEMS REQUIRE:
-          - id
-          - text
-          - data
-          - global
-        *********************************/
         confirmMap["buttonArray"].forEach(function(button)
         {
             $(this.#buttonRow).append("<button id='" + button.id + "' class='modalButton'>" + button.text + "</button>");
-                
+
             $("#" + button.id).bind("pointerup", function()
             {
                 let buttonData = button.data;
@@ -115,14 +124,21 @@ class Modal
                 actionMap["buttonData"] = buttonData;
                 actionMap["global"] = button.global;
 
-                executeAction(actionMap, confirmMap["executeHeader"]);
+                if(itemExecute)
+                {
+                    payload.executeItem(actionMap)
+                }
+                else
+                {
+                    executeAction(actionMap, confirmMap["executeHeader"]);
+                }
             });
         }, this);
 
         this.#displayModal();
     }
 
-    showExecutePage(actionMap, executeMap)
+    showExecutePage(actionMap, executeMap, itemComplete=false)
     {
         // ACTIONMAP:
         //  - nothing, just passes through to completeAction
@@ -206,7 +222,7 @@ class Modal
 		$(this.#timerBox).removeClass("hidden");
 
 		$(this.#buttonRow).attr("data-mode","execute");
-		
+
         this.#displayModal();
     }
 

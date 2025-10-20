@@ -52,7 +52,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "You sure? You have {charges} charge{charges:amount!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -112,7 +112,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "You sure? You have {charges} charge{charges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -302,7 +302,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "You sure? You have {charges} charge{charges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -480,7 +480,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "You sure? You have {charges} charge{charges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
