@@ -112,7 +112,7 @@ class Modal
         {
             $(this.#buttonRow).append("<button id='" + button.id + "' class='modalButton'>" + button.text + "</button>");
 
-            $("#" + button.id).bind("pointerup", function()
+            $("#" + button.id).one("pointerup", function(event)
             {
                 let buttonData = button.data;
 
@@ -152,6 +152,7 @@ class Modal
 		$(this.#buttonRow).html("");
 		$(this.#buttonRow).append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
 
+        /*
         switch(executeMap["petStage"])
         {
             case(1):
@@ -170,6 +171,7 @@ class Modal
                 break;
             }
         }
+        */
 
         $("#executeButton").on("pointerdown", {this: this}, function(event)
 		{
@@ -201,7 +203,7 @@ class Modal
 				$("#executeButton").trigger("pointerdown");
 			}
 		});
-
+        /*
         $("#digiPetButton").on("pointerup", {this: this}, function(event)
 		{
 			$("#digiPetButton").remove();
@@ -212,6 +214,25 @@ class Modal
 
 			event.data.this.#modalTimer.startTimer(executeMap["maxTime"],completeAction,actionMap);
 		});
+        */
+
+        let itemInputs = payload.getInventoryExecuteInputs();
+
+        itemInputs.forEach(function(itemInput)
+        {
+            $(this.#buttonRow).append(itemInput["buttonHTML"]);
+
+            $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+            {
+                itemInput["function"](
+                    itemInput["functionInput"],
+                    itemInput["functionIndex"],
+                    event.data.this.#modalTimer,
+                    [executeMap["maxTime"], completeAction, actionMap]
+                );
+            });
+
+        }, this);
 
         $(this.#headerText).html(executeMap["headerText"]);
 

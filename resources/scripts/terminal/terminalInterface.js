@@ -799,11 +799,13 @@ function injectUserPayload(userPayload)
 							updateEntryCosts("REPEAT",resultJSON["entryPath"],resultJSON["action"]);
 						}
 
+						/*
 						if(payload.getActiveEffect("deck_jst")) // JOHNNY'S SPECIAL TOUCH
 						{
 							session.setFunctionState("TOUCHED",resultJSON["entryID"],resultJSON["action"].toLowerCase(),1);
 							updateEntryCosts("TOUCHED",resultJSON["entryPath"],resultJSON["action"]);
 						}
+						*/
 					}
 				});
 
@@ -1208,7 +1210,7 @@ function updateTags(change, tagType)
 
 function allowAccess()
 {
-	if(payload.hasCyberdeck() || payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1"))
+	if(payload.hasCyberdeck()) //|| payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1"))
 	{
 		$("#terminalButton").html("Access Terminal");
 		$("#terminalButton").attr("disabled",false);
@@ -1469,6 +1471,7 @@ function takeAction(target)
 							"<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
 						"</span>" : "";
 	*/
+	let copycatText = "";
 	let buttonArray = [];
 
 	/*
@@ -2015,6 +2018,7 @@ function executeAction(actionMap, executeHeader)
 
 		let petStage = null;
 
+		/*
 		if(payload.getItem("digi_pet"))
 		{
 			if(!payload.getActiveEffect("pet_play")) // Pet: Stage 1 > Unplayed
@@ -2030,6 +2034,7 @@ function executeAction(actionMap, executeHeader)
 				petStage = 3;
 			}
 		}
+		*/
 
 		let executeMap = {
 			headerText: executeHeader,
@@ -2232,6 +2237,7 @@ function completeAction(actionMap)
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	disableExpensiveButtons();
 
+	/*
 	if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 	{
 		if((actionMap["action"] !== "item") && (!session.isActionCopyable(actionMap["action"])))
@@ -2239,6 +2245,7 @@ function completeAction(actionMap)
 			session.makeActionCopyable(actionMap["action"]);
 		}
 	}
+	*/
 
 	if(Object.keys(actionMap).includes("digipet"))
 	{
@@ -2292,6 +2299,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 
 		$(".touchedIndicator").removeClass("dimmed");
 
+		/*
 		if(!payload.getActiveEffect("deck_jst"))
 		{
 			$.ajax({
@@ -2308,6 +2316,7 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 
 			payload.setActiveEffect("deck_jst",true);
 		}
+		*/
 	}
 }
 
@@ -2401,6 +2410,7 @@ function generatePuzzle(target)
 
 			let petStage = null;
 
+			/*
 			if(payload.getItem("digi_pet"))
 			{
 				if(!payload.getActiveEffect("pet_play")) // Pet: Stage 1 > Unplayed
@@ -2416,6 +2426,7 @@ function generatePuzzle(target)
 					petStage = 3;
 				}
 			}
+			*/
 
 			let executeMap = {
 				petStage: petStage,

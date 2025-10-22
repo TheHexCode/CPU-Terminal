@@ -9,6 +9,8 @@ class Inventory
     #effects;
 
     #initialActivations;
+    #confirmInputs;
+    #executeInputs;
 
     constructor()
     {
@@ -18,6 +20,81 @@ class Inventory
         this.#items = [];
         this.#effects = [];
         this.#initialActivations = [];
+        this.#confirmInputs = [];
+        this.#executeInputs = [];
+    }
+
+    getConfirmInputs()
+    {
+        return this.#confirmInputs;
+    }
+
+    getExecuteInputs()
+    {
+        let returnArray = [];
+
+        //"<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>"
+
+        /*
+        $("#digiPetButton").on("pointerup", {this: this}, function(event)
+		{
+			$("#digiPetButton").remove();
+			//!! Dancing Digipet Animation
+			$("#executeButton").prop("disabled", true);
+
+			actionMap["digipet"] = true;
+
+			event.data.this.#modalTimer.startTimer(executeMap["maxTime"],completeAction,actionMap);
+		});
+        */
+        this.#executeInputs.forEach(function(input, index)
+        {
+            let parentEffect = this.#effects.find(function(effect)
+            {
+                return effect.effect_name === input.effect_name;
+            });
+
+            let HTMLString = "<button id='" + input["effect_name"] + "_" + index + "' class='modalButton'>" + this.#parseLabel(parentEffect, input["label"]) + "</button>";
+
+            let onPointerUpFunction = function(inputArg, inputIndex, timer=null, startTimerArgs=null)
+            {
+                inputArg["activation"].forEach(function(activation, activationIndex)
+                {
+                    switch(activation["type"])
+                    {
+                        case("complete_timer"):
+                        {
+                            $("#" + inputArg["itemID"]).remove();
+
+                            if(activation["animation"] !== null)
+                            {
+                                //!! DIGIPET ANIMATION
+                            }
+
+                            $("#executeButton").prop("disabled", true);
+
+                            timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
+                            break;
+                        }
+                        default:
+                        {
+                            payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                            break;
+                        }
+                    }
+                });
+            };
+
+            returnArray.push({
+                "buttonHTML": HTMLString,
+                "itemID": input["effect_name"] + "_" + index,
+                "function": onPointerUpFunction,
+                "functionInput": structuredClone(input),
+                "functionIndex": index
+            });
+        }, this.#globalThis);
+
+        return returnArray;
     }
 
     establishInventory(itemList, itemUses)
@@ -176,6 +253,11 @@ class Inventory
                             itemCat = "cons";
                             break;
                         }
+                        default:
+                        {
+                            itemCat = "util";
+                            break;
+                        }
                     }
                     break;
                 }
@@ -190,14 +272,14 @@ class Inventory
         });
     }
 
-    #checkCondition()
+    #checkCondition(effectConditions)
     {
         // array of conditions
             // left
                 // payload:roles [Array]
                 // payload:effects [Array]
-                // payload:functions:XXX [Array Key]
-                // terminal:effects:remote_enabled [Array Key]
+                // payload:functions:XXX [Array Key > Value]
+                // terminal:effects:remote_enabled [Array Key > Value]
             // operation
                 // contains [Arrays]
                 // not_contains [Arrays]
@@ -212,11 +294,153 @@ class Inventory
                 // Number
             // rejection_label
                 // String
+
+        let returnValue = 0;
+
+        effectConditions.forEach(function(condition)
+        {
+            let leftType = null;
+            let left = null;
+
+            switch(condition["left"].split(":")[0])
+            {
+                case("payload"):
+                {
+                    switch(condition["left"].split(":")[1])
+                    {
+                        case("roles"):
+                        {
+                            leftType = "array";
+                            left = payload.getRoles();
+                            break;
+                        }
+                        case("effects"):
+                        {
+                            leftType = "array";
+                            left = payload.getStatusEffects();
+                            break;
+                        }
+                        case("functions"):
+                        {
+                            leftType = "value";
+                            left = payload.getFunction(condition["left"].split(":")[2]);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case("terminal"):
+                {
+                    switch(condition["left"].split(":")[1])
+                    {
+                        case("effects"):
+                        {
+                            leftType = "value";
+                            left = session.getStatusEffects(condition["left"].split(":")[2]);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case("item"):
+                {
+                    switch(condition["left"].split(":")[1])
+                    {
+                        case("instance"):
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            let rightType = typeof condition["right"];
+            let right = condition["right"];
+
+            let operation = condition["operation"];
+
+            let pass = false;
+
+            switch(leftType)
+            {
+                case("array"):
+                {
+                    switch(operation)
+                    {
+                        case("contains"):
+                        {
+                            pass = left.includes(right);
+                            break;
+                        }
+                        case("not_contains"):
+                        {
+                            pass = !(left.includes(right));
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case("value"):
+                {
+                    switch(operation)
+                    {
+                        case("greater_than"):
+                        {
+                            pass = left > right;
+                            break;
+                        }
+                        case("greater_than_equals"):
+                        {
+                            pass = left >= right;
+                            break;
+                        }
+                        case("equals"):
+                        {
+                            pass = left === right;
+                            break;
+                        }
+                        case("not_equals"):
+                        {
+                            pass = left !== right;
+                            break;
+                        }
+                        case("lesser_than_equals"):
+                        {
+                            pass = left <= right;
+                            break;
+                        }
+                        case("lesser_than"):
+                        {
+                            pass = left < right;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if(pass)
+            {
+                if(Object.keys(condition).includes("effect"))
+                {
+                    returnValue = returnValue + condition["effect"];
+                }
+                
+                continue;
+            }
+            else
+            {
+                if(Object.keys(condition).includes("rejection_label"))
+                {
+
+                }
+            }
+        });
     }
 
     #parseLabel(parentEffect, labelString)
     {
-        let parseMatches = labelString.match(/{.*?}/g);
+        let parseMatches = (labelString.match(/{.*?}/g) ?? []);
 
         console.log(parentEffect);
 
@@ -524,15 +748,7 @@ class Inventory
                             }
                             case("confirm"):
                             {
-                                let inputHTML = '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
-                                                    '<div class="initHeader">' + inputEntry.header + '</div>' +
-                                                    '<div class="initOption">' +
-                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')"' + (disabled ? ' disabled' : '') + '>' +
-                                                        '<label for="' + mainEffect.effect_name + '">' + inputEntry.label + "</label>" +
-                                                    '</div>' +
-                                                '</div>';
-
-                                //$("#initItemList").append(inputHTML);
+                                this.#confirmInputs.push(inputEntry);
                                 break;
                             }
                         }
@@ -636,6 +852,9 @@ class Inventory
                             }
                             case("execute"):
                             {
+                                inputEntry["effect_name"] = mainEffect["effect_name"];
+
+                                this.#executeInputs.push(inputEntry);
                                 break;
                             }
                         }
@@ -669,6 +888,14 @@ class Inventory
 
         let targetInput = targetEffect.input[target_index];
 
+        let actionMap = {
+            targetEffect: targetEffect,
+            targetInput: targetInput,
+            targetID: targetEffect["effect_name"],
+            action: "item",
+            actionType: "item"
+        };
+
         if(Object.keys(targetInput).includes("confirm"))
         {
             let buttonArray = [{
@@ -677,14 +904,6 @@ class Inventory
 				data: session.getTerminalID(),
 				global: false
 			}];
-
-			let actionMap = {
-                targetEffect: targetEffect,
-                targetInput: targetInput,
-				targetID: targetEffect["effect_name"],
-				action: "item",
-				actionType: "item"
-			};
 
 			let confirmMap = {
 				headerText: "Confirm Item Activation",
@@ -696,6 +915,7 @@ class Inventory
         }
         else
         {
+            this.executeItem(actionMap);
         }
     }
 
@@ -703,26 +923,30 @@ class Inventory
     {
         let maxTime = 30;
 
-        switch(actionMap["targetInput"]["confirm"]["timer"]["type"])
+        let targetTimer = actionMap["targetInput"]["confirm"]["timer"];
+
+        switch(targetTimer["type"])
         {
             case("skip"):
             {
+                // skip the execute window entirely
                 break;
             }
             case("static"):
             {
+                maxTime = targetTimer["seconds"];
                 break;
             }
             case("action"):
             {
+                maxTime = payload.getActionTime(targetTimer["seconds"]);
                 break;
             }
         }
 
         let executeMap = {
-            petStage: null,
             headerText: "Activate / Item",
-            maxTime: 0
+            maxTime: maxTime
         }
 
         actionModal.showExecutePage(actionMap, executeMap, true);

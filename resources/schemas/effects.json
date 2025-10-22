@@ -412,7 +412,7 @@
 			{
 				"type": "button",
 				"screen": "execute",
-				"label": "Use DigiPet to Complete?",
+				"label": "Activate DigiPet?<br/>({charges}/{perType})",
 				"condition":
 				[
 					{
@@ -435,7 +435,8 @@
 						"name": "digi_use"
 					},
 					{
-						"type": "complete_timer"
+						"type": "complete_timer",
+						"animation": null
 					}
 				]
 			}

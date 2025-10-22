@@ -218,7 +218,7 @@ class Session
             }
         }
 
-        actionCost += ((payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1")) ? 1 : 0);
+        //actionCost += ((payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1")) ? 1 : 0);
 
         return actionCost;
     }
@@ -284,9 +284,9 @@ class Session
         /*
         <svg id="hexLogo" width="209" height="229" xmlns="http://www.w3.org/2000/svg">
             <mask id="logoMask">
-                <polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" /> 
+                <polygon points="105,10 195,62 195,167 105,219 15,167 15,62" fill="black" stroke="white" stroke-width="15" />
             </mask>
-        
+
             <foreignObject x="0" y="0" width="209" height="229" mask="url(#logoMask)">
                 <div id="logoBG"></div>
             </foreignObject>

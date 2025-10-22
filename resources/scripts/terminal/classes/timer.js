@@ -28,7 +28,7 @@ class Timer
             this.#colon = " ";
         }
     }
-    
+
     #interval(maxTime, callback, callargs=null, results=null)
     {
         if(this.#pause === false)
@@ -36,11 +36,11 @@ class Timer
             let newDate = Date.now();
 
             let dateDiff = (newDate - this.#baseDate)/1000;
-        
+
             this.#baseDate = newDate;
 
             this.#elapse += dateDiff;
-            
+
             if(this.#elapse > maxTime)
             {
                 clearInterval(this.#timerInterval);
@@ -66,13 +66,13 @@ class Timer
         }
 
         let readTime = Math.max(maxTime-this.#elapse,0);
-            
+
         let min = tens(parseInt(readTime/60));
         let sec = tens(parseInt(readTime%60));
         let hundsec = tens(parseInt((readTime*100)%100));
-        
+
         let mmss = min + this.#colon + sec;
-        
+
         $(this.#timerContainer + " .mmss > .FG").html(mmss);
         $(this.#timerContainer + " .hundsec > .FG").html(hundsec);
     }
@@ -87,7 +87,7 @@ class Timer
             this.#pause = false;
 
             let results = null;
-            
+
             if(callargs !== null)
             {
                 if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))
@@ -110,7 +110,7 @@ class Timer
     skipTimer(callback, callargs=null)
     {
         let results = null;
-            
+
         if(callargs !== null)
         {
             if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))

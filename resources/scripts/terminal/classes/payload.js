@@ -65,6 +65,16 @@ class Payload
         return this.#cyberdecks.length > 0;
     }
 
+    getInventoryConfirmInputs()
+    {
+        return this.#inventory.getConfirmInputs();
+    }
+
+    getInventoryExecuteInputs()
+    {
+        return this.#inventory.getExecuteInputs();
+    }
+
     getFunctionList()
     {
         return this.#functions;
@@ -364,6 +374,11 @@ class Payload
     executeItem(actionMap)
     {
         this.#inventory.executeItem(actionMap);
+    }
+
+    activateItemEffect(effectName, inputIndex)
+    {
+        this.#inventory.toggleEffect(effectName, inputIndex, true);
     }
 
 /*
