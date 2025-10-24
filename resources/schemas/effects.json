@@ -145,9 +145,9 @@
 						"rejection_label": "You must have Hacking I to set up"
 					},
 					{
-						"left": "terminal:effects:remote_enabled",
-						"operation": "not_equals",
-						"right": true,
+						"left": "terminal:effects",
+						"operation": "not_contains",
+						"right": "remote_enabled",
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],
@@ -182,9 +182,9 @@
 						"rejection_label": "You must have Hacking I to set up"
 					},
 					{
-						"left": "terminal:effects:remote_enabled",
-						"operation": "not_equals",
-						"right": true,
+						"left": "terminal:effects",
+						"operation": "not_contains",
+						"right": "remote_enabled",
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],
@@ -234,9 +234,9 @@
 				"condition":
 				[
 					{
-						"left": "terminal:effects:remote_enabled",
-						"operation": "not_equals",
-						"right": true,
+						"left": "terminal:effects",
+						"operation": "not_contains",
+						"right": "remote_enabled",
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],
@@ -265,9 +265,9 @@
 				"condition":
 				[
 					{
-						"left": "terminal:effects:remote_enabled",
-						"operation": "not_equals",
-						"right": true,
+						"left": "terminal:effects",
+						"operation": "not_contains",
+						"right": "remote_enabled",
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],

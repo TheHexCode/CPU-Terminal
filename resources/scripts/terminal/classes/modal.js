@@ -152,6 +152,12 @@ class Modal
 		$(this.#buttonRow).html("");
 		$(this.#buttonRow).append("<button id='executeButton' class='modalButton'>HOLD TO EXECUTE</button>");
 
+        let completeFunction = completeAction;
+
+        if(itemComplete)
+        {
+            completeFunction = payload.completeItem.bind(payload);
+        }
         /*
         switch(executeMap["petStage"])
         {
@@ -181,7 +187,7 @@ class Modal
 			{
 				$("#executeButton").addClass("active");
 
-				event.data.this.#modalTimer.startTimer(executeMap["maxTime"],completeAction,actionMap);
+				event.data.this.#modalTimer.startTimer(executeMap["maxTime"],completeFunction,actionMap);
 			}
 		});
 		$("#executeButton").on("pointerup pointerleave pointerout",  {this: this}, function(event)
@@ -216,23 +222,26 @@ class Modal
 		});
         */
 
-        let itemInputs = payload.getInventoryExecuteInputs();
-
-        itemInputs.forEach(function(itemInput)
+        if(!itemComplete)
         {
-            $(this.#buttonRow).append(itemInput["buttonHTML"]);
+            let itemInputs = payload.getInventoryExecuteInputs();
 
-            $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+            itemInputs.forEach(function(itemInput)
             {
-                itemInput["function"](
-                    itemInput["functionInput"],
-                    itemInput["functionIndex"],
-                    event.data.this.#modalTimer,
-                    [executeMap["maxTime"], completeAction, actionMap]
-                );
-            });
+                $(this.#buttonRow).append(itemInput["buttonHTML"]);
 
-        }, this);
+                $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+                {
+                    itemInput["function"](
+                        itemInput["functionInput"],
+                        itemInput["functionIndex"],
+                        event.data.this.#modalTimer,
+                        [executeMap["maxTime"], completeFunction, actionMap]
+                    );
+                });
+
+            }, this);
+        }
 
         $(this.#headerText).html(executeMap["headerText"]);
 
@@ -247,10 +256,17 @@ class Modal
         this.#displayModal();
     }
 
-    skipExecutePage(actionMap)
+    skipExecutePage(actionMap, itemComplete=false)
     {
         $("#load").removeClass("hidden");
 
-        this.#modalTimer.skipTimer(completeAction,actionMap);
+        if(!itemComplete)
+        {
+            this.#modalTimer.skipTimer(completeAction,actionMap);
+        }
+        else
+        {
+            this.#modalTimer.skipTimer(payload.completeItem.bind(payload),actionMap);
+        }
     }
 }

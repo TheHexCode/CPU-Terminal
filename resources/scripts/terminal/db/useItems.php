@@ -17,7 +17,7 @@ if($effects !== null)
     $activeStatement->execute();
     $activeCodes = $activeStatement->fetch(PDO::FETCH_ASSOC);
 
-    echo var_dump($activeCodes);
+    //echo var_dump($activeCodes);
 
     $useQuery = "   INSERT INTO {$dbName}.item_uses
                                 (user_id, effect, simCode, jobCode, terminal_id)
@@ -41,7 +41,7 @@ if($effects !== null)
         $perQuery = "   SELECT per_type
                         FROM {$dbName}.item_effects
                         WHERE abbr = :effectAbbr";
-        
+
         $perStatement = $pdo->prepare($perQuery);
         $perStatement->execute([':effectAbbr' => $effect]);
 

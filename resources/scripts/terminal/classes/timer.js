@@ -128,10 +128,12 @@ class Timer
 
                     this.#userActions(callargs);
 
+                    /*
                     if(callargs["actionType"] === "item")
                     {
                         this.#useItems(callargs);
                     }
+                    */
 
                     callargs["results"] = results.responseJSON;
 
@@ -147,10 +149,12 @@ class Timer
 
                 this.#userActions(callargs);
 
+                /*
                 if(callargs["actionType"] === "item")
                 {
                     this.#useItems(callargs);
                 }
+                */
 
                 callback(callargs);
             }
@@ -201,6 +205,7 @@ class Timer
         }
     }
 
+    /*
     #useItems(callargs)
     {
         $.ajax({
@@ -215,6 +220,7 @@ class Timer
             }
         });
     }
+    */
 
     pauseTimer()
     {

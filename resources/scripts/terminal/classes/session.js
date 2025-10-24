@@ -42,6 +42,7 @@ class Session
     #puzzleData;
     #repeatIcons = new Object();
 
+    #statusEffects;
     #touched = false;
     #copyableActions = [];
 
@@ -52,6 +53,8 @@ class Session
         this.#stateData = termInfo["stateData"];
         this.#entryData = termInfo["entries"];
         this.#puzzleData = termInfo["puzzles"];
+
+        this.#statusEffects = [];
 
         switch(this.#termState)
         {
@@ -223,6 +226,24 @@ class Session
         return actionCost;
     }
 
+    addStatusEffect(effect_name)
+    {
+        this.#statusEffects.push(effect_name);
+    }
+
+    removeStatusEffect(effect_name)
+    {
+        this.#statusEffects.splice(this.#statusEffects.findIndex(function(effect)
+        {
+            return effect === effect_name;
+        }), 1);
+    }
+
+    getStatusEffects()
+    {
+        return this.#statusEffects;
+    }
+
     setFunctionState(functionName, entryID, entryAction, functionRank)
     {
         let entry = this.#entryData.find(entry => entry.id === Number(entryID));
@@ -366,7 +387,7 @@ class Session
         */
         $("#main").css("max-width","100%");
         $("#main").html("<p>No boot device available or Operating System detected<br/>" +
-                        "Current boot mode is set to UEFI<br/>" +
+                        "Current boot mode is set to HOLO<br/>" +
                         "Please ensure a compatible bootable media is available</p>" +
                     /*    "<p>Available Actions<br/><ul>" +
                         "<li>No Available Actions</li>" +

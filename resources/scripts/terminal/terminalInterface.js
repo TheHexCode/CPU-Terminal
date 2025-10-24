@@ -2161,6 +2161,7 @@ function completeAction(actionMap)
 			setupAlertModal("Your " + actionMap["newData"] + " Function has been Refreshed!<br/><br/>NOTE: The usage of the " + actionMap["newData"] + " Function is not tracked by this OS. Do not run this action again unless you've used " + actionMap["newData"] + " again this Scene and require another Refresh.");
 			break;
 		}
+		/*
 		case("item"):
 		{
 			switch(actionMap["targetID"].split("_")[0])
@@ -2219,6 +2220,7 @@ function completeAction(actionMap)
 
 			break;
 		}
+		*/
 		case("puzzle"):
 		{
 			switch(actionMap["action"])

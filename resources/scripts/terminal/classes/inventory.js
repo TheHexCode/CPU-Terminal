@@ -33,20 +33,6 @@ class Inventory
     {
         let returnArray = [];
 
-        //"<button id='digiPetButton' class='modalButton'>ACTIVATE DIGIPET?<br/>(1/SCENE)</button>"
-
-        /*
-        $("#digiPetButton").on("pointerup", {this: this}, function(event)
-		{
-			$("#digiPetButton").remove();
-			//!! Dancing Digipet Animation
-			$("#executeButton").prop("disabled", true);
-
-			actionMap["digipet"] = true;
-
-			event.data.this.#modalTimer.startTimer(executeMap["maxTime"],completeAction,actionMap);
-		});
-        */
         this.#executeInputs.forEach(function(input, index)
         {
             let parentEffect = this.#effects.find(function(effect)
@@ -54,7 +40,24 @@ class Inventory
                 return effect.effect_name === input.effect_name;
             });
 
-            let HTMLString = "<button id='" + input["effect_name"] + "_" + index + "' class='modalButton'>" + this.#parseLabel(parentEffect, input["label"]) + "</button>";
+            let parsedLabel = this.#parseLabel(parentEffect, input["label"]);
+            let conditionCheck = true;
+
+            if(Object.keys(input).includes("condition"))
+            {
+                let checkResults = this.#checkCondition(input.condition);
+                if(typeof checkResults === "string")
+                {
+                    conditionCheck = false;
+                    parsedLabel = checkResults;
+                }
+                else
+                {
+                    conditionCheck = checkResults;
+                }
+            }
+
+            let HTMLString = "<button id='" + input["effect_name"] + "_" + index + "' class='modalButton'" + (conditionCheck === false ? " disabled" : "") + ">" + parsedLabel + "</button>";
 
             let onPointerUpFunction = function(inputArg, inputIndex, timer=null, startTimerArgs=null)
             {
@@ -279,7 +282,7 @@ class Inventory
                 // payload:roles [Array]
                 // payload:effects [Array]
                 // payload:functions:XXX [Array Key > Value]
-                // terminal:effects:remote_enabled [Array Key > Value]
+                // terminal:effects [Array]
             // operation
                 // contains [Arrays]
                 // not_contains [Arrays]
@@ -296,153 +299,176 @@ class Inventory
                 // String
 
         let returnValue = 0;
+        let continueState = true;
 
         effectConditions.forEach(function(condition)
         {
-            let leftType = null;
-            let left = null;
-
-            switch(condition["left"].split(":")[0])
+            if(!continueState)
             {
-                case("payload"):
-                {
-                    switch(condition["left"].split(":")[1])
-                    {
-                        case("roles"):
-                        {
-                            leftType = "array";
-                            left = payload.getRoles();
-                            break;
-                        }
-                        case("effects"):
-                        {
-                            leftType = "array";
-                            left = payload.getStatusEffects();
-                            break;
-                        }
-                        case("functions"):
-                        {
-                            leftType = "value";
-                            left = payload.getFunction(condition["left"].split(":")[2]);
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case("terminal"):
-                {
-                    switch(condition["left"].split(":")[1])
-                    {
-                        case("effects"):
-                        {
-                            leftType = "value";
-                            left = session.getStatusEffects(condition["left"].split(":")[2]);
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case("item"):
-                {
-                    switch(condition["left"].split(":")[1])
-                    {
-                        case("instance"):
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            let rightType = typeof condition["right"];
-            let right = condition["right"];
-
-            let operation = condition["operation"];
-
-            let pass = false;
-
-            switch(leftType)
-            {
-                case("array"):
-                {
-                    switch(operation)
-                    {
-                        case("contains"):
-                        {
-                            pass = left.includes(right);
-                            break;
-                        }
-                        case("not_contains"):
-                        {
-                            pass = !(left.includes(right));
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case("value"):
-                {
-                    switch(operation)
-                    {
-                        case("greater_than"):
-                        {
-                            pass = left > right;
-                            break;
-                        }
-                        case("greater_than_equals"):
-                        {
-                            pass = left >= right;
-                            break;
-                        }
-                        case("equals"):
-                        {
-                            pass = left === right;
-                            break;
-                        }
-                        case("not_equals"):
-                        {
-                            pass = left !== right;
-                            break;
-                        }
-                        case("lesser_than_equals"):
-                        {
-                            pass = left <= right;
-                            break;
-                        }
-                        case("lesser_than"):
-                        {
-                            pass = left < right;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-
-            if(pass)
-            {
-                if(Object.keys(condition).includes("effect"))
-                {
-                    returnValue = returnValue + condition["effect"];
-                }
-                
-                continue;
+                return;
             }
             else
             {
-                if(Object.keys(condition).includes("rejection_label"))
-                {
+                let leftType = null;
+                let left = null;
 
+                switch(condition["left"].split(":")[0])
+                {
+                    case("payload"):
+                    {
+                        switch(condition["left"].split(":")[1])
+                        {
+                            case("roles"):
+                            {
+                                leftType = "array";
+                                left = payload.getRoles();
+                                break;
+                            }
+                            case("effects"):
+                            {
+                                leftType = "array";
+                                left = payload.getStatusEffects();
+                                break;
+                            }
+                            case("functions"):
+                            {
+                                leftType = "value";
+                                left = payload.getFunction(condition["left"].split(":")[2]);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("terminal"):
+                    {
+                        switch(condition["left"].split(":")[1])
+                        {
+                            case("effects"):
+                            {
+                                leftType = "array";
+                                left = session.getStatusEffects();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("item"):
+                    {
+                        switch(condition["left"].split(":")[1])
+                        {
+                            case("instance"):
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                let rightType = typeof condition["right"];
+                let right = condition["right"];
+
+                let operation = condition["operation"];
+
+                let pass = false;
+
+                switch(leftType)
+                {
+                    case("array"):
+                    {
+                        switch(operation)
+                        {
+                            case("contains"):
+                            {
+                                pass = left.includes(right);
+                                break;
+                            }
+                            case("not_contains"):
+                            {
+                                pass = !(left.includes(right));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("value"):
+                    {
+                        switch(operation)
+                        {
+                            case("greater_than"):
+                            {
+                                pass = left > right;
+                                break;
+                            }
+                            case("greater_than_equals"):
+                            {
+                                pass = left >= right;
+                                break;
+                            }
+                            case("equals"):
+                            {
+                                pass = left === right;
+                                break;
+                            }
+                            case("not_equals"):
+                            {
+                                pass = left !== right;
+                                break;
+                            }
+                            case("lesser_than_equals"):
+                            {
+                                pass = left <= right;
+                                break;
+                            }
+                            case("lesser_than"):
+                            {
+                                pass = left < right;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                if(pass)
+                {
+                    if(Object.keys(condition).includes("effect"))
+                    {
+                        returnValue = returnValue + condition["effect"];
+                        continueState = true;
+                    }
+                    else
+                    {
+                        returnValue = pass;
+                        continueState = true;
+                    }
+                }
+                else
+                {
+                    if(Object.keys(condition).includes("rejection_label"))
+                    {
+                        returnValue = condition["rejection_label"];
+                        continueState = false;
+                    }
+                    else if(Object.keys(condition).includes("effect"))
+                    {
+                        //effect not added to returnValue
+                        continueState = true;
+                    }
+                    else
+                    {
+                        returnValue = pass;
+                        continueState = false;
+                    }
                 }
             }
         });
+
+        return returnValue;
     }
 
     #parseLabel(parentEffect, labelString)
     {
         let parseMatches = (labelString.match(/{.*?}/g) ?? []);
-
-        console.log(parentEffect);
 
         parseMatches.forEach(function(match)
         {
@@ -590,19 +616,19 @@ class Inventory
 
     }
 
-    #activateEffect(parentEffect, effectDetails, activate=true)
+    #activateEffect(parentEffect, activationDetails, activate=true)
     {
         let amount = null;
 
-        if(Object.keys(effectDetails).includes("amount"))
+        if(Object.keys(activationDetails).includes("amount"))
         {
-            if(Object.keys(effectDetails).includes("stack"))
+            if(Object.keys(activationDetails).includes("stack"))
             {
-                amount = effectDetails["stack"];
+                amount = activationDetails["stack"];
             }
             else
             {
-                let amountPath = effectDetails.amount.split(":");
+                let amountPath = activationDetails.amount.split(":");
                 amount = parentEffect.values.find(function(value)
                 {
                     return value.name === amountPath[1];
@@ -610,31 +636,31 @@ class Inventory
             }
         }
 
-        if(Object.keys(effectDetails).includes("icon"))
+        if(Object.keys(activationDetails).includes("icon"))
         {
             if(activate)
             {
-                this.#displayActivationIcon(parentEffect, effectDetails.icon);
+                this.#displayActivationIcon(parentEffect, activationDetails.icon);
             }
             else
             {
-                this.#removeActivationIcon(parentEffect, effectDetails.icon);
+                this.#removeActivationIcon(parentEffect, activationDetails.icon);
             }
         }
 
-        if(Object.keys(effectDetails).includes("label"))
+        if(Object.keys(activationDetails).includes("label"))
         {
             if(activate)
             {
-                this.#displayActivationLabel(parentEffect, effectDetails.label);
+                this.#displayActivationLabel(parentEffect, activationDetails.label);
             }
             else
             {
-                this.#removeActivationLabel(parentEffect, effectDetails.label);
+                this.#removeActivationLabel(parentEffect, activationDetails.label);
             }
         }
 
-        switch(effectDetails.type)
+        switch(activationDetails.type)
         {
             case("plus_tags"):
             {
@@ -653,11 +679,11 @@ class Inventory
             {
                 if(activate)
                 {
-                    payload.plusFunction(effectDetails.type, amount);
+                    payload.plusFunction(activationDetails.type, amount);
                 }
                 else
                 {
-                    payload.minusFunction(effectDetails.type, amount);
+                    payload.minusFunction(activationDetails.type, amount);
                 }
                 break;
             }
@@ -683,6 +709,61 @@ class Inventory
                 {
                     payload.setActionTime(parentEffect.effect_name, amount * -1);
                 }
+                break;
+            }
+            case("skip_timer"):
+            {
+                // Handled by ConfirmInputs
+                break;
+            }
+            case("complete_timer"):
+            {
+                // Handled by ExecuteInputs
+                break;
+            }
+            case("terminal_effect"):
+            {
+                if(activate)
+                {
+                    session.addStatusEffect(activationDetails.name);
+                }
+                else
+                {
+                    session.removeStatusEffect(activationDetails.name);
+                }
+                break;
+            }
+            case("payload_effect"):
+            {
+                if(activate)
+                {
+                    payload.addStatusEffect(activationDetails.name);
+                }
+                else
+                {
+                    payload.removeStatusEffect(activationDetails.name);
+                }
+                break;
+            }
+            case("action_cost"):
+            {
+                /*
+                    {
+                        "type": "action_cost",
+                        "amount": "values:action_cost:amount",
+                        "conditional": "values:action_type:value",
+                        "icon": "spirte.png"
+                    }
+                //////////////////////////////////////////////////
+                    {
+						"type": "action_cost",
+						"amount": "values:action_cost:amount"
+					}
+                */
+                break;
+            }
+            case("pop-up"):
+            {
                 break;
             }
         }
@@ -798,32 +879,14 @@ class Inventory
                         {
                             case("inventory"):
                             {
-                                /*
-                                    effectString += "<span class='itemActionRow'>" +
-                                                        "<span class='itemMarks'>";
-
-                                    for(let i = 0; i < effect.uses; i++)
-                                    {
-                                        effectString += "<img src='/resources/images/actions/itemfilled.png' />";
-                                    }
-
-                                    for(let j = 0; j < remCharges; j++)
-                                    {
-                                        effectString += "<img src='/resources/images/actions/itemopen.png' />";
-                                    }
-
-                                    effectString += "<span>per " + (effect.per_type === "sim" ? "Sim" : "Scene") + "</span>" +
-                                                "</span>" +
-                                                "<button class='deckButton' data-effect='" + effect.abbr + "' data-plus='" + plusTags + "' onclick='takeAction(this)' " + (remCharges === 0 ? "disabled" : "") + ">+" + plusTags + " Tag" + (plusTags === 1 ? "" : "s") + "</button>" +
-                                            "</span>"
-                                */
-                                let buttonHTML = "<span class='itemActionRow'>" +
-                                                        "<span class='itemMarks'>";
+                                let buttonHTML = "<span class='itemActionRow'>";
 
                                 let remCharges = 100;
 
                                 if(mainEffect["charges"] !== null)
                                 {
+                                    buttonHTML += "<span class='itemMarks'>";
+
                                     for(let i = 0; i < mainEffect["uses"]; i++)
                                     {
                                         buttonHTML += "<img src='/resources/images/actions/itemfilled.png' />";
@@ -839,7 +902,24 @@ class Inventory
                                     remCharges = mainEffect["charges"] - mainEffect["uses"];
                                 }
 
-                                buttonHTML += "<button id='" + mainEffect.effect_name + "' class='sideItemButton' onclick='useItem(this," + index + ")' " + (remCharges <= 0 ? "disabled" : "") + ">" + this.#parseLabel(mainEffect, inputEntry["label"]) + "</button>" +
+                                let parsedLabel = this.#parseLabel(mainEffect, inputEntry["label"]);
+                                let conditionCheck = true;
+
+                                if(Object.keys(inputEntry).includes("condition"))
+                                {
+                                    let checkResults = this.#checkCondition(inputEntry.condition);
+                                    if(typeof checkResults === "string")
+                                    {
+                                        conditionCheck = false;
+                                        parsedLabel = checkResults;
+                                    }
+                                    else
+                                    {
+                                        conditionCheck = checkResults;
+                                    }
+                                }
+
+                                buttonHTML += "<button id='" + mainEffect.effect_name + "' class='itemButton' onclick='useItem(this," + index + ")'" + (((remCharges <= 0) || (conditionCheck === false)) ? " disabled" : "") + ">" + parsedLabel + "</button>" +
                                             "</span>";
 
                                 $(".itemItem > .itemActions[data-effect*='!" + mainEffect["effect_name"] + ";']").append(buttonHTML);
@@ -892,7 +972,7 @@ class Inventory
             targetEffect: targetEffect,
             targetInput: targetInput,
             targetID: targetEffect["effect_name"],
-            action: "item",
+            action: targetEffect["effect_name"],
             actionType: "item"
         };
 
@@ -930,6 +1010,7 @@ class Inventory
             case("skip"):
             {
                 // skip the execute window entirely
+                actionModal.skipExecutePage(actionMap, true);
                 break;
             }
             case("static"):
@@ -950,6 +1031,91 @@ class Inventory
         }
 
         actionModal.showExecutePage(actionMap, executeMap, true);
+    }
+
+    completeItem(actionMap)
+    {
+        closeModal("executed");
+
+        $("#load").addClass("hidden");
+
+        //actionMap:
+            // targetEffect: targetEffect,
+            // targetInput: targetInput,
+            // targetID: targetEffect["effect_name"],
+            // action: targetEffect["effect_name"],
+            // actionType: "item"
+
+        // Update charges on item in inventory
+        // >> itemMarks under id=effect_name...
+        /* $(".deckButton[data-effect='" + actionMap["targetID"] + "']").parent().find(".itemMarks img:nth-child(-n + " + actionMap["usedCharges"] + ")").attr("src","/resources/images/actions/itemfilled.png");
+        */
+        // >> if no more charges, disable button
+        // #activateEffect()
+        // useItems.php
+        // >> userID
+        // >> effects: []
+        // >> termID
+
+        let parentEffect = this.#effects.find(function(potentialEffect)
+        {
+            return potentialEffect.effect_name === actionMap["targetEffect"].effect_name;
+        });
+        let targetInput = actionMap["targetInput"];
+
+        let parsedLabel = this.#parseLabel(parentEffect, targetInput["label"]);
+        let conditionCheck = true;
+
+        if(Object.keys(targetInput).includes("condition"))
+        {
+            let checkResults = this.#checkCondition(targetInput.condition);
+            if(typeof checkResults === "string")
+            {
+                conditionCheck = false;
+                parsedLabel = checkResults;
+            }
+            else
+            {
+                conditionCheck = checkResults;
+            }
+        }
+
+        let remCharges = 100;
+
+        if(Object.keys(parentEffect).includes("charges"))
+        {
+            parentEffect["uses"]++;
+
+            $("#" + parentEffect["effect_name"]).parent().find(".itemMarks img:nth-child(-n + " + parentEffect["uses"] + ")").attr("src","/resources/images/actions/itemfilled.png");
+
+            remCharges = parentEffect["charges"] - parentEffect["uses"];
+        }
+
+        if((remCharges <= 0) || (conditionCheck === false))
+        {
+            $("#" + parentEffect["effect_name"]).attr("disabled", true);
+            $("#" + parentEffect["effect_name"]).prop("disabled", true);
+        }
+        $("#" + parentEffect["effect_name"]).html(parsedLabel);
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/useItems.php",
+            data:
+            {
+                userID: payload.getUserID(),
+                effects: parentEffect["effect_name"],
+                termID: session.getTerminalID()
+            }
+        });
+
+        console.log(targetInput);
+
+        targetInput["activation"].forEach(function(activation)
+        {
+            this.#activateEffect(parentEffect, activation, true);
+        }, this.#globalThis);
     }
 
     applyTermLoginEffects()

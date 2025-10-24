@@ -12,6 +12,7 @@ class Payload
     #roles;
     #inventory;
 
+    #statusEffects;
     #cyberdecks;
     #timeMods;
     #costMods;
@@ -22,6 +23,7 @@ class Payload
 
         this.#payloadSet = false;
         this.#extraFuncs = [];
+        this.#statusEffects = [];
         this.#cyberdecks = [];
         this.#timeMods = [];
         this.#costMods = [];
@@ -82,7 +84,7 @@ class Payload
 
     getFunction(funcName)
     {
-        let allFuncs = JSON.parse(JSON.stringify(this.#functions)); //DEEP COPY SO AS TO NOT AFFECT ORIGINAL #functions ARRAY
+        let allFuncs = structuredClone(this.#functions); //DEEP COPY SO AS TO NOT AFFECT ORIGINAL #functions ARRAY
 
         this.#extraFuncs.forEach(function(xFunc)
         {
@@ -315,6 +317,24 @@ class Payload
         }
     }
 
+    addStatusEffect(effect_name)
+    {
+        this.#statusEffects.push(effect_name);
+    }
+
+    removeStatusEffect(effect_name)
+    {
+        this.#statusEffects.splice(this.#statusEffects.findIndex(function(effect)
+        {
+            return effect === effect_name;
+        }), 1);
+    }
+
+    getStatusEffects()
+    {
+        return this.#statusEffects;
+    }
+
     setActionTime(timeSource, timeAmount)
     {
         this.#timeMods.push(
@@ -374,6 +394,11 @@ class Payload
     executeItem(actionMap)
     {
         this.#inventory.executeItem(actionMap);
+    }
+
+    completeItem(actionMap)
+    {
+        this.#inventory.completeItem(actionMap);
     }
 
     activateItemEffect(effectName, inputIndex)
