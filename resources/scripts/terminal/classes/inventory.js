@@ -737,7 +737,7 @@ class Inventory
             {
                 if(activate)
                 {
-                    payload.addStatusEffect(activationDetails.name);
+                    payload.addStatusEffect(activationDetails.name, parentEffect.perType);
                 }
                 else
                 {

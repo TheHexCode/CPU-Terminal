@@ -132,19 +132,19 @@ else
     */
 
     $itemUseQuery = "   SELECT DISTINCT effect,
-                                        ( SELECT COUNT(*)
+                                        ( SELECT COUNT(effect)
                                         WHERE user_id = :userID
                                             AND simCode = :simCode
                                         ) AS simUses,
-                                        ( SELECT COUNT(*)
+                                        ( SELECT COUNT(effect)
                                         WHERE user_id = :userID
                                             AND jobCode = :jobCode
                                         ) AS jobUses,
-                                        ( SELECT COUNT(*)
+                                        ( SELECT COUNT(effect)
                                         WHERE user_id = :userID
                                             AND terminal_id = :termID
                                         ) AS termUses,
-                                        ( SELECT COUNT(*)
+                                        ( SELECT COUNT(effect)
                                         WHERE user_id = :userID
                                         ) AS itemUses
                         FROM {$dbName}.item_uses

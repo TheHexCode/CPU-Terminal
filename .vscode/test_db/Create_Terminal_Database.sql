@@ -198,6 +198,29 @@ CREATE TABLE sim_user_actions (
         ON DELETE CASCADE
 );
 
+CREATE TABLE sim_session_effects (
+    terminal_id INT         NOT NULL,
+    effect_name VARCHAR(50) NOT NULL,
+    CONSTRAINT session_effect
+        PRIMARY KEY (terminal_id, effect_name),
+    FOREIGN KEY (terminal_id)
+        REFERENCES sim_terminals(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE sim_payload_effects (
+    user_id     INT         NOT NULL,
+    effect_name VARCHAR(50) NOT NULL,
+    duration    VARCHAR(50) NOT NULL,
+    CONSTRAINT payload_effect
+        PRIMARY KEY (user_id, effect_name, duration),
+    FOREIGN KEY (user_id)
+        REFERENCES users(lm_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 ####################################################################################################
 ###
 ###     CPU >> LARPMANAGER

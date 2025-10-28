@@ -432,7 +432,7 @@
 				[
 					{
 						"type": "payload_effect",
-						"name": "digi_use"
+						"name": "pet_use"
 					},
 					{
 						"type": "complete_timer",

@@ -317,9 +317,23 @@ class Payload
         }
     }
 
-    addStatusEffect(effect_name)
+    addStatusEffect(effect_name, effect_duration)
     {
         this.#statusEffects.push(effect_name);
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/toggleEffect.php",
+            data:
+            {
+                targetType: "user",
+                targetID: this.getUserID(),
+                effect: effect_name,
+                duration: effect_duration,
+                toggle: true
+            }
+        });
     }
 
     removeStatusEffect(effect_name)
@@ -328,6 +342,19 @@ class Payload
         {
             return effect === effect_name;
         }), 1);
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/toggleEffect.php",
+            data:
+            {
+                targetType: "user",
+                targetID: this.getUserID(),
+                effect: effect_name,
+                toggle: false
+            }
+        });
     }
 
     getStatusEffects()

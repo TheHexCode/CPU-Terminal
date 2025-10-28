@@ -229,6 +229,19 @@ class Session
     addStatusEffect(effect_name)
     {
         this.#statusEffects.push(effect_name);
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/toggleEffect.php",
+            data:
+            {
+                targetType: "terminal",
+                targetID: this.getTerminalID(),
+                effect: effect_name,
+                toggle: true
+            }
+        });
     }
 
     removeStatusEffect(effect_name)
@@ -237,6 +250,19 @@ class Session
         {
             return effect === effect_name;
         }), 1);
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/toggleEffect.php",
+            data:
+            {
+                targetType: "terminal",
+                targetID: this.getTerminalID(),
+                effect: effect_name,
+                toggle: false
+            }
+        });
     }
 
     getStatusEffects()
