@@ -26,7 +26,78 @@ class Inventory
 
     getConfirmInputs()
     {
-        return this.#confirmInputs;
+        let returnArray = [];
+
+        this.#confirmInputs.forEach(function(input, index)
+        {
+            let parentEffect = this.#effects.find(function(effect)
+            {
+                return effect.effect_name === input.effect_name;
+            });
+
+            let parsedLabel = this.#parseLabel(parentEffect, input["label"]);
+            let conditionCheck = true;
+
+            if(Object.keys(input).includes("condition"))
+            {
+                let checkResults = this.#checkCondition(input.condition);
+                if(typeof checkResults === "string")
+                {
+                    conditionCheck = false;
+                    parsedLabel = checkResults;
+                }
+                else
+                {
+                    conditionCheck = checkResults;
+                }
+            }
+
+            /*
+                "<span class='copycatBox'>" +
+                    "<input id='copycatActivate' type='checkbox'/>" +
+                    "<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
+                "</span>"
+            */
+
+            let HTMLString = "<button id='" + input["effect_name"] + "_" + index + "' class='modalButton'" + (conditionCheck === false ? " disabled" : "") + ">" + parsedLabel + "</button>";
+
+            let onPointerUpFunction = function(inputArg, inputIndex, timer=null, startTimerArgs=null)
+            {
+                inputArg["activation"].forEach(function(activation, activationIndex)
+                {
+                    switch(activation["type"])
+                    {
+                        case("complete_timer"):
+                        {
+                            $("#" + inputArg["itemID"]).remove();
+
+                            if(activation["animation"] !== null)
+                            {
+                                //!! DIGIPET ANIMATION
+                            }
+
+                            $("#executeButton").prop("disabled", true);
+
+                            timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
+                            break;
+                        }
+                        default:
+                        {
+                            payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                            break;
+                        }
+                    }
+                });
+            };
+
+            returnArray.push({
+                "buttonHTML": HTMLString,
+                "itemID": input["effect_name"] + "_" + index,
+                "function": onPointerUpFunction,
+                "functionInput": structuredClone(input),
+                "functionIndex": index
+            });
+        });
     }
 
     getExecuteInputs()
@@ -562,6 +633,11 @@ class Inventory
                     result = tens(result);
                     break;
                 }
+                case("title"):
+                {
+                    result = result.charAt(0).toUpperCase() + result.slice(1);
+                    break;
+                }
             }
 
             labelString = labelString.replace(match, result);
@@ -737,7 +813,7 @@ class Inventory
             {
                 if(activate)
                 {
-                    payload.addStatusEffect(activationDetails.name, parentEffect.perType);
+                    payload.addStatusEffect(activationDetails.name, parentEffect.perType, session.getTerminalID());
                 }
                 else
                 {

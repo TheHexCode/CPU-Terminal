@@ -6,6 +6,7 @@ $targetType = $_POST["targetType"];
 $targetID = $_POST["targetID"];
 $effect = $_POST["effect"];
 $duration = $_POST["duration"] ?? null;
+$termID = $_POST["termID"] ?? null;
 $toggle = $_POST["toggle"];
 
 
@@ -40,12 +41,42 @@ switch($targetType)
     }
     case("user"):
     {
+        $codeQuery = "SELECT * FROM {$dbName}.sim_active_codes";
+        $codeStatement = $pdo->prepare($codeQuery);
+        $codeStatement->execute();
+        $activeCodes = $codeStatement->fetch(PDO::FETCH_ASSOC);
+
+        switch($duration)
+        {
+            case("sim"):
+            {
+                $durationCode = $activeCodes["simCode"];
+                break;
+            }
+            case("scene"):
+            {
+                $durationCode = $activeCodes["jobCode"];
+                break;
+            }
+            case("term"):
+            {
+                $durationCode = $termID;
+                break;
+            }
+            case("item"):
+            default:
+            {
+                $durationCode = null;
+                break;
+            }
+        }
+
         $effectQuery = str_replace("!TABLE_NAME!","sim_payload_effects",$effectQuery);
         $effectQuery = str_replace("!TARGET!", "user", $effectQuery);
         $effectQuery = str_replace("!DURATION_APPEND!", ", duration", $effectQuery);
         $effectQuery = str_replace("!TARGET_ID!", $targetID, $effectQuery);
         $effectQuery = str_replace("!EFFECT_NAME!", $effect, $effectQuery);
-        $effectQuery = str_replace("!EFFECT_DURATION!", ", '$duration'", $effectQuery);
+        $effectQuery = str_replace("!EFFECT_DURATION!", ", '$durationCode'", $effectQuery);
         break;
     }
 }

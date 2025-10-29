@@ -161,6 +161,20 @@ else
                                         ':termID' => $termID]);
     $itemUseResponse = $itemUseStatement->fetchAll(PDO::FETCH_ASSOC);
 
+    $effectQuery = "SELECT DISTINCT effect_name
+                    FROM sim_payload_effects
+                    WHERE user_id = :userID
+                       AND ( duration = :simCode
+                          OR duration = :jobCode
+                          OR duration = :termID )";
+
+    $effectStatement = $pdo->prepare($effectQuery);
+    $effectStatement->execute([':userID' => $userResponse["lm_id"],
+                                       ':simCode' => $activeCodes["simCode"],
+                                       ':jobCode' => $activeCodes["jobCode"],
+                                       ':termID' => $termID]);
+    $effectArray = $effectStatement->fetchAll(PDO::FETCH_COLUMN);
+
 /*
     $itemUseQuery = "   SELECT SUM(item_effects.charges - user_items.count)
                         FROM user_items
@@ -381,6 +395,7 @@ else
                                     "roles" => $roleResponse,
                                     "items" => $itemResponse,
                                     "itemUses" => $itemUseResponse,
+                                    "effects" => $effectArray,
                                     "hasAccessed" => $hasAccessed,
                                     "prevActions" => $actionResponse,
                                     "puzzActions" => $puzzleResponse,

@@ -35,6 +35,7 @@ class Payload
         this.#handle = payload.name;
         this.#functions = payload.functions;
         this.#roles = payload.roles;
+        this.#statusEffects = payload.effects;
 
         this.#inventory.establishInventory(payload.items, payload.itemUses);
         this.#inventory.setupInputs();
@@ -247,7 +248,7 @@ class Payload
 
                 if(asIndex !== -1)
                 {
-                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(plus_amount);
+                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(plus_amount);
                 }
                 else
                 {
@@ -317,7 +318,7 @@ class Payload
         }
     }
 
-    addStatusEffect(effect_name, effect_duration)
+    addStatusEffect(effect_name, effect_duration, terminal_id)
     {
         this.#statusEffects.push(effect_name);
 
@@ -331,6 +332,7 @@ class Payload
                 targetID: this.getUserID(),
                 effect: effect_name,
                 duration: effect_duration,
+                termID: terminal_id,
                 toggle: true
             }
         });

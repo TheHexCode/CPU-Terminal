@@ -32,7 +32,7 @@
 				"screen": "confirm",
 				"type": "checkbox",
 				"header": "COPYCAT: ",
-				"label": "want to use?",
+				"label": "({charges}/{perType!title}) Activate {displayName} for this action to complete it immediately?",
 				"activation":
 				[
 					{
@@ -52,7 +52,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -112,7 +112,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -302,7 +302,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -412,7 +412,7 @@
 			{
 				"type": "button",
 				"screen": "execute",
-				"label": "Activate DigiPet?<br/>({charges}/{perType})",
+				"label": "Activate DigiPet?<br/>({charges}/{perType!title})",
 				"condition":
 				[
 					{
@@ -481,7 +481,7 @@
 				"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
 				"confirm":
 				{
-					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+					"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 					"button": "Confirm",
 					"timer":
 					{
