@@ -1996,6 +1996,7 @@ function closeModal(event)
 	else if((event.type !== "keyup") || (event.key === "Escape"))
 	{
 		actionModal.clearModal();
+        payload.removeConfirmStatusEffects();
 
 		Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	}

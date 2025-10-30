@@ -1442,14 +1442,14 @@ footer
 	border-image-slice: 30;
 }
 
-.copycatBox
+.confirmBox
 {
 	display: flex;
 	flex-direction: row;
 	column-gap: 0.5rem;
 }
 
-#copycatActivate
+.confirmInput
 {
 	align-self: flex-start;
 }

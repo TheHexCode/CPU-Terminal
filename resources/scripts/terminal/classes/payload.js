@@ -364,6 +364,14 @@ class Payload
         return this.#statusEffects;
     }
 
+    removeConfirmStatusEffects()
+    {
+        this.#statusEffects = this.#statusEffects.filter(function(effect)
+        {
+            return !(effect.startsWith("confirm_"));
+        });
+    }
+
     setActionTime(timeSource, timeAmount)
     {
         this.#timeMods.push(

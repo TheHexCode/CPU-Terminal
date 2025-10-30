@@ -135,6 +135,26 @@ class Modal
             });
         }, this);
 
+        if(!itemExecute)
+        {
+            let itemInputs = payload.getInventoryConfirmInputs();
+
+            itemInputs.forEach(function(itemInput)
+            {
+                $(this.#bodyText).append(itemInput["buttonHTML"]);
+
+                $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+                {
+                    itemInput["function"](
+                        event,
+                        itemInput["functionInput"],
+                        itemInput["functionIndex"]
+                    );
+                });
+
+            }, this);
+        }
+
         this.#displayModal();
     }
 

@@ -59,26 +59,27 @@ class Inventory
                 "</span>"
             */
 
-            let HTMLString = "<button id='" + input["effect_name"] + "_" + index + "' class='modalButton'" + (conditionCheck === false ? " disabled" : "") + ">" + parsedLabel + "</button>";
+            let HTMLString =    "<span class='confirmBox" + (conditionCheck === false ? " dimmed" : "") + " >" +
+                                    "<input id='" + input["effect_name"] + "_" + index + "' type='confirmInput'" + (conditionCheck === false ? " disabled" : "") + " />" +
+                                    "<span class='confirmLabel'>" + parsedLabel + "</span>" +
+                                "</span>";
 
-            let onPointerUpFunction = function(inputArg, inputIndex, timer=null, startTimerArgs=null)
+            let onPointerUpFunction = function(eventArg, inputArg, inputIndex)
             {
                 inputArg["activation"].forEach(function(activation, activationIndex)
                 {
                     switch(activation["type"])
                     {
-                        case("complete_timer"):
+                        case("skip_timer"):
                         {
-                            $("#" + inputArg["itemID"]).remove();
-
-                            if(activation["animation"] !== null)
+                            if($(eventArg.target).prop("checked"))
                             {
-                                //!! DIGIPET ANIMATION
+                                payload.addStatusEffect("confirm_skip_timer_" + inputArg["effect_name"]);
                             }
-
-                            $("#executeButton").prop("disabled", true);
-
-                            timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
+                            else
+                            {
+                                payload.removeStatusEffect("confirm_skip_timer_" + inputArg["effect_name"]);
+                            }
                             break;
                         }
                         default:
@@ -91,13 +92,15 @@ class Inventory
             };
 
             returnArray.push({
-                "buttonHTML": HTMLString,
+                "inputHTML": HTMLString,
                 "itemID": input["effect_name"] + "_" + index,
                 "function": onPointerUpFunction,
                 "functionInput": structuredClone(input),
                 "functionIndex": index
             });
-        });
+        }, this.#globalThis);
+
+        return returnArray;
     }
 
     getExecuteInputs()
@@ -138,7 +141,9 @@ class Inventory
                     {
                         case("complete_timer"):
                         {
+                            console.log($("#" + inputArg["itemID"]));
                             $("#" + inputArg["itemID"]).remove();
+                            console.log($("#" + inputArg["itemID"]));
 
                             if(activation["animation"] !== null)
                             {
@@ -874,6 +879,7 @@ class Inventory
                     {
                         // checkbox
                             // screen:
+                                // crack
                                 // confirm
                             // label: string
                             // activation
@@ -905,6 +911,8 @@ class Inventory
                             }
                             case("confirm"):
                             {
+                                inputEntry["effect_name"] = mainEffect["effect_name"];
+
                                 this.#confirmInputs.push(inputEntry);
                                 break;
                             }

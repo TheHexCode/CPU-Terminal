@@ -38,6 +38,8 @@
   > Deputy's Hat
     - Need clarification on rules
   > Buttons
+    - Closing after using DigiPet still uses
+    - Add temp effects array to Payload?
 
 (Plus: &#x271A;)
 (Minus: &#x2501;)
