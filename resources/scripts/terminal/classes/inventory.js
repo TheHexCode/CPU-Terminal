@@ -74,17 +74,19 @@ class Inventory
                         {
                             if($(eventArg.target).prop("checked"))
                             {
-                                payload.addStatusEffect("confirm_skip_timer_" + inputArg["effect_name"]);
+                                console.log("checked");
+                                payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
                             }
                             else
                             {
-                                payload.removeStatusEffect("confirm_skip_timer_" + inputArg["effect_name"]);
+                                console.log("unchecked");
+                                payload.removeTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
                             }
                             break;
                         }
                         default:
                         {
-                            payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                            //payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
                             break;
                         }
                     }
@@ -141,9 +143,7 @@ class Inventory
                     {
                         case("complete_timer"):
                         {
-                            console.log($("#" + inputArg["itemID"]));
-                            $("#" + inputArg["itemID"]).remove();
-                            console.log($("#" + inputArg["itemID"]));
+                            $("#" + inputArg["effect_name"] + "_" + inputIndex).remove();
 
                             if(activation["animation"] !== null)
                             {
@@ -155,9 +155,13 @@ class Inventory
                             timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
                             break;
                         }
+                        case("payload_effect"):
+                        {
+                            payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                        }
                         default:
                         {
-                            payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                            //payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
                             break;
                         }
                     }
@@ -166,6 +170,7 @@ class Inventory
 
             returnArray.push({
                 "buttonHTML": HTMLString,
+                "buttonEnabled": conditionCheck,
                 "itemID": input["effect_name"] + "_" + index,
                 "function": onPointerUpFunction,
                 "functionInput": structuredClone(input),
@@ -610,6 +615,7 @@ class Inventory
                     break;
                 }
                 case("totalCharges"):
+                case("charges"):
                 {
                     result = parentEffect.charges;
                     break;
@@ -1039,7 +1045,7 @@ class Inventory
 
         targetEffect.input[target_index].activation.forEach(function(activation)
         {
-            this.#activateEffect(targetEffect, activation, activate);
+            this.#activateEffect(targetEffect, activation, activate, true);
         }, this.#globalThis);
     }
 
@@ -1229,7 +1235,7 @@ class Inventory
 
                 if(condition_passed && !disabled)
                 {
-                    this.#activateEffect(mainEffect, tlEntry);
+                    this.#activateEffect(mainEffect, tlEntry, true);
                 }
             }, this.#globalThis);
         }, this.#globalThis);
@@ -1258,5 +1264,34 @@ class Inventory
                 termID: session.getTerminalID()
             }
         });
+    }
+
+    submitEffects(effectArray)
+    {
+        effectArray.forEach(function(effect)
+        {
+            let parentEffect = this.#effects.find(function(potentialEffect)
+            {
+                return potentialEffect.effect_name === effect.effect_name;
+            });
+            let targetActivation = parentEffect["input"][effect.input_index]["activation"][effect.activation_index];
+
+            console.log(parentEffect);
+            console.log(targetActivation);
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/resources/scripts/terminal/db/useItems.php",
+                data:
+                {
+                    userID: payload.getUserID(),
+                    effects: parentEffect["effect_name"],
+                    termID: session.getTerminalID()
+                }
+            });
+
+            this.#activateEffect(parentEffect, targetActivation, true);
+        }, this.#globalThis);
     }
 }

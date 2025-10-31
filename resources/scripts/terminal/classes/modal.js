@@ -250,15 +250,18 @@ class Modal
             {
                 $(this.#buttonRow).append(itemInput["buttonHTML"]);
 
-                $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+                if(itemInput["buttonEnabled"])
                 {
-                    itemInput["function"](
-                        itemInput["functionInput"],
-                        itemInput["functionIndex"],
-                        event.data.this.#modalTimer,
-                        [executeMap["maxTime"], completeFunction, actionMap]
-                    );
-                });
+                    $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+                    {
+                        itemInput["function"](
+                            itemInput["functionInput"],
+                            itemInput["functionIndex"],
+                            event.data.this.#modalTimer,
+                            [executeMap["maxTime"], completeFunction, actionMap]
+                        );
+                    });
+                }
 
             }, this);
         }

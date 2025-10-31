@@ -13,6 +13,7 @@ class Payload
     #inventory;
 
     #statusEffects;
+    #tempEffects;
     #cyberdecks;
     #timeMods;
     #costMods;
@@ -24,6 +25,7 @@ class Payload
         this.#payloadSet = false;
         this.#extraFuncs = [];
         this.#statusEffects = [];
+        this.#tempEffects = [];
         this.#cyberdecks = [];
         this.#timeMods = [];
         this.#costMods = [];
@@ -318,6 +320,36 @@ class Payload
         }
     }
 
+    addTempEffect(effect_name, input_index, activation_index)
+    {
+        this.#tempEffects.push({
+            "effect_name": effect_name,
+            "input_index": input_index,
+            "activation_index": activation_index
+        });
+    }
+
+    removeTempEffect(effect_name, input_index, activation_index)
+    {
+        this.#tempEffects.splice(this.#tempEffects.findIndex(function(effect)
+        {
+            return ((effect.effect_name === effect_name) &&
+                    (effect.input_index === input_index) &&
+                    (effect.activation_index === activation_index));
+        }), 1);
+    }
+
+    submitTempEffects()
+    {
+        this.#inventory.submitEffects(this.#tempEffects);
+        this.#tempEffects = [];
+    }
+
+    clearTempEffects()
+    {
+        this.#tempEffects = [];
+    }
+
     addStatusEffect(effect_name, effect_duration, terminal_id)
     {
         this.#statusEffects.push(effect_name);
@@ -364,14 +396,6 @@ class Payload
         return this.#statusEffects;
     }
 
-    removeConfirmStatusEffects()
-    {
-        this.#statusEffects = this.#statusEffects.filter(function(effect)
-        {
-            return !(effect.startsWith("confirm_"));
-        });
-    }
-
     setActionTime(timeSource, timeAmount)
     {
         this.#timeMods.push(
@@ -398,11 +422,6 @@ class Payload
     applyTermLoginEffects()
     {
         this.#inventory.applyTermLoginEffects();
-    }
-
-    submitInitialEffects()
-    {
-        this.#inventory.submitInitialEffects();
     }
 
     addCyberdeck(deckSource)

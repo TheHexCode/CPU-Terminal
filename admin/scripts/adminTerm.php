@@ -67,13 +67,13 @@ class adminTerminal
         $puzzleStatement = $pdo->prepare($puzzleQuery);
         $puzzleStatement->execute([':termID' => $this->termID]);
         $this->puzzles = $puzzleStatement->fetchAll(PDO::FETCH_ASSOC);
-
+        /*
         $knowQuery = "  SELECT id, name
                         FROM {$dbName}.sr_knowledges";
         $knowStatement = $pdo->prepare($knowQuery);
         $knowStatement->execute();
         $this->knowledges = $knowStatement->fetchAll(PDO::FETCH_ASSOC);
-
+        */
         $slugQuery = "  SELECT slug
                         FROM {$dbName}.sim_terminals
                         WHERE jobCode=:jobCode";

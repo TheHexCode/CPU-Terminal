@@ -225,7 +225,7 @@ function injectUserPayload(userPayload)
 
 		//!! Bastion!
 
-		// FUNCTIONS / INVENTORY
+		// FUNCTIONS
 
 		///////////// ACTIVE
 
@@ -1996,7 +1996,11 @@ function closeModal(event)
 	else if((event.type !== "keyup") || (event.key === "Escape"))
 	{
 		actionModal.clearModal();
-        payload.removeConfirmStatusEffects();
+
+		if(event !== "executed")
+		{
+			payload.clearTempEffects();
+		}
 
 		Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	}
@@ -2112,12 +2116,13 @@ function completeAction(actionMap)
 				session.setFunctionState("REPEAT",actionMap["targetID"],actionMap["action"].toLowerCase(),payload.getFunction("REPEAT"));
 				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["action"]);
 			}
-
+			/*
 			if(payload.getItem("deck_jst")) //JOHNNY'S SPECIAL TOUCH
 			{
 				session.setFunctionState("TOUCHED",actionMap["targetID"],actionMap["action"].toLowerCase(),1);
 				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["action"]);
 			}
+			*/
 			break;
 		}
 		case("log"):
@@ -2240,6 +2245,8 @@ function completeAction(actionMap)
 	Gems.updateTagGems(Gems.STANDBY,session.getCurrentTags());
 	disableExpensiveButtons();
 
+	payload.submitTempEffects();
+
 	/*
 	if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))
 	{
@@ -2248,7 +2255,6 @@ function completeAction(actionMap)
 			session.makeActionCopyable(actionMap["action"]);
 		}
 	}
-	*/
 
 	if(Object.keys(actionMap).includes("digipet"))
 	{
@@ -2270,6 +2276,7 @@ function completeAction(actionMap)
 			$("#petStatus").attr("src","/resources/images/status/pet_sleep.png");
 		}
 	}
+	*/
 }
 
 function updateEntryCosts(reducer, entryPath, entryAction)
