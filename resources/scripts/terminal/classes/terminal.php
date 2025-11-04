@@ -6,6 +6,7 @@ class Terminal
     private $termID;
     private $termDisplayName;
     private $termAccessCost;
+    private $termOwner;
     private $termState;
     private $stateData;
     private $entries;
@@ -27,6 +28,7 @@ class Terminal
             $this->termID = $termResponse["id"];
             $this->termDisplayName = $termResponse["displayName"];
             $this->termAccessCost = $termResponse["access"];
+            $this->termOwner = $termResponse["owner_id"];
             $this->termState = $termResponse["state"];
             $this->stateData = $termResponse["stateData"];
             $this->entries = $termResponse["entries"];
@@ -363,7 +365,7 @@ class Terminal
                 }
                 $outIce = 0;
                 */
-                
+
                 $iceDiff = max(0, substr_count($prevEntry["path"] ?? "","-") - substr_count($entry["path"], "-"));
 
                 for($i = 0; $i < $iceDiff; $i++)
@@ -373,7 +375,7 @@ class Terminal
                 }
 
                 $prevEntry = $entry;
-                
+
 
                 $prefixIntro = ">> ";
 
@@ -652,6 +654,7 @@ class Terminal
         {
             $termInfo = array(
                 "termID" => $this->termID,
+                "termOwner" => $this->termOwner,
                 "termState" => $this->termState,
                 "stateData" => $this->stateData,
                 "entries" => $this->initialEntries,

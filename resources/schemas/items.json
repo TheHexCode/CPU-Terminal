@@ -89,14 +89,20 @@
 		[
 			{
 				"name": "corp_name",
+				"displayName": "CORP",
 				"options":
-				[
-					"Winton",
-					"Kruger"
-				]
+				{
+					"path": "db:cpu_orgs",
+					"value": "id",
+					"label": "name"
+				}
 			}
 		],
-		"tags": [],
+		"tags": [
+			{
+				"tag": "multiple"
+			}
+		],
 		"tiers":
 		[
 			{
@@ -469,7 +475,11 @@
 		"type": "utility",
 		"flavor": "",
 		"owner": "",
-		"instance": "sprite",
+		"instance": [
+			{
+				"name": "sprite"
+			}
+		],
 		"tags": [],
 		"tiers":
 		[
@@ -651,7 +661,11 @@
 		"type": "consumable",
 		"flavor": "",
 		"owner": "",
-		"tags": [],
+		"tags": [
+			{
+				"tag": "multiple"
+			}
+		],
 		"tiers":
 		[
 			{
@@ -718,6 +732,9 @@
 		"owner": "",
 		"tags":
 		[
+			{
+				"tag": "multiple"
+			},
 			{
 				"tag": "exhausting"
 			},
@@ -789,11 +806,67 @@
 		"type": "secret",
 		"flavor": "",
 		"owner": "",
-		"tags": [],
+		"tags": [
+			{
+				"tag": "multiple"
+			}
+		],
+		"instance":
+		[
+			{
+				"name": "corp_name",
+				"displayName": "CORP",
+				"options":
+				{
+					"path": "db:cpu_orgs",
+					"value": "id",
+					"label": "name"
+				}
+			}
+		],
 		"tiers":
 		[
 			{
 				"tier": 0,
+				"tierName": "Minor",
+				"effects":
+				[
+					{
+						"name": "digisec_secret",
+						"values":
+						[
+							{
+								"name": "time",
+								"amount": -10
+							}
+						],
+						"charges": 1,
+						"perType": "item"
+					}
+				]
+			},
+			{
+				"tier": 1,
+				"tierName": "Moderate",
+				"effects":
+				[
+					{
+						"name": "digisec_secret",
+						"values":
+						[
+							{
+								"name": "time",
+								"amount": -10
+							}
+						],
+						"charges": 1,
+						"perType": "item"
+					}
+				]
+			},
+			{
+				"tier": 2,
+				"tierName": "Major",
 				"effects":
 				[
 					{

@@ -139,11 +139,13 @@ class Modal
         {
             let itemInputs = payload.getInventoryConfirmInputs();
 
+            $(this.#bodyText).append("<hr/>");
+
             itemInputs.forEach(function(itemInput)
             {
-                $(this.#bodyText).append(itemInput["buttonHTML"]);
+                $(this.#bodyText).append(itemInput["inputHTML"]);
 
-                $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
+                $("#" + itemInput["itemID"]).on("change", {this: this}, function(event)
                 {
                     itemInput["function"](
                         event,
@@ -163,7 +165,7 @@ class Modal
         // ACTIONMAP:
         //  - nothing, just passes through to completeAction
         // EXECUTEMAP:
-        //  - petStage
+        //  X petStage
         //  - maxTime
         //  - headerText
 

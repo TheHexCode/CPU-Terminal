@@ -84,7 +84,7 @@
 				"condition":
 				[
 					{
-						"left": "item:instance",
+						"left": "item:instance:corp_name",
 						"operation": "equals",
 						"right": "terminal:owner"
 					}
@@ -637,7 +637,7 @@
 				"condition":
 				[
 					{
-						"left": "item:instance",
+						"left": "item:instance:corp_name",
 						"operation": "equals",
 						"right": "terminal:owner"
 					}

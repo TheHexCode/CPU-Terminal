@@ -2008,7 +2008,11 @@ function closeModal(event)
 
 function executeAction(actionMap, executeHeader)
 {
-	if((!$("#copycatActivate").prop("checked")) && (actionMap["actionType"] !== "item"))
+	if(payload.hasSkipTimer())
+	{
+		actionModal.skipExecutePage(actionMap);
+	}
+	else
 	{
 		let maxTime = payload.getActionTime();
 
@@ -2021,7 +2025,7 @@ function executeAction(actionMap, executeHeader)
 			Gems.updateTagGems(Gems.EXECUTE,session.getCurrentTags()-actionMap["actionCost"],session.getCurrentTags());
 		}
 
-		let petStage = null;
+		//let petStage = null;
 
 		/*
 		if(payload.getItem("digi_pet"))
@@ -2044,16 +2048,17 @@ function executeAction(actionMap, executeHeader)
 		let executeMap = {
 			headerText: executeHeader,
 			maxTime: maxTime,
-			petStage: petStage
+			//petStage: petStage
 		};
 
 		actionModal.showExecutePage(actionMap, executeMap);
 	}
+	/*
 	else //USING COPYCAT OR AN ITEM
 	{
 		if(actionMap["actionType"] === "item")
 		{
-			actionModal.skipExecutePage(actionMap);
+
 		}
 		else //COPYCAT
 		{
@@ -2074,6 +2079,7 @@ function executeAction(actionMap, executeHeader)
 			actionModal.skipExecutePage(actionMap);
 		}
 	}
+	*/
 }
 
 function completeAction(actionMap)

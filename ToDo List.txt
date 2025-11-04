@@ -29,7 +29,8 @@
 
 > INVENTORY ✓
   > MAKE VALIDATOR FOR ITEMS.JSON AND EFFECTS.JSON
-  > Copycat -- condition
+  > Copycat
+    - Unique condition
   > Corp Protocols
     - Display options
     - Selecting an option adds more instances of the item
@@ -37,9 +38,8 @@
     - Condition is checked
   > Deputy's Hat
     - Need clarification on rules
-  > Buttons
-    - Closing after using DigiPet still uses
-    - Add temp effects array to Payload?
+  > ADD OWNERSHIP TO TERM_EDIT
+  > PRE-HACKING PAGE
 
 (Plus: &#x271A;)
 (Minus: &#x2501;)

@@ -1,4 +1,4 @@
--- Active: 1746590270449@@REXv5@3306@dbiykpinec1m8s
+-- Active: 1745412174410@@127.0.0.1@3306@dbiykpinec1m8s
 
 USE dbiykpinec1m8s;
 
@@ -63,7 +63,23 @@ INSERT INTO ice_effects
             (12, '-30 CREDITS'),
             (13, '-50 CREDITS');
 
-INSERT INTO items
+INSERT INTO cpu_orgs
+            (name, discovered)
+    VALUES  ("CLEC", 1),
+            ("Debutantalus", 1),
+            ("Fuji Krupp Dynamics", 1),
+            ("Kruger", 1),
+            ("LAVI", 1),
+            ("Muny", 1),
+            ("Ra Energy Unlimited", 1),
+            ("ReMed", 1),
+            ("Nutrigen International", 1),
+            ("Winton Firearms", 1),
+            ("Moggers", 1),
+            ("Golden Triangle", 1),
+            ("Cybernet Matrix Media", 1);
+
+/* INSERT INTO items
             (abbr, name, tier, category, radio, enabled)
     VALUES  ('cmm_wid','CMM Widow',2,'arms',NULL, 1),
             ('cmm_coc','CMM Cocoon',2,'arms',NULL, 1),
@@ -87,9 +103,9 @@ INSERT INTO items
             ('impl_mags','Canopic Jar [Magsweep]',0,'impl',NULL, 0),
             ('shim_0','Shimmerstick',0,'cons',NULL, 1),
             ('shim_1','Shimmerstick',1,'cons',NULL, 1),
-            ('vigil','Vigil',NULL,'cons',NULL, 0);
+            ('vigil','Vigil',NULL,'cons',NULL, 0); */
 
-INSERT INTO item_effects
+/* INSERT INTO item_effects
             (abbr, use_loc, req_type, requirement, charges, per_type, notes)
     VALUES  ('cmm','init','function','Slip',1,'scene','+1 Tag'),
             ('copycat','confirm',NULL,NULL,1,'sim','Skip Action Timer'),
@@ -111,9 +127,9 @@ INSERT INTO item_effects
             ('impl_mags','init',NULL,NULL,1,'sim','Perform Brick Action / Skip Timer'),
             ('shim_0','before_after',NULL,NULL,10,'item','+1 Tag to Costs; +30s on All Actions'),
             ('shim_1','before_after',NULL,NULL,10,'item','+1 Tag to Costs; +15s on All Actions'),
-            ('vigil','init',NULL,NULL,1,'item',NULL);
+            ('vigil','init',NULL,NULL,1,'item',NULL); */
 
-INSERT INTO items_to_effects
+/* INSERT INTO items_to_effects
             (item_abbr, effect_abbr)
     VALUES  ('cmm_wid','cmm'),
             ('cmm_coc','cmm'),
@@ -136,7 +152,7 @@ INSERT INTO items_to_effects
             ('impl_mags','impl_mags'),
             ('shim_0','shim_0'),
             ('shim_1','shim_1'),
-            ('vigil','vigil');
+            ('vigil','vigil'); */
 
 ####################################################################################################
 ###

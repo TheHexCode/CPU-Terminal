@@ -115,6 +115,8 @@ class Timer
         {
             if((callargs["actionType"] === "entry") || (callargs["actionType"] === "ice"))
             {
+                var thisTimer = this;
+
                 results = $.getJSON(
                     "/resources/scripts/terminal/db/getEntryUpdate.php",
                     { id: callargs["targetID"], newState: callargs["buttonData"] }
@@ -123,10 +125,10 @@ class Timer
                 {
                     if(callargs["global"])
                     {
-                        this.#updateTerminal(callargs);
+                        thisTimer.#updateTerminal(callargs);
                     }
 
-                    this.#userActions(callargs);
+                    thisTimer.#userActions(callargs);
 
                     /*
                     if(callargs["actionType"] === "item")

@@ -2,8 +2,8 @@ UPDATE sim_active_codes
 	SET jobCode = 'ABC1234';
 
 INSERT INTO sim_terminals
-			(slug, jobCode, displayName, access, state, stateData, remoteEnabled)
-     VALUES ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL, 0);
+			(slug, jobCode, displayName, access, state, stateData, owner_id)
+     VALUES ('test', 'ABC1234', 'Test Terminal', 2, 'active', NULL, 13);
 
 SET @TermID = 1;
 SET @TermID = LAST_INSERT_ID();

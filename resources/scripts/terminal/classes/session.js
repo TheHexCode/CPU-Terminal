@@ -29,6 +29,7 @@ class Session
     static FUNCS = "funcs";
 
     #termID;
+    #termOwner;
     #termState;
     #stateData;
 
@@ -49,6 +50,7 @@ class Session
     constructor(termInfo)
     {
         this.#termID = termInfo["termID"];
+        this.#termOwner = termInfo["termOwner"];
         this.#termState = termInfo["termState"];
         this.#stateData = termInfo["stateData"];
         this.#entryData = termInfo["entries"];
@@ -82,6 +84,11 @@ class Session
     getTerminalID()
     {
         return this.#termID;
+    }
+
+    getTerminalOwner()
+    {
+        return this.#termOwner;
     }
 
     getExtraTagMin()

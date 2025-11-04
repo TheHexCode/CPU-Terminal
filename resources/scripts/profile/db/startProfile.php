@@ -1,4 +1,5 @@
 <?php
+require('dbConnect.php');
 
 $itemFilepath = "./resources/schemas/items.json";
 $itemFile = fopen($itemFilepath,"r");
@@ -101,29 +102,155 @@ foreach($itemArray as $itemCat)
 
         foreach($itemType["items"] as $item)
         {
-            $itemString .=  "<div class='itemContainer'>";
-
-            foreach($item["tiers"] as $tier)
+            $tagMultiple = count(array_filter($item["tags"], function($tag)
             {
-                $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
-                $tagUnique = count(array_filter($item["tags"], function($tag)
+                return $tag["tag"] === "multiple";
+            })) > 0;
+
+            if($tagMultiple)
+            {
+                // instanced multiple
+                //  e.g. corp_protocols, digisec_secrets
+
+                if(array_key_exists("instance",$item))
                 {
-                    return $tag["tag"] === "unique";
-                })) > 0;
+                    $instanceSelects = array();
 
-                $itemString .=  "<div class='itemSelect " . ($tagUnique ? "radio" : "check") . "'>" .
-                                    "<input type='" . ($tagUnique ? "radio" : "checkbox") . "' " .
-                                        "id='" . $itemName . "' " .
-                                        "data-item='" . strtolower($item["name"]) . "' " .
-                                        "data-tier='" . $tier["tier"] . "' " .
-                                        "form='itemForm' " .
-                                        ($tagUnique ? "name='" . $item["category"] . "_" . $item["type"]. "' onclick='toggleRadio(this)' " : " ") .
-                                    ">" .
-                                    "<label for='" . $itemName . "'>" . $item["name"] . " [T" . $tier["tier"] . "]</label>";
-                $itemString .=  "</div>"; //itemSelect
+                    foreach($item["instance"] as $index => $instance)
+                    {
+                        $exPath = explode(":",$instance["options"]["path"]);
+
+                        switch($exPath[0])
+                        {
+                            case("db"):
+                            {
+                                $tableName = $exPath[1];
+
+                                $instanceQuery = "  SELECT  {$instance['options']['value']} as value,
+                                                            {$instance['options']['label']} as label
+                                                    FROM {$dbName}.{$tableName}";
+                                $instanceStatement = $pdo->prepare($instanceQuery);
+                                $instanceStatement->execute();
+                                $instanceOptions = $instanceStatement->fetch(PDO::FETCH_ASSOC);
+
+                                //https://stackoverflow.com/questions/1597736/sort-an-array-of-associative-arrays-by-column-value
+                                $label_column = array_column($instanceOptions,"label");
+                                array_multisort($label_column, SORT_ASC, SORT_STRING, $instanceOptions);
+
+                                array_push($instanceSelects,array(
+                                    "index" => $index,
+                                    "name" => $instance["name"],
+                                    "displayName" => $instance["displayName"],
+                                    "options" => $instanceOptions
+                                ));
+                                break;
+                            }
+                        }
+                    }
+                    /*
+                        <div class="itemSelect">
+                            <div class="itemSelectName">CORP PROTOCOLS [T0]:</div>
+                            <div class="itemSelectGrid">
+                                <div class="itemSelectHeaderRow">
+                                    <span data-col="2" style="grid-column:2;">CORP</span>
+                                </div>
+                                <div class="itemSelectRow" data-row="2" style="grid-row:2;">
+                                    <!--<span class="itemSelectRowButton" onpointerup="delItemSelectRow(this)" data-row="2">&#xf1398;</span>-->
+                                    <select name="corp protocols_t0_1" data-col="2" style="grid-column:2;">
+                                        <option value="1">CORP 1</option>
+                                    </select>
+                                </div>
+                                <div class="itemSelectRow" data-row="3" style="grid-column:3;">
+                                    <span class="itemSelectRowButton" onpointerUp="addItemSelectRow(this)" data-row="3">&#x271A;</span>
+                                </div>
+                            </div>
+                        </div>
+                    */
+
+                    $headers = "<div class='itemSelectHeaderRow>";
+                    $optionString = "";
+
+                    foreach($instanceSelects as $select)
+                    {
+                        $headers .= "<span data-col='" . ($select["index"] + 2) . "' style='grid-column:" . ($select["index"] + 2) . ";'>" . $select["displayName"] . "</span>";
+
+                        $optionString .= "<option value='" . $select["value"] . "'>" . $select["label"] . "</option>";
+                    }
+
+                    $headers .= "</div>"; // itemSelectHeaderRow
+
+                    $itemString .= "<div class='itemSelect'>";
+
+                    foreach($item["tiers"] as $tier)
+                    {
+                        $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
+
+                        $itemString .=  "<div class='itemSelectName'>" . $item["name"] . " [T" . ($tier["tierName"] ?? $tier["tier"]) . "]:</div>" .
+                                        "<div class='itemSelectGrid'>" .
+                                            $headers .
+                                            "<div class='itemSelectRow' data-row='2' style='grid-row:2;'>" .
+                                                "<!--<span class='itemSelectRowButton' onpointerup='delItemSelectRow(this)' data-row='2'>&#xf1398;</span>-->" .
+                                                "<select name='" . $itemName . "_1' data-col='2' style='grid-column:2;'>" .
+                                                    $optionString .
+                                                "</select>" .
+                                            "</div>" . // itemSelectRow
+                                            "<div class='itemSelectRow' data-row='3' style='grid-row:3;'>" .
+                                                "<span class='itemSelectRowButton' onpointerup='addItemSelectRow(this)' data-row='2'>&#x271A;</span>" .
+                                            "</div>" . // itemSelectRow
+                                        "</div>"; // itemSelectGrid
+                    }
+
+                    $itemString .= "</div>"; // itemSelect
+                }
+                else
+                {
+                    //non-instanced multiple
+                    // e.g. shimmerstick; vigil
+                }
             }
+            else
+            {
+                // non-multiple items
 
-            $itemString .= "</div>"; //itemContainer
+                /*
+                    <div class="itemContainer">
+                        <div class="itemSelect check">
+                            <input type="checkbox" id="copycat_t0" data-item="copycat" data-tier="0" form="itemForm">
+                            <label for="copycat_t0">Copycat [T0]</label>
+                        </div>
+                    </div>
+                */
+
+                if(array_key_exists("instance",$item))
+                {
+                    // Add selection dropdown under main item
+                    //  e.g. digipet
+                }
+
+                $itemString .=  "<div class='itemContainer'>";
+
+                foreach($item["tiers"] as $tier)
+                {
+                    $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
+                    $tagUnique = count(array_filter($item["tags"], function($tag)
+                    {
+                        return $tag["tag"] === "unique";
+                    })) > 0;
+
+                    $itemString .=  "<div class='itemInput " . ($tagUnique ? "radio" : "check") . "'>" .
+                                        "<input type='" . ($tagUnique ? "radio" : "checkbox") . "' " .
+                                            "id='" . $itemName . "' " .
+                                            "data-item='" . strtolower($item["name"]) . "' " .
+                                            "data-tier='" . $tier["tier"] . "' " .
+                                            "form='itemForm' " .
+                                            ($tagUnique ? "name='" . $item["category"] . "_" . $item["type"]. "' onclick='toggleRadio(this)' " : " ") .
+                                        ">" .
+                                        "<label for='" . $itemName . "'>" . $item["name"] . " [T" . ($tier["tierName"] ?? $tier["tier"]) . "]</label>";
+                    $itemString .=  "</div>"; //itemInput
+                }
+
+                $itemString .= "</div>"; //itemContainer
+            }
         }
 
         /*$itemString .=  "<div class='itemSelect " . ($item["radio"] !== null ? "radio" : "check") . "'>" .

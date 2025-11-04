@@ -4,26 +4,16 @@ USE dbiykpinec1m8s;
 
 ####################################################################################################
 ###
-###     SIM >> STUFF NEEDED FOR A PARTICULAR SIMULATION
+###     CPU >> GENERAL
 ###
 ####################################################################################################
 
-CREATE TABLE sim_active_codes (
-    simCode TEXT    NOT NULL,
-	jobCode TEXT    NOT NULL
-);
-
-CREATE TABLE sim_terminals (
-    id              INT     AUTO_INCREMENT,
-    slug 		    TEXT    NOT NULL,
-    jobCode 	    TEXT    NOT NULL,
-    displayName     TEXT,
-    access 		    INT		NOT NULL,
-	state 		    TEXT    NOT NULL,
-	stateData 	    INT,
-    remoteEnabled   BOOL    NOT NULL,
-	PRIMARY KEY (id)
-);
+CREATE TABLE cpu_orgs (
+    id          INT     AUTO_INCREMENT,
+    name        TEXT    NOT NULL,
+    discovered  BOOLEAN NOT NULL,
+    PRIMARY KEY (id)
+)
 
 CREATE TABLE ice_types (
     type    VARCHAR(255),
@@ -43,12 +33,39 @@ CREATE TABLE ice_tiers (
 )
 
 CREATE TABLE ice_effects (
-    tier_id  INT     NOT NULL,
+    tier_id  INT    NOT NULL,
     effect  TEXT    NOT NULL,
     FOREIGN KEY (tier_id)
         REFERENCES ice_tiers(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
+);
+
+####################################################################################################
+###
+###     SIM >> STUFF NEEDED FOR A PARTICULAR SIMULATION
+###
+####################################################################################################
+
+CREATE TABLE sim_active_codes (
+    simCode TEXT    NOT NULL,
+	jobCode TEXT    NOT NULL
+);
+
+CREATE TABLE sim_terminals (
+    id              INT     AUTO_INCREMENT,
+    slug 		    TEXT    NOT NULL,
+    jobCode 	    TEXT    NOT NULL,
+    displayName     TEXT,
+    access 		    INT		NOT NULL,
+	state 		    TEXT    NOT NULL,
+	stateData 	    INT,
+    owner_id        INT,
+	PRIMARY KEY (id),
+    FOREIGN KEY (owner_id)
+        REFERENCES cpu_orgs(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE sim_entries (
@@ -153,12 +170,14 @@ CREATE TABLE items_to_effects (
 );
 */
 CREATE TABLE user_items (
-    user_id     INT         NOT NULL,
-    item        VARCHAR(50) NOT NULL,
-    tier        INT         NOT NULL,
-    count       INT,
-    CONSTRAINT userFunction
-        PRIMARY KEY (user_id, item, tier),
+    user_id         INT             NOT NULL,
+    item            VARCHAR(255)    NOT NULL,
+    tier            INT             NOT NULL,
+    instance_key    VARCHAR(255),
+    instance_value  VARCHAR(255),
+    count           INT,
+    CONSTRAINT userItem
+        PRIMARY KEY (user_id, item, tier, instance_key, instance_value),
     FOREIGN KEY (user_id)
         REFERENCES users(lm_id)
         ON UPDATE CASCADE
@@ -166,11 +185,11 @@ CREATE TABLE user_items (
 );
 
 CREATE TABLE item_uses (
-    user_id     INT         NOT NULL,
-    effect      VARCHAR(50) NOT NULL,
-    simCode     TEXT        NOT NULL,
-    jobCode     TEXT        NOT NULL,
-    terminal_id INT         NOT NULL,
+    user_id     INT             NOT NULL,
+    effect      VARCHAR(255)    NOT NULL,
+    simCode     TEXT            NOT NULL,
+    jobCode     TEXT            NOT NULL,
+    terminal_id INT             NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES users(lm_id)
         ON UPDATE CASCADE
@@ -199,8 +218,8 @@ CREATE TABLE sim_user_actions (
 );
 
 CREATE TABLE sim_session_effects (
-    terminal_id INT         NOT NULL,
-    effect_name VARCHAR(50) NOT NULL,
+    terminal_id INT             NOT NULL,
+    effect_name VARCHAR(255)    NOT NULL,
     CONSTRAINT session_effect
         PRIMARY KEY (terminal_id, effect_name),
     FOREIGN KEY (terminal_id)
@@ -211,7 +230,7 @@ CREATE TABLE sim_session_effects (
 
 CREATE TABLE sim_payload_effects (
     user_id     INT         NOT NULL,
-    effect_name VARCHAR(50) NOT NULL,
+    effect_name VARCHAR(255) NOT NULL,
     duration    VARCHAR(50),
     CONSTRAINT payload_effect
         PRIMARY KEY (user_id, effect_name, duration),

@@ -6,7 +6,7 @@ include('resources/scripts/terminal/classes/terminal.php');
 $termSlug = $_GET["id"];
 $local = $_GET["loc"] ?? false;
 
-$termQuery = "  SELECT id,displayName,access,state,stateData
+$termQuery = "  SELECT id,displayName,access,state,stateData,owner_id
                 FROM {$dbName}.sim_terminals
                 INNER JOIN {$dbName}.sim_active_codes
                     ON sim_terminals.jobCode=sim_active_codes.jobCode

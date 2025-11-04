@@ -339,9 +339,24 @@ class Payload
         }), 1);
     }
 
+    hasSkipTimer()
+    {
+        return this.#tempEffects.some(function(effect)
+        {
+            return ((effect.effect_name === "skip_timer") &&
+                    (effect.input_index === null) &&
+                    (effect.activation_index === null));
+        });
+    }
+
     submitTempEffects()
     {
-        this.#inventory.submitEffects(this.#tempEffects);
+        this.#inventory.submitEffects(this.#tempEffects.filter(function(effect)
+            {
+                return ((effect.input_index !== null) &&
+                        (effect.activation_index !== null));
+            })
+        );
         this.#tempEffects = [];
     }
 

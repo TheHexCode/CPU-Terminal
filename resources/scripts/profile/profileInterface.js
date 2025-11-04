@@ -607,7 +607,7 @@ function statSubmit(event)
 	*/
 	// LIST OF ITEMS
 	let items = [];
-	$(".itemSelect input:checked").each(function(index, item)
+	$(".itemInput input:checked").each(function(index, item)
 	{
 		let itemPush = {
 			name: $(item).attr("data-item"),

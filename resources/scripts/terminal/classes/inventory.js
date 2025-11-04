@@ -35,6 +35,13 @@ class Inventory
                 return effect.effect_name === input.effect_name;
             });
 
+            let chargeDisabled = false;
+
+            if((parentEffect["charges"] !== null) && (parentEffect["uses"] >= parentEffect["charges"]))
+            {
+                chargeDisabled = true;
+            }
+
             let parsedLabel = this.#parseLabel(parentEffect, input["label"]);
             let conditionCheck = true;
 
@@ -59,12 +66,12 @@ class Inventory
                 "</span>"
             */
 
-            let HTMLString =    "<span class='confirmBox" + (conditionCheck === false ? " dimmed" : "") + " >" +
-                                    "<input id='" + input["effect_name"] + "_" + index + "' type='confirmInput'" + (conditionCheck === false ? " disabled" : "") + " />" +
+            let HTMLString =    "<span class='confirmBox" + (((conditionCheck === false) || (chargeDisabled === true)) ? " dimmed'" : "'") + " >" +
+                                    "<input id='" + input["effect_name"] + "_" + index + "' class='confirmInput' type='checkbox'" + (((conditionCheck === false) || (chargeDisabled === true)) ? " disabled" : "") + " />" +
                                     "<span class='confirmLabel'>" + parsedLabel + "</span>" +
                                 "</span>";
 
-            let onPointerUpFunction = function(eventArg, inputArg, inputIndex)
+            let onChangeFunction = function(eventArg, inputArg, inputIndex)
             {
                 inputArg["activation"].forEach(function(activation, activationIndex)
                 {
@@ -74,13 +81,13 @@ class Inventory
                         {
                             if($(eventArg.target).prop("checked"))
                             {
-                                console.log("checked");
                                 payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                payload.addTempEffect("skip_timer", null, null);
                             }
                             else
                             {
-                                console.log("unchecked");
                                 payload.removeTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                payload.removeTempEffect("skip_timer", null, null);
                             }
                             break;
                         }
@@ -96,7 +103,7 @@ class Inventory
             returnArray.push({
                 "inputHTML": HTMLString,
                 "itemID": input["effect_name"] + "_" + index,
-                "function": onPointerUpFunction,
+                "function": onChangeFunction,
                 "functionInput": structuredClone(input),
                 "functionIndex": index
             });
@@ -356,7 +363,7 @@ class Inventory
         });
     }
 
-    #checkCondition(effectConditions)
+    #checkCondition(effectConditions, instanceValues=null)
     {
         // array of conditions
             // left
@@ -364,6 +371,7 @@ class Inventory
                 // payload:effects [Array]
                 // payload:functions:XXX [Array Key > Value]
                 // terminal:effects [Array]
+                // item:instance:XXX [Array Key > Value]
             // operation
                 // contains [Arrays]
                 // not_contains [Arrays]
@@ -439,14 +447,46 @@ class Inventory
                         {
                             case("instance"):
                             {
+                                leftType = "value";
+
+                                let leftKey = condition["left"].split(":")[2];
+
+                                left = instanceValues.find(function(instance)
+                                {
+                                    return instance.name === leftKey;
+                                });
+                                
                                 break;
                             }
                         }
                     }
                 }
 
-                let rightType = typeof condition["right"];
-                let right = condition["right"];
+                let right = null;
+
+                if(((typeof condition["right"]) === "string") &&
+                    (condition["right"].includes(":")))
+                {
+                    switch(condition["right"].split(":")[0])
+                    {
+                        case("terminal"):
+                        {
+                            switch(condition["right"].split(":")[1])
+                            {
+                                case("owner"):
+                                {
+                                    right = session.getTerminalOwner();
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    right = condition["right"];
+                }
 
                 let operation = condition["operation"];
 
@@ -1217,23 +1257,38 @@ class Inventory
 
         termLoginHavingEffects.forEach(function(mainEffect)
         {
-            let disabled = false;
+            let chargeDisabled = false;
 
             if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
             {
-                disabled = true;
+                chargeDisabled = true;
             }
 
             mainEffect.term_login.forEach(function(tlEntry)
             {
-                let condition_passed = true;
+                let conditionCheck = true;
 
                 if(Object.keys(tlEntry).includes("condition"))
                 {
-                    //pass
+                    let itemInstance = null
+
+                    if(Object.keys(mainEffect).includes("instance"))
+                    {
+                        itemInstance = mainEffect.instance;
+                    }
+                    let checkResults = this.#checkCondition(tlEntry.condition, itemInstance);
+                    if(typeof checkResults === "string")
+                    {
+                        conditionCheck = false;
+                        parsedLabel = checkResults;
+                    }
+                    else
+                    {
+                        conditionCheck = checkResults;
+                    }
                 }
 
-                if(condition_passed && !disabled)
+                if((conditionCheck === true) && (chargeDisabled === true))
                 {
                     this.#activateEffect(mainEffect, tlEntry, true);
                 }
@@ -1276,8 +1331,7 @@ class Inventory
             });
             let targetActivation = parentEffect["input"][effect.input_index]["activation"][effect.activation_index];
 
-            console.log(parentEffect);
-            console.log(targetActivation);
+            parentEffect.uses++;
 
             $.ajax({
                 type: "POST",
