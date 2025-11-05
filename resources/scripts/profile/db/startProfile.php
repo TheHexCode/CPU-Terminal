@@ -131,9 +131,8 @@ foreach($itemArray as $itemCat)
                                                     FROM {$dbName}.{$tableName}";
                                 $instanceStatement = $pdo->prepare($instanceQuery);
                                 $instanceStatement->execute();
-                                $instanceOptions = $instanceStatement->fetch(PDO::FETCH_ASSOC);
+                                $instanceOptions = $instanceStatement->fetchAll(PDO::FETCH_ASSOC);
 
-                                //https://stackoverflow.com/questions/1597736/sort-an-array-of-associative-arrays-by-column-value
                                 $label_column = array_column($instanceOptions,"label");
                                 array_multisort($label_column, SORT_ASC, SORT_STRING, $instanceOptions);
 
@@ -167,14 +166,23 @@ foreach($itemArray as $itemCat)
                         </div>
                     */
 
-                    $headers = "<div class='itemSelectHeaderRow>";
-                    $optionString = "";
+                    $headers = "<div class='itemSelectHeaderRow'>";
+                    $selectString = "";
 
-                    foreach($instanceSelects as $select)
+                    foreach($instanceSelects as $selectIndex => $select)
                     {
-                        $headers .= "<span data-col='" . ($select["index"] + 2) . "' style='grid-column:" . ($select["index"] + 2) . ";'>" . $select["displayName"] . "</span>";
+                        $headers .= "<span class='itemSelectHeader' data-col='" . ($select["index"] + 3) . "' style='grid-column:" . ($select["index"] + 3) . ";'>" . $select["displayName"] . "</span>";
 
-                        $optionString .= "<option value='" . $select["value"] . "'>" . $select["label"] . "</option>";
+                        $optionString = "<option value='null' selected>--</option>";
+
+                        foreach($select["options"] as $option)
+                        {
+                            $optionString .= "<option value='" . $option["value"] . "'>" . $option["label"] . "</option>";
+                        }
+
+                        $selectString .=    "<select class='itemSelectInput' name='!itemName!_!ROW!_" . $selectIndex . "' data-item='" . $itemName . "' data-col='" . ($selectIndex + 3) . "' style='grid-column:" . ($selectIndex + 3) . ";'>" .
+                                                $optionString .
+                                            "</select>";
                     }
 
                     $headers .= "</div>"; // itemSelectHeaderRow
@@ -185,17 +193,19 @@ foreach($itemArray as $itemCat)
                     {
                         $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
 
-                        $itemString .=  "<div class='itemSelectName'>" . $item["name"] . " [T" . ($tier["tierName"] ?? $tier["tier"]) . "]:</div>" .
+                        $itemString .=  "<div class='itemSelectName'>" . $item["name"] . " [" . ($tier["tierName"] ?? ("T" . $tier["tier"])) . "]:</div>" .
                                         "<div class='itemSelectGrid'>" .
                                             $headers .
-                                            "<div class='itemSelectRow' data-row='2' style='grid-row:2;'>" .
-                                                "<!--<span class='itemSelectRowButton' onpointerup='delItemSelectRow(this)' data-row='2'>&#xf1398;</span>-->" .
-                                                "<select name='" . $itemName . "_1' data-col='2' style='grid-column:2;'>" .
-                                                    $optionString .
-                                                "</select>" .
-                                            "</div>" . // itemSelectRow
+                                            "<div class='itemSelectPrototype'>" .
+                                                "<span class='itemSelectRowButton' onpointerup='delItemSelectRow(this)' data-row='!ROW!'>&#xf1398;</span>" . str_replace("!itemName!",$itemName,$selectString) .
+                                            "</div>" .
+                                            "<div class='itemSelectHRBox' data-row='2' style='grid-row:2;' >" .
+                                                "<div class='itemSelectHRBG'></div>" .
+                                                "<hr class='itemSelectHR'/>" .
+                                                "<div class='itemSelectHRBlur'></div>" .
+                                            "</div>" . //itemSelectHRBox
                                             "<div class='itemSelectRow' data-row='3' style='grid-row:3;'>" .
-                                                "<span class='itemSelectRowButton' onpointerup='addItemSelectRow(this)' data-row='2'>&#x271A;</span>" .
+                                                "<span class='itemSelectRowButton' onpointerup='addItemSelectRow(this)' data-row='3'>&#x271A;</span>" .
                                             "</div>" . // itemSelectRow
                                         "</div>"; // itemSelectGrid
                     }
@@ -245,7 +255,7 @@ foreach($itemArray as $itemCat)
                                             "form='itemForm' " .
                                             ($tagUnique ? "name='" . $item["category"] . "_" . $item["type"]. "' onclick='toggleRadio(this)' " : " ") .
                                         ">" .
-                                        "<label for='" . $itemName . "'>" . $item["name"] . " [T" . ($tier["tierName"] ?? $tier["tier"]) . "]</label>";
+                                        "<label for='" . $itemName . "'>" . $item["name"] . " [" . ($tier["tierName"] ?? ("T" . $tier["tier"])) . "]</label>";
                     $itemString .=  "</div>"; //itemInput
                 }
 

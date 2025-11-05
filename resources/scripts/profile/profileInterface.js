@@ -352,6 +352,38 @@ function processCharInfo(charData)
 	$(".postLogon").removeClass("hidden");
 	$(".lmLoginBox").addClass("hidden");
 }
+
+function addItemSelectRow(target)
+{
+	let targetRow = Number(target.dataset["row"]);
+	let targetParent = $(target).parent()[0];
+	let targetGrid = $(target).parents(".itemSelectGrid")[0];
+
+	let prototypeHTML = $(targetGrid).children(".itemSelectPrototype")[0].innerHTML;
+
+	prototypeHTML = prototypeHTML.replaceAll("!ROW!", targetRow);
+	let newTargetHTML = targetParent.outerHTML.replaceAll("\"" + targetRow + "\"", "\"" + (targetRow + 2) + "\"").replaceAll(":" + targetRow + ";", ":" + (targetRow + 2) + ";");
+
+	$(targetParent).html(prototypeHTML);
+	$(targetGrid).append(	"<div class='itemSelectHRBox' data-row='" + (targetRow + 1) + "' style='grid-row:" + (targetRow + 1) + ";' >" +
+								"<div class='itemSelectHRBG'></div>" +
+								"<hr class='itemSelectHR' />" +
+								"<div class='itemSelectHRBlur'></div>" +
+							"</div>");
+	$(targetGrid).append(newTargetHTML);
+}
+
+function delItemSelectRow(target)
+{
+	let targetRow = Number(target.dataset["row"]);
+
+	let targetParent = $(target).parent()[0];
+	let targetHR = $(targetParent).prev()[0];
+
+	$(targetParent).remove();
+	$(targetHR).remove();
+}
+
 /*
 function changeOrigin(target)
 {
@@ -498,7 +530,7 @@ function chooseKeyword(target)
 		});
 	}
 }
-*/
+
 function setItemCharges(itemAbbr, charges)
 {
 	$(".itemCount[data-abbr='" + itemAbbr + "']").attr("data-charges", charges);
@@ -534,6 +566,7 @@ function changeItemCharges(itemAbbr, change)
 	}
 
 }
+*/
 
 function statSubmit(event)
 {

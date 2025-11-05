@@ -383,7 +383,7 @@ h2
 	flex-direction: column;
 }
 
-.itemGrid
+.itemSelectGrid
 {
 	display: grid;
 	grid-template-columns: [start] min-content [gap] auto [select] min-content;
@@ -396,6 +396,29 @@ h2
 	grid-row: 1;
 	display: grid;
 	grid-template-columns: subgrid;
+	align-items: end;
+}
+
+.itemSelectHeader
+{
+	text-align: center;
+}
+
+.itemSelectPrototype
+{
+	/*display: none;*/
+	visibility: hidden;
+	grid-column: start / end;
+	grid-row: 1;
+	display: grid;
+	grid-template-columns: subgrid;
+	height: 1rem;
+}
+
+.itemSelectInput
+{
+	height: 1.5rem;
+	align-self: center;
 }
 
 .itemSelectRow
@@ -405,9 +428,60 @@ h2
 	grid-template-columns: subgrid;
 }
 
+.itemSelectHRBox
+{
+	grid-column: gap / end;
+	display: grid;
+	margin-top: -5px;
+}
+
+.itemSelectHR
+{
+	grid-row: 1 / span 2;
+	grid-column: 1;
+	color: var(--fg-color);
+	z-index: 0;
+}
+
+.itemSelectHRBG
+{
+	grid-row: 1;
+	grid-column: 1;
+	background: var(--bg-color);
+	z-index: -1;
+	margin-top: -5px;
+}
+
+.itemSelectHRBlur
+{
+	grid-row: 2;
+	grid-column: 1;
+	background: linear-gradient(90deg,rgba(0,0,0,0) 10%, var(--fg-color) 50%, rgba(0,0,0,0) 90%);
+	filter: blur(5px);
+	height: 25%;
+	overflow: hidden;
+	z-index: -2;
+}
+
+
 .itemSelectRowButton
 {
 	grid-column: start / gap;
+	padding: 0px 5px 0px 5px;
+	color: var(--fg-color);
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.itemSelectRowButton:hover,
+.itemSelectRowButton:focus {
+	color: var(--bg-color);
+	text-shadow:
+		 2px  2px 5px var(--fg-color),
+		 2px -2px 5px var(--fg-color),
+		-2px -2px 5px var(--fg-color),
+		-2px  2px 5px var(--fg-color);
+	cursor: pointer;
 }
 
 #saveBar
