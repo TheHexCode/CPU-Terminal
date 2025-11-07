@@ -2,8 +2,8 @@ class Inventory
 {
     #globalThis = this;
 
-    #itemSchema;
-    #effectSchema;
+    #itemModel;
+    #effectModel;
 
     #items;
     #effects;
@@ -14,8 +14,8 @@ class Inventory
 
     constructor()
     {
-        this.#itemSchema = $.getJSON("/resources/schemas/items.json");
-        this.#effectSchema = $.getJSON("/resources/schemas/effects.json");
+        this.#itemModel = $.getJSON("/resources/models/items.json")["items"];
+        this.#effectModel = $.getJSON("/resources/models/effects.json");
 
         this.#items = [];
         this.#effects = [];
@@ -190,12 +190,12 @@ class Inventory
 
     establishInventory(itemList, itemUses)
     {
-        this.#itemSchema = this.#itemSchema.responseJSON;
-        this.#effectSchema = this.#effectSchema.responseJSON;
+        this.#itemModel = this.#itemModel.responseJSON;
+        this.#effectModel = this.#effectModel.responseJSON;
 
         itemList.forEach(function(dbItem)
         {
-            let proposedItem = this.#itemSchema.find(function(potentialItem)
+            let proposedItem = this.#itemModel.find(function(potentialItem)
             {
                 return potentialItem.name.toLowerCase().replace("&#39;","'") === dbItem.name.toLowerCase();
             });
@@ -207,7 +207,7 @@ class Inventory
 
             proposedTier.effects.forEach(function(effect)
             {
-                let proposedEffect = this.#effectSchema.find(function(potentialEffect)
+                let proposedEffect = this.#effectModel.find(function(potentialEffect)
                 {
                     return potentialEffect.name.toLowerCase() === effect.name.toLowerCase();
                 }) ?? {};

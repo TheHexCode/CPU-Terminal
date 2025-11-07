@@ -26,8 +26,8 @@ class ReverseMasterMind
 
         this.#pegCount = pegCount;
         this.#puzzleID = puzzleID;
-        
-        $.getJSON("/resources/schemas/four_peg.json", function(puzzleDB) {
+
+        $.getJSON("/resources/models/four_peg.json", function(puzzleDB) {
             thisInst.#puzzleIndex = Math.floor(Math.random() * puzzleDB.length)
 
             thisInst.#puzzleArray = puzzleDB[thisInst.#puzzleIndex];
@@ -55,7 +55,7 @@ class ReverseMasterMind
             if(thisInst.#colorCount < 6)
             {
                 delete thisInst.#colorCount["F"];
-                
+
                 if(thisInst.#colorCount < 5)
                 {
                     delete thisInst.#colorCount["E"];
@@ -87,7 +87,7 @@ class ReverseMasterMind
         {
             random = Math.floor(Math.random() * remaining);
             remaining -= 1;
-            
+
             temp = this.#colorSrcs[colorKeys[remaining]];
             this.#colorSrcs[colorKeys[remaining]] = this.#colorSrcs[colorKeys[random]];
             this.#colorSrcs[colorKeys[random]] = temp;
@@ -181,7 +181,7 @@ class ReverseMasterMind
             guessString +=      "</div>" +
                             "</div>";
         }, this);
-        
+
         $("#rmmGuessArray").html(guessString);
 
         $("#rmmAnswerBox").html("<div class='rmmTotalCheck'>" +
@@ -244,7 +244,7 @@ class ReverseMasterMind
     checkGuess(guessRow, playerAnswer)
     {
         let guess = this.#guesses[guessRow];
-        
+
         let correct = [];
         let wrong = [];
 
@@ -390,12 +390,12 @@ function submitAnswer(target)
         $(".rmmAnswerCheck, .rmmTotalCheck").removeClass("checkBorder");
 
         let playerAnswer = [];
-        
+
         $(".rmmAnswerChar").each(function(index, char)
         {
             playerAnswer.push(char.dataset["ball"]);
         });
-        
+
         $(".rmmAnswerRow").addClass("checking");
 
         sleep(450).then(() => {

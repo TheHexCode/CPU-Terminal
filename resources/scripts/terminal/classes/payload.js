@@ -1,7 +1,7 @@
 class Payload
 {
-    #itemSchema;
-    #effectSchema;
+    #itemModel;
+    #effectModel;
 
     #payloadSet;
 

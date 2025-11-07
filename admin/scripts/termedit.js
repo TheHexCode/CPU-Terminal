@@ -147,7 +147,7 @@ class AdminTerminal
     #entryList = [];
     #puzzles = [];
     #knowledges = [];
-    #iceSchema = [];
+    #iceModel = [];
     #changesPending = false;
 
     constructor(termID, entries, puzzles, knowledges, iceListing)
@@ -156,7 +156,7 @@ class AdminTerminal
         this.#entryList = this.#listifyEntries(entries);
         this.#puzzles = puzzles ?? [];
         this.#knowledges = knowledges ?? [];
-        this.#iceSchema = iceListing;
+        this.#iceModel = iceListing;
 
         $(".entryList[data-icon='files']").html(this.drawEntries(this.#entryList["files"]));
         $(".entryList[data-icon='darkweb']").html(this.drawEntries(this.#entryList["darkweb"]));
@@ -289,18 +289,18 @@ class AdminTerminal
 
                 if(entry["title"] === null)
                 {
-                    entry["title"] = Object.keys(this.#iceSchema)[0];
+                    entry["title"] = Object.keys(this.#iceModel)[0];
                 }
 
                 if(entry["contents"] === null)
                 {
-                    entry["contents"] = Object.keys(this.#iceSchema[entry["title"]])[0];
+                    entry["contents"] = Object.keys(this.#iceModel[entry["title"]])[0];
                 }
 
                 entry["parsedTitle"] =  '<div class="entryTitle">' +
                                             '<select class="selectParent" data-id="' + entry["path"] + '" onchange="changeICEType(this)">';
 
-                Object.keys(this.#iceSchema).forEach(function(iceType)
+                Object.keys(this.#iceModel).forEach(function(iceType)
                 {
                     entry["parsedTitle"] +=     '<option value="' + iceType + '"' + (entry["title"] === iceType ? " selected" : "" ) + '>' + iceType + '</option>';
                 });
@@ -308,7 +308,7 @@ class AdminTerminal
                 entry["parsedTitle"] +=     '</select>' +
                                             '<select class="selectChild" data-id="' + entry["path"] + '" onchange="changeICETier(this)">';
 
-                Object.keys(this.#iceSchema[entry["title"]]).forEach(function(iceTier)
+                Object.keys(this.#iceModel[entry["title"]]).forEach(function(iceTier)
                 {
                     entry["parsedTitle"] +=     '<option value="' + iceTier + '"' + (entry["contents"] === iceTier ? " selected" : "" ) + '>' + iceTier + '</option>';
                 })
@@ -453,7 +453,7 @@ class AdminTerminal
 
     #getICEEffects(iceType, iceTier)
     {
-        let effects = this.#iceSchema[iceType][iceTier];
+        let effects = this.#iceModel[iceType][iceTier];
 
         //'<input class="entryContents" type="text" value=' + entry["parsedContents"] +
         let effectString = '"' + effects[0] + '" disabled />';

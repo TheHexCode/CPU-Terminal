@@ -9,12 +9,12 @@ $playerAction = $_GET["action"];
 $entry_query = $pdo->query("SELECT * FROM {$dbName}.sim_entries WHERE id={$entryID}");
 $entry = $entry_query->fetch(PDO::FETCH_ASSOC);
 
-$iconFilepath = "../../../schemas/icons.json";
+$iconFilepath = "../../../models/icons.json";
 $iconFile = fopen($iconFilepath,"r");
-$iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
+$iconModel = json_decode(fread($iconFile,filesize($iconFilepath)),true);
 fclose($iconFile);
 
-$action = $iconSchema[$entry["icon"]]["types"][$entry["type"]][$entryState][$playerAction];
+$action = $iconModel[$entry["icon"]]["types"][$entry["type"]][$entryState][$playerAction];
 
 if($action["enabled"])
 {

@@ -1,0 +1,892 @@
+{
+	"$schema": "./schemas/items.schema.json",
+	"items":
+	[
+		{
+			"name": "CMM Widow",
+			"category": "arms",
+			"type": "ranged_1h",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 2,
+					"effects":
+					[
+						{
+							"name": "cmm_arms",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CMM Cocoon",
+			"category": "arms",
+			"type": "shield_small",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 2,
+					"effects":
+					[
+						{
+							"name": "cmm_arms",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 2
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Copycat",
+			"category": "customization",
+			"type": "cyberdeck_software",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "copycat",
+							"charges": 1,
+							"perType": "sim"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Corp Protocols",
+			"category": "customization",
+			"type": "cyberdeck",
+			"flavor": "",
+			"owner": "",
+			"instance":
+			[
+				{
+					"name": "corp_name",
+					"displayName": "CORP",
+					"options":
+					{
+						"path": "db:cpu_orgs",
+						"value": "id",
+						"label": "name"
+					}
+				}
+			],
+			"tags": [
+				{
+					"tag": "multiple"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "corp_protocols",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Pocket Hacker",
+			"category": "customization",
+			"type": "asw_body",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "pocket_hacker",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 1,
+							"perType": "sim"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "pocket_hacker",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 2,
+							"perType": "sim"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "DriveMe",
+			"category": "customization",
+			"type": "cyberdeck_software",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "hacking_script",
+					"value": 1
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "driveme",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 4
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Budget Cyberdeck",
+			"category": "utility",
+			"type": "cyberdeck",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "budget_cyberdeck",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 1,
+							"perType": "sim"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Budget Remote Access Drive",
+			"category": "utility",
+			"type": "utility",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "budget_remote_access_drive"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CipherSync Beacon",
+			"category": "utility",
+			"type": "hacking_watch",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "ciphersync_beacon",
+							"values":
+							[
+								{
+									"name": "hacking",
+									"amount": 1
+								}
+							]
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "ciphersync_beacon",
+							"values":
+							[
+								{
+									"name": "hacking",
+									"amount": 2
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ConnTrust Remote Access Drive",
+			"category": "utility",
+			"type": "utility",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "conntrust_remote_access_drive"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CRD Spider Cyberdeck",
+			"category": "utility",
+			"type": "cyberdeck",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				},
+				{
+					"tag": "charges",
+					"value": "Common Circuit"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "crd_spider_cyberdeck",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 1,
+							"perType": "sim"
+						}
+					]
+				},
+				{
+					"tier": 2,
+					"effects":
+					[
+						{
+							"name": "crd_spider_cyberdeck",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 2
+								}
+							],
+							"charges": 1,
+							"perType": "sim"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Debutantalus Reporter Badge",
+			"category": "utility",
+			"type": "utility",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "limited"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "debutantalus_reporter_badge",
+							"values":
+							[
+								{
+									"name": "cost",
+									"amount": 10
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "debutantalus_reporter_badge",
+							"values":
+							[
+								{
+									"name": "cost",
+									"amount": 8
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Deputy&#39;s Hat",
+			"category": "utility",
+			"type": "utility",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "deputys_hat",
+							"values":
+							[
+								{
+									"name": "hacking",
+									"amount": 1
+								},
+								{
+									"name": "tag_limit",
+									"amount": 1
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "DigiPet",
+			"category": "utility",
+			"type": "utility",
+			"flavor": "",
+			"owner": "",
+			"instance": [
+				{
+					"name": "sprite"
+				}
+			],
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "pet_play",
+							"charges": 1,
+							"perType": "sim"
+						},
+						{
+							"name": "pet_use",
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "FKD DC-17",
+			"category": "utility",
+			"type": "cyberdeck",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+					]
+				},
+				{
+					"tier": 1,
+					"effects":
+					[
+					]
+				}
+			]
+		},
+		{
+			"name": "Infiltrator ModScript",
+			"category": "utility",
+			"type": "modscript",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "infiltrator_modscript",
+							"values":
+							[
+								{
+									"name": "alarm_sense",
+									"amount": 1
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Johnny&#39;s Special Touch",
+			"category": "utility",
+			"type": "cyberdeck",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "johnnys_special_touch",
+							"values":
+							[
+								{
+									"name": "action_cost",
+									"amount": -1
+								},
+								{
+									"name": "action_type",
+									"value": "access"
+								}
+							],
+							"charges": 1,
+							"perType": "term"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "MM Console",
+			"category": "utility",
+			"type": "cyberdeck",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "unique"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "mm_console",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 2,
+							"perType": "sim"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Power Glove [Ultra-Hacking 9000]",
+			"category": "utility",
+			"type": "implant_arm",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "power_glove_uh9k",
+							"values":
+							[
+								{
+									"name": "action_time",
+									"amount": -5
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Shimmerstick",
+			"category": "utility",
+			"type": "consumable",
+			"flavor": "",
+			"owner": "",
+			"tags": [
+				{
+					"tag": "multiple"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "shimmerstick_consume",
+							"charges": 10,
+							"perType": "item"
+						},
+						{
+							"name": "shimmerstick_apply",
+							"values":
+							[
+								{
+									"name": "action_cost",
+									"amount": 1
+								},
+								{
+									"name": "action_time",
+									"amount": 15
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "shimmerstick_consume",
+							"charges": 10,
+							"perType": "item"
+						},
+						{
+							"name": "shimmerstick_apply",
+							"values":
+							[
+								{
+									"name": "action_cost",
+									"amount": 1
+								},
+								{
+									"name": "action_time",
+									"amount": 30
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Vigil",
+			"category": "utility",
+			"type": "consumable_drug",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "multiple"
+				},
+				{
+					"tag": "exhausting"
+				},
+				{
+					"tag": "limited"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"effects":
+					[
+						{
+							"name": "vigil_consume",
+							"charges": 1,
+							"perType": "item"
+						},
+						{
+							"name": "vigil_apply",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								},
+								{
+									"name": "limit",
+									"amount": 2
+								}
+							],
+							"charges": 1,
+							"perType": "term"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"effects":
+					[
+						{
+							"name": "vigil_consume",
+							"charges": 1,
+							"perType": "item"
+						},
+						{
+							"name": "vigil_apply",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								},
+								{
+									"name": "limit",
+									"amount": 4
+								}
+							],
+							"charges": 1,
+							"perType": "term"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "DigiSec Secrets",
+			"category": "resource",
+			"type": "secret",
+			"flavor": "",
+			"owner": "",
+			"tags": [
+				{
+					"tag": "multiple"
+				}
+			],
+			"instance":
+			[
+				{
+					"name": "corp_name",
+					"displayName": "CORP",
+					"options":
+					{
+						"path": "db:cpu_orgs",
+						"value": "id",
+						"label": "name"
+					}
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"tierName": "Minor",
+					"effects":
+					[
+						{
+							"name": "digisec_secret",
+							"values":
+							[
+								{
+									"name": "time",
+									"amount": -10
+								}
+							],
+							"charges": 1,
+							"perType": "item"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"tierName": "Moderate",
+					"effects":
+					[
+						{
+							"name": "digisec_secret",
+							"values":
+							[
+								{
+									"name": "time",
+									"amount": -10
+								}
+							],
+							"charges": 1,
+							"perType": "item"
+						}
+					]
+				},
+				{
+					"tier": 2,
+					"tierName": "Major",
+					"effects":
+					[
+						{
+							"name": "digisec_secret",
+							"values":
+							[
+								{
+									"name": "time",
+									"amount": -10
+								}
+							],
+							"charges": 1,
+							"perType": "item"
+						}
+					]
+				}
+			]
+		}
+	]
+}

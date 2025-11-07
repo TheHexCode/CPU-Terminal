@@ -1,9 +1,9 @@
 <?php
 require('dbConnect.php');
 
-$itemFilepath = "./resources/schemas/items.json";
+$itemFilepath = "./resources/models/items.json";
 $itemFile = fopen($itemFilepath,"r");
-$itemSchema = json_decode(fread($itemFile,filesize($itemFilepath)),true);
+$itemModel = json_decode(fread($itemFile,filesize($itemFilepath)),true)["items"];
 fclose($itemFile);
 
 ######################################################################
@@ -83,7 +83,7 @@ $itemArray = array(
     )
 );
 
-foreach($itemSchema as $item)
+foreach($itemModel as $item)
 {
     array_push($itemArray[$item["category"]]["types"][$item["type"]]["items"],$item);
 }

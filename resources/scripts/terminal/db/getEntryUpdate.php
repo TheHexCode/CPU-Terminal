@@ -17,9 +17,9 @@ $entryStatement = $pdo->prepare($entryQuery);
 $entryStatement->execute([':entryID' => $entryID]);
 $entry = $entryStatement->fetch(PDO::FETCH_ASSOC);
 
-$iconFilepath = "../../../schemas/icons.json";
+$iconFilepath = "../../../models/icons.json";
 $iconFile = fopen($iconFilepath,"r");
-$iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
+$iconModel = json_decode(fread($iconFile,filesize($iconFilepath)),true);
 fclose($iconFile);
 
 $newEntry = array();
@@ -41,16 +41,16 @@ if($entry["type"] === "ice")
     $iceStatement->execute();
     $iceResults = $iceStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $iceSchema = array();
+    $iceModel = array();
 
-    array_map(function($ice) use (&$iceSchema) {
-        if((!(array_key_exists($ice["type"], $iceSchema))) || (!(array_key_exists($ice["tier"], $iceSchema[$ice["type"]]))))
+    array_map(function($ice) use (&$iceModel) {
+        if((!(array_key_exists($ice["type"], $iceModel))) || (!(array_key_exists($ice["tier"], $iceModel[$ice["type"]]))))
         {
-            $iceSchema[$ice["type"]][$ice["tier"]] = array($ice["effect"]);
+            $iceModel[$ice["type"]][$ice["tier"]] = array($ice["effect"]);
         }
         else
         {
-            array_push($iceSchema[$ice["type"]][$ice["tier"]],$ice["effect"]);
+            array_push($iceModel[$ice["type"]][$ice["tier"]],$ice["effect"]);
         }
     }, $iceResults);
 
@@ -60,7 +60,7 @@ if($entry["type"] === "ice")
 
     $spannedContents = "";
 
-    $effectArray = $iceSchema[$entry["title"]][$entry["contents"]];
+    $effectArray = $iceModel[$entry["title"]][$entry["contents"]];
 
     foreach($effectArray as $entryEffect)
     {
@@ -81,7 +81,7 @@ else
         $newState = $entry["previous"];
     }
 
-    $stateGuide = $iconSchema[$entry["icon"]]["types"][$entry["type"]][$newState];
+    $stateGuide = $iconModel[$entry["icon"]]["types"][$entry["type"]][$newState];
 
     if($entry["type"] === "trap")
     {

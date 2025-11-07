@@ -13,8 +13,8 @@ class Terminal
     private $puzzles;
     private $initialEntries;
     private $logEntries;
-    private $iconSchema;
-    private $iceSchema;
+    private $iconModel;
+    private $iceModel;
 
     function __construct($termResponse)
     {
@@ -35,11 +35,11 @@ class Terminal
             $this->puzzles = $termResponse["puzzles"];
             $this->initialEntries = array();
             $this->logEntries = $termResponse["logEntries"];
-            $this->iceSchema = $termResponse["iceSchema"];
+            $this->iceModel = $termResponse["iceModel"];
 
-            $iconFilepath = "./resources/schemas/icons.json";
+            $iconFilepath = "./resources/models/icons.json";
             $iconFile = fopen($iconFilepath,"r");
-            $this->iconSchema = json_decode(fread($iconFile,filesize($iconFilepath)),true);
+            $this->iconModel = json_decode(fread($iconFile,filesize($iconFilepath)),true);
             fclose($iconFile);
         }
     }
@@ -89,7 +89,7 @@ class Terminal
                 "inactive" => array()
             ];
 
-            foreach(array_keys($this->iconSchema) as $icon)
+            foreach(array_keys($this->iconModel) as $icon)
             {
                 if(in_array($icon,$activeIcons,true))
                 {
@@ -173,7 +173,7 @@ class Terminal
 
             array_multisort(array_column($dbArray,"path"),SORT_NATURAL,$dbArray);
 
-            $iconGuide = $this->iconSchema[$icon];
+            $iconGuide = $this->iconModel[$icon];
 
             $returnArray = array();
 
@@ -247,7 +247,7 @@ class Terminal
                     {
                         $contentsMask = '<span class="entrySecret">';
 
-                        $effectArray = $this->iceSchema[$entry["title"]][$entry["contents"]];
+                        $effectArray = $this->iceModel[$entry["title"]][$entry["contents"]];
 
                         foreach($effectArray as $entryEffect)
                         {

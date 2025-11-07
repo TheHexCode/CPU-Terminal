@@ -100,7 +100,7 @@ else
     $termResponse['entries'] = $entryResponse;
     $termResponse['puzzles'] = $puzzleResponse;
     $termResponse['logEntries'] = $logResponse;
-    $termResponse['iceSchema'] = $iceArray;
+    $termResponse['iceModel'] = $iceArray;
 
     $terminal = new Terminal($termResponse);
 }
