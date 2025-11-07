@@ -180,7 +180,7 @@ foreach($itemArray as $itemCat)
                             $optionString .= "<option value='" . $option["value"] . "'>" . $option["label"] . "</option>";
                         }
 
-                        $selectString .=    "<select class='itemSelectInput' name='!itemName!_!ROW!_" . $selectIndex . "' data-item='" . $item["name"] . "' data-tier='!TIER!' data-key='" . $select["name"] . "' data-col='" . ($selectIndex + 3) . "' style='grid-column:" . ($selectIndex + 3) . ";'>" .
+                        $selectString .=    "<select class='itemSelectInput' name='!itemName!_!ROW!_" . $selectIndex . "' data-item='" . strtolower($item["name"]) . "' data-tier='!TIER!' data-key='" . $select["name"] . "' data-col='" . ($selectIndex + 3) . "' style='grid-column:" . ($selectIndex + 3) . ";'>" .
                                                 $optionString .
                                             "</select>";
                     }

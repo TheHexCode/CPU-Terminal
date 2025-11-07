@@ -230,6 +230,7 @@ class Inventory
                 proposedEffect["charges"] = effect.charges ?? null;
                 proposedEffect["perType"] = effect.perType ?? null;
                 proposedEffect["displayName"] = proposedItem.name + " [T" + proposedTier.tier + "]";
+                proposedEffect["instance"] = (dbItem.instanceKey === "" ? null : {[dbItem.instanceKey]: Number(dbItem.instanceValue)});
 
                 let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
 
@@ -451,11 +452,7 @@ class Inventory
 
                                 let leftKey = condition["left"].split(":")[2];
 
-                                left = instanceValues.find(function(instance)
-                                {
-                                    return instance.name === leftKey;
-                                });
-                                
+                                left = instanceValues[leftKey];
                                 break;
                             }
                         }
@@ -743,7 +740,7 @@ class Inventory
 
     }
 
-    #activateEffect(parentEffect, activationDetails, activate=true)
+    #activateEffect(parentEffect, activationDetails, activate=true, initial=false)
     {
         let amount = null;
 
@@ -895,9 +892,19 @@ class Inventory
             }
         }
 
-        if(activate)
+        if(initial)
         {
-            this.#initialActivations.push(parentEffect.effect_name);
+            if(activate)
+            {
+                this.#initialActivations.push(parentEffect.effect_name);
+            }
+            else
+            {
+                this.#initialActivations.splice(this.#initialActivations.findIndex(function(effect_name)
+                {
+                    return effect_name === parentEffect.effect_name;
+                }), 1);
+            }
         }
     }
 
@@ -1011,7 +1018,7 @@ class Inventory
                             {
                                 let buttonHTML = "<span class='itemActionRow'>";
 
-                                let remCharges = 100;
+                                let remCharges = Number.POSITIVE_INFINITY;
 
                                 if(mainEffect["charges"] !== null)
                                 {
@@ -1058,6 +1065,61 @@ class Inventory
                             }
                             case("crack"):
                             {
+                                /*
+                                <div id="brad_init" class="initItem hidden">
+                                    <div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
+                                    <div class="initOption">
+                                        <button data-effect="brad" onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck"><br>(Can set up later)</span></button>
+                                    </div>
+                                </div>
+                                */
+                                let buttonHTML = "";
+                                let remCharges = Number.POSITIVE_INFINITY;
+
+                                if(mainEffect["charges"] !== null)
+                                {
+                                    buttonHTML += "<span class='itemMarks'>";
+
+                                    for(let i = 0; i < mainEffect["uses"]; i++)
+                                    {
+                                        buttonHTML += "<img src='/resources/images/actions/itemfilled.png' />";
+                                    }
+
+                                    for(let j = mainEffect["uses"]; j < mainEffect["charges"]; j++)
+                                    {
+                                        buttonHTML += "<img src='/resources/images/actions/itemopen.png' />";
+                                    }
+
+                                    buttonHTML +=   "<span>per " + (mainEffect["perType"] === "sim" ? "Sim" : "Scene") + "</span>" +
+                                                "</span>";
+                                    remCharges = mainEffect["charges"] - mainEffect["uses"];
+                                }
+
+                                let parsedLabel = this.#parseLabel(mainEffect, inputEntry["label"]);
+                                let conditionCheck = true;
+
+                                if(Object.keys(inputEntry).includes("condition"))
+                                {
+                                    let checkResults = this.#checkCondition(inputEntry.condition);
+                                    if(typeof checkResults === "string")
+                                    {
+                                        conditionCheck = false;
+                                        parsedLabel = checkResults;
+                                    }
+                                    else
+                                    {
+                                        conditionCheck = checkResults;
+                                    }
+                                }
+
+                                buttonHTML +=   '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
+                                                    '<div class="initHeader">' + mainEffect.displayName + '</div>' +
+                                                    '<div class="initOption">' +
+                                                        '<button id="' + mainEffect.effect_name + '" class="itemButton" onclick="useItem(this,' + index + ')"' + (((remCharges <= 0) || (conditionCheck === false)) ? ' disabled' : '') + '>' + parsedLabel + '</button>' +
+                                                    '</div>' +
+                                                '</div>';
+
+                                $("#initItemList").append(buttonHTML);
                                 break;
                             }
                             case("execute"):
@@ -1210,7 +1272,7 @@ class Inventory
             }
         }
 
-        let remCharges = 100;
+        let remCharges = Number.POSITIVE_INFINITY;
 
         if(Object.keys(parentEffect).includes("charges"))
         {
@@ -1239,8 +1301,6 @@ class Inventory
                 termID: session.getTerminalID()
             }
         });
-
-        console.log(targetInput);
 
         targetInput["activation"].forEach(function(activation)
         {
@@ -1288,9 +1348,9 @@ class Inventory
                     }
                 }
 
-                if((conditionCheck === true) && (chargeDisabled === true))
+                if((conditionCheck === true) && (chargeDisabled === false))
                 {
-                    this.#activateEffect(mainEffect, tlEntry, true);
+                    this.#activateEffect(mainEffect, tlEntry, true, true);
                 }
             }, this.#globalThis);
         }, this.#globalThis);

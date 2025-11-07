@@ -360,6 +360,11 @@ class Payload
         this.#tempEffects = [];
     }
 
+    submitInitialEffects()
+    {
+        this.#inventory.submitInitialEffects();
+    }
+
     clearTempEffects()
     {
         this.#tempEffects = [];

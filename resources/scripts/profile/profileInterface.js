@@ -381,8 +381,6 @@ function addItemSelectRow(target, selected=null)
 
 	if(selected !== null)
 	{
-		console.log(selected["value"]);
-		console.log($(targetParent).children(".itemSelectInput[data-key='" + selected["key"] + "']").children("option[value='" + selected["value"] + "']"));
 		$(targetParent).children(".itemSelectInput[data-key='" + selected["key"]+ "']").children("option[value='" + selected["value"] + "']").prop("selected", true).attr("selected", true);
 	}
 }
