@@ -180,7 +180,7 @@ foreach($itemArray as $itemCat)
                             $optionString .= "<option value='" . $option["value"] . "'>" . $option["label"] . "</option>";
                         }
 
-                        $selectString .=    "<select class='itemSelectInput' name='!itemName!_!ROW!_" . $selectIndex . "' data-item='" . $itemName . "' data-col='" . ($selectIndex + 3) . "' style='grid-column:" . ($selectIndex + 3) . ";'>" .
+                        $selectString .=    "<select class='itemSelectInput' name='!itemName!_!ROW!_" . $selectIndex . "' data-item='" . $item["name"] . "' data-tier='!TIER!' data-key='" . $select["name"] . "' data-col='" . ($selectIndex + 3) . "' style='grid-column:" . ($selectIndex + 3) . ";'>" .
                                                 $optionString .
                                             "</select>";
                     }
@@ -194,10 +194,10 @@ foreach($itemArray as $itemCat)
                         $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
 
                         $itemString .=  "<div class='itemSelectName'>" . $item["name"] . " [" . ($tier["tierName"] ?? ("T" . $tier["tier"])) . "]:</div>" .
-                                        "<div class='itemSelectGrid'>" .
+                                        "<div class='itemSelectGrid' data-item='" . $itemName . "'>" .
                                             $headers .
                                             "<div class='itemSelectPrototype'>" .
-                                                "<span class='itemSelectRowButton' onpointerup='delItemSelectRow(this)' data-row='!ROW!'>&#xf1398;</span>" . str_replace("!itemName!",$itemName,$selectString) .
+                                                "<span class='itemSelectRowButton' onpointerup='delItemSelectRow(this)' data-row='!ROW!'>&#xf1398;</span>" . str_replace("!TIER!",$tier["tier"],str_replace("!itemName!",$itemName,$selectString)) .
                                             "</div>" .
                                             "<div class='itemSelectHRBox' data-row='2' style='grid-row:2;' >" .
                                                 "<div class='itemSelectHRBG'></div>" .

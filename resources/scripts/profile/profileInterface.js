@@ -39,7 +39,7 @@ function toggleRadio(radio)
 	}
 	else
 	{
-		$("input[name='"+$(radio).prop("name")+"']").prop("data-active",false);
+		$('input[name="'+$(radio).prop('name')+'"]').prop("data-active",false);
 		$(radio).prop("data-active",true);
 	}
 }
@@ -336,13 +336,20 @@ function processCharInfo(charData)
 
 	charData["items"].forEach(function(item)
 	{
-		let itemInput = $("input[data-item='" + item["name"] + "'][data-tier='" + item["tier"] + "']")[0];
+		if(item["instanceKey"] === "")
+		{
+			let itemInput = $('input[data-item="' + item['name'] + '"][data-tier="' + item['tier'] + '"]')[0];
 
-		//setItemCharges(item["item_abbr"], item["count"]);
+			//setItemCharges(item["item_abbr"], item["count"]);
 
-		$(itemInput).prop("checked",true);
-		$("input[name='"+$(itemInput).prop("name")+"']").prop("data-active",false);
-		$(itemInput).prop("data-active",true);
+			$(itemInput).prop("checked",true);
+			$('input[name="'+$(itemInput).prop('name')+'"]').prop("data-active",false);
+			$(itemInput).prop("data-active",true);
+		}
+		else
+		{
+			addItemSelectRow($(".itemSelectGrid[data-item='" + item['name'].toLowerCase() + "_t" + item['tier'] + "'] .itemSelectRow:last-child .itemSelectRowButton")[0], {key: item["instanceKey"], value: item["instanceValue"]});
+		}
 	});
 
 	$("#load").addClass("hidden");
@@ -353,7 +360,7 @@ function processCharInfo(charData)
 	$(".lmLoginBox").addClass("hidden");
 }
 
-function addItemSelectRow(target)
+function addItemSelectRow(target, selected=null)
 {
 	let targetRow = Number(target.dataset["row"]);
 	let targetParent = $(target).parent()[0];
@@ -371,6 +378,13 @@ function addItemSelectRow(target)
 								"<div class='itemSelectHRBlur'></div>" +
 							"</div>");
 	$(targetGrid).append(newTargetHTML);
+
+	if(selected !== null)
+	{
+		console.log(selected["value"]);
+		console.log($(targetParent).children(".itemSelectInput[data-key='" + selected["key"] + "']").children("option[value='" + selected["value"] + "']"));
+		$(targetParent).children(".itemSelectInput[data-key='" + selected["key"]+ "']").children("option[value='" + selected["value"] + "']").prop("selected", true).attr("selected", true);
+	}
 }
 
 function delItemSelectRow(target)
@@ -640,14 +654,31 @@ function statSubmit(event)
 	*/
 	// LIST OF ITEMS
 	let items = [];
-	$(".itemInput input:checked").each(function(index, item)
+	$('.itemInput input:checked').each(function(index, item)
 	{
 		let itemPush = {
 			name: $(item).attr("data-item"),
-			tier: $(item).attr("data-tier")
+			tier: $(item).attr("data-tier"),
+			instanceKey: null,
+			instanceValue: null
 		}
 
 		items.push(itemPush);
+	});
+	$(".itemSelectRow select").each(function(index, item)
+	{
+		let instanceValue = item.options[item.selectedIndex].value
+		if(instanceValue !== "null")
+		{
+			let itemPush = {
+				name: $(item).attr("data-item"),
+				tier: $(item).attr("data-tier"),
+				instanceKey: $(item).attr("data-key"),
+				instanceValue: Number(instanceValue)
+			}
+
+			items.push(itemPush);
+		}
 	});
 
 	$.ajax({

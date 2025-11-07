@@ -257,7 +257,9 @@ $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
 
 // ITEMS
 $itemQuery = "  SELECT  item AS name,
-                        tier
+                        tier,
+                        instance_key AS instanceKey,
+                        instance_value AS instanceValue
                 FROM {$dbName}.user_items
                 WHERE user_id = :userID";
 
