@@ -2252,6 +2252,8 @@ function completeAction(actionMap)
 	disableExpensiveButtons();
 
 	payload.submitTempEffects();
+	payload.applyPostActionEffects(actionMap);
+	payload.checkItemConditions();
 
 	/*
 	if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))

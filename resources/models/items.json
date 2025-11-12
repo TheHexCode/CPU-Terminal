@@ -584,10 +584,6 @@
 								{
 									"name": "action_cost",
 									"amount": -1
-								},
-								{
-									"name": "action_type",
-									"value": "access"
 								}
 							],
 							"charges": 1,

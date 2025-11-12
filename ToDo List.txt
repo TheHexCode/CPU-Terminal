@@ -31,15 +31,11 @@
   > MAKE VALIDATOR FOR ITEMS.JSON AND EFFECTS.JSON
   > Copycat
     - Unique condition
-  > Corp Protocols
-    - Display options
-    - Selecting an option adds more instances of the item
-    - Saving saves all of the instances
-    - Condition is checked
   > Deputy's Hat
     - Need clarification on rules
   > ADD OWNERSHIP TO TERM_EDIT
   > PRE-HACKING PAGE
+  > RECHECK INPUTS AFTER ACTIONS
 
 (Plus: &#x271A;)
 (Minus: &#x2501;)

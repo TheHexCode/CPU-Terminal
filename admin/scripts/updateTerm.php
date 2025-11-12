@@ -8,8 +8,10 @@ $terminal = $_POST["terminal"];
 if($action === "CREATE")
 {
     $createQuery = "INSERT INTO {$dbName}.sim_terminals
-                                (slug, jobCode, displayName, access, state, remoteEnabled)
-                    VALUES (:slug, :jobCode, :displayName, :accessCost, 'active', 0)";
+                                (slug, jobCode, displayName, access, state)
+                    VALUES (:slug, :jobCode, :displayName, :accessCost, 'active')";
+
+    #!! ADD owner_id !!#
 
     $createStatement = $pdo->prepare($createQuery);
     $createStatement->execute([ ':slug' => $terminal["termSlug"],

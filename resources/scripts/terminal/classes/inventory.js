@@ -14,7 +14,7 @@ class Inventory
 
     constructor()
     {
-        this.#itemModel = $.getJSON("/resources/models/items.json")["items"];
+        this.#itemModel = $.getJSON("/resources/models/items.json");
         this.#effectModel = $.getJSON("/resources/models/effects.json");
 
         this.#items = [];
@@ -190,7 +190,7 @@ class Inventory
 
     establishInventory(itemList, itemUses)
     {
-        this.#itemModel = this.#itemModel.responseJSON;
+        this.#itemModel = this.#itemModel.responseJSON["items"];
         this.#effectModel = this.#effectModel.responseJSON;
 
         itemList.forEach(function(dbItem)
@@ -364,7 +364,7 @@ class Inventory
         });
     }
 
-    #checkCondition(effectConditions, instanceValues=null)
+    #checkCondition(effectConditions, itemValues=null)
     {
         // array of conditions
             // left
@@ -447,15 +447,17 @@ class Inventory
                         switch(condition["left"].split(":")[1])
                         {
                             case("instance"):
+                            case("action"):
                             {
                                 leftType = "value";
 
                                 let leftKey = condition["left"].split(":")[2];
 
-                                left = instanceValues[leftKey];
+                                left = itemValues[leftKey];
                                 break;
                             }
                         }
+                        break;
                     }
                 }
 
@@ -584,7 +586,7 @@ class Inventory
         return returnValue;
     }
 
-    #parseLabel(parentEffect, labelString)
+    #parseLabel(parentEffect, labelString, extraInfo=null)
     {
         let parseMatches = (labelString.match(/{.*?}/g) ?? []);
 
@@ -667,6 +669,32 @@ class Inventory
                     result = parentEffect.displayName;
                     break;
                 }
+                case("cost"):
+                {
+                    result = 0;
+
+                    let costPath = extraInfo.amount.split(":");
+                    let baseCost = parentEffect.values.find(function(value)
+                    {
+                        return value.name === costPath[1];
+                    })[costPath[2]];
+
+                    switch(extraInfo["type"])
+                    {
+                        case("dynamic"):
+                        {
+                            let costEffect = this.#checkCondition(extraInfo["condition"]);
+                            result = baseCost + costEffect;
+                            break;
+                        }
+                        case("static"):
+                        {
+                            result = baseCost;
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
 
             switch(modifier)
@@ -689,7 +717,7 @@ class Inventory
             }
 
             labelString = labelString.replace(match, result);
-        });
+        }, this.#globalThis);
 
         return labelString;
     }
@@ -835,6 +863,32 @@ class Inventory
                 }
                 break;
             }
+            case("action_cost"):
+            {
+                /*
+                    {
+                        "type": "action_cost",
+                        "amount": "values:action_cost:amount",
+                        "conditional": "values:action_type:value",
+                        "icon": "spirte.png"
+                    }
+                //////////////////////////////////////////////////
+                    {
+						"type": "action_cost",
+						"amount": "values:action_cost:amount"
+					}
+                */
+                if(activate)
+                {
+                    payload.setActionCost(parentEffect.effect_name, amount);
+                }
+                else
+                {
+                    payload.setActionCost(parentEffect.effect_name, amount * -1);
+                }
+                break;
+                break;
+            }
             case("skip_timer"):
             {
                 // Handled by ConfirmInputs
@@ -867,23 +921,6 @@ class Inventory
                 {
                     payload.removeStatusEffect(activationDetails.name);
                 }
-                break;
-            }
-            case("action_cost"):
-            {
-                /*
-                    {
-                        "type": "action_cost",
-                        "amount": "values:action_cost:amount",
-                        "conditional": "values:action_type:value",
-                        "icon": "spirte.png"
-                    }
-                //////////////////////////////////////////////////
-                    {
-						"type": "action_cost",
-						"amount": "values:action_cost:amount"
-					}
-                */
                 break;
             }
             case("pop-up"):
@@ -1056,7 +1093,32 @@ class Inventory
                                     }
                                 }
 
-                                buttonHTML += "<button id='" + mainEffect.effect_name + "' class='itemButton' onclick='useItem(this," + index + ")'" + (((remCharges <= 0) || (conditionCheck === false)) ? " disabled" : "") + ">" + parsedLabel + "</button>" +
+                                let cost = null;
+
+                                if(Object.keys(inputEntry).includes("cost"))
+                                {
+                                    let costPath = inputEntry["cost"].amount.split(":");
+                                    let baseCost = mainEffect.values.find(function(value)
+                                    {
+                                        return value.name === costPath[1];
+                                    })[costPath[2]];
+
+                                    switch(inputEntry["cost"]["type"])
+                                    {
+                                        case("dynamic"):
+                                        {
+                                            let costEffect = this.#checkCondition(inputEntry["cost"]["condition"]);
+
+                                            cost = baseCost + costEffect;
+                                        }
+                                        case("static"):
+                                        {
+                                            cost = baseCost;
+                                        }
+                                    }
+                                }
+
+                                buttonHTML += "<button id='" + mainEffect.effect_name + "' class='itemButton' data-input='" + index + "' onclick='useItem(this," + index + ")'" + ((cost !== null) ? " data-cost='" + cost + "'" : "") + (((remCharges <= 0) || (conditionCheck === false)) ? " disabled" : "") + ">" + parsedLabel + "</button>" +
                                             "</span>";
 
                                 $(".itemItem > .itemActions[data-effect*='!" + mainEffect["effect_name"] + ";']").append(buttonHTML);
@@ -1115,7 +1177,7 @@ class Inventory
                                 buttonHTML +=   '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
                                                     '<div class="initHeader">' + mainEffect.displayName + '</div>' +
                                                     '<div class="initOption">' +
-                                                        '<button id="' + mainEffect.effect_name + '" class="itemButton" onclick="useItem(this,' + index + ')"' + (((remCharges <= 0) || (conditionCheck === false)) ? ' disabled' : '') + '>' + parsedLabel + '</button>' +
+                                                        '<button id="' + mainEffect.effect_name + '" class="itemButton" data-input="' + index + '" onclick="useItem(this,' + index + ')"' + (((remCharges <= 0) || (conditionCheck === false)) ? ' disabled' : '') + '>' + parsedLabel + '</button>' +
                                                     '</div>' +
                                                 '</div>';
 
@@ -1179,7 +1241,7 @@ class Inventory
 
 			let confirmMap = {
 				headerText: "Confirm Item Activation",
-				bodyText: this.#parseLabel(targetEffect, targetInput["confirm"]["body"]),
+				bodyText: this.#parseLabel(targetEffect, targetInput["confirm"]["body"], targetInput["cost"] ?? null),
 				buttonArray: buttonArray
 			};
 
@@ -1407,5 +1469,88 @@ class Inventory
 
             this.#activateEffect(parentEffect, targetActivation, true);
         }, this.#globalThis);
+    }
+
+    applyPostActionEffects(actionMap)
+    {
+        let postActionHavingEffects = this.#effects.filter(function(potentialEffect)
+        {
+            return Object.keys(potentialEffect).includes("post_action");
+        });
+
+        postActionHavingEffects.forEach(function(mainEffect)
+        {
+            let chargeDisabled = false;
+
+            if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
+            {
+                chargeDisabled = true;
+            }
+
+            mainEffect.post_action.forEach(function(pAEntry)
+            {
+                let conditionCheck = true;
+
+                if(Object.keys(pAEntry).includes("condition"))
+                {
+                    let checkResults = this.#checkCondition(pAEntry.condition, actionMap);
+
+                    conditionCheck = checkResults;
+                }
+
+                if((conditionCheck === true) && (chargeDisabled === false))
+                {
+                    this.#activateEffect(mainEffect, pAEntry, true);
+                }
+            }, this.#globalThis);
+        }, this.#globalThis);
+    }
+
+    checkItemConditions()
+    {
+        let itemButtons = $(".itemButton");
+
+        let globalThis = this.#globalThis;
+
+        itemButtons.each(function (index, itemButton)
+        {
+            let parentEffect = globalThis.#effects.find(function(proposedEffect)
+            {
+                return proposedEffect.effect_name === $(itemButton).attr("id");
+            });
+
+            let targetInput = parentEffect.input[Number($(itemButton).attr("data-input"))];
+
+            console.log({parentEffect});
+
+            let chargeDisabled = false;
+
+            if((parentEffect["charges"] !== null) && (parentEffect["uses"] >= parentEffect["charges"]))
+            {
+                chargeDisabled = true;
+            }
+
+            let conditionCheck = true;
+
+            if(Object.keys(targetInput).includes("condition"))
+            {
+                let checkResults = globalThis.#checkCondition(targetInput.condition);
+                if(typeof checkResults === "string")
+                {
+                    conditionCheck = false;
+                    $(itemButton).html(checkResults);
+                }
+                else
+                {
+                    conditionCheck = checkResults;
+                }
+            }
+
+            if((chargeDisabled === true) || (conditionCheck !== true))
+            {
+                $(itemButton).prop("disabled",true);
+                $(itemButton).attr("disabled",true);
+            }
+        });
     }
 }

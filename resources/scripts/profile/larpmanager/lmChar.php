@@ -63,6 +63,10 @@ $lmCharacter = json_decode('
                     {
                         "id": 11,
                         "name": "Standard Role"
+                    },
+                    {
+                        "id": 369,
+                        "name": "Slipstream"
                     }
                 ]
             },
@@ -135,7 +139,7 @@ $lmCharacter = json_decode('
         ]
     }', true);
 
-
+# 4 = Roles
 $lmRoleIDs =  array_column(array_filter($lmCharacter["abilities"], function ($ability) {
     return in_array($ability["id"],array(4,8,31));
 })[0]["abilities"],"id");

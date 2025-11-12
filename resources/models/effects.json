@@ -151,7 +151,7 @@
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],
-				"label": "Set up BRAD. (Can do later)",
+				"label": "Set up Remote Access Drive",
 				"confirm":
 				{
 					"body": "Set up BRAD?",
@@ -188,7 +188,7 @@
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],
-				"label": "Set up BRAD",
+				"label": "Set up Remote Access Drive",
 				"confirm":
 				{
 					"body": "Set up BRAD?",
@@ -240,7 +240,7 @@
 						"rejection_label": "The Terminal is already enabled for Remote Access."
 					}
 				],
-				"label": "Set up CtRAD. (Can do later)",
+				"label": "Set up Remote Access Drive",
 				"confirm":
 				{
 					"body": "Set up CtRAD?",
@@ -274,7 +274,7 @@
 				"label": "Set up CtRAD",
 				"confirm":
 				{
-					"body": "Set up CtRAD?",
+					"body": "Set up Remote Access Drive",
 					"button": "Confirm",
 					"timer":
 					{
@@ -320,7 +320,7 @@
 		]
 	},
 	{
-		"name": "debutantalus_repoter_badge",
+		"name": "debutantalus_reporter_badge",
 		"input":
 		[
 			{
@@ -330,7 +330,7 @@
 				"cost":
 				{
 					"type": "dynamic",
-					"base": "values:cost:amount",
+					"amount": "values:cost:amount",
 					"condition":
 					[
 						{
@@ -341,7 +341,7 @@
 						},
 						{
 							"left": "payload:functions:forgery",
-							"operation": "greater_than",
+							"operation": "greater_than_equals",
 							"right": 1,
 							"effect": -2
 						}
@@ -349,7 +349,7 @@
 				},
 				"confirm":
 				{
-					"body": "You sure? It will cost X tag(s)",
+					"body": "You sure? It will cost {cost} Tag{cost!plurality}.",
 					"button": "Confirm",
 					"timer":
 					{
@@ -466,7 +466,14 @@
 			{
 				"type": "action_cost",
 				"amount": "values:action_cost:amount",
-				"conditional": "values:action_type:value",
+				"condition":
+				[
+					{
+						"left": "item:action:action",
+						"operation": "equals",
+						"right": "access"
+					}
+				],
 				"icon": "spirte.png"
 			}
 		]

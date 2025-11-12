@@ -60,6 +60,11 @@ class Payload
         return this.#handle;
     }
 
+    getRoles()
+    {
+        return this.#roles.map(role => role.toLowerCase());
+    }
+
     hasRole(roleName)
     {
         return this.#roles.find(role => role.toLowerCase() === roleName.toLowerCase());
@@ -439,6 +444,16 @@ class Payload
         return actionTime;
     }
 
+    setActionCost(costSource, costAmount)
+    {
+        
+    }
+
+    getActionCost()
+    {
+
+    }
+
     applyTermLoginEffects()
     {
         this.#inventory.applyTermLoginEffects();
@@ -480,6 +495,16 @@ class Payload
     activateItemEffect(effectName, inputIndex)
     {
         this.#inventory.toggleEffect(effectName, inputIndex, true);
+    }
+
+    applyPostActionEffects(actionMap)
+    {
+        this.#inventory.applyPostActionEffects(actionMap);
+    }
+
+    checkItemConditions()
+    {
+        this.#inventory.checkItemConditions();
     }
 
 /*
