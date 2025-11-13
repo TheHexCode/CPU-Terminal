@@ -91,6 +91,19 @@ body::after
 	}
 }
 
+#stickyHeader
+{
+	position: sticky;
+	top: 0;
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.25rem;
+	background-color: var(--bg-color);
+	margin: -0.25rem;
+	padding: 0.25rem;
+	z-index: 90;
+}
+
 .gem.blend
 {
 	animation: gemBlend ease-in-out;

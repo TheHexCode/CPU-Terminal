@@ -221,14 +221,9 @@ class Session
             {
                 actionCost = Math.max(actionCost - this.#repeatIcons[searchResults["icon"]][action], 0);
             }
-
-            if((action === "access") && (this.#touched))
-            {
-                actionCost = Math.max(actionCost - 1, 0);
-            }
         }
 
-        //actionCost += ((payload.getActiveEffect("shim0") || payload.getActiveEffect("shim1")) ? 1 : 0);
+        actionCost = payload.getActionCost(actionCost, action);
 
         return actionCost;
     }

@@ -35,42 +35,46 @@
 					</foreignObject>
 				</svg>
 			</div>
-			<div id="statusBar">
-				<div id="itemStatus">
-					<img id="petStatus" class="hidden" src=""/>
-					<img id="shimStatus" class="hidden" src=""/>
-				</div>
-				<!-- CONNECTED USERS? -->
-				<img id="serverStatus" src="/resources/images/status/server_on.png"/>
-			</div>
-			<div id="gemBar">
-				<div id="gemContainer">
-					<div class="gemPair">
-						<span id="gem1"  class="gem <?php echo $terminal->getAccessGem(1) ?>"></span>
-						<span id="gem2"  class="gem <?php echo $terminal->getAccessGem(2) ?>"></span>
+			<div id="stickyHeader">
+				<div id="statusBar">
+					<div id="itemStatus">
+						<!--<img id="petStatus" class="hidden" src=""/>
+						<img id="shimStatus" class="hidden" src=""/>-->
 					</div>
-					<div class="gemPair">
-						<span id="gem3"  class="gem <?php echo $terminal->getAccessGem(3) ?>"></span>
-						<span id="gem4"  class="gem <?php echo $terminal->getAccessGem(4) ?>"></span>
-					</div>
-					<div class="gemPair">
-						<span id="gem5"  class="gem <?php echo $terminal->getAccessGem(5) ?>"></span>
-						<span id="gem6"  class="gem <?php echo $terminal->getAccessGem(6) ?>"></span>
-					</div>
-					<div class="gemPair">
-						<span id="gem7"  class="gem <?php echo $terminal->getAccessGem(7) ?>"></span>
-						<span id="gem8"  class="gem <?php echo $terminal->getAccessGem(8) ?>"></span>
-					</div>
-					<div class="gemPair">
-						<span id="gem9"  class="gem <?php echo $terminal->getAccessGem(9) ?>"></span>
-						<span id="gem10" class="gem <?php echo $terminal->getAccessGem(10)?>"></span>
+					<div id="connStatus">
+						<!-- CONNECTED USERS? -->
+						<img id="serverStatus" src="/resources/images/status/server_on.png"/>
 					</div>
 				</div>
-				<div id="gemTens" class="dimmed">
-					TENS
-					<div class="lcdBox">
-						<span class="dseg BG">x~~</span>
-						<span id="gemTenTags" class="dseg FG"></span>
+				<div id="gemBar">
+					<div id="gemContainer">
+						<div class="gemPair">
+							<span id="gem1"  class="gem <?php echo $terminal->getAccessGem(1) ?>"></span>
+							<span id="gem2"  class="gem <?php echo $terminal->getAccessGem(2) ?>"></span>
+						</div>
+						<div class="gemPair">
+							<span id="gem3"  class="gem <?php echo $terminal->getAccessGem(3) ?>"></span>
+							<span id="gem4"  class="gem <?php echo $terminal->getAccessGem(4) ?>"></span>
+						</div>
+						<div class="gemPair">
+							<span id="gem5"  class="gem <?php echo $terminal->getAccessGem(5) ?>"></span>
+							<span id="gem6"  class="gem <?php echo $terminal->getAccessGem(6) ?>"></span>
+						</div>
+						<div class="gemPair">
+							<span id="gem7"  class="gem <?php echo $terminal->getAccessGem(7) ?>"></span>
+							<span id="gem8"  class="gem <?php echo $terminal->getAccessGem(8) ?>"></span>
+						</div>
+						<div class="gemPair">
+							<span id="gem9"  class="gem <?php echo $terminal->getAccessGem(9) ?>"></span>
+							<span id="gem10" class="gem <?php echo $terminal->getAccessGem(10)?>"></span>
+						</div>
+					</div>
+					<div id="gemTens" class="dimmed">
+						TENS
+						<div class="lcdBox">
+							<span class="dseg BG">x~~</span>
+							<span id="gemTenTags" class="dseg FG"></span>
+						</div>
 					</div>
 				</div>
 			</div>

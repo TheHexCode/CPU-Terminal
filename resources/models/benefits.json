@@ -1,0 +1,687 @@
+{
+	"benefits":
+	[
+		{
+			"name": "cmm_arms",
+			"stacking": true,
+			"inputs":
+			[
+				{
+					"type": "checkbox",
+					"screen": "crack",
+					"header": "CMM ARMS: ",
+					"label": "Used Slip this Scene?",
+					"activations":
+					[
+						{
+							"type": "plus_tags",
+							"amount": "values:tags:amount",
+							"label":
+							{
+								"location": "crack_extra",
+								"label": "[CMM ARMS:+{values:tags:amount!tens}]"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "copycat",
+			"inputs":
+			[
+				{
+					"screen": "confirm",
+					"type": "checkbox",
+					"header": "COPYCAT: ",
+					"label": "({charges}/{perType!title}) Activate {displayName} for this action to complete it immediately?",
+					"conditions":
+					[
+						{
+							"left": "payload:copyables",
+							"operation": "contains",
+							"right": "action:type"
+						}
+					],
+					"activations":
+					[
+						{
+							"type": "skip_timer"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "pocket_hacker",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"confirm":
+					{
+						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "skip"
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "plus_tags",
+							"amount": "values:tags:amount"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "corp_protocols",
+			"term_login":
+			[
+				{
+					"type": "plus_tags",
+					"amount": "values:tags:amount",
+					"label":
+					{
+						"location": "crack_extra",
+						"label": "[CORP PCL:+{values:tags:amount!tens}]"
+					},
+					"conditions":
+					[
+						{
+							"left": "item:instance:corp_name",
+							"operation": "equals",
+							"right": "terminal:owner"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "driveme",
+			"ph_login":
+			[
+				{
+					"type": "plus_tags",
+					"amount": "values:tags:amount"
+				}
+			]
+		},
+		{
+			"name": "budget_cyberdeck",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"confirm":
+					{
+						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "skip"
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "plus_tags",
+							"amount": "values:tags:amount"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "budget_remote_access_drive",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "crack",
+					"conditions":
+					[
+						{
+							"left": "payload:functions:hacking",
+							"operation": "greater_than",
+							"right": 1,
+							"rejection_label": "You must have Hacking I to set up"
+						},
+						{
+							"left": "session:status",
+							"operation": "not_contains",
+							"right": "remote_enabled",
+							"rejection_label": "The Terminal is already enabled for Remote Access."
+						}
+					],
+					"label": "Set up Remote Access Drive",
+					"confirm":
+					{
+						"body": "Set up BRAD?",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "static",
+							"seconds": 30
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "session",
+							"name": "remote_enabled"
+						}
+					]
+				},
+				{
+					"type": "button",
+					"screen": "inventory",
+					"conditions":
+					[
+						{
+							"left": "payload:functions:hacking",
+							"operation": "greater_than",
+							"right": 1,
+							"rejection_label": "You must have Hacking I to set up"
+						},
+						{
+							"left": "session:status",
+							"operation": "not_contains",
+							"right": "remote_enabled",
+							"rejection_label": "The Terminal is already enabled for Remote Access."
+						}
+					],
+					"label": "Set up Remote Access Drive",
+					"confirm":
+					{
+						"body": "Set up BRAD?",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "static",
+							"seconds": 30
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "session",
+							"name": "remote_enabled"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ciphersync_beacon",
+			"term_login":
+			[
+				{
+					"type": "plus_function",
+					"function": "hacking",
+					"amount": "values:hacking:amount",
+					"label":
+					{
+						"location": "crack_hacking",
+						"label": "[BEACON:&nbsp;&nbsp;+{values:hacking:amount*2!tens}]"
+					}
+				}
+			]
+		},
+		{
+			"name": "conntrust_remote_access_drive",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "crack",
+					"conditions":
+					[
+						{
+							"left": "session:status",
+							"operation": "not_contains",
+							"right": "remote_enabled",
+							"rejection_label": "The Terminal is already enabled for Remote Access."
+						}
+					],
+					"label": "Set up Remote Access Drive",
+					"confirm":
+					{
+						"body": "Set up CtRAD?",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "static",
+							"seconds": 30
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "session",
+							"name": "remote_enabled"
+						}
+					]
+				},
+				{
+					"type": "button",
+					"screen": "inventory",
+					"conditions":
+					[
+						{
+							"left": "session:status",
+							"operation": "not_contains",
+							"right": "remote_enabled",
+							"rejection_label": "The Terminal is already enabled for Remote Access."
+						}
+					],
+					"label": "Set up CtRAD",
+					"confirm":
+					{
+						"body": "Set up Remote Access Drive",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "static",
+							"seconds": 30
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "session",
+							"name": "remote_enabled"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "crd_spider_cyberdeck",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"confirm":
+					{
+						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "skip"
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "plus_tags",
+							"amount": "values:tags:amount"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "debutantalus_reporter_badge",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "Activate Badge?",
+					"cost":
+					{
+						"type": "dynamic",
+						"amount": "values:cost:amount",
+						"conditions":
+						[
+							{
+								"left": "payload:roles",
+								"operation": "contains",
+								"right": "slipstream",
+								"effect": -2
+							},
+							{
+								"left": "payload:functions:forgery",
+								"operation": "greater_than_equals",
+								"right": 1,
+								"effect": -2
+							}
+						]
+					},
+					"confirm":
+					{
+						"body": "You sure? It will cost {cost} Tag{cost!plurality}.",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "action",
+							"seconds": 30
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "debutantalus_reporter_badge"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "deputys_hat",
+			"term_login":
+			[
+				{
+				}
+			]
+		},
+		{
+			"name": "pet_own",
+			"term_login":
+			[
+				{
+					"type": "status",
+					"scope": "payload",
+					"name": "pet_own"
+				}
+			]
+		},
+		{
+			"name": "pet_play",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "Play with DigiPet?",
+					"conditions":
+					[
+						{
+							"left": "payload:status",
+							"operation": "not_contains",
+							"right": "pet_play",
+							"rejection_label": "Already Played With!"
+						}
+					],
+					"confirm":
+					{
+						"body": "You sure?",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "action",
+							"seconds": 30
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "pet_play"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "pet_use",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "execute",
+					"label": "Activate DigiPet?<br/>({charges}/{perType!title})",
+					"conditions":
+					[
+						{
+							"left": "payload:status",
+							"operation": "contains",
+							"right": "pet_play",
+							"rejection_label": "Your DigiPet misses you!<br/>Play with them first!"
+						},
+						{
+							"left": "payload:status",
+							"operation": "not_contains",
+							"right": "pet_use",
+							"rejection_label": "Your DigiPet is all tuckered out!<br/>Wait for the next Scene!"
+						}
+					],
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "pet_use"
+						},
+						{
+							"type": "complete_timer",
+							"animation": null
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "infiltrator_modscript",
+			"ph_login":
+			[
+				{
+					"type": "plus_function",
+					"function": "alarm_sense",
+					"amount": "values:alarm_sense:amount"
+				}
+			],
+			"term_login":
+			[
+				{
+					"type": "plus_function",
+					"function": "alarm_sense",
+					"amount": "values:alarm_sense:amount"
+				}
+			]
+		},
+		{
+			"name": "johnnys_special_touch",
+			"post_action":
+			[
+				{
+					"type": "status",
+					"scope": "payload",
+					"name": "johnnys_special_touch",
+					"conditions":
+					[
+						{
+							"left": "item:action:action",
+							"operation": "equals",
+							"right": "access"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "mm_console",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"confirm":
+					{
+						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "skip"
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "plus_tags",
+							"amount": "values:tags:amount"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "power_glove_uh9k",
+			"term_login":
+			[
+				{
+					"type": "status",
+					"scope": "payload",
+					"name": "power_glove_uh9k_time"
+				}
+			]
+		},
+		{
+			"name": "shimmerstick_consume",
+			"inputs":
+			[
+				{
+					"type": "checkbox",
+					"screen": "ph_login",
+					"header": "SHIMMERSTICK: ",
+					"label": "Consume Shimmerstick?",
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "shimmerstick_consumed"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "shimmerstick_apply",
+			"inputs":
+			[
+				{
+					"type": "checkbox",
+					"screen": "crack",
+					"header": "SHIMMERSTICK: ",
+					"label": "Apply Shimmerstick?",
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "shimmerstick_applied"
+						}
+					]
+				},
+				{
+					"type": "button",
+					"screen": "inventory",
+					"label": "Apply Shimmerstick?",
+					"confirm":
+					{
+						"body": "You sure? Consequences.",
+						"button": "Confirm",
+						"timer":
+						{
+							"type": "skip"
+						}
+					},
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "shimmerstick_applied"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "vigil_consume",
+			"inputs":
+			[
+				{
+					"type": "checkbox",
+					"screen": "ph_login",
+					"header": "VIGIL: ",
+					"label": "Consume Vigil?",
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "vigil_consumed"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "vigil_apply",
+			"inputs":
+			[
+				{
+					"type": "button",
+					"screen": "crack",
+					"header": "VIGIL: ",
+					"label": "Apply Vigil?",
+					"activations":
+					[
+						{
+							"type": "pop-up",
+							"name": "vigil_function_select"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "digisec_secret",
+			"inputs":
+			[
+				{
+					"type": "checkbox",
+					"screen": "ph_login",
+					"header": "DIGITAL SECURITY SECRETS: ",
+					"label": "Burn DigiSec Secret?",
+					"conditions":
+					[
+						{
+							"left": "item:instance:corp_name",
+							"operation": "equals",
+							"right": "terminal:owner"
+						}
+					],
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "digisec_secret"
+						}
+					]
+				}
+			]
+		}
+	]
+}

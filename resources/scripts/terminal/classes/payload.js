@@ -436,27 +436,48 @@ class Payload
         // NEGATIVE TIMEMOD = SHORTER TIMER
         let timeModification = this.#timeMods.reduce(function(accumulator, timeObject)
         {
-            accumulator + timeObject.amount;
+            return accumulator + timeObject.amount;
         }, 0);
 
+        // DEFAULT TIME IS 30s
         let actionTime = Math.max(10, 30 + timeModification);
 
         return actionTime;
     }
 
-    setActionCost(costSource, costAmount)
+    setActionCost(costSource, actionType, costAmount)
     {
-        
+        this.#costMods.push(
+            {
+                "source": costSource,
+                "actionType": actionType,
+                "amount": costAmount
+            }
+        )
     }
 
-    getActionCost()
+    getActionCost(baseCost, actionType)
     {
+        let costModification = this.#costMods.reduce(function(accumulator, costObject)
+        {
+            if((costObject["actionType"] === "any") || (costObject["actionType"] === actionType))
+            {
+                return accumulator + costObject["amount"];
+            }
+            else
+            {
+                return accumulator;
+            }
+        }, baseCost);
 
+        return Math.max(0, costModification);
     }
 
     applyTermLoginEffects()
     {
         this.#inventory.applyTermLoginEffects();
+
+        this.#inventory.reapplyDisplayEffects(this.#statusEffects);
     }
 
     addCyberdeck(deckSource)

@@ -796,7 +796,7 @@ function injectUserPayload(userPayload)
 						if(payload.getFunction("REPEAT"))
 						{
 							session.setFunctionState("REPEAT",resultJSON["entryID"],resultJSON["action"].toLowerCase(),payload.getFunction("REPEAT"));
-							updateEntryCosts("REPEAT",resultJSON["entryPath"],resultJSON["action"]);
+							//updateEntryCosts("REPEAT",resultJSON["entryPath"],resultJSON["action"]);
 						}
 
 						/*
@@ -809,6 +809,7 @@ function injectUserPayload(userPayload)
 					}
 				});
 
+				updateEntryCosts();
 				disableExpensiveButtons();
 			});
 
@@ -2120,7 +2121,7 @@ function completeAction(actionMap)
 			if(payload.getFunction("REPEAT"))
 			{
 				session.setFunctionState("REPEAT",actionMap["targetID"],actionMap["action"].toLowerCase(),payload.getFunction("REPEAT"));
-				updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["action"]);
+				//updateEntryCosts("REPEAT",actionMap["results"]["entryPath"],actionMap["action"]);
 			}
 			/*
 			if(payload.getItem("deck_jst")) //JOHNNY'S SPECIAL TOUCH
@@ -2129,6 +2130,7 @@ function completeAction(actionMap)
 				updateEntryCosts("TOUCHED",actionMap["results"]["entryPath"],actionMap["action"]);
 			}
 			*/
+			updateEntryCosts();
 			break;
 		}
 		case("log"):
@@ -2287,6 +2289,38 @@ function completeAction(actionMap)
 	*/
 }
 
+function updateEntryCosts()
+{
+	$(".accessButton, .modifyButton").each(function(index,entryButton)
+	{
+		if($(entryButton).html() !== "N/A")
+		{
+			let entryAction = null;
+			switch(true)
+			{
+				case(entryButton.classList.contains("accessButton")):
+				{
+					entryAction = "access";
+					break;
+				}
+				case(entryButton.classList.contains("modifyButton")):
+				{
+					entryAction = "modify";
+					break;
+				}
+			}
+
+			if(entryAction !== null)
+			{
+				let newCost = session.getActionCost($(entryButton).attr("data-id"), entryAction);
+				$(entryButton).attr("data-cost",newCost);
+				$(entryButton).html(newCost + " Tag" + pluralize(newCost));
+			}
+		};
+	});
+}
+
+/*
 function updateEntryCosts(reducer, entryPath, entryAction)
 {
 	if((reducer === "REPEAT") && ((entryAction === "access") || (entryAction === "modify")))
@@ -2334,9 +2368,10 @@ function updateEntryCosts(reducer, entryPath, entryAction)
 
 			payload.setActiveEffect("deck_jst",true);
 		}
-		*/
+		*//*
 	}
 }
+*/
 
 function changeExternalTags(change)
 {

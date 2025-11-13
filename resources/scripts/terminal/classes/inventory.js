@@ -3,7 +3,8 @@ class Inventory
     #globalThis = this;
 
     #itemModel;
-    #effectModel;
+    #benefitModel;
+    #statusModel;
 
     #items;
     #effects;
@@ -15,13 +16,198 @@ class Inventory
     constructor()
     {
         this.#itemModel = $.getJSON("/resources/models/items.json");
-        this.#effectModel = $.getJSON("/resources/models/effects.json");
+        this.#benefitModel = $.getJSON("/resources/models/benefits.json");
+        this.#statusModel = $.getJSON("/resources/models/statuses.json");
 
         this.#items = [];
         this.#effects = [];
         this.#initialActivations = [];
         this.#confirmInputs = [];
         this.#executeInputs = [];
+    }
+
+    establishInventory(itemList, itemUses)
+    {
+        this.#itemModel = this.#itemModel.responseJSON["items"];
+        this.#benefitModel = this.#benefitModel.responseJSON["benefits"];
+        this.#statusModel = this.#statusModel.responseJSON["statuses"];
+
+        // LINK THE ACTUAL OBJECTS BETWEEN EACH OTHER?
+        // MAKE A NEW OBJECT WITH ALL OF THE PERTINENT INFO
+        // -- CAN THIS INCLUDE DYNAMIC INFO OR IS THAT BY DEFINITION GOING TO MAKE THE DATA STALE
+
+        itemList.forEach(function(dbItem)
+        {
+            let proposedItem = this.#itemModel.find(function(potentialItem)
+            {
+                return potentialItem.name.toLowerCase().replace("&#39;","'") === dbItem.name.toLowerCase();
+            });
+
+            let proposedTier = proposedItem.tiers.find(function(potentialTier)
+            {
+                return Number(potentialTier.tier) === Number(dbItem.tier);
+            });
+
+            let itemName = proposedItem.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier
+
+            proposedTier.effects.forEach(function(effect)
+            {
+                let proposedEffect = this.#effectModel.find(function(potentialEffect)
+                {
+                    return potentialEffect.name.toLowerCase() === effect.name.toLowerCase();
+                }) ?? {};
+
+                if(proposedEffect.stacking)
+                {
+                    proposedEffect["effect_name"] = effect.name.toLowerCase();
+
+                    effect.values.forEach(function(value)
+                    {
+                        value["stack"] = value.amount;
+                    });
+                }
+                else
+                {
+                    proposedEffect["effect_name"] = effect.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier;
+                }
+
+                proposedEffect["values"] = effect.values ?? null;
+                proposedEffect["charges"] = effect.charges ?? null;
+                proposedEffect["perType"] = effect.perType ?? null;
+                proposedEffect["displayName"] = proposedItem.name + " [T" + proposedTier.tier + "]";
+                proposedEffect["item_name"] = itemName;
+                proposedEffect["instance"] = (dbItem.instanceKey === "" ? null : {[dbItem.instanceKey]: Number(dbItem.instanceValue)});
+
+                let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
+
+                if(extantEffect === undefined)
+                {
+                    let usedItem = itemUses.find(function(itemEffect)
+                    {
+                        return itemEffect.effect === proposedEffect["effect_name"];
+                    }, this.#globalThis);
+
+                    if(usedItem !== undefined)
+                    {
+                        switch(proposedEffect["perType"])
+                        {
+                            case("sim"):
+                            {
+                                proposedEffect["uses"] = usedItem["simUses"];
+                                break;
+                            }
+                            case("scene"):
+                            {
+                                proposedEffect["uses"] = usedItem["jobUses"];
+                                break;
+                            }
+                            case("term"):
+                            {
+                                proposedEffect["uses"] = usedItem["termUses"];
+                                break;
+                            }
+                            case("item"):
+                            default:
+                            {
+                                proposedEffect["uses"] = usedItem["itemUses"];
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        proposedEffect["uses"] = 0;
+                    }
+
+                    this.#effects.push(structuredClone(proposedEffect));
+
+                    if(Object.keys(proposedItem).includes("dataEffectString"))
+                    {
+                        proposedItem["dataEffectString"] += "!" + proposedEffect["effect_name"] + ";"
+                    }
+                    else
+                    {
+                        proposedItem["dataEffectString"] = "!" + proposedEffect["effect_name"] + ";"
+                    }
+
+                }
+                else
+                {
+                    extantEffect.values.forEach(function(extantValue)
+                    {
+                        let propValue = proposedEffect.values.find((proposedValue) => {return proposedValue.name === extantValue.name;});
+                        extantValue["stack"] += propValue.amount;
+                    });
+                }
+            }, this.#globalThis);
+
+            this.#items.push({
+                "item_name": itemName,
+                "tier": proposedTier.tier,
+                "display_name": proposedItem.name + " [T" + proposedTier.tier + "]",
+                "category": proposedItem.category,
+                "type": proposedItem.type,
+                "tags": proposedItem.tags,
+                "effects": proposedTier.effects,
+                "dataEffect": proposedItem.dataEffectString
+            });
+
+        }, this.#globalThis);
+
+        this.#items.forEach(function(item)
+        {
+            $("#noItems").addClass("hidden");
+
+            let itemCat = null;
+            switch(item["category"])
+            {
+                case("arms"):
+                {
+                    itemCat = "arms";
+                    break;
+                }
+                case("customization"):
+                {
+                    itemCat = "cust";
+                    break;
+                }
+                default:
+                {
+                    switch(item["type"])
+                    {
+                        case("cyberdeck"):
+                        {
+                            itemCat = "deck";
+                            break;
+                        }
+                        case("implant_arm"):
+                        {
+                            itemCat = "impl";
+                            break;
+                        }
+                        case("consumable"):
+                        case("consumable_drug"):
+                        {
+                            itemCat = "cons";
+                            break;
+                        }
+                        default:
+                        {
+                            itemCat = "util";
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            $(".itemCat[data-cat='" + itemCat + "']").removeClass("hidden");
+
+            $(".itemCat[data-cat='" + itemCat + "'] > .itemList").append(
+                            "<li id='" + item["item_name"] + "' class='itemItem'>" +
+                                "<span class='itemName'>" + item["display_name"] + "</span>" +
+                                "<span class='itemActions' data-effect='" + item["dataEffect"] + "'></span>" +
+                            "</li>");
+        });
     }
 
     getConfirmInputs()
@@ -186,182 +372,6 @@ class Inventory
         }, this.#globalThis);
 
         return returnArray;
-    }
-
-    establishInventory(itemList, itemUses)
-    {
-        this.#itemModel = this.#itemModel.responseJSON["items"];
-        this.#effectModel = this.#effectModel.responseJSON;
-
-        itemList.forEach(function(dbItem)
-        {
-            let proposedItem = this.#itemModel.find(function(potentialItem)
-            {
-                return potentialItem.name.toLowerCase().replace("&#39;","'") === dbItem.name.toLowerCase();
-            });
-
-            let proposedTier = proposedItem.tiers.find(function(potentialTier)
-            {
-                return Number(potentialTier.tier) === Number(dbItem.tier);
-            });
-
-            proposedTier.effects.forEach(function(effect)
-            {
-                let proposedEffect = this.#effectModel.find(function(potentialEffect)
-                {
-                    return potentialEffect.name.toLowerCase() === effect.name.toLowerCase();
-                }) ?? {};
-
-                if(proposedEffect.stacking)
-                {
-                    proposedEffect["effect_name"] = effect.name.toLowerCase();
-
-                    effect.values.forEach(function(value)
-                    {
-                        value["stack"] = value.amount;
-                    });
-                }
-                else
-                {
-                    proposedEffect["effect_name"] = effect.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier;
-                }
-
-                proposedEffect["values"] = effect.values ?? null;
-                proposedEffect["charges"] = effect.charges ?? null;
-                proposedEffect["perType"] = effect.perType ?? null;
-                proposedEffect["displayName"] = proposedItem.name + " [T" + proposedTier.tier + "]";
-                proposedEffect["instance"] = (dbItem.instanceKey === "" ? null : {[dbItem.instanceKey]: Number(dbItem.instanceValue)});
-
-                let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
-
-                if(extantEffect === undefined)
-                {
-                    let usedItem = itemUses.find(function(itemEffect)
-                    {
-                        return itemEffect.effect === proposedEffect["effect_name"];
-                    }, this.#globalThis);
-
-                    if(usedItem !== undefined)
-                    {
-                        switch(proposedEffect["perType"])
-                        {
-                            case("sim"):
-                            {
-                                proposedEffect["uses"] = usedItem["simUses"];
-                                break;
-                            }
-                            case("scene"):
-                            {
-                                proposedEffect["uses"] = usedItem["jobUses"];
-                                break;
-                            }
-                            case("term"):
-                            {
-                                proposedEffect["uses"] = usedItem["termUses"];
-                                break;
-                            }
-                            case("item"):
-                            default:
-                            {
-                                proposedEffect["uses"] = usedItem["itemUses"];
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        proposedEffect["uses"] = 0;
-                    }
-
-                    this.#effects.push(structuredClone(proposedEffect));
-
-                    if(Object.keys(proposedItem).includes("dataEffectString"))
-                    {
-                        proposedItem["dataEffectString"] += "!" + proposedEffect["effect_name"] + ";"
-                    }
-                    else
-                    {
-                        proposedItem["dataEffectString"] = "!" + proposedEffect["effect_name"] + ";"
-                    }
-
-                }
-                else
-                {
-                    extantEffect.values.forEach(function(extantValue)
-                    {
-                        let propValue = proposedEffect.values.find((proposedValue) => {return proposedValue.name === extantValue.name;});
-                        extantValue["stack"] += propValue.amount;
-                    });
-                }
-            }, this.#globalThis);
-
-            this.#items.push({
-                "item_name": proposedItem.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier,
-                "tier": proposedTier.tier,
-                "display_name": proposedItem.name + " [T" + proposedTier.tier + "]",
-                "category": proposedItem.category,
-                "type": proposedItem.type,
-                "tags": proposedItem.tags,
-                "effects": proposedTier.effects,
-                "dataEffect": proposedItem.dataEffectString
-            });
-
-        }, this.#globalThis);
-
-        this.#items.forEach(function(item)
-        {
-            $("#noItems").addClass("hidden");
-
-            let itemCat = null;
-            switch(item["category"])
-            {
-                case("arms"):
-                {
-                    itemCat = "arms";
-                    break;
-                }
-                case("customization"):
-                {
-                    itemCat = "cust";
-                    break;
-                }
-                default:
-                {
-                    switch(item["type"])
-                    {
-                        case("cyberdeck"):
-                        {
-                            itemCat = "deck";
-                            break;
-                        }
-                        case("implant_arm"):
-                        {
-                            itemCat = "impl";
-                            break;
-                        }
-                        case("consumable"):
-                        case("consumable_drug"):
-                        {
-                            itemCat = "cons";
-                            break;
-                        }
-                        default:
-                        {
-                            itemCat = "util";
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            $(".itemCat[data-cat='" + itemCat + "']").removeClass("hidden");
-
-            $(".itemCat[data-cat='" + itemCat + "'] > .itemList").append(
-                            "<li id='" + item["item_name"] + "' class='itemItem'>" +
-                                "<span class='itemName'>" + item["display_name"] + "</span>" +
-                                "<span class='itemActions' data-effect='" + item["dataEffect"] + "'></span>" +
-                            "</li>");
-        });
     }
 
     #checkCondition(effectConditions, itemValues=null)
@@ -758,14 +768,56 @@ class Inventory
         }
     }
 
-    #displayActivationIcon(parentEffect, iconPath)
+    #displayActivationIcon(activationDetails)
     {
+        let iconObject = activationDetails["icon"];
 
+        if($("#itemStatus img[data-icon='" + activationDetails["name"] + "']").length === 0)
+        {
+            if(Object.keys(iconObject).includes("hierarchy"))
+            {
+                let overwrites = iconObject["hierarchy"]["overwrites"];
+                let overwritten = iconObject["hierarchy"]["overwritten_by"];
+
+                if($("#itemStatus img").filter(function(index, element)
+                {
+                    return overwritten.includes(element.dataset["icon"]);
+                }).length === 0)
+                {
+                    let replaceableImg = $("#itemStatus img").filter(function(index, element)
+                    {
+                        return overwrites.includes(element.dataset["icon"]);
+                    });
+
+                    if(replaceableImg.length === 0)
+                    {
+                        $("#itemStatus").append('<img data-icon="' + activationDetails["name"] + '" src="' + iconObject["source"] + '"/>');
+                    }
+                    else
+                    {
+                        $(replaceableImg[0]).attr("src", iconObject["source"]);
+                        $(replaceableImg[0]).attr("data-icon", activationDetails["name"]);
+                    }
+                }
+                else
+                {
+                    // Do nothing, you were overwritten
+                }
+            }
+            else
+            {
+                $("#itemStatus").append('<img data-icon="' + activationDetails["name"] + '" src="' + iconObject["source"] + '"/>');
+            }
+        }
+        else
+        {
+            $("#itemStatus img[data-icon='" + activationDetails["name"] + "']").attr("src", iconObject["source"]);
+        }
     }
 
-    #removeActivationIcon(parentEffect, iconPath)
+    #removeActivationIcon(activationDetails)
     {
-
+        $("#itemStatus img[data-icon='" + activationDetails["name"] + "']").remove();
     }
 
     #activateEffect(parentEffect, activationDetails, activate=true, initial=false)
@@ -792,11 +844,11 @@ class Inventory
         {
             if(activate)
             {
-                this.#displayActivationIcon(parentEffect, activationDetails.icon);
+                this.#displayActivationIcon(activationDetails);
             }
             else
             {
-                this.#removeActivationIcon(parentEffect, activationDetails.icon);
+                this.#removeActivationIcon(activationDetails);
             }
         }
 
@@ -865,28 +917,14 @@ class Inventory
             }
             case("action_cost"):
             {
-                /*
-                    {
-                        "type": "action_cost",
-                        "amount": "values:action_cost:amount",
-                        "conditional": "values:action_type:value",
-                        "icon": "spirte.png"
-                    }
-                //////////////////////////////////////////////////
-                    {
-						"type": "action_cost",
-						"amount": "values:action_cost:amount"
-					}
-                */
                 if(activate)
                 {
-                    payload.setActionCost(parentEffect.effect_name, amount);
+                    payload.setActionCost(parentEffect.effect_name, activationDetails["action_type"], amount);
                 }
                 else
                 {
-                    payload.setActionCost(parentEffect.effect_name, amount * -1);
+                    payload.setActionCost(parentEffect.effect_name, activationDetails["action_type"], amount * -1);
                 }
-                break;
                 break;
             }
             case("skip_timer"):
@@ -1428,6 +1466,30 @@ class Inventory
         });
     }
 
+    reapplyDisplayEffects(payloadEffects)
+    {
+        /*
+        payloadEffects.forEach(function(payloadEffect)
+        {
+            let activation = null;
+            JSON.stringify(this.#effects, (_, nestedValue) => {
+                if (nestedValue &&
+                    nestedValue["type"] === "payload_effect" &&
+                    Object.keys(nestedValue).includes("icon") &&
+                    nestedValue["name"] === payloadEffect)
+                {
+                    activation = nestedValue;
+                }
+                return nestedValue;
+            });
+
+            if(activation !== null)
+            {
+                this.#displayActivationIcon(activation);
+            }
+        }, this.#globalThis); */
+    }
+
     submitInitialEffects()
     {
         $.ajax({
@@ -1497,6 +1559,18 @@ class Inventory
 
                     conditionCheck = checkResults;
                 }
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/resources/scripts/terminal/db/useItems.php",
+                    data:
+                    {
+                        userID: payload.getUserID(),
+                        effects: mainEffect["effect_name"],
+                        termID: session.getTerminalID()
+                    }
+                });
 
                 if((conditionCheck === true) && (chargeDisabled === false))
                 {

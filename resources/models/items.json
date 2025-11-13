@@ -13,7 +13,7 @@
 			[
 				{
 					"tier": 2,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "cmm_arms",
@@ -42,7 +42,7 @@
 			[
 				{
 					"tier": 2,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "cmm_arms",
@@ -71,7 +71,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "copycat",
@@ -110,7 +110,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "corp_protocols",
@@ -142,7 +142,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "pocket_hacker",
@@ -160,7 +160,7 @@
 				},
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "pocket_hacker",
@@ -195,7 +195,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "driveme",
@@ -227,7 +227,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "budget_cyberdeck",
@@ -256,7 +256,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "budget_remote_access_drive"
@@ -281,7 +281,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "ciphersync_beacon",
@@ -297,7 +297,7 @@
 				},
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "ciphersync_beacon",
@@ -324,7 +324,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "conntrust_remote_access_drive"
@@ -353,7 +353,7 @@
 			[
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "crd_spider_cyberdeck",
@@ -371,7 +371,7 @@
 				},
 				{
 					"tier": 2,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "crd_spider_cyberdeck",
@@ -405,7 +405,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "debutantalus_reporter_badge",
@@ -423,7 +423,7 @@
 				},
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "debutantalus_reporter_badge",
@@ -452,7 +452,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "deputys_hat",
@@ -488,8 +488,11 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
+						{
+							"name": "pet_own"
+						},
 						{
 							"name": "pet_play",
 							"charges": 1,
@@ -520,13 +523,13 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 					]
 				},
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 					]
 				}
@@ -543,7 +546,7 @@
 			[
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "infiltrator_modscript",
@@ -575,7 +578,7 @@
 			[
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "johnnys_special_touch",
@@ -609,7 +612,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "mm_console",
@@ -638,7 +641,7 @@
 			[
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "power_glove_uh9k",
@@ -669,7 +672,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "shimmerstick_consume",
@@ -696,7 +699,7 @@
 				},
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "shimmerstick_consume",
@@ -745,7 +748,7 @@
 			[
 				{
 					"tier": 0,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "vigil_consume",
@@ -772,7 +775,7 @@
 				},
 				{
 					"tier": 1,
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "vigil_consume",
@@ -828,7 +831,7 @@
 				{
 					"tier": 0,
 					"tierName": "Minor",
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "digisec_secret",
@@ -847,7 +850,7 @@
 				{
 					"tier": 1,
 					"tierName": "Moderate",
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "digisec_secret",
@@ -866,7 +869,7 @@
 				{
 					"tier": 2,
 					"tierName": "Major",
-					"effects":
+					"benefits":
 					[
 						{
 							"name": "digisec_secret",

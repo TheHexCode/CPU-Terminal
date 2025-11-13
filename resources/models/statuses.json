@@ -1,0 +1,141 @@
+{
+    "statuses":
+    {
+        "payload":
+        [
+            {
+                "name": "debutantalus_reporter_badge"
+            },
+            {
+                "name": "pet_own",
+                "icon":
+                {
+                    "source": "/resources/images/status/pet_egg.png",
+                    "hierarchy":
+                    {
+                        "overwrites": [],
+                        "overwritten_by":
+                        [
+                            "pet_play",
+                            "pet_use"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "pet_play",
+                "icon":
+                {
+                    "source": "/resources/images/status/pet_ready.png",
+                    "hierarchy":
+                    {
+                        "overwrites":
+                        [
+                            "pet_own"
+                        ],
+                        "overwritten_by":
+                        [
+                            "pet_use"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "pet_use",
+                "icon":
+                {
+                    "source": "/resources/images/status/pet_sleep.png",
+                    "hierarchy":
+                    {
+                        "type": "payload",
+                        "overwrites":
+                        [
+                            "pet_own",
+                            "pet_play"
+                        ],
+                        "overwritten_by": []
+                    }
+                }
+            },
+            {
+                "name": "johnnys_special_touch",
+                "icon":
+                {
+                    "source": "/resources/images/status/touched.png"
+                },
+                "benefits":
+                [
+                    {
+                        "type": "action_cost",
+                        "amount": "values:action_cost:amount",
+                        "action_type": "access"
+                    }
+                ]
+            },
+            {
+                "name": "cyberdeck_override",
+                "benefits":
+                [
+
+                ]
+            },
+            {
+                "name": "power_glove_uh9k_time",
+                "benefits":
+                [
+                    {
+                        "type": "cyberdeck_override"
+                    },
+                    {
+                        "type": "action_time",
+					    "amount": "values:action_time:amount"
+                    }
+                ]
+            },
+            {
+                "name": "shimmerstick_consumed"
+            },
+            {
+                "name": "shimmerstick_applied",
+                "benefits":
+                [
+                    {
+                        "type": "action_cost",
+                        "amount": "values:action_cost:amount",
+                        "action_type": "any"
+                    },
+                    {
+                        "type": "action_time",
+                        "amount": "values:action_time:amount"
+                    },
+                    {
+                        "type": "cyberdeck_override"
+                    }
+                ]
+            },
+            {
+                "name": "vigil_consumed"
+            },
+            {
+                "name": "digisec_secret",
+                "benefits":
+                [
+                    {
+                        "type": "action_time",
+                        "amount": "values:time:amount"
+                    }
+                ]
+            }
+        ],
+        "session":
+        [
+            {
+                "name": "remote_enabled",
+                "icon":
+                {
+
+                }
+            }
+        ]
+    }
+}
