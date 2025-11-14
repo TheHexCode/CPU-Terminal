@@ -1,11 +1,10 @@
 {
-	"$schema": "./schemas/items.schema.json",
 	"items":
 	[
 		{
 			"name": "CMM Widow",
 			"category": "arms",
-			"type": "ranged_1h",
+			"subCategory": "ranged_1h",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -34,7 +33,7 @@
 		{
 			"name": "CMM Cocoon",
 			"category": "arms",
-			"type": "shield_small",
+			"subCategory": "shield_small",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -63,7 +62,7 @@
 		{
 			"name": "Copycat",
 			"category": "customization",
-			"type": "cyberdeck_software",
+			"subCategory": "cyberdeck_software",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -85,7 +84,7 @@
 		{
 			"name": "Corp Protocols",
 			"category": "customization",
-			"type": "cyberdeck",
+			"subCategory": "cyberdeck",
 			"flavor": "",
 			"owner": "",
 			"instance":
@@ -129,7 +128,7 @@
 		{
 			"name": "Pocket Hacker",
 			"category": "customization",
-			"type": "asw_body",
+			"subCategory": "asw_body",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -181,7 +180,7 @@
 		{
 			"name": "DriveMe",
 			"category": "customization",
-			"type": "cyberdeck_software",
+			"subCategory": "cyberdeck_software",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -214,7 +213,7 @@
 		{
 			"name": "Budget Cyberdeck",
 			"category": "utility",
-			"type": "cyberdeck",
+			"subCategory": "cyberdeck",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -248,7 +247,7 @@
 		{
 			"name": "Budget Remote Access Drive",
 			"category": "utility",
-			"type": "utility",
+			"subCategory": "utility",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -268,7 +267,7 @@
 		{
 			"name": "CipherSync Beacon",
 			"category": "utility",
-			"type": "hacking_watch",
+			"subCategory": "hacking_watch",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -316,7 +315,7 @@
 		{
 			"name": "ConnTrust Remote Access Drive",
 			"category": "utility",
-			"type": "utility",
+			"subCategory": "utility",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -336,7 +335,7 @@
 		{
 			"name": "CRD Spider Cyberdeck",
 			"category": "utility",
-			"type": "cyberdeck",
+			"subCategory": "cyberdeck",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -392,7 +391,7 @@
 		{
 			"name": "Debutantalus Reporter Badge",
 			"category": "utility",
-			"type": "utility",
+			"subCategory": "utility",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -444,7 +443,7 @@
 		{
 			"name": "Deputy&#39;s Hat",
 			"category": "utility",
-			"type": "utility",
+			"subCategory": "utility",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -475,7 +474,7 @@
 		{
 			"name": "DigiPet",
 			"category": "utility",
-			"type": "utility",
+			"subCategory": "utility",
 			"flavor": "",
 			"owner": "",
 			"instance": [
@@ -510,7 +509,7 @@
 		{
 			"name": "FKD DC-17",
 			"category": "utility",
-			"type": "cyberdeck",
+			"subCategory": "cyberdeck",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -538,7 +537,7 @@
 		{
 			"name": "Infiltrator ModScript",
 			"category": "utility",
-			"type": "modscript",
+			"subCategory": "modscript",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -565,7 +564,7 @@
 		{
 			"name": "Johnny&#39;s Special Touch",
 			"category": "utility",
-			"type": "cyberdeck",
+			"subCategory": "cyberdeck",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -599,7 +598,7 @@
 		{
 			"name": "MM Console",
 			"category": "utility",
-			"type": "cyberdeck",
+			"subCategory": "cyberdeck",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -633,7 +632,7 @@
 		{
 			"name": "Power Glove [Ultra-Hacking 9000]",
 			"category": "utility",
-			"type": "implant_arm",
+			"subCategory": "implant_arm",
 			"flavor": "",
 			"owner": "",
 			"tags": [],
@@ -660,7 +659,7 @@
 		{
 			"name": "Shimmerstick",
 			"category": "utility",
-			"type": "consumable",
+			"subCategory": "consumable",
 			"flavor": "",
 			"owner": "",
 			"tags": [
@@ -729,7 +728,7 @@
 		{
 			"name": "Vigil",
 			"category": "utility",
-			"type": "consumable_drug",
+			"subCategory": "consumable_drug",
 			"flavor": "",
 			"owner": "",
 			"tags":
@@ -805,7 +804,7 @@
 		{
 			"name": "DigiSec Secrets",
 			"category": "resource",
-			"type": "secret",
+			"subCategory": "secret",
 			"flavor": "",
 			"owner": "",
 			"tags": [

@@ -15,11 +15,11 @@
 					[
 						{
 							"type": "plus_tags",
-							"amount": "values:tags:amount",
+							"amount": "values:tags",
 							"label":
 							{
 								"location": "crack_extra",
-								"label": "[CMM ARMS:+{values:tags:amount!tens}]"
+								"label": "[CMM ARMS:+{values:tags!tens}]"
 							}
 						}
 					]
@@ -59,10 +59,10 @@
 				{
 					"type": "button",
 					"screen": "inventory",
-					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"label": "+{values:tags} Tag{values:tags!plurality}",
 					"confirm":
 					{
-						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"body": "Use {displayName} to gain {values:tags} Tag{values:tags!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 						"button": "Confirm",
 						"timer":
 						{
@@ -73,7 +73,7 @@
 					[
 						{
 							"type": "plus_tags",
-							"amount": "values:tags:amount"
+							"amount": "values:tags"
 						}
 					]
 				}
@@ -85,11 +85,11 @@
 			[
 				{
 					"type": "plus_tags",
-					"amount": "values:tags:amount",
+					"amount": "values:tags",
 					"label":
 					{
 						"location": "crack_extra",
-						"label": "[CORP PCL:+{values:tags:amount!tens}]"
+						"label": "[CORP PCL:+{values:tags!tens}]"
 					},
 					"conditions":
 					[
@@ -108,7 +108,7 @@
 			[
 				{
 					"type": "plus_tags",
-					"amount": "values:tags:amount"
+					"amount": "values:tags"
 				}
 			]
 		},
@@ -119,10 +119,10 @@
 				{
 					"type": "button",
 					"screen": "inventory",
-					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"label": "+{values:tags} Tag{values:tags!plurality}",
 					"confirm":
 					{
-						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"body": "Use {displayName} to gain {values:tags} Tag{values:tags!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 						"button": "Confirm",
 						"timer":
 						{
@@ -133,7 +133,7 @@
 					[
 						{
 							"type": "plus_tags",
-							"amount": "values:tags:amount"
+							"amount": "values:tags"
 						}
 					]
 				}
@@ -228,11 +228,11 @@
 				{
 					"type": "plus_function",
 					"function": "hacking",
-					"amount": "values:hacking:amount",
+					"amount": "values:hacking",
 					"label":
 					{
 						"location": "crack_hacking",
-						"label": "[BEACON:&nbsp;&nbsp;+{values:hacking:amount*2!tens}]"
+						"label": "[BEACON:&nbsp;&nbsp;+{values:hacking*2!tens}]"
 					}
 				}
 			]
@@ -314,10 +314,10 @@
 				{
 					"type": "button",
 					"screen": "inventory",
-					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"label": "+{values:tags} Tag{values:tags!plurality}",
 					"confirm":
 					{
-						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"body": "Use {displayName} to gain {values:tags} Tag{values:tags!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 						"button": "Confirm",
 						"timer":
 						{
@@ -328,7 +328,7 @@
 					[
 						{
 							"type": "plus_tags",
-							"amount": "values:tags:amount"
+							"amount": "values:tags"
 						}
 					]
 				}
@@ -345,7 +345,7 @@
 					"cost":
 					{
 						"type": "dynamic",
-						"amount": "values:cost:amount",
+						"amount": "values:cost",
 						"conditions":
 						[
 							{
@@ -485,7 +485,7 @@
 				{
 					"type": "plus_function",
 					"function": "alarm_sense",
-					"amount": "values:alarm_sense:amount"
+					"amount": "values:alarm_sense"
 				}
 			],
 			"term_login":
@@ -493,13 +493,13 @@
 				{
 					"type": "plus_function",
 					"function": "alarm_sense",
-					"amount": "values:alarm_sense:amount"
+					"amount": "values:alarm_sense"
 				}
 			]
 		},
 		{
 			"name": "johnnys_special_touch",
-			"post_action":
+			"post_actions":
 			[
 				{
 					"type": "status",
@@ -508,7 +508,7 @@
 					"conditions":
 					[
 						{
-							"left": "item:action:action",
+							"left": "action:type",
 							"operation": "equals",
 							"right": "access"
 						}
@@ -523,10 +523,10 @@
 				{
 					"type": "button",
 					"screen": "inventory",
-					"label": "+{values:tags:amount} Tag{values:tags:amount!plurality}",
+					"label": "+{values:tags} Tag{values:tags!plurality}",
 					"confirm":
 					{
-						"body": "Use {displayName} to gain {values:tags:amount} Tag{values:tags:amount!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
+						"body": "Use {displayName} to gain {values:tags} Tag{values:tags!plurality}?<br/><br/>This item may be used <b>{totalCharges}</b> time{totalCharges!plurality} per {perType!title}. You have <b>{remainCharges}</b> use{remainCharges!plurality} left.",
 						"button": "Confirm",
 						"timer":
 						{
@@ -537,7 +537,7 @@
 					[
 						{
 							"type": "plus_tags",
-							"amount": "values:tags:amount"
+							"amount": "values:tags"
 						}
 					]
 				}

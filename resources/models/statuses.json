@@ -73,14 +73,7 @@
                 ]
             },
             {
-                "name": "cyberdeck_override",
-                "benefits":
-                [
-
-                ]
-            },
-            {
-                "name": "power_glove_uh9k_time",
+                "name": "power_glove_uh9k_equipped",
                 "benefits":
                 [
                     {
@@ -125,6 +118,9 @@
                         "amount": "values:time:amount"
                     }
                 ]
+            },
+            {
+                "name": "marked"
             }
         ],
         "session":
@@ -135,6 +131,9 @@
                 {
 
                 }
+            },
+            {
+                "name": "alarm_raised"
             }
         ]
     }

@@ -1,39 +1,939 @@
+function titleCase(str)
+{
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 class Item
 {
-    #itemName;
-    #displayName;
-    #category;
-    #subCat;
-    #tags;
-    #tier;
-    #benefits;
+    _name;
+    _id;
+    _displayName;
+    _category;
+    _subCat;
+    _tags;
+    _tier;
+    _tierName;
+    _instanceValues = {};
+    _benefits = [];
+    _dataEffectString = "";
 
-    constructor(itemObject, tier)
+    constructor(models, dbObject, itemUses)
     {
-        this.#itemName = itemObject["name"];
-        this.#tier = tier;
-        this.#category = itemObject["category"];
-        this.#subCat = itemObject["type"];
-        this.#tags = itemObject["tags"];
-        
-        this.#displayName = this.itemName + " [T" + tier + "]";
-        let tierObject = itemObject["tiers"].find(function(potentialTier)
+        let itemObject = models["items"].find(function(proposedItem)
         {
-            return potentialTier["tier"] = tier;
+            return proposedItem.name.toLowerCase().replaceAll("&#39;","'") === dbObject.name;
         });
-        this.#benefits = tierObject["benefits"].forEach(function(itemBenefit)
+
+        let tierObject = itemObject["tiers"].find(function(proposedTier)
         {
-            let benefitObject = 
-            return new Benefit(benefitObject);
-        })
+            return proposedTier.tier === dbObject.tier;
+        });
+
+        if(Object.keys(tierObject).includes("tierName"))
+        {
+            this._tierName = tierObject["tierName"];
+        }
+        else
+        {
+            this._tierName = "T" + tierObject["tier"];
+        }
+
+        this._name = itemObject["name"];
+        this._tier = Number(tierObject["tier"]);
+
+        this._id = this._name.toLowerCase().replaceAll("&#39;","").replaceAll(" ","_") + "_" + this._tierName.toLowerCase();
+        this._displayName = itemObject["name"].replaceAll("&#39;","'") + " [" + this._tierName + "]";
+        this._category = itemObject["category"];
+        this._subCat = itemObject["subCategory"];
+        this._tags = itemObject["tags"];
+
+        /*
+        if(Object.keys(itemObject).includes("instance"))
+        {
+            itemObject["instance"].forEach(function(value)
+            {
+                let valueObject =
+                {
+
+                }
+                this.#instanceValues[value.name] = value.amount;
+            }, this);
+        }
+        */
+
+        if(dbObject.instanceKey !== "")
+        {
+            this._instanceValues[dbObject.instanceKey] = [dbObject.instanceValue];
+        }
+
+        tierObject["benefits"].forEach(function(itemBenefit)
+        {
+            let benefitObject = models["benefits"].find(function(proposedBenefit)
+            {
+                return proposedBenefit.name === itemBenefit.name;
+            });
+
+            let newBenefit = new Benefit(this, itemBenefit, benefitObject, itemUses)
+
+            this._benefits.push(newBenefit);
+            this._dataEffectString += "!" + newBenefit.id + ";";
+
+        }, this);
+    }
+
+    get name()              { return this._name;                }
+    get id()                { return this._id;                  }
+    get displayName()       { return this._displayName;         }
+    get category()          { return this._category;            }
+    get subCategory()       { return this._subCat;              }
+    get tags()              { return this._tags;                }
+    get tier()              { return this._tier;                }
+    get tierName()          { return this._tierName;            }
+    get instanceValues()    { return this._instanceValues;      }
+    get benefits()          { return this._benefits;            }
+    get dataEffectString()  { return this._dataEffectString;    }
+
+    hasTag(tagName)
+    {
+        let targetTag = this._tags.find(function(potentialTag)
+        {
+            return potentialTag.name === tagName;
+        });
+
+        if(targetTag !== undefined)
+        {
+            if(Object.keys(targetTag).includes("value"))
+            {
+                return targetTag.value;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    addInstanceValue(newKey, newValue)
+    {
+        if(Object.keys(this._instanceValues).includes(newKey))
+        {
+            this._instanceValues[newKey].push(newValue);
+        }
+        else
+        {
+            this._instanceValues[newKey] = [newValue];
+        }
     }
 }
 
 class Benefit
 {
-    constructor(benefitObject)
+    _parent;
+
+    _name;
+    _stacking;
+    _id;
+    _charges;
+    _chargePerType;
+    _uses;
+    #remCharges;
+    _values = {};
+
+    _effectType;
+    _effects = [];
+
+    constructor(parent, itemBenefit, benefitObject, itemUses)
     {
 
+        this._parent = parent;
+
+        this._name = itemBenefit.name;
+        this._stacking = benefitObject.stacking ?? false;
+
+        if(this._stacking)
+        {
+            this._id = itemBenefit.name;
+        }
+        else
+        {
+            this._id = itemBenefit.name + "_" + parent.tierName.toLowerCase();
+        }
+
+        this._charges = Number(itemBenefit.charges) ?? null;
+        this._chargePerType = itemBenefit.perType ?? null;
+
+        let useObject = itemUses.find(function(potentialUse)
+        {
+            return potentialUse.effect === this._id;
+        });
+
+        switch(this._chargePerType)
+        {
+            case("sim"):
+            {
+                this._uses = useObject.simUses;
+                break;
+            }
+            case("scene"):
+            {
+                this._uses = useObject.jobUses;
+                break;
+            }
+            case("term"):
+            {
+                this._uses = useObject.termUses;
+                break;
+            }
+            case("item"):
+            {
+                this._uses = useObject.itemUses;
+                break;
+            }
+        }
+        this.#remCharges = this._charges - this._uses;
+
+        if(Object.keys(itemBenefit).includes("values"))
+        {
+            itemBenefit["values"].forEach(function(value)
+            {
+                this._values[value.name] = value.amount;
+            }, this);
+        }
+
+        switch(true)
+        {
+            case(Object.keys(benefitObject).includes("term_login")):
+            {
+                this._effects = benefitObject["term_login"];
+                this._effectType = "term_login";
+                break;
+            }
+            case(Object.keys(benefitObject).includes("inputs")):
+            {
+                this._effects = benefitObject["inputs"];
+                this._effectType = "inputs";
+                break;
+            }
+            case(Object.keys(benefitObject).includes("post_actions")):
+            {
+                this._effects = benefitObject["post_actions"];
+                this._effectType = "post_actions";
+                break;
+            }
+            case(Object.keys(benefitObject).includes("ph_login")):
+            {
+                this._effectType = "ph_login";
+                break;
+            }
+        }
+    }
+
+    get parent()        { return this._parent;          }
+    get name()          { return this._name;            }
+    get stacking()      { return this._stacking;        }
+    get id()            { return this._id;              }
+    get values()        { return this._values;          }
+    get effects()       { return this._effects;         }
+    get effectType()    { return this._effectType;      }
+    get charges()       { return this._charges;         }
+    get perType()       { return this._chargePerType;   }
+    get uses()          { return this._uses;            }
+
+    stackBenefits(newBenefitObject)
+    {
+        Object.keys(newBenefitObject.values).forEach(function(newKey)
+        {
+            if(Object.keys(this._values).includes(newKey))
+            {
+                this._values[newKey] += newBenefitObject.values[newKey];
+            }
+            else
+            {
+                this._values[newKey] = newBenefitObject.values[newKey];
+            }
+        }, this);
+
+        if((typeof this._parent) === "array")
+        {
+            if((typeof newBenefitObject.parent) === "array")
+            {
+                newBenefitObject.parent.forEach(function(newParent)
+                {
+                    this._parent.push(newParent);
+                }, this);
+            }
+            else
+            {
+                this._parent.push(newBenefitObject.parent);
+            }
+        }
+        else
+        {
+            this._parent = [this._parent];
+
+            if((typeof newBenefitObject.parent) === "array")
+            {
+                newBenefitObject.parent.forEach(function(newParent)
+                {
+                    this._parent.push(newParent);
+                }, this);
+            }
+            else
+            {
+                this._parent.push(newBenefitObject.parent);
+            }
+        }
+    }
+
+    parseLabel(labelString, effectIndex=null)
+    {
+        let parseMatches = (labelString.match(/{.*?}/g) ?? []);
+
+        parseMatches.forEach(function(match)
+        {
+            let modifier = (match.split("!")[1] ?? "}").split("}")[0];
+            let pathArray = match.split("!")[0].split("{")[1].split("}")[0].split(":");
+
+            let result = 0;
+
+            switch(pathArray[0])
+            {
+                case("values"):
+                {
+                    let splitKey = pathArray[1].split(/([*/+-])/);
+
+                    let resultValue = this._values[splitKey[0]];
+
+                    switch(splitKey[1])
+                    {
+                        case("*"):
+                        {
+                            result = resultValue * Number(splitKey[2]);
+                            break;
+                        }
+                        case("/"):
+                        {
+                            result = resultValue / Number(splitKey[2]);
+                            break;
+                        }
+                        case("+"):
+                        {
+                            result = resultValue + Number(splitKey[2]);
+                            break;
+                        }
+                        case("-"):
+                        {
+                            result = resultValue - Number(splitKey[2]);
+                            break;
+                        }
+                        default: //undefined
+                        {
+                            result = resultValue;
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case("remainCharges"):
+                {
+                    result = this.#remCharges;
+                    break;
+                }
+                case("totalCharges"):
+                case("charges"):
+                {
+                    result = this._charges;
+                    break;
+                }
+                case("perType"):
+                {
+                    result = this._chargePerType;
+                    break;
+                }
+                case("displayName"):
+                {
+                    result = this._parent.displayName;
+                    break;
+                }
+                case("cost"):
+                {
+                    let thisEffect = this._effects[effectIndex];
+                    let costPath = thisEffect.cost.amount.split(":");
+
+                    let baseCost = 0;
+
+                    switch(costPath[0])
+                    {
+                        case("values"):
+                        {
+                            baseCost = this._values[costPath[1]];
+                            break;
+                        }
+                    }
+
+                    switch(thisEffect.cost.type)
+                    {
+                        case("dynamic"):
+                        {
+                            let costEffect = this.checkConditions(thisEffect.cost.conditions);
+                            result = baseCost + costEffect;
+                            break;
+                        }
+                        case("static"):
+                        {
+                            result = baseCost;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            switch(modifier)
+            {
+                case("plurality"):
+                {
+                    result = (result !== 1 ? "s" : "");
+                    break;
+                }
+                case("tens"):
+                {
+                    result = tens(result);
+                    break;
+                }
+                case("title"):
+                {
+                    result = titleCase(result);
+                    break;
+                }
+            }
+
+            labelString = labelString.replace(match, result);
+        }, this);
+
+        return labelString;
+    }
+
+    checkConditions(effectConditions)
+    {
+        // array of conditions
+            // left
+                // payload:roles [Array]
+                // payload:effects [Array]
+                // payload:functions:XXX [Array Key > Value]
+                // terminal:effects [Array]
+                // item:instance:XXX [Array Key > Array]
+                // action:type [Value]
+            // operation
+                // contains [Arrays]
+                // not_contains [Arrays]
+                // greater_than [Numbers]
+                // equals [Numbers / Strings / Boolean]
+                // not_equals [Numbers / Strings / Boolean]
+            // right
+                // String
+                // Number
+                // Boolean
+            // effect
+                // Number
+            // rejection_label
+                // String
+
+        let returnValue = 0;
+        let continueState = true;
+
+        effectConditions.forEach(function(condition)
+        {
+            if(!continueState)
+            {
+                return;
+            }
+            else
+            {
+                let leftType = null;
+                let left = null;
+
+                let leftArray = condition["left"].split(":");
+
+                switch(leftArray[0])
+                {
+                    case("payload"):
+                    {
+                        switch(leftArray[1])
+                        {
+                            case("roles"):
+                            {
+                                leftType = "array";
+                                left = payload.getRoles();
+                                break;
+                            }
+                            case("effects"):
+                            {
+                                leftType = "array";
+                                left = payload.getStatusEffects();
+                                break;
+                            }
+                            case("functions"):
+                            {
+                                leftType = "value";
+                                left = payload.getFunction(leftArray[2]);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("terminal"):
+                    {
+                        switch(leftArray[1])
+                        {
+                            case("effects"):
+                            {
+                                leftType = "array";
+                                left = session.getStatusEffects();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("item"):
+                    {
+                        switch(leftArray[1])
+                        {
+                            case("instance"):
+                            {
+                                leftType = "array";
+                                left = this._parent.instanceValues[leftArray[2]];
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("action"):
+                    {
+                        switch(leftArray[1])
+                        {
+                            case("type"):
+                            {
+                                leftType = "value";
+                                left = itemValues[leftkey];
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                let right = null;
+
+                if(((typeof condition["right"]) === "string") &&
+                    (condition["right"].includes(":")))
+                {
+                    let rightArray = condition["right"].split(":");
+                    switch(rightArray[0])
+                    {
+                        case("terminal"):
+                        {
+                            switch(rightArray[1])
+                            {
+                                case("owner"):
+                                {
+                                    right = session.getTerminalOwner();
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    right = condition["right"];
+                }
+
+                let operation = condition["operation"];
+
+                let pass = false;
+
+                switch(leftType)
+                {
+                    case("array"):
+                    {
+                        switch(operation)
+                        {
+                            case("equals"):
+                            case("contains"):
+                            {
+                                pass = left.includes(right);
+                                break;
+                            }
+                            case("not_contains"):
+                            {
+                                pass = !(left.includes(right));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case("value"):
+                    {
+                        switch(operation)
+                        {
+                            case("greater_than"):
+                            {
+                                pass = left > right;
+                                break;
+                            }
+                            case("greater_than_equals"):
+                            {
+                                pass = left >= right;
+                                break;
+                            }
+                            case("equals"):
+                            {
+                                pass = left === right;
+                                break;
+                            }
+                            case("not_equals"):
+                            {
+                                pass = left !== right;
+                                break;
+                            }
+                            case("lesser_than_equals"):
+                            {
+                                pass = left <= right;
+                                break;
+                            }
+                            case("lesser_than"):
+                            {
+                                pass = left < right;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                if(pass)
+                {
+                    if(Object.keys(condition).includes("effect"))
+                    {
+                        returnValue = returnValue + condition.effect;
+                        continueState = true;
+                    }
+                    else
+                    {
+                        returnValue = pass;
+                        continueState = true;
+                    }
+                }
+                else
+                {
+                    if(Object.keys(condition).includes("rejection_label"))
+                    {
+                        returnValue = condition["rejection_label"];
+                        continueState = false;
+                    }
+                    else if(Object.keys(condition).includes("effect"))
+                    {
+                        //effect not added to returnValue
+                        continueState = true;
+                    }
+                    else
+                    {
+                        returnValue = pass;
+                        continueState = false;
+                    }
+                }
+            }
+        });
+
+        return returnValue;
+    }
+
+    isDisabled()
+    {
+        return ((this._charges !== null) &&
+                (this.#remCharges >= 0));
+    }
+
+    #getInputDetails(inputObject, inputIndex)
+    {
+        let parsedLabel = this.parseLabel(inputObject.label);
+        let conditionCheck = true;
+
+        if(Object.keys(inputObject).includes("conditions"))
+        {
+            let checkResults = this.checkConditions(inputObject.conditions);
+            if(typeof checkResults === "string")
+            {
+                conditionCheck = false;
+                parsedLabel = checkResults;
+            }
+            else
+            {
+                conditionCheck = checkResults;
+            }
+        }
+
+        let cost = null;
+
+        if(Object.keys(inputObject).includes("cost"))
+        {
+            cost = this.parseLabel("{cost}", inputIndex);
+        }
+
+        return {
+            label: parsedLabel,
+            passed: conditionCheck,
+            cost: cost
+        }
+    }
+
+    getInputHTML(inputIndex)
+    {
+        if(this._effectType !== "inputs") { return; }
+
+        let targetInput = this._effects[inputIndex];
+        let chargeDisabled = this.isDisabled();
+
+        let returnHTML = "";
+
+        switch(targetInput.type)
+        {
+            case("checkbox"):
+            {
+                // checkbox
+                    // screen:
+                        // crack
+                        // confirm
+                    // label: string
+                    // activation
+                        // amount: string
+                        // label: string
+                        // type:
+                            // plus_tags
+                            // skip_timer
+                            // payload_effect
+                            // action_cost
+                            // action_time
+                            // payload_has_cyberdeck
+                            // pop-up
+                switch(targetInput.screen)
+                {
+                    case("crack"):
+                    {
+                        returnHTML += '<div class="initItem' + (chargeDisabled ? ' dimmed' : '') + '">' +
+                                            '<div class="initHeader">' + targetInput.header + '</div>' +
+                                            '<div class="initOption">' +
+                                                '<input type="checkbox" id="' + this._id + '" onclick="initCheck(this, ' + inputIndex + ')"' + (chargeDisabled ? ' disabled' : '') + '>' +
+                                                '<label for="' + this._id + '">' + targetEntry.label + "</label>" +
+                                            '</div>' +
+                                        '</div>';
+
+                        return {
+                            category: "crack",
+                            value: returnHTML
+                        };
+                    }
+                    case("confirm"):
+                    {
+                        /*
+                            "<span class='copycatBox'>" +
+                                "<input id='copycatActivate' type='checkbox'/>" +
+                                "<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
+                            "</span>"
+                        */
+                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
+
+                        returnString +=     "<span class='confirmBox" + ((chargeDisabled || !inputDetails.passed) ? " dimmed'" : "'") + " >" +
+                                                "<input id='" + this._id + "_" + inputIndex + "' class='confirmInput' type='checkbox'" + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + " />" +
+                                                "<span class='confirmLabel'>" + inputDetails.label + "</span>" +
+                                            "</span>";
+
+                        let onChangeFunction = function(eventArg, inputArg, inputIndex)
+                        {
+                            inputArg.activations.forEach(function(activation, activationIndex)
+                            {
+                                switch(activation.type)
+                                {
+                                    case("skip_timer"):
+                                    {
+                                        if($(eventArg.target).prop("checked"))
+                                        {
+                                            payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                            payload.addTempEffect("skip_timer", null, null);
+                                        }
+                                        else
+                                        {
+                                            payload.removeTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                            payload.removeTempEffect("skip_timer", null, null);
+                                        }
+                                        break;
+                                    }
+                                    default:
+                                    {
+                                        //payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                        break;
+                                    }
+                                }
+                            });
+                        };
+
+                        returnArray.push({
+                            "inputHTML": HTMLString,
+                            "itemID": input["effect_name"] + "_" + index,
+                            "function": onChangeFunction,
+                            "functionInput": structuredClone(input),
+                            "functionIndex": index
+                        });
+                        return {
+                            category: "confirm",
+                            value: {
+                                benefit: this,
+                                index: inputIndex
+                            }
+                        };
+                    }
+                }
+                break;
+            }
+            case("button"):
+            {
+                // button
+                    // screen:
+                        // inventory
+                        // crack
+                        // execute
+                    // condition: []
+                    // cost:
+                        // type
+                            // dynamic
+                        // base [for dynamic]
+                        // condition [for dynamic]: []
+                    // label:
+                        // +{amount}...{plurality}
+                    // confirm:
+                        // body
+                            // {charges}...{charges!plurality}
+                        // button
+                            // Confirm
+                        // timer
+                            // type
+                                // skip
+                                // static [not affected by actionTime]
+                                // action [affected by actionTime]
+                            // seconds [for static / action]
+                                // 30
+                    // activation: []
+                        // type
+                            // plus_tags
+                            // terminal_effect
+                            // payload_effect
+                            // complete_timer
+                            // action_cost
+                            // action_time
+                            // payload_has_cyberdeck
+                            // pop-up
+                        // amount [for plus_tags && action_* && pop_up]
+                        // name [for *_effect]
+                        // value [for payload_has_cyberdeck]
+                switch(targetInput.screen)
+                {
+                    case("inventory"):
+                    {
+                        returnHTML += "<span class='itemActionRow'>";
+
+                        if(this._chargePerType === "sim" || this._chargePerType === "scene")
+                        {
+                            returnHTML += "<span class='itemMarks'>";
+
+                            for(let i = 0; i < this._uses; i++)
+                            {
+                                returnHTML += "<img src='/resources/images/actions/itemfilled.png' />";
+                            }
+
+                            for(let j = this._uses; j < this._charges; j++)
+                            {
+                                returnHTML += "<img src='/resources/images/actions/itemopen.png' />";
+                            }
+
+                            returnHTML +=   "<span>per " + (titleCase(this._chargePerType)) + "</span>" +
+                                        "</span>";
+                        }
+
+                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
+
+                        returnHTML += "<button id='" + this._id + "' class='itemButton' data-input='" + inputIndex + "' onclick='useItem(this," + inputIndex + ")'" + ((inputDetails.cost !== null) ? " data-cost='" + inputDetails.cost + "'" : "") + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + ">" + inputDetails.label + "</button>" +
+                                    "</span>";
+
+                        return {
+                            category: "inventory",
+                            value: returnHTML
+                        };
+                    }
+                    case("crack"):
+                    {
+                        /*
+                        <div id="brad_init" class="initItem hidden">
+                            <div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
+                            <div class="initOption">
+                                <button data-effect="brad" onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck"><br>(Can set up later)</span></button>
+                            </div>
+                        </div>
+                        */
+
+                        returnHTML += "<span class='itemActionRow'>";
+
+                        if(this._chargePerType === "sim" || this._chargePerType === "scene")
+                        {
+                            returnHTML += "<span class='itemMarks'>";
+
+                            for(let i = 0; i < this._uses; i++)
+                            {
+                                returnHTML += "<img src='/resources/images/actions/itemfilled.png' />";
+                            }
+
+                            for(let j = this._uses; j < this._charges; j++)
+                            {
+                                returnHTML += "<img src='/resources/images/actions/itemopen.png' />";
+                            }
+
+                            returnHTML +=   "<span>per " + (titleCase(this._chargePerType)) + "</span>" +
+                                        "</span>";
+                        }
+
+                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
+
+                        returnHTML +=   '<div class="initItem' + (chargeDisabled ? ' dimmed' : '') + '">' +
+                                            '<div class="initHeader">' + this._parent.displayName + '</div>' +
+                                            '<div class="initOption">' +
+                                                '<button id="' + this._id + '" class="itemButton" data-input="' + inputIndex + '" onclick="useItem(this,' + inputIndex + ')"' + ((chargeDisabled || !inputDetails.passed) ? ' disabled' : '') + '>' + inputDetails.label + '</button>' +
+                                            '</div>' +
+                                        '</div>';
+
+                         return {
+                            category: "crack",
+                            value: returnHTML
+                        };
+                    }
+                    case("execute"):
+                    {
+                        return {
+                            category: "execute",
+                            value: {
+                                benefit: this,
+                                index: inputIndex
+                            }
+                        };
+                    }
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -49,12 +949,13 @@ class Inventory
 {
     #globalThis = this;
 
+    #models;
     #itemModel;
     #benefitModel;
     #statusModel;
 
     #items;
-    #effects;
+    #benefits;
 
     #initialActivations;
     #confirmInputs;
@@ -67,7 +968,7 @@ class Inventory
         this.#statusModel = $.getJSON("/resources/models/statuses.json");
 
         this.#items = [];
-        this.#effects = [];
+        this.#benefits = [];
         this.#initialActivations = [];
         this.#confirmInputs = [];
         this.#executeInputs = [];
@@ -79,12 +980,50 @@ class Inventory
         this.#benefitModel = this.#benefitModel.responseJSON["benefits"];
         this.#statusModel = this.#statusModel.responseJSON["statuses"];
 
-        // LINK THE ACTUAL OBJECTS BETWEEN EACH OTHER?
-        // MAKE A NEW OBJECT WITH ALL OF THE PERTINENT INFO
-        // -- CAN THIS INCLUDE DYNAMIC INFO OR IS THAT BY DEFINITION GOING TO MAKE THE DATA STALE
+        this.#models = {
+            "items": this.#itemModel,
+            "benefits": this.#benefitModel,
+            "statuses": this.#statusModel
+        }
 
         itemList.forEach(function(dbItem)
         {
+            let extantItem = this.#items.find(function(potentialItem)
+            {
+                return ((potentialItem.name === dbItem.name) &&
+                        (potentialItem.tier === Number(dbItem.tier)));
+            });
+
+            if(extantItem !== undefined)
+            {
+                extantItem.addInstanceValue(dbItem.instanceKey, dbItem.instanceValue);
+            }
+            else
+            {
+                let newItem = new Item(this.#models, dbItem, itemUses)
+
+                newItem.benefits.forEach(function(newBenefit)
+                {
+                    let extantBenefit = this.#benefits.find(function(potentialBenefit)
+                    {
+                        return ((potentialBenefit.name === newBenefit.name) &&
+                                (potentialBenefit.stacking === true));
+                    });
+
+                    if(extantBenefit !== undefined)
+                    {
+                        extantBenefit.stackBenefits(newBenefit);
+                    }
+                    else
+                    {
+                        this.#benefits.push(newBenefit);
+                    }
+                }, this);
+
+                this.#items.push(newItem);
+            }
+
+            /*
             let proposedItem = this.#itemModel.find(function(potentialItem)
             {
                 return potentialItem.name.toLowerCase().replace("&#39;","'") === dbItem.name.toLowerCase();
@@ -94,8 +1033,6 @@ class Inventory
             {
                 return Number(potentialTier.tier) === Number(dbItem.tier);
             });
-
-            let itemName = proposedItem.name.toLowerCase().replace(" ","+") + "_t" + proposedTier.tier
 
             proposedTier.effects.forEach(function(effect)
             {
@@ -125,7 +1062,7 @@ class Inventory
                 proposedEffect["item_name"] = itemName;
                 proposedEffect["instance"] = (dbItem.instanceKey === "" ? null : {[dbItem.instanceKey]: Number(dbItem.instanceValue)});
 
-                let extantEffect = this.#effects.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
+                let extantEffect = this.#benefits.find((thisEffect) => {return thisEffect.effect_name === proposedEffect.effect_name});
 
                 if(extantEffect === undefined)
                 {
@@ -166,7 +1103,7 @@ class Inventory
                         proposedEffect["uses"] = 0;
                     }
 
-                    this.#effects.push(structuredClone(proposedEffect));
+                    this.#benefits.push(structuredClone(proposedEffect));
 
                     if(Object.keys(proposedItem).includes("dataEffectString"))
                     {
@@ -198,15 +1135,19 @@ class Inventory
                 "effects": proposedTier.effects,
                 "dataEffect": proposedItem.dataEffectString
             });
+            */
 
         }, this.#globalThis);
+
+        console.log(this.#items);
+        console.log(this.#benefits);
 
         this.#items.forEach(function(item)
         {
             $("#noItems").addClass("hidden");
 
             let itemCat = null;
-            switch(item["category"])
+            switch(item.category)
             {
                 case("arms"):
                 {
@@ -220,7 +1161,7 @@ class Inventory
                 }
                 default:
                 {
-                    switch(item["type"])
+                    switch(item.subCategory)
                     {
                         case("cyberdeck"):
                         {
@@ -250,96 +1191,62 @@ class Inventory
             $(".itemCat[data-cat='" + itemCat + "']").removeClass("hidden");
 
             $(".itemCat[data-cat='" + itemCat + "'] > .itemList").append(
-                            "<li id='" + item["item_name"] + "' class='itemItem'>" +
-                                "<span class='itemName'>" + item["display_name"] + "</span>" +
-                                "<span class='itemActions' data-effect='" + item["dataEffect"] + "'></span>" +
+                            "<li id='" + item.id + "' class='itemItem'>" +
+                                "<span class='itemName'>" + item.displayName + "</span>" +
+                                "<span class='itemActions' data-effect='" + item.dataEffectString + "'></span>" +
                             "</li>");
         });
+    }
+
+    setupInputs()
+    {
+        let benefitsHavingInputs = this.#benefits.filter(function(potentialEffect)
+        {
+            return potentialEffect.effectType === "inputs";
+        });
+
+        benefitsHavingInputs.forEach(function(mainBenefit)
+        {
+            let disabled = mainBenefit.isDisabled();
+
+            mainBenefit.effects.forEach(function(inputEntry, inputIndex)
+            {
+                let inputHTML = mainBenefit.getInputHTML(inputIndex);
+
+                switch(inputHTML.category)
+                {
+                    case("crack"):
+                    {
+                        $("#initItemList").append(inputHTML.value);
+                        break;
+                    }
+                    case("confirm"):
+                    {
+                        this.#confirmInputs.push(inputHTML.value);
+                        break;
+                    }
+                    case("inventory"):
+                    {
+                        $(".itemItem > .itemActions[data-effect*='" + mainBenefit.parent.dataEffectString + "']").append(inputHTML.value);
+                        break;
+                    }
+                    case("execute"):
+                    {
+                        this.#executeInputs.push(inputHTML.value);
+                        break;
+                    }
+                }
+            }, this);
+        }, this);
     }
 
     getConfirmInputs()
     {
         let returnArray = [];
 
-        this.#confirmInputs.forEach(function(input, index)
+        this.#confirmInputs.forEach(function(confirmObject)
         {
-            let parentEffect = this.#effects.find(function(effect)
-            {
-                return effect.effect_name === input.effect_name;
-            });
 
-            let chargeDisabled = false;
-
-            if((parentEffect["charges"] !== null) && (parentEffect["uses"] >= parentEffect["charges"]))
-            {
-                chargeDisabled = true;
-            }
-
-            let parsedLabel = this.#parseLabel(parentEffect, input["label"]);
-            let conditionCheck = true;
-
-            if(Object.keys(input).includes("condition"))
-            {
-                let checkResults = this.#checkCondition(input.condition);
-                if(typeof checkResults === "string")
-                {
-                    conditionCheck = false;
-                    parsedLabel = checkResults;
-                }
-                else
-                {
-                    conditionCheck = checkResults;
-                }
-            }
-
-            /*
-                "<span class='copycatBox'>" +
-                    "<input id='copycatActivate' type='checkbox'/>" +
-                    "<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
-                "</span>"
-            */
-
-            let HTMLString =    "<span class='confirmBox" + (((conditionCheck === false) || (chargeDisabled === true)) ? " dimmed'" : "'") + " >" +
-                                    "<input id='" + input["effect_name"] + "_" + index + "' class='confirmInput' type='checkbox'" + (((conditionCheck === false) || (chargeDisabled === true)) ? " disabled" : "") + " />" +
-                                    "<span class='confirmLabel'>" + parsedLabel + "</span>" +
-                                "</span>";
-
-            let onChangeFunction = function(eventArg, inputArg, inputIndex)
-            {
-                inputArg["activation"].forEach(function(activation, activationIndex)
-                {
-                    switch(activation["type"])
-                    {
-                        case("skip_timer"):
-                        {
-                            if($(eventArg.target).prop("checked"))
-                            {
-                                payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
-                                payload.addTempEffect("skip_timer", null, null);
-                            }
-                            else
-                            {
-                                payload.removeTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
-                                payload.removeTempEffect("skip_timer", null, null);
-                            }
-                            break;
-                        }
-                        default:
-                        {
-                            //payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
-                            break;
-                        }
-                    }
-                });
-            };
-
-            returnArray.push({
-                "inputHTML": HTMLString,
-                "itemID": input["effect_name"] + "_" + index,
-                "function": onChangeFunction,
-                "functionInput": structuredClone(input),
-                "functionIndex": index
-            });
         }, this.#globalThis);
 
         return returnArray;
@@ -351,7 +1258,7 @@ class Inventory
 
         this.#executeInputs.forEach(function(input, index)
         {
-            let parentEffect = this.#effects.find(function(effect)
+            let parentEffect = this.#benefits.find(function(effect)
             {
                 return effect.effect_name === input.effect_name;
             });
@@ -423,360 +1330,12 @@ class Inventory
 
     #checkCondition(effectConditions, itemValues=null)
     {
-        // array of conditions
-            // left
-                // payload:roles [Array]
-                // payload:effects [Array]
-                // payload:functions:XXX [Array Key > Value]
-                // terminal:effects [Array]
-                // item:instance:XXX [Array Key > Value]
-            // operation
-                // contains [Arrays]
-                // not_contains [Arrays]
-                // greater_than [Numbers]
-                // equals [Numbers / Strings / Boolean]
-                // not_equals [Numbers / Strings / Boolean]
-            // right
-                // String
-                // Number
-                // Boolean
-            // effect
-                // Number
-            // rejection_label
-                // String
 
-        let returnValue = 0;
-        let continueState = true;
-
-        effectConditions.forEach(function(condition)
-        {
-            if(!continueState)
-            {
-                return;
-            }
-            else
-            {
-                let leftType = null;
-                let left = null;
-
-                switch(condition["left"].split(":")[0])
-                {
-                    case("payload"):
-                    {
-                        switch(condition["left"].split(":")[1])
-                        {
-                            case("roles"):
-                            {
-                                leftType = "array";
-                                left = payload.getRoles();
-                                break;
-                            }
-                            case("effects"):
-                            {
-                                leftType = "array";
-                                left = payload.getStatusEffects();
-                                break;
-                            }
-                            case("functions"):
-                            {
-                                leftType = "value";
-                                left = payload.getFunction(condition["left"].split(":")[2]);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("terminal"):
-                    {
-                        switch(condition["left"].split(":")[1])
-                        {
-                            case("effects"):
-                            {
-                                leftType = "array";
-                                left = session.getStatusEffects();
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("item"):
-                    {
-                        switch(condition["left"].split(":")[1])
-                        {
-                            case("instance"):
-                            case("action"):
-                            {
-                                leftType = "value";
-
-                                let leftKey = condition["left"].split(":")[2];
-
-                                left = itemValues[leftKey];
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                let right = null;
-
-                if(((typeof condition["right"]) === "string") &&
-                    (condition["right"].includes(":")))
-                {
-                    switch(condition["right"].split(":")[0])
-                    {
-                        case("terminal"):
-                        {
-                            switch(condition["right"].split(":")[1])
-                            {
-                                case("owner"):
-                                {
-                                    right = session.getTerminalOwner();
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    right = condition["right"];
-                }
-
-                let operation = condition["operation"];
-
-                let pass = false;
-
-                switch(leftType)
-                {
-                    case("array"):
-                    {
-                        switch(operation)
-                        {
-                            case("contains"):
-                            {
-                                pass = left.includes(right);
-                                break;
-                            }
-                            case("not_contains"):
-                            {
-                                pass = !(left.includes(right));
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("value"):
-                    {
-                        switch(operation)
-                        {
-                            case("greater_than"):
-                            {
-                                pass = left > right;
-                                break;
-                            }
-                            case("greater_than_equals"):
-                            {
-                                pass = left >= right;
-                                break;
-                            }
-                            case("equals"):
-                            {
-                                pass = left === right;
-                                break;
-                            }
-                            case("not_equals"):
-                            {
-                                pass = left !== right;
-                                break;
-                            }
-                            case("lesser_than_equals"):
-                            {
-                                pass = left <= right;
-                                break;
-                            }
-                            case("lesser_than"):
-                            {
-                                pass = left < right;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                if(pass)
-                {
-                    if(Object.keys(condition).includes("effect"))
-                    {
-                        returnValue = returnValue + condition["effect"];
-                        continueState = true;
-                    }
-                    else
-                    {
-                        returnValue = pass;
-                        continueState = true;
-                    }
-                }
-                else
-                {
-                    if(Object.keys(condition).includes("rejection_label"))
-                    {
-                        returnValue = condition["rejection_label"];
-                        continueState = false;
-                    }
-                    else if(Object.keys(condition).includes("effect"))
-                    {
-                        //effect not added to returnValue
-                        continueState = true;
-                    }
-                    else
-                    {
-                        returnValue = pass;
-                        continueState = false;
-                    }
-                }
-            }
-        });
-
-        return returnValue;
     }
 
     #parseLabel(parentEffect, labelString, extraInfo=null)
     {
-        let parseMatches = (labelString.match(/{.*?}/g) ?? []);
 
-        parseMatches.forEach(function(match)
-        {
-            let modifier = (match.split("!")[1] ?? "}").split("}")[0];
-            let pathArray = match.split("!")[0].split("{")[1].split("}")[0].split(":");
-
-            let result = 0;
-
-            switch(pathArray[0])
-            {
-                case("values"):
-                {
-                    let resultValue = parentEffect.values.find(function(value)
-                    {
-                        return value.name === pathArray[1];
-                    });
-
-                    if(Object.keys(resultValue).includes("stack"))
-                    {
-                        result = resultValue["stack"];
-                    }
-                    else
-                    {
-                        let mult = Number(pathArray[2].split("*")[1]);
-                        let div = Number(pathArray[2].split("/")[1]);
-                        let add = Number(pathArray[2].split("+")[1]);
-                        let subt = Number(pathArray[2].split("-")[1]);
-
-                        switch(false)
-                        {
-                            case(Number.isNaN(mult)):
-                            {
-                                result = resultValue[pathArray[2].split("*")[0]] * mult;
-                                break;
-                            }
-                            case(Number.isNaN(div)):
-                            {
-                                result = resultValue[pathArray[2].split("/")[0]] / div;
-                                break;
-                            }
-                            case(Number.isNaN(add)):
-                            {
-                                result = resultValue[pathArray[2].split("+")[0]] + add;
-                                break;
-                            }
-                            case(Number.isNaN(subt)):
-                            {
-                                result = resultValue[pathArray[2].split("-")[0]] - subt;
-                                break;
-                            }
-                            default:
-                            {
-                                result = resultValue[pathArray[2]];
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-                case("remainCharges"):
-                {
-                    result = parentEffect.charges - parentEffect.uses;
-                    break;
-                }
-                case("totalCharges"):
-                case("charges"):
-                {
-                    result = parentEffect.charges;
-                    break;
-                }
-                case("perType"):
-                {
-                    result = parentEffect.perType;
-                    break;
-                }
-                case("displayName"):
-                {
-                    result = parentEffect.displayName;
-                    break;
-                }
-                case("cost"):
-                {
-                    result = 0;
-
-                    let costPath = extraInfo.amount.split(":");
-                    let baseCost = parentEffect.values.find(function(value)
-                    {
-                        return value.name === costPath[1];
-                    })[costPath[2]];
-
-                    switch(extraInfo["type"])
-                    {
-                        case("dynamic"):
-                        {
-                            let costEffect = this.#checkCondition(extraInfo["condition"]);
-                            result = baseCost + costEffect;
-                            break;
-                        }
-                        case("static"):
-                        {
-                            result = baseCost;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-
-            switch(modifier)
-            {
-                case("plurality"):
-                {
-                    result = (result !== 1 ? "s" : "")
-                    break;
-                }
-                case("tens"):
-                {
-                    result = tens(result);
-                    break;
-                }
-                case("title"):
-                {
-                    result = result.charAt(0).toUpperCase() + result.slice(1);
-                    break;
-                }
-            }
-
-            labelString = labelString.replace(match, result);
-        }, this.#globalThis);
-
-        return labelString;
     }
 
     #displayActivationLabel(parentEffect, labelObject)
@@ -1030,264 +1589,9 @@ class Inventory
         }
     }
 
-    setupInputs()
-    {
-        let inputHavingEffects = this.#effects.filter(function(potentialEffect)
-        {
-            return Object.keys(potentialEffect).includes("input");
-        });
-
-        inputHavingEffects.forEach(function(mainEffect)
-        {
-            let disabled = false;
-
-            if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
-            {
-                disabled = true;
-            }
-
-            mainEffect.input.forEach(function(inputEntry, index)
-            {
-                switch(inputEntry.type)
-                {
-                    case("checkbox"):
-                    {
-                        // checkbox
-                            // screen:
-                                // crack
-                                // confirm
-                            // label: string
-                            // activation
-                                // amount: string
-                                // label: string
-                                // type:
-                                    // plus_tags
-                                    // skip_timer
-                                    // payload_effect
-                                    // action_cost
-                                    // action_time
-                                    // payload_has_cyberdeck
-                                    // pop-up
-                        switch(inputEntry.screen)
-                        {
-                            case("crack"):
-                            {
-                                let inputHTML = '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
-                                                    '<div class="initHeader">' + inputEntry.header + '</div>' +
-                                                    '<div class="initOption">' +
-                                                        '<input type="checkbox" id="' + mainEffect.effect_name + '" onclick="initCheck(this, ' + index + ')"' + (disabled ? ' disabled' : '') + '>' +
-                                                        '<label for="' + mainEffect.effect_name + '">' + inputEntry.label + "</label>" +
-                                                    '</div>' +
-                                                '</div>';
-
-                                $("#initItemList").append(inputHTML);
-
-                                break;
-                            }
-                            case("confirm"):
-                            {
-                                inputEntry["effect_name"] = mainEffect["effect_name"];
-
-                                this.#confirmInputs.push(inputEntry);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("button"):
-                    {
-                        // button
-                            // screen:
-                                // inventory
-                                // crack
-                                // execute
-                            // condition: []
-                            // cost:
-                                // type
-                                    // dynamic
-                                // base [for dynamic]
-                                // condition [for dynamic]: []
-                            // label:
-                                // +{amount}...{plurality}
-                            // confirm:
-                                // body
-                                    // {charges}...{charges!plurality}
-                                // button
-                                    // Confirm
-                                // timer
-                                    // type
-                                        // skip
-                                        // static [not affected by actionTime]
-                                        // action [affected by actionTime]
-                                    // seconds [for static / action]
-                                        // 30
-                            // activation: []
-                                // type
-                                    // plus_tags
-                                    // terminal_effect
-                                    // payload_effect
-                                    // complete_timer
-                                    // action_cost
-                                    // action_time
-                                    // payload_has_cyberdeck
-                                    // pop-up
-                                // amount [for plus_tags && action_* && pop_up]
-                                // name [for *_effect]
-                                // value [for payload_has_cyberdeck]
-                        switch(inputEntry.screen)
-                        {
-                            case("inventory"):
-                            {
-                                let buttonHTML = "<span class='itemActionRow'>";
-
-                                let remCharges = Number.POSITIVE_INFINITY;
-
-                                if(mainEffect["charges"] !== null)
-                                {
-                                    buttonHTML += "<span class='itemMarks'>";
-
-                                    for(let i = 0; i < mainEffect["uses"]; i++)
-                                    {
-                                        buttonHTML += "<img src='/resources/images/actions/itemfilled.png' />";
-                                    }
-
-                                    for(let j = mainEffect["uses"]; j < mainEffect["charges"]; j++)
-                                    {
-                                        buttonHTML += "<img src='/resources/images/actions/itemopen.png' />";
-                                    }
-
-                                    buttonHTML +=   "<span>per " + (mainEffect["perType"] === "sim" ? "Sim" : "Scene") + "</span>" +
-                                                "</span>";
-                                    remCharges = mainEffect["charges"] - mainEffect["uses"];
-                                }
-
-                                let parsedLabel = this.#parseLabel(mainEffect, inputEntry["label"]);
-                                let conditionCheck = true;
-
-                                if(Object.keys(inputEntry).includes("condition"))
-                                {
-                                    let checkResults = this.#checkCondition(inputEntry.condition);
-                                    if(typeof checkResults === "string")
-                                    {
-                                        conditionCheck = false;
-                                        parsedLabel = checkResults;
-                                    }
-                                    else
-                                    {
-                                        conditionCheck = checkResults;
-                                    }
-                                }
-
-                                let cost = null;
-
-                                if(Object.keys(inputEntry).includes("cost"))
-                                {
-                                    let costPath = inputEntry["cost"].amount.split(":");
-                                    let baseCost = mainEffect.values.find(function(value)
-                                    {
-                                        return value.name === costPath[1];
-                                    })[costPath[2]];
-
-                                    switch(inputEntry["cost"]["type"])
-                                    {
-                                        case("dynamic"):
-                                        {
-                                            let costEffect = this.#checkCondition(inputEntry["cost"]["condition"]);
-
-                                            cost = baseCost + costEffect;
-                                        }
-                                        case("static"):
-                                        {
-                                            cost = baseCost;
-                                        }
-                                    }
-                                }
-
-                                buttonHTML += "<button id='" + mainEffect.effect_name + "' class='itemButton' data-input='" + index + "' onclick='useItem(this," + index + ")'" + ((cost !== null) ? " data-cost='" + cost + "'" : "") + (((remCharges <= 0) || (conditionCheck === false)) ? " disabled" : "") + ">" + parsedLabel + "</button>" +
-                                            "</span>";
-
-                                $(".itemItem > .itemActions[data-effect*='!" + mainEffect["effect_name"] + ";']").append(buttonHTML);
-
-                                break;
-                            }
-                            case("crack"):
-                            {
-                                /*
-                                <div id="brad_init" class="initItem hidden">
-                                    <div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
-                                    <div class="initOption">
-                                        <button data-effect="brad" onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck"><br>(Can set up later)</span></button>
-                                    </div>
-                                </div>
-                                */
-                                let buttonHTML = "";
-                                let remCharges = Number.POSITIVE_INFINITY;
-
-                                if(mainEffect["charges"] !== null)
-                                {
-                                    buttonHTML += "<span class='itemMarks'>";
-
-                                    for(let i = 0; i < mainEffect["uses"]; i++)
-                                    {
-                                        buttonHTML += "<img src='/resources/images/actions/itemfilled.png' />";
-                                    }
-
-                                    for(let j = mainEffect["uses"]; j < mainEffect["charges"]; j++)
-                                    {
-                                        buttonHTML += "<img src='/resources/images/actions/itemopen.png' />";
-                                    }
-
-                                    buttonHTML +=   "<span>per " + (mainEffect["perType"] === "sim" ? "Sim" : "Scene") + "</span>" +
-                                                "</span>";
-                                    remCharges = mainEffect["charges"] - mainEffect["uses"];
-                                }
-
-                                let parsedLabel = this.#parseLabel(mainEffect, inputEntry["label"]);
-                                let conditionCheck = true;
-
-                                if(Object.keys(inputEntry).includes("condition"))
-                                {
-                                    let checkResults = this.#checkCondition(inputEntry.condition);
-                                    if(typeof checkResults === "string")
-                                    {
-                                        conditionCheck = false;
-                                        parsedLabel = checkResults;
-                                    }
-                                    else
-                                    {
-                                        conditionCheck = checkResults;
-                                    }
-                                }
-
-                                buttonHTML +=   '<div class="initItem' + (disabled ? ' dimmed' : '') + '">' +
-                                                    '<div class="initHeader">' + mainEffect.displayName + '</div>' +
-                                                    '<div class="initOption">' +
-                                                        '<button id="' + mainEffect.effect_name + '" class="itemButton" data-input="' + index + '" onclick="useItem(this,' + index + ')"' + (((remCharges <= 0) || (conditionCheck === false)) ? ' disabled' : '') + '>' + parsedLabel + '</button>' +
-                                                    '</div>' +
-                                                '</div>';
-
-                                $("#initItemList").append(buttonHTML);
-                                break;
-                            }
-                            case("execute"):
-                            {
-                                inputEntry["effect_name"] = mainEffect["effect_name"];
-
-                                this.#executeInputs.push(inputEntry);
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }, this.#globalThis);
-        }, this.#globalThis);
-    }
-
     toggleEffect(target_id, target_index, activate)
     {
-        let targetEffect = this.#effects.find(function(effect)
+        let targetEffect = this.#benefits.find(function(effect)
         {
             return effect.effect_name === target_id;
         });
@@ -1300,7 +1604,7 @@ class Inventory
 
     useItem(target_id, target_index)
     {
-        let targetEffect = this.#effects.find(function(effect)
+        let targetEffect = this.#benefits.find(function(effect)
         {
             return effect.effect_name === target_id;
         });
@@ -1396,7 +1700,7 @@ class Inventory
         // >> effects: []
         // >> termID
 
-        let parentEffect = this.#effects.find(function(potentialEffect)
+        let parentEffect = this.#benefits.find(function(potentialEffect)
         {
             return potentialEffect.effect_name === actionMap["targetEffect"].effect_name;
         });
@@ -1457,7 +1761,7 @@ class Inventory
 
     applyTermLoginEffects()
     {
-        let termLoginHavingEffects = this.#effects.filter(function(potentialEffect)
+        let termLoginHavingEffects = this.#benefits.filter(function(potentialEffect)
         {
             return Object.keys(potentialEffect).includes("term_login");
         });
@@ -1519,7 +1823,7 @@ class Inventory
         payloadEffects.forEach(function(payloadEffect)
         {
             let activation = null;
-            JSON.stringify(this.#effects, (_, nestedValue) => {
+            JSON.stringify(this.#benefits, (_, nestedValue) => {
                 if (nestedValue &&
                     nestedValue["type"] === "payload_effect" &&
                     Object.keys(nestedValue).includes("icon") &&
@@ -1556,7 +1860,7 @@ class Inventory
     {
         effectArray.forEach(function(effect)
         {
-            let parentEffect = this.#effects.find(function(potentialEffect)
+            let parentEffect = this.#benefits.find(function(potentialEffect)
             {
                 return potentialEffect.effect_name === effect.effect_name;
             });
@@ -1582,7 +1886,7 @@ class Inventory
 
     applyPostActionEffects(actionMap)
     {
-        let postActionHavingEffects = this.#effects.filter(function(potentialEffect)
+        let postActionHavingEffects = this.#benefits.filter(function(potentialEffect)
         {
             return Object.keys(potentialEffect).includes("post_action");
         });
@@ -1635,14 +1939,12 @@ class Inventory
 
         itemButtons.each(function (index, itemButton)
         {
-            let parentEffect = globalThis.#effects.find(function(proposedEffect)
+            let parentEffect = globalThis.#benefits.find(function(proposedEffect)
             {
                 return proposedEffect.effect_name === $(itemButton).attr("id");
             });
 
             let targetInput = parentEffect.input[Number($(itemButton).attr("data-input"))];
-
-            console.log({parentEffect});
 
             let chargeDisabled = false;
 
