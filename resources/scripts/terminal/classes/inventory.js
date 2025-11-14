@@ -1,3 +1,50 @@
+class Item
+{
+    #itemName;
+    #displayName;
+    #category;
+    #subCat;
+    #tags;
+    #tier;
+    #benefits;
+
+    constructor(itemObject, tier)
+    {
+        this.#itemName = itemObject["name"];
+        this.#tier = tier;
+        this.#category = itemObject["category"];
+        this.#subCat = itemObject["type"];
+        this.#tags = itemObject["tags"];
+        
+        this.#displayName = this.itemName + " [T" + tier + "]";
+        let tierObject = itemObject["tiers"].find(function(potentialTier)
+        {
+            return potentialTier["tier"] = tier;
+        });
+        this.#benefits = tierObject["benefits"].forEach(function(itemBenefit)
+        {
+            let benefitObject = 
+            return new Benefit(benefitObject);
+        })
+    }
+}
+
+class Benefit
+{
+    constructor(benefitObject)
+    {
+
+    }
+}
+
+class StatusEffect
+{
+    constructor()
+    {
+
+    }
+}
+
 class Inventory
 {
     #globalThis = this;
