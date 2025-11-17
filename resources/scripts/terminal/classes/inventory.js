@@ -749,14 +749,15 @@ class Benefit
                         */
                         let inputDetails = this.#getInputDetails(targetInput, inputIndex);
 
-                        returnString +=     "<span class='confirmBox" + ((chargeDisabled || !inputDetails.passed) ? " dimmed'" : "'") + " >" +
-                                                "<input id='" + this._id + "_" + inputIndex + "' class='confirmInput' type='checkbox'" + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + " />" +
+                        returnHTML +=     "<span class='confirmBox" + ((chargeDisabled || !inputDetails.passed) ? " dimmed'" : "'") + " >" +
+                                                "<input id='" + this._id + ":" + inputIndex + "' class='confirmInput' type='checkbox'" + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + " />" +
                                                 "<span class='confirmLabel'>" + inputDetails.label + "</span>" +
                                             "</span>";
 
-                        let onChangeFunction = function(eventArg, inputArg, inputIndex)
+                        let onChangeFunction = function(eventArg, benefitArg, inputIndex)
                         {
-                            inputArg.activations.forEach(function(activation, activationIndex)
+                            let targetInput = benefitArg.inputs[inputIndex];
+                            targetInput.activations.forEach(function(activation, activationIndex)
                             {
                                 switch(activation.type)
                                 {
@@ -764,12 +765,12 @@ class Benefit
                                     {
                                         if($(eventArg.target).prop("checked"))
                                         {
-                                            payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                            payload.addTempEffect(benefitArg.id, inputIndex, activationIndex);
                                             payload.addTempEffect("skip_timer", null, null);
                                         }
                                         else
                                         {
-                                            payload.removeTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                            payload.removeTempEffect(benefitArg.id, inputIndex, activationIndex);
                                             payload.removeTempEffect("skip_timer", null, null);
                                         }
                                         break;
@@ -783,18 +784,14 @@ class Benefit
                             });
                         };
 
-                        returnArray.push({
-                            "inputHTML": HTMLString,
-                            "itemID": input["effect_name"] + "_" + index,
-                            "function": onChangeFunction,
-                            "functionInput": structuredClone(input),
-                            "functionIndex": index
-                        });
                         return {
                             category: "confirm",
                             value: {
-                                benefit: this,
-                                index: inputIndex
+                                "inputHTML": returnHTML,
+                                "itemID": this._id + ":" + inputIndex,
+                                "function": onChangeFunction,
+                                "functionBenefit": this,
+                                "functionIndex": inputIndex
                             }
                         };
                     }
@@ -922,16 +919,97 @@ class Benefit
                     }
                     case("execute"):
                     {
+                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
+
+                        returnHTML += "<button id='" + this._id + ":" + inputIndex + "' class='modalButton'" + ((chargeDisabled || !inputDetails.passed) === false ? " disabled" : "") + ">" + inputDetails.label + "</button>";
+
+                        let onPointerUpFunction = function(benefitArg, inputIndex, timer=null, startTimerArgs=null)
+                        {
+                            let targetInput = benefitArg.inputs[inputIndex];
+
+                            targetInput.activations.forEach(function(activation, activationIndex)
+                            {
+                                switch(activation.type)
+                                {
+                                    case("complete_timer"):
+                                    {
+                                        $("#" + this._id + ":" + inputIndex).remove();
+
+                                        if(activation.animation !== null)
+                                        {
+                                            //!! DIGIPET ANIMATION
+                                        }
+
+                                        $("#executeButton").prop("disabled", true);
+
+                                        timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
+                                        break;
+                                    }
+                                    case("payload_effect"):
+                                    {
+                                        payload.addTempEffect(benefitArg.id, inputIndex, activationIndex);
+                                    }
+                                    default:
+                                    {
+                                        //payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
+                                        break;
+                                    }
+                                }
+                            });
+                        };
+
                         return {
                             category: "execute",
                             value: {
-                                benefit: this,
-                                index: inputIndex
+                                "buttonHTML": returnHTML,
+                                "buttonEnabled": inputDetails.passed,
+                                "itemID": this._id + ":" + inputIndex,
+                                "function": onPointerUpFunction,
+                                "functionBenefit": this,
+                                "functionIndex": inputIndex
                             }
                         };
                     }
                 }
                 break;
+            }
+        }
+    }
+
+    toggleActivationLabel(labelObject, activate)
+    {
+        if(activate)
+        {
+            let parsedLabel = this.parseLabel(labelObject.label);
+
+            switch(labelObject.location)
+            {
+                case("crack_extra"):
+                {
+                    $("#extraDetails").append("<span id='" + this._id + "'>" + parsedLabel + "</span>");
+                    break;
+                }
+                case("crack_hacking"):
+                {
+                    $("#hackDetails").append("<span id='" + this._id + "'>" + parsedLabel + "</span>");
+                    break;
+                }
+            }
+        }
+        else
+        {
+            switch(labelObject.location)
+            {
+                case("crack_extra"):
+                {
+                    $("#extraDetails #" + this._id).remove();
+                    break;
+                }
+                case("crack_hacking"):
+                {
+                    $("#hackDetails #" + this._id).remove();
+                    break;
+                }
             }
         }
     }
@@ -1242,136 +1320,12 @@ class Inventory
 
     getConfirmInputs()
     {
-        let returnArray = [];
-
-        this.#confirmInputs.forEach(function(confirmObject)
-        {
-
-        }, this.#globalThis);
-
-        return returnArray;
+        return this.#confirmInputs;
     }
 
     getExecuteInputs()
     {
-        let returnArray = [];
-
-        this.#executeInputs.forEach(function(input, index)
-        {
-            let parentEffect = this.#benefits.find(function(effect)
-            {
-                return effect.effect_name === input.effect_name;
-            });
-
-            let parsedLabel = this.#parseLabel(parentEffect, input["label"]);
-            let conditionCheck = true;
-
-            if(Object.keys(input).includes("condition"))
-            {
-                let checkResults = this.#checkCondition(input.condition);
-                if(typeof checkResults === "string")
-                {
-                    conditionCheck = false;
-                    parsedLabel = checkResults;
-                }
-                else
-                {
-                    conditionCheck = checkResults;
-                }
-            }
-
-            let HTMLString = "<button id='" + input["effect_name"] + "_" + index + "' class='modalButton'" + (conditionCheck === false ? " disabled" : "") + ">" + parsedLabel + "</button>";
-
-            let onPointerUpFunction = function(inputArg, inputIndex, timer=null, startTimerArgs=null)
-            {
-                inputArg["activation"].forEach(function(activation, activationIndex)
-                {
-                    switch(activation["type"])
-                    {
-                        case("complete_timer"):
-                        {
-                            $("#" + inputArg["effect_name"] + "_" + inputIndex).remove();
-
-                            if(activation["animation"] !== null)
-                            {
-                                //!! DIGIPET ANIMATION
-                            }
-
-                            $("#executeButton").prop("disabled", true);
-
-                            timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
-                            break;
-                        }
-                        case("payload_effect"):
-                        {
-                            payload.addTempEffect(inputArg["effect_name"], inputIndex, activationIndex);
-                        }
-                        default:
-                        {
-                            //payload.activateItemEffect(inputArg["effect_name"], inputIndex, activationIndex);
-                            break;
-                        }
-                    }
-                });
-            };
-
-            returnArray.push({
-                "buttonHTML": HTMLString,
-                "buttonEnabled": conditionCheck,
-                "itemID": input["effect_name"] + "_" + index,
-                "function": onPointerUpFunction,
-                "functionInput": structuredClone(input),
-                "functionIndex": index
-            });
-        }, this.#globalThis);
-
-        return returnArray;
-    }
-
-    #checkCondition(effectConditions, itemValues=null)
-    {
-
-    }
-
-    #parseLabel(parentEffect, labelString, extraInfo=null)
-    {
-
-    }
-
-    #displayActivationLabel(parentEffect, labelObject)
-    {
-        let parsedLabel = this.#parseLabel(parentEffect, labelObject.label);
-
-        switch(labelObject.location)
-        {
-            case("crack_extra"):
-            {
-                $("#extraDetails").append("<span id='" + parentEffect.effect_name + "'>" + parsedLabel + "</span>");
-                break;
-            }
-            case("crack_hacking"):
-            {
-                $("#hackDetails").append("<span id='" + parentEffect.effect_name + "'>" + parsedLabel + "</span>");
-                break;
-            }
-        }
-    }
-
-    #removeActivationLabel(parentEffect, labelObject)
-    {
-        switch(labelObject.location)
-        {
-            case("crack_extra"):
-            {
-                $("#extraDetails #" + parentEffect.effect_name).remove();
-                break;
-            }
-            case("crack_hacking"):
-            {
-                $("#hackDetails #" + parentEffect.effect_name).remove();
-                break;
-            }
-        }
+        return this.#executeInputs;
     }
 
     #displayActivationIcon(activationDetails)
@@ -1460,14 +1414,7 @@ class Inventory
 
         if(Object.keys(activationDetails).includes("label"))
         {
-            if(activate)
-            {
-                this.#displayActivationLabel(parentEffect, activationDetails.label);
-            }
-            else
-            {
-                this.#removeActivationLabel(parentEffect, activationDetails.label);
-            }
+            parentEffect.toggleActivationLabel(activationDetails.label, activate);
         }
 
         switch(activationDetails.type)
@@ -1484,16 +1431,15 @@ class Inventory
                 }
                 break;
             }
-            case("plus_hacking"):
-            case("plus_alarm_sense"):
+            case("plus_function"):
             {
                 if(activate)
                 {
-                    payload.plusFunction(activationDetails.type, amount);
+                    payload.plusFunction(activationDetails.function, amount);
                 }
                 else
                 {
-                    payload.minusFunction(activationDetails.type, amount);
+                    payload.minusFunction(activationDetails.function, amount);
                 }
                 break;
             }

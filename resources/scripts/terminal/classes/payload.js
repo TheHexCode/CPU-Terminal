@@ -152,7 +152,7 @@ class Payload
         return extraFunc;
     }
 
-    plusFunction(effect_type, plus_amount)
+    plusFunction(activation_function, plus_amount)
     {
         /*
         switch(func.toLowerCase())
@@ -225,43 +225,43 @@ class Payload
         }
         */
 
-        switch(effect_type)
+        switch(activation_function)
         {
-            case("plus_hacking"):
+            case("hacking"):
             {
                 let hackIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
 
                 if(hackIndex !== -1)
                 {
-                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) + Number(plus_amount);
+                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) + Number(amount);
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Hacking",
-                        rank: Number(plus_amount),
+                        rank: Number(amount),
                         type: "ranked",
                         keyword: null,
                         hacking_cat: "initial"
                     });
                 }
 
-                updateTags(Number(plus_amount) * 2, Session.HACK);
+                updateTags(Number(amount) * 2, Session.HACK);
                 break;
             }
-            case("plus_alarm_sense"):
+            case("alarm_sense"):
             {
-                let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
+                let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
 
                 if(asIndex !== -1)
                 {
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(plus_amount);
+                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(amount);
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Alarm Sense",
-                        rank: Number(plus_amount),
+                        rank: Number(amount),
                         type: "ranked",
                         keyword: null,
                         hacking_cat: "passive"
@@ -272,40 +272,35 @@ class Payload
         }
     }
 
-    minusFunction(func)
+    minusFunction(activation_function, amount)
     {
-        switch(func.toLowerCase())
+        switch(activation_function)
         {
-            case("k_hds"): // DISSIM
+            case("hacking"):
             {
-                let knowIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "knowledge");
+                let hackIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
 
-                if(knowIndex["extra"] !== "dissim;")
+                if(hackIndex !== -1)
                 {
-                    this.#extraFuncs[knowIndex]["extra"] = this.#extraFuncs[knowIndex]["extra"].replace("dissim;","");
-                    this.#extraFuncs[knowIndex]["keyword"] = this.#extraFuncs[knowIndex]["keyword"].replace(";Hacking &amp; DigiSec","");
+                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) - Number(amount);
+                    updateTags((Number(amount)*2) * -1, Session.HACK);
                 }
-                else
-                {
-                    this.#extraFuncs.splice(knowIndex,1);
-                }
+
                 break;
             }
-            case("alarmsense"): // POLYMATH
+            case("alarm_sense"):
             {
                 let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
 
-                if(knowIndex["extra"] !== "poly;")
+                if(asIndex !== -1)
                 {
-                    this.#extraFuncs[asIndex]["extra"] = this.#extraFuncs[asIndex]["extra"].replace("poly;","");
-                }
-                else
-                {
-                    this.#extraFuncs.splice(asIndex,1);
+                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) - Number(amount);
                 }
 
                 break;
             }
+        }
+        /*
             case("repair"): // POLYMATH
             {
                 let repIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "repair");
@@ -323,6 +318,7 @@ class Payload
                 break;
             }
         }
+        */
     }
 
     addTempEffect(effect_name, input_index, activation_index)
