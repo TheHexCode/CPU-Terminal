@@ -63,7 +63,7 @@
                 {
                     "source": "/resources/images/status/touched.png"
                 },
-                "benefits":
+                "activations":
                 [
                     {
                         "type": "action_cost",
@@ -74,7 +74,7 @@
             },
             {
                 "name": "power_glove_uh9k_equipped",
-                "benefits":
+                "activations":
                 [
                     {
                         "type": "cyberdeck_override"
@@ -90,7 +90,7 @@
             },
             {
                 "name": "shimmerstick_applied",
-                "benefits":
+                "activations":
                 [
                     {
                         "type": "action_cost",
@@ -111,7 +111,7 @@
             },
             {
                 "name": "digisec_secret",
-                "benefits":
+                "activations":
                 [
                     {
                         "type": "action_time",

@@ -726,7 +726,7 @@ class Benefit
                 {
                     case("crack"):
                     {
-                        returnHTML += '<div class="initItem' + (chargeDisabled ? ' dimmed' : '') + '">' +
+                        returnHTML += '<div class="initItem' + (chargeDisabled ? ' dimmed' : '') + '" data-input="' + this.id + ":" + inputIndex +'">' +
                                             '<div class="initHeader">' + targetInput.header + '</div>' +
                                             '<div class="initOption">' +
                                                 '<input type="checkbox" id="' + this._id + '" onclick="initCheck(this, ' + inputIndex + ')"' + (chargeDisabled ? ' disabled' : '') + '>' +
@@ -975,41 +975,254 @@ class Benefit
             }
         }
     }
+}
 
-    toggleActivationLabel(labelObject, activate)
+class Activation
+{
+    /*
+    TYPE: ENUM (
+        PLUS_TAGS: {
+            AMOUNT [REQUIRES PARSING],
+            ?LABEL:
+            {
+                LOCATION: ENUM (
+                    "CRACK_EXTRA",
+                ),
+                LABEL [REQUIRES PARSING]
+            },
+            CONDITIONS
+        },
+        PLUS_FUNCTION: {
+            FUNCTION,
+            AMOUNT,
+            ?LABEL
+        }
+        SKIP_TIMER: {},
+        STATUS: {
+            SCOPE: ENUM (
+                SESSION,
+                PAYLOAD
+            ),
+            NAME
+        },
+        COMPLETE_TIMER: {
+            ?ANIMATION
+        },
+        POP-UP: {
+            NAME
+        },
+        ACTION_COST: {
+            AMOUNT,
+            ACTION_TYPE: "ACCESS" / "ANY" ...
+        },
+        ACTION_TIME: {
+            AMOUNT
+        },
+        CYBERDECK_OVERRIDE: {},
+
+    )
+    */
+    #parent;
+    #type;
+    #amount;
+    #label;
+    #conditions;
+    #name;
+    /*
+    #function;
+    #scope;
+    #animation;
+    #actionType;
+    */
+    #detail;
+
+    constructor(parentBenefit, activationObject)
     {
-        if(activate)
+        this.#parent = parentBenefit;
+        this.#type = activationObject.type;
+        this.#amount = activationObject.amount ?? null;
+        this.#label = activationObject.label ?? null;
+        this.#conditions = activationObject.conditions ?? null;
+        this.#name = activationObject.name ?? null;
+
+        switch(true)
         {
-            let parsedLabel = this.parseLabel(labelObject.label);
+            case(Object.keys(activationObject).includes("function")):
+            {
+                this.#detail = activationObject.function;
+                break;
+            }
+            case(Object.keys(activationObject).includes("scope")):
+            {
+                this.#detail = activationObject.scope;
+                break;
+            }
+            case(Object.keys(activationObject).includes("animation")):
+            {
+                this.#detail = activationObject.animation;
+                break;
+            }
+            case(Object.keys(activationObject).includes("action_type")):
+            {
+                this.#detail = activationObject.action_type;
+                break;
+            }
+            default:
+            {
+                this.#detail = null;
+                break;
+            }
+        }
+    }
+
+    #displayActivationLabel(labelObject)
+    {
+        if(labelObject !== null)
+        {
+            let parsedLabel = this.#parent.parseLabel(labelObject.label);
 
             switch(labelObject.location)
             {
                 case("crack_extra"):
                 {
-                    $("#extraDetails").append("<span id='" + this._id + "'>" + parsedLabel + "</span>");
+                    $("#extraDetails").append("<span id='" + this.#parent.id + "'>" + parsedLabel + "</span>");
                     break;
                 }
                 case("crack_hacking"):
                 {
-                    $("#hackDetails").append("<span id='" + this._id + "'>" + parsedLabel + "</span>");
+                    $("#hackDetails").append("<span id='" + this.#parent.id + "'>" + parsedLabel + "</span>");
                     break;
                 }
             }
         }
-        else
+    }
+
+    #removeActivationLabel(labelObject)
+    {
+        if(labelObject !== null)
         {
             switch(labelObject.location)
             {
                 case("crack_extra"):
                 {
-                    $("#extraDetails #" + this._id).remove();
+                    $("#extraDetails #" + this.#parent.id).remove();
                     break;
                 }
                 case("crack_hacking"):
                 {
-                    $("#hackDetails #" + this._id).remove();
+                    $("#hackDetails #" + this.#parent.id).remove();
                     break;
                 }
+            }
+        }
+    }
+
+    activate()
+    {
+        let amount = this.#parent.parseLabel(this.#amount);
+
+        switch(this.#type)
+        {
+            case("plus_tags"):
+            {
+                this.#displayActivationLabel(this.#label);
+                updateTags(amount, Session.ITEMS);
+                break;
+            }
+            case("plus_function"):
+            {
+                payload.plusFunction(this.#detail, amount);
+                break;
+            }
+            case("skip_timer"):
+            {
+                // Handled by ConfirmInputs
+                break;
+            }
+            case("complete_timer"):
+            {
+                // Handled by ExecuteInputs
+                break;
+            }
+            case("action_cost"):
+            {
+                payload.setActionCost(this.#parent.id, this.#detail, amount);
+                break;
+            }
+            case("action_time"):
+            {
+                payload.setActionTime(this.#parent.id, amount);
+                break;
+            }
+            case("cyberdeck_override"):
+            {
+                payload.addCyberdeck(this.#parent.id);
+                break;
+            }
+            case("status"):
+            {
+                // pass for now
+                break;
+            }
+            case("pop-up"):
+            {
+                // pass for now
+                break;
+            }
+        }
+    }
+
+    deactivate()
+    {
+        let amount = (this.#parent.parseLabel(this.#amount)) * -1;
+
+        switch(this.#type)
+        {
+            case("plus_tags"):
+            {
+                this.#removeActivationLabel(this.#label);
+                updateTags(amount, Session.ITEMS);
+                break;
+            }
+            case("plus_function"):
+            {
+                payload.plusFunction(this.#detail, amount);
+                break;
+            }
+            case("skip_timer"):
+            {
+                // Handled by ConfirmInputs
+                break;
+            }
+            case("complete_timer"):
+            {
+                // Handled by ExecuteInputs
+                break;
+            }
+            case("action_cost"):
+            {
+                payload.setActionCost(this.#parent.id, this.#detail, amount);
+                break;
+            }
+            case("action_time"):
+            {
+                payload.setActionTime(this.#parent.id, amount);
+                break;
+            }
+            case("cyberdeck_override"):
+            {
+                payload.addCyberdeck(this.#parent.id);
+                break;
+            }
+            case("status"):
+            {
+                // pass for now
+                break;
+            }
+            case("pop-up"):
+            {
+                // pass for now
+                break;
             }
         }
     }
@@ -1285,8 +1498,6 @@ class Inventory
 
         benefitsHavingInputs.forEach(function(mainBenefit)
         {
-            let disabled = mainBenefit.isDisabled();
-
             mainBenefit.effects.forEach(function(inputEntry, inputIndex)
             {
                 let inputHTML = mainBenefit.getInputHTML(inputIndex);
@@ -1298,19 +1509,55 @@ class Inventory
                         $("#initItemList").append(inputHTML.value);
                         break;
                     }
+                    case("inventory"):
+                    {
+                        $(".itemItem > .itemActions[data-effect*='" + mainBenefit.id + "']").append(inputHTML.value);
+                        break;
+                    }
                     case("confirm"):
                     {
                         this.#confirmInputs.push(inputHTML.value);
                         break;
                     }
-                    case("inventory"):
-                    {
-                        $(".itemItem > .itemActions[data-effect*='" + mainBenefit.parent.dataEffectString + "']").append(inputHTML.value);
-                        break;
-                    }
                     case("execute"):
                     {
                         this.#executeInputs.push(inputHTML.value);
+                        break;
+                    }
+                }
+            }, this);
+        }, this);
+    }
+
+    resetOnScreenInputs()
+    {
+        let benefitsHavingInputs = this.#benefits.filter(function(potentialEffect)
+        {
+            return potentialEffect.effectType === "inputs";
+        });
+
+        benefitsHavingInputs.forEach(function(mainBenefit)
+        {
+            mainBenefit.effects.forEach(function(inputEntry, inputIndex)
+            {
+                let inputHTML = mainBenefit.getInputHTML(inputIndex);
+
+                switch(inputHTML.category)
+                {
+                    case("crack"):
+                    {
+                        $("#initItemList").html(inputHTML.value);
+                        break;
+                    }
+                    case("inventory"):
+                    {
+                        $(".itemItem > .itemActions[data-effect*='" + mainBenefit.id + "']").html(inputHTML.value);
+                        break;
+                    }
+                    case("confirm"):
+                    case("execute"):
+                    {
+                        // PASS > Not "On Screen", don't need updates
                         break;
                     }
                 }
@@ -1380,6 +1627,7 @@ class Inventory
         $("#itemStatus img[data-icon='" + activationDetails["name"] + "']").remove();
     }
 
+    /*
     #activateEffect(parentEffect, activationDetails, activate=true, initial=false)
     {
         let amount = null;
@@ -1534,41 +1782,49 @@ class Inventory
             }
         }
     }
+    */
 
-    toggleEffect(target_id, target_index, activate)
+    toggleEffect(benefitID, inputIndex, activate)
     {
-        let targetEffect = this.#benefits.find(function(effect)
+        let targetBenefit = this.#benefits.find(function(potentialBenefit)
         {
-            return effect.effect_name === target_id;
+            return potentialBenefit.id === benefitID;
         });
 
-        targetEffect.input[target_index].activation.forEach(function(activation)
+        targetBenefit.inputs[inputIndex].activations.forEach(function(activation)
         {
-            this.#activateEffect(targetEffect, activation, activate, true);
-        }, this.#globalThis);
+            if(activate)
+            {
+                (new Activation(targetBenefit, activation)).activate();
+            }
+            else
+            {
+                (new Activation(targetBenefit, activation)).deactivate();
+            }
+        });
     }
 
-    useItem(target_id, target_index)
+    useItem(benefitID, inputIndex)
     {
-        let targetEffect = this.#benefits.find(function(effect)
+        let targetBenefit = this.#benefits.find(function(potentialBenefit)
         {
-            return effect.effect_name === target_id;
+            return potentialBenefit.id === benefitID;
         });
 
-        let targetInput = targetEffect.input[target_index];
+        let targetInput = targetBenefit.inputs[inputIndex];
 
         let actionMap = {
-            targetEffect: targetEffect,
+            targetBenefit: targetBenefit,
             targetInput: targetInput,
-            targetID: targetEffect["effect_name"],
-            action: targetEffect["effect_name"],
+            inputIndex: inputIndex,
+            action: targetBenefit.id,
             actionType: "item"
         };
 
         if(Object.keys(targetInput).includes("confirm"))
         {
             let buttonArray = [{
-				id: target_id + "_" + target_index,
+				id: targetBenefit.id + ":" + inputIndex,
 				text: targetInput["confirm"]["button"],
 				data: session.getTerminalID(),
 				global: false
@@ -1576,7 +1832,7 @@ class Inventory
 
 			let confirmMap = {
 				headerText: "Confirm Item Activation",
-				bodyText: this.#parseLabel(targetEffect, targetInput["confirm"]["body"], targetInput["cost"] ?? null),
+				bodyText: targetBenefit.parseLabel(targetInput["confirm"]["body"], targetInput["cost"] ?? null),
 				buttonArray: buttonArray
 			};
 
@@ -1646,46 +1902,15 @@ class Inventory
         // >> effects: []
         // >> termID
 
-        let parentEffect = this.#benefits.find(function(potentialEffect)
-        {
-            return potentialEffect.effect_name === actionMap["targetEffect"].effect_name;
-        });
+        let targetBenefit = actionMap["targetBenefit"];
         let targetInput = actionMap["targetInput"];
 
-        let parsedLabel = this.#parseLabel(parentEffect, targetInput["label"]);
-        let conditionCheck = true;
+        let inputHTML = targetBenefit.getInputHTML(actionMap["inputIndex"]);
 
-        if(Object.keys(targetInput).includes("condition"))
+        if(inputHTML.location === "inventory")
         {
-            let checkResults = this.#checkCondition(targetInput.condition);
-            if(typeof checkResults === "string")
-            {
-                conditionCheck = false;
-                parsedLabel = checkResults;
-            }
-            else
-            {
-                conditionCheck = checkResults;
-            }
+            $(".itemItem > .itemActions[data-effect*='" + targetBenefit.id + "']").html(inputHTML.value);
         }
-
-        let remCharges = Number.POSITIVE_INFINITY;
-
-        if(Object.keys(parentEffect).includes("charges"))
-        {
-            parentEffect["uses"]++;
-
-            $("#" + parentEffect["effect_name"]).parent().find(".itemMarks img:nth-child(-n + " + parentEffect["uses"] + ")").attr("src","/resources/images/actions/itemfilled.png");
-
-            remCharges = parentEffect["charges"] - parentEffect["uses"];
-        }
-
-        if((remCharges <= 0) || (conditionCheck === false))
-        {
-            $("#" + parentEffect["effect_name"]).attr("disabled", true);
-            $("#" + parentEffect["effect_name"]).prop("disabled", true);
-        }
-        $("#" + parentEffect["effect_name"]).html(parsedLabel);
 
         $.ajax({
             type: "POST",
@@ -1694,7 +1919,7 @@ class Inventory
             data:
             {
                 userID: payload.getUserID(),
-                effects: parentEffect["effect_name"],
+                effects: targetBenefit.id,
                 termID: session.getTerminalID()
             }
         });
