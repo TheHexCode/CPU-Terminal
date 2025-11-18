@@ -11,7 +11,7 @@ fclose($itemFile);
 $itemArray = array(
     "utility" => array(
         "heading" => "UTILITY",
-        "types" => array(
+        "subCats" => array(
             "cyberdeck" => array(
                 "heading" => "CYBERDECK",
                 "items" => array()
@@ -44,7 +44,7 @@ $itemArray = array(
     ),
     "customization" => array(
         "heading" => "CUSTOMIZATIONS",
-        "types" => array(
+        "subCats" => array(
             "cyberdeck" => array(
                 "heading" => "CYBERDECK CUSTOMIZATIONS",
                 "items" => array()
@@ -61,7 +61,7 @@ $itemArray = array(
     ),
     "arms" => array(
         "heading" => "WEAPONS/ARMOR",
-        "types" => array(
+        "subCats" => array(
             "ranged_1h" => array(
                 "heading" => "RANGED, 1H",
                 "items" => array()
@@ -74,7 +74,7 @@ $itemArray = array(
     ),
     "resource" => array(
         "heading" => "RESOURCES",
-        "types" => array(
+        "subCats" => array(
             "secret" => array(
                 "heading" => "SECRETS",
                 "items" => array()
@@ -85,7 +85,7 @@ $itemArray = array(
 
 foreach($itemModel as $item)
 {
-    array_push($itemArray[$item["category"]]["types"][$item["type"]]["items"],$item);
+    array_push($itemArray[$item["category"]]["subCats"][$item["subCategory"]]["items"],$item);
 }
 
 $itemString = "";
@@ -95,12 +95,12 @@ foreach($itemArray as $itemCat)
     $itemString .=  "<section class='itemSection'>" .
                         "<h2>" . $itemCat["heading"] . "</h2>";
 
-    foreach($itemCat["types"] as $itemType)
+    foreach($itemCat["subCats"] as $itemSubCat)
     {
         $itemString .=  "<div class='itemType'>" .
-                            "<h3>" . $itemType["heading"] . "</h3>";
+                            "<h3>" . $itemSubCat["heading"] . "</h3>";
 
-        foreach($itemType["items"] as $item)
+        foreach($itemSubCat["items"] as $item)
         {
             $tagMultiple = count(array_filter($item["tags"], function($tag)
             {
@@ -253,7 +253,7 @@ foreach($itemArray as $itemCat)
                                             "data-item='" . strtolower($item["name"]) . "' " .
                                             "data-tier='" . $tier["tier"] . "' " .
                                             "form='itemForm' " .
-                                            ($tagUnique ? "name='" . $item["category"] . "_" . $item["type"]. "' onclick='toggleRadio(this)' " : " ") .
+                                            ($tagUnique ? "name='" . $item["category"] . "_" . $item["subCategory"]. "' onclick='toggleRadio(this)' " : " ") .
                                         ">" .
                                         "<label for='" . $itemName . "'>" . $item["name"] . " [" . ($tier["tierName"] ?? ("T" . $tier["tier"])) . "]</label>";
                     $itemString .=  "</div>"; //itemInput

@@ -808,6 +808,8 @@ function injectUserPayload(userPayload)
 						*/
 					}
 				});
+				
+				session.setCurrentTags(userPayload["remTags"] + requiredTags);
 
 				updateEntryCosts();
 				disableExpensiveButtons();
@@ -829,7 +831,6 @@ function injectUserPayload(userPayload)
 				});
 			}
 			*/
-			session.setCurrentTags(userPayload["remTags"] + requiredTags);
 
 			if(userPayload["masherData"] !== null)
 			{
@@ -961,6 +962,7 @@ function initRadio(target)
 
 function initCheck(target, index)
 {
+	payload.toggleItemCheckbox(target, index);
 	/*
 	let effect = payload.getEffect(target.id.split("_opt")[0]);
 
@@ -1098,11 +1100,11 @@ function initCheck(target, index)
 		}
 	}
 	*/
-	payload.toggleItemCheckbox(target, index);
 }
 
 function initAction(target)
 {
+	/*
 	////////////////////
 	//  Budget Access Remote Drive (REQ: HACKING I)
 	//  Canopic Jar [Magsweep]
@@ -1125,6 +1127,7 @@ function initAction(target)
 			break;
 		}
 	}
+	*/
 }
 
 function updateTags(change, tagType)
@@ -1224,7 +1227,7 @@ function accessTerminal(event)
 	{
 		if(event !== "hasAccessed")
 		{
-			payload.submitInitialEffects();
+			payload.submitTempEffects(true);
 		}
 
 		let reqTags = parseInt($("#reqTags").html());
@@ -1453,7 +1456,7 @@ function openSubTab(target, contentID)
 
 function useItem(target, index)
 {
-	payload.useItem(target, index);
+	payload.confirmItem(target, index);
 }
 
 function takeAction(target)

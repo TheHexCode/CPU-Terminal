@@ -19,7 +19,7 @@ class Gems {
     ]);
 	static CONFIRM = new Map([
         ["remain",  "blue"],
-        ["using", "amber"]
+        ["using",   "amber"]
     ]);
 	static EXECUTE = new Map([
         ["remain", "blue"],
@@ -29,14 +29,23 @@ class Gems {
         ["all", "root"]
     ]);
 
+    static currentStage = this.ROOT;
+
+    static getCurrentStage()
+    {
+        return Gems.currentStage;
+    }
+
 	static updateTagGems(gemStage, stageOne, stageTwo=stageOne, totalTags=stageTwo)
 	{
+        Gems.currentStage = gemStage;
+
         let tenOnes = Math.floor((stageOne-1)/10);
         let remOnes = ((stageOne-1) % 10)+1;
-        
+
         let tenTwos = Math.floor((stageTwo-1)/10);
         let remTwos = ((stageTwo-1) % 10)+1;
-        
+
         let tenTotal = Math.floor((totalTags-1)/10);
         let remTotal = ((totalTags-1) % 10)+1;
 

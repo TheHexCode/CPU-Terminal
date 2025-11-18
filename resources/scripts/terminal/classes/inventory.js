@@ -47,20 +47,6 @@ class Item
         this._subCat = itemObject["subCategory"];
         this._tags = itemObject["tags"];
 
-        /*
-        if(Object.keys(itemObject).includes("instance"))
-        {
-            itemObject["instance"].forEach(function(value)
-            {
-                let valueObject =
-                {
-
-                }
-                this.#instanceValues[value.name] = value.amount;
-            }, this);
-        }
-        */
-
         if(dbObject.instanceKey !== "")
         {
             this._instanceValues[dbObject.instanceKey] = [dbObject.instanceValue];
@@ -169,30 +155,37 @@ class Benefit
         let useObject = itemUses.find(function(potentialUse)
         {
             return potentialUse.effect === this._id;
-        });
+        }, this);
 
-        switch(this._chargePerType)
+        if(useObject !== undefined)
         {
-            case("sim"):
+            switch(this._chargePerType)
             {
-                this._uses = useObject.simUses;
-                break;
+                case("sim"):
+                {
+                    this._uses = useObject.simUses;
+                    break;
+                }
+                case("scene"):
+                {
+                    this._uses = useObject.jobUses;
+                    break;
+                }
+                case("term"):
+                {
+                    this._uses = useObject.termUses;
+                    break;
+                }
+                case("item"):
+                {
+                    this._uses = useObject.itemUses;
+                    break;
+                }
             }
-            case("scene"):
-            {
-                this._uses = useObject.jobUses;
-                break;
-            }
-            case("term"):
-            {
-                this._uses = useObject.termUses;
-                break;
-            }
-            case("item"):
-            {
-                this._uses = useObject.itemUses;
-                break;
-            }
+        }
+        else
+        {
+            this._uses = 0;
         }
         this.#remCharges = this._charges - this._uses;
 
@@ -232,7 +225,10 @@ class Benefit
         }
     }
 
-    get parent()        { return this._parent;          }
+    get parent()
+    {
+        return (Array.isArray(this._parent) ? this._parent[0] : this._parent);
+    }
     get name()          { return this._name;            }
     get stacking()      { return this._stacking;        }
     get id()            { return this._id;              }
@@ -291,7 +287,12 @@ class Benefit
 
     parseLabel(labelString, effectIndex=null)
     {
-        let parseMatches = (labelString.match(/{.*?}/g) ?? []);
+        let parseMatches = [];
+
+        if(labelString !== null)
+        {
+            parseMatches = labelString.match(/{.*?}/g) ?? [];
+        }
 
         parseMatches.forEach(function(match)
         {
@@ -443,221 +444,260 @@ class Benefit
             // rejection_label
                 // String
 
-        let returnValue = 0;
-        let continueState = true;
-
-        effectConditions.forEach(function(condition)
+        if(effectConditions === null)
         {
-            if(!continueState)
-            {
-                return;
-            }
-            else
-            {
-                let leftType = null;
-                let left = null;
+            return true;
+        }
+        else
+        {
+            let returnValue = 0;
+            let continueState = true;
 
-                let leftArray = condition["left"].split(":");
-
-                switch(leftArray[0])
+            effectConditions.forEach(function(condition)
+            {
+                if(!continueState)
                 {
-                    case("payload"):
-                    {
-                        switch(leftArray[1])
-                        {
-                            case("roles"):
-                            {
-                                leftType = "array";
-                                left = payload.getRoles();
-                                break;
-                            }
-                            case("effects"):
-                            {
-                                leftType = "array";
-                                left = payload.getStatusEffects();
-                                break;
-                            }
-                            case("functions"):
-                            {
-                                leftType = "value";
-                                left = payload.getFunction(leftArray[2]);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("terminal"):
-                    {
-                        switch(leftArray[1])
-                        {
-                            case("effects"):
-                            {
-                                leftType = "array";
-                                left = session.getStatusEffects();
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("item"):
-                    {
-                        switch(leftArray[1])
-                        {
-                            case("instance"):
-                            {
-                                leftType = "array";
-                                left = this._parent.instanceValues[leftArray[2]];
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case("action"):
-                    {
-                        switch(leftArray[1])
-                        {
-                            case("type"):
-                            {
-                                leftType = "value";
-                                left = itemValues[leftkey];
-                                break;
-                            }
-                        }
-                        break;
-                    }
+                    return;
                 }
-
-                let right = null;
-
-                if(((typeof condition["right"]) === "string") &&
-                    (condition["right"].includes(":")))
+                else
                 {
-                    let rightArray = condition["right"].split(":");
-                    switch(rightArray[0])
+                    let leftType = null;
+                    let left = null;
+
+                    let leftArray = condition["left"].split(":");
+
+                    switch(leftArray[0])
                     {
-                        case("terminal"):
+                        case("payload"):
                         {
-                            switch(rightArray[1])
+                            switch(leftArray[1])
                             {
-                                case("owner"):
+                                case("roles"):
                                 {
-                                    right = session.getTerminalOwner();
+                                    leftType = "array";
+                                    left = payload.getRoles();
+                                    break;
+                                }
+                                case("status"):
+                                {
+                                    leftType = "array";
+                                    left = payload.getStatusEffects();
+                                    break;
+                                }
+                                case("functions"):
+                                {
+                                    leftType = "value";
+                                    left = payload.getFunction(leftArray[2]);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case("session"):
+                        {
+                            switch(leftArray[1])
+                            {
+                                case("status"):
+                                {
+                                    leftType = "array";
+                                    left = session.getStatusEffects();
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case("item"):
+                        {
+                            switch(leftArray[1])
+                            {
+                                case("instance"):
+                                {
+                                    leftType = "array";
+                                    left = this._parent.instanceValues[leftArray[2]];
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case("action"):
+                        {
+                            switch(leftArray[1])
+                            {
+                                case("type"):
+                                {
+                                    leftType = "value";
+                                    left = itemValues[leftkey];
                                     break;
                                 }
                             }
                             break;
                         }
                     }
-                }
-                else
-                {
-                    right = condition["right"];
-                }
 
-                let operation = condition["operation"];
+                    let right = null;
 
-                let pass = false;
-
-                switch(leftType)
-                {
-                    case("array"):
+                    if(((typeof condition["right"]) === "string") &&
+                        (condition["right"].includes(":")))
                     {
-                        switch(operation)
+                        let rightArray = condition["right"].split(":");
+                        switch(rightArray[0])
                         {
-                            case("equals"):
-                            case("contains"):
+                            case("terminal"):
                             {
-                                pass = left.includes(right);
-                                break;
-                            }
-                            case("not_contains"):
-                            {
-                                pass = !(left.includes(right));
+                                switch(rightArray[1])
+                                {
+                                    case("owner"):
+                                    {
+                                        right = session.getTerminalOwner();
+                                        break;
+                                    }
+                                }
                                 break;
                             }
                         }
-                        break;
-                    }
-                    case("value"):
-                    {
-                        switch(operation)
-                        {
-                            case("greater_than"):
-                            {
-                                pass = left > right;
-                                break;
-                            }
-                            case("greater_than_equals"):
-                            {
-                                pass = left >= right;
-                                break;
-                            }
-                            case("equals"):
-                            {
-                                pass = left === right;
-                                break;
-                            }
-                            case("not_equals"):
-                            {
-                                pass = left !== right;
-                                break;
-                            }
-                            case("lesser_than_equals"):
-                            {
-                                pass = left <= right;
-                                break;
-                            }
-                            case("lesser_than"):
-                            {
-                                pass = left < right;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                if(pass)
-                {
-                    if(Object.keys(condition).includes("effect"))
-                    {
-                        returnValue = returnValue + condition.effect;
-                        continueState = true;
                     }
                     else
                     {
-                        returnValue = pass;
-                        continueState = true;
+                        right = condition["right"];
                     }
+
+                    let operation = condition["operation"];
+
+                    let pass = false;
+
+                    switch(leftType)
+                    {
+                        case("array"):
+                        {
+                            switch(operation)
+                            {
+                                case("equals"):
+                                case("contains"):
+                                {
+                                    pass = left.includes(right);
+                                    break;
+                                }
+                                case("not_contains"):
+                                {
+                                    pass = !(left.includes(right));
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case("value"):
+                        {
+                            switch(operation)
+                            {
+                                case("greater_than"):
+                                {
+                                    pass = left > right;
+                                    break;
+                                }
+                                case("greater_than_equals"):
+                                {
+                                    pass = left >= right;
+                                    break;
+                                }
+                                case("equals"):
+                                {
+                                    pass = left === right;
+                                    break;
+                                }
+                                case("not_equals"):
+                                {
+                                    pass = left !== right;
+                                    break;
+                                }
+                                case("lesser_than_equals"):
+                                {
+                                    pass = left <= right;
+                                    break;
+                                }
+                                case("lesser_than"):
+                                {
+                                    pass = left < right;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if(pass)
+                    {
+                        if(Object.keys(condition).includes("effect"))
+                        {
+                            returnValue = returnValue + condition.effect;
+                            continueState = true;
+                        }
+                        else
+                        {
+                            returnValue = pass;
+                            continueState = true;
+                        }
+                    }
+                    else
+                    {
+                        if(Object.keys(condition).includes("rejection_label"))
+                        {
+                            returnValue = condition["rejection_label"];
+                            continueState = false;
+                        }
+                        else if(Object.keys(condition).includes("effect"))
+                        {
+                            //effect not added to returnValue
+                            continueState = true;
+                        }
+                        else
+                        {
+                            returnValue = pass;
+                            continueState = false;
+                        }
+                    }
+                }
+            }, this);
+
+            return returnValue;
+        }
+    }
+
+    getCost(inputObject, inputIndex)
+    {
+        let cost = null;
+
+        if(Object.keys(inputObject).includes("cost"))
+        {
+            cost = this.parseLabel("{cost}", inputIndex);
+        }
+        else if(Object.keys(inputObject).includes("activations"))
+        {
+            let thisBenefit = this;
+            let plusAmount = inputObject.activations.reduce(function(accumulator, thisActivation)
+            {
+                if(thisActivation.type === "plus_tags")
+                {
+                    return accumulator + Number(thisBenefit.parseLabel("{" + thisActivation.amount + "}"));
                 }
                 else
                 {
-                    if(Object.keys(condition).includes("rejection_label"))
-                    {
-                        returnValue = condition["rejection_label"];
-                        continueState = false;
-                    }
-                    else if(Object.keys(condition).includes("effect"))
-                    {
-                        //effect not added to returnValue
-                        continueState = true;
-                    }
-                    else
-                    {
-                        returnValue = pass;
-                        continueState = false;
-                    }
+                    return accumulator;
                 }
+            }, 0);
+
+            if(plusAmount > 0)
+            {
+                cost = plusAmount * -1;
             }
-        });
+        }
 
-        return returnValue;
+        return cost;
     }
 
     isDisabled()
     {
         return ((this._charges !== null) &&
-                (this.#remCharges >= 0));
+                (this.#remCharges <= 0));
     }
 
     #getInputDetails(inputObject, inputIndex)
@@ -679,12 +719,7 @@ class Benefit
             }
         }
 
-        let cost = null;
-
-        if(Object.keys(inputObject).includes("cost"))
-        {
-            cost = this.parseLabel("{cost}", inputIndex);
-        }
+        let cost = this.getCost(inputObject, inputIndex);
 
         return {
             label: parsedLabel,
@@ -698,6 +733,9 @@ class Benefit
         if(this._effectType !== "inputs") { return; }
 
         let targetInput = this._effects[inputIndex];
+        let inputID = this._id + "-" + inputIndex;
+
+        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
         let chargeDisabled = this.isDisabled();
 
         let returnHTML = "";
@@ -726,11 +764,11 @@ class Benefit
                 {
                     case("crack"):
                     {
-                        returnHTML += '<div class="initItem' + (chargeDisabled ? ' dimmed' : '') + '" data-input="' + this.id + ":" + inputIndex +'">' +
+                        returnHTML += '<div class="initItem' + ((chargeDisabled || !inputDetails.passed) ? ' dimmed' : '') + '" data-input="' + inputID +'">' +
                                             '<div class="initHeader">' + targetInput.header + '</div>' +
                                             '<div class="initOption">' +
-                                                '<input type="checkbox" id="' + this._id + '" onclick="initCheck(this, ' + inputIndex + ')"' + (chargeDisabled ? ' disabled' : '') + '>' +
-                                                '<label for="' + this._id + '">' + targetEntry.label + "</label>" +
+                                                '<input type="checkbox" id="' + this._id + '" onclick="initCheck(this, ' + inputIndex + ')"' + ((chargeDisabled || !inputDetails.passed) ? ' disabled' : '') + '>' +
+                                                '<label for="' + this._id + '">' + inputDetails.label + "</label>" +
                                             '</div>' +
                                         '</div>';
 
@@ -747,16 +785,14 @@ class Benefit
                                 "<span class='copycatLabel'>(1/Sim) Activate Copycat for this action to complete it immedidately?</span>" +
                             "</span>"
                         */
-                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
-
                         returnHTML +=     "<span class='confirmBox" + ((chargeDisabled || !inputDetails.passed) ? " dimmed'" : "'") + " >" +
-                                                "<input id='" + this._id + ":" + inputIndex + "' class='confirmInput' type='checkbox'" + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + " />" +
+                                                "<input id='" + this._id + "-" + inputIndex + "' class='confirmInput' type='checkbox'" + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + " />" +
                                                 "<span class='confirmLabel'>" + inputDetails.label + "</span>" +
                                             "</span>";
 
                         let onChangeFunction = function(eventArg, benefitArg, inputIndex)
                         {
-                            let targetInput = benefitArg.inputs[inputIndex];
+                            let targetInput = benefitArg.effects[inputIndex];
                             targetInput.activations.forEach(function(activation, activationIndex)
                             {
                                 switch(activation.type)
@@ -788,12 +824,19 @@ class Benefit
                             category: "confirm",
                             value: {
                                 "inputHTML": returnHTML,
-                                "itemID": this._id + ":" + inputIndex,
+                                "itemID": this._id + "-" + inputIndex,
                                 "function": onChangeFunction,
                                 "functionBenefit": this,
                                 "functionIndex": inputIndex
                             }
                         };
+                    }
+                    case("ph_login"):
+                    {
+                        return {
+                            category: "ph_login",
+                            value: null
+                        }
                     }
                 }
                 break;
@@ -842,7 +885,7 @@ class Benefit
                 {
                     case("inventory"):
                     {
-                        returnHTML += "<span class='itemActionRow'>";
+                        returnHTML += "<span class='itemActionRow' data-input='" + inputID + "'>";
 
                         if(this._chargePerType === "sim" || this._chargePerType === "scene")
                         {
@@ -862,9 +905,7 @@ class Benefit
                                         "</span>";
                         }
 
-                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
-
-                        returnHTML += "<button id='" + this._id + "' class='itemButton' data-input='" + inputIndex + "' onclick='useItem(this," + inputIndex + ")'" + ((inputDetails.cost !== null) ? " data-cost='" + inputDetails.cost + "'" : "") + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + ">" + inputDetails.label + "</button>" +
+                        returnHTML += "<button id='" + this._id + "' class='itemButton' onclick='useItem(this," + inputIndex + ")'" + ((inputDetails.cost !== null) ? " data-cost='" + inputDetails.cost + "'" : "") + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + ">" + inputDetails.label + "</button>" +
                                     "</span>";
 
                         return {
@@ -883,32 +924,31 @@ class Benefit
                         </div>
                         */
 
-                        returnHTML += "<span class='itemActionRow'>";
+                        returnHTML +=   "<div class='initItem" + ((chargeDisabled || !inputDetails.passed) ? " dimmed" : "") + "' data-input='" + inputID + "'>" +
+                                            '<div class="initHeader">' + this._parent.displayName + '</div>' +
+                                            "<div class='initActionRow' >";
 
                         if(this._chargePerType === "sim" || this._chargePerType === "scene")
                         {
-                            returnHTML += "<span class='itemMarks'>";
+                            returnHTML +=       "<span class='itemMarks'>";
 
                             for(let i = 0; i < this._uses; i++)
                             {
-                                returnHTML += "<img src='/resources/images/actions/itemfilled.png' />";
+                                returnHTML +=       "<img src='/resources/images/actions/itemfilled.png' />";
                             }
 
                             for(let j = this._uses; j < this._charges; j++)
                             {
-                                returnHTML += "<img src='/resources/images/actions/itemopen.png' />";
+                                returnHTML +=       "<img src='/resources/images/actions/itemopen.png' />";
                             }
 
-                            returnHTML +=   "<span>per " + (titleCase(this._chargePerType)) + "</span>" +
-                                        "</span>";
+                            returnHTML +=           "<span>per " + (titleCase(this._chargePerType)) + "</span>" +
+                                                "</span>";
                         }
 
-                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
-
-                        returnHTML +=   '<div class="initItem' + (chargeDisabled ? ' dimmed' : '') + '">' +
-                                            '<div class="initHeader">' + this._parent.displayName + '</div>' +
-                                            '<div class="initOption">' +
-                                                '<button id="' + this._id + '" class="itemButton" data-input="' + inputIndex + '" onclick="useItem(this,' + inputIndex + ')"' + ((chargeDisabled || !inputDetails.passed) ? ' disabled' : '') + '>' + inputDetails.label + '</button>' +
+                        returnHTML +=           '<div class="initOption">' +
+                                                    '<button id="' + this._id + '" class="itemButton" data-input="' + inputIndex + '" onclick="useItem(this,' + inputIndex + ')"' + ((chargeDisabled || !inputDetails.passed) ? ' disabled' : '') + '>' + inputDetails.label + '</button>' +
+                                                '</div>' +
                                             '</div>' +
                                         '</div>';
 
@@ -919,13 +959,11 @@ class Benefit
                     }
                     case("execute"):
                     {
-                        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
-
-                        returnHTML += "<button id='" + this._id + ":" + inputIndex + "' class='modalButton'" + ((chargeDisabled || !inputDetails.passed) === false ? " disabled" : "") + ">" + inputDetails.label + "</button>";
+                        returnHTML += "<button id='" + this._id + "-" + inputIndex + "' class='modalButton'" + ((chargeDisabled || !inputDetails.passed) === false ? " disabled" : "") + ">" + inputDetails.label + "</button>";
 
                         let onPointerUpFunction = function(benefitArg, inputIndex, timer=null, startTimerArgs=null)
                         {
-                            let targetInput = benefitArg.inputs[inputIndex];
+                            let targetInput = benefitArg.effects[inputIndex];
 
                             targetInput.activations.forEach(function(activation, activationIndex)
                             {
@@ -933,7 +971,7 @@ class Benefit
                                 {
                                     case("complete_timer"):
                                     {
-                                        $("#" + this._id + ":" + inputIndex).remove();
+                                        $("#" + this._id + "-" + inputIndex).remove();
 
                                         if(activation.animation !== null)
                                         {
@@ -963,17 +1001,43 @@ class Benefit
                             value: {
                                 "buttonHTML": returnHTML,
                                 "buttonEnabled": inputDetails.passed,
-                                "itemID": this._id + ":" + inputIndex,
+                                "itemID": this._id + "-" + inputIndex,
                                 "function": onPointerUpFunction,
                                 "functionBenefit": this,
                                 "functionIndex": inputIndex
                             }
                         };
                     }
+                    case("ph_login"):
+                    {
+                        return {
+                            category: "ph_login",
+                            value: null
+                        }
+                    }
                 }
                 break;
             }
         }
+    }
+
+    useBenefit()
+    {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/useItems.php",
+            data:
+            {
+                userID: payload.getUserID(),
+                effects: this._id,
+                termID: session.getTerminalID()
+            }
+        });
+
+
+        this._uses++;
+        this.#remCharges = this._charges - this._uses;
     }
 }
 
@@ -1119,18 +1183,28 @@ class Activation
 
     activate()
     {
-        let amount = this.#parent.parseLabel(this.#amount);
+        let amount = Number(this.#parent.parseLabel("{" + this.#amount + "}"));
 
         switch(this.#type)
         {
             case("plus_tags"):
             {
                 this.#displayActivationLabel(this.#label);
-                updateTags(amount, Session.ITEMS);
+
+                if(Gems.getCurrentStage() === Gems.ACCESS)
+                {
+                    updateTags(amount, Session.ITEMS);
+                }
+                else
+                {
+                    session.setCurrentTags(session.getCurrentTags() + amount);
+                    Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+                }
                 break;
             }
             case("plus_function"):
             {
+                this.#displayActivationLabel(this.#label);
                 payload.plusFunction(this.#detail, amount);
                 break;
             }
@@ -1174,18 +1248,28 @@ class Activation
 
     deactivate()
     {
-        let amount = (this.#parent.parseLabel(this.#amount)) * -1;
+        let amount = (Number(this.#parent.parseLabel("{" + this.#amount + "}"))) * -1;
 
         switch(this.#type)
         {
             case("plus_tags"):
             {
                 this.#removeActivationLabel(this.#label);
-                updateTags(amount, Session.ITEMS);
+
+                if(Gems.getCurrentStage() === Gems.ACCESS)
+                {
+                    updateTags(amount, Session.ITEMS);
+                }
+                else
+                {
+                    session.setCurrentTags(session.getCurrentTags() + amount);
+                    Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
+                }
                 break;
             }
             case("plus_function"):
             {
+                this.#removeActivationLabel(this.#label);
                 payload.plusFunction(this.#detail, amount);
                 break;
             }
@@ -1230,10 +1314,24 @@ class Activation
 
 class StatusEffect
 {
-    constructor()
-    {
+    _name;
+    #icon;
+    #parent;
+    #activations;
 
+    constructor(statusObject)
+    {
+        this._name = statusObject.name;
+        this.#icon = statusObject.icon;
+        this.#activations = [];
+
+        /*statusObject["activations"].forEach(function(activation)
+        {
+            this.#activations.push(new Activation(null, activation));
+        });*/
     }
+
+    get name() { return this._name; }
 }
 
 class Inventory
@@ -1245,10 +1343,12 @@ class Inventory
     #benefitModel;
     #statusModel;
 
+    #allStatusEffects;
+
     #items;
     #benefits;
+    #statusEffects;
 
-    #initialActivations;
     #confirmInputs;
     #executeInputs;
 
@@ -1258,9 +1358,13 @@ class Inventory
         this.#benefitModel = $.getJSON("/resources/models/benefits.json");
         this.#statusModel = $.getJSON("/resources/models/statuses.json");
 
+        this.#allStatusEffects = {
+            "payload": [],
+            "session": []
+        };
+
         this.#items = [];
         this.#benefits = [];
-        this.#initialActivations = [];
         this.#confirmInputs = [];
         this.#executeInputs = [];
     }
@@ -1313,6 +1417,16 @@ class Inventory
 
                 this.#items.push(newItem);
             }
+
+            this.#statusModel["payload"].forEach(function(modelStatus)
+            {
+                this.#allStatusEffects.payload.push((new StatusEffect(modelStatus)));
+            }, this);
+
+            this.#statusModel["session"].forEach(function(modelStatus)
+            {
+                this.#allStatusEffects.session.push((new StatusEffect(modelStatus)));
+            }, this);
 
             /*
             let proposedItem = this.#itemModel.find(function(potentialItem)
@@ -1457,6 +1571,7 @@ class Inventory
                         case("cyberdeck"):
                         {
                             itemCat = "deck";
+                            payload.addCyberdeck(item.name);
                             break;
                         }
                         case("implant_arm"):
@@ -1487,6 +1602,8 @@ class Inventory
                                 "<span class='itemActions' data-effect='" + item.dataEffectString + "'></span>" +
                             "</li>");
         });
+
+
     }
 
     setupInputs()
@@ -1541,17 +1658,18 @@ class Inventory
             mainBenefit.effects.forEach(function(inputEntry, inputIndex)
             {
                 let inputHTML = mainBenefit.getInputHTML(inputIndex);
+                let inputID = mainBenefit.id + "-" + inputIndex;
 
                 switch(inputHTML.category)
                 {
                     case("crack"):
                     {
-                        $("#initItemList").html(inputHTML.value);
+                        $(".initItem[data-input='" + inputID + "']").replaceWith(inputHTML.value);
                         break;
                     }
                     case("inventory"):
                     {
-                        $(".itemItem > .itemActions[data-effect*='" + mainBenefit.id + "']").html(inputHTML.value);
+                        $(".itemItem > .itemActions[data-effect*='" + mainBenefit.id + "'] > .itemActionRow[data-input='" + inputID + "']").replaceWith(inputHTML.value);
                         break;
                     }
                     case("confirm"):
@@ -1784,47 +1902,59 @@ class Inventory
     }
     */
 
-    toggleEffect(benefitID, inputIndex, activate)
+    // Used by toggling an item checkbox (init/crack screen)
+    toggleInitialEffect(benefitID, inputIndex, activate)
     {
         let targetBenefit = this.#benefits.find(function(potentialBenefit)
         {
             return potentialBenefit.id === benefitID;
         });
 
-        targetBenefit.inputs[inputIndex].activations.forEach(function(activation)
+        targetBenefit.effects[inputIndex].activations.forEach(function(activation, activationIndex)
         {
             if(activate)
             {
                 (new Activation(targetBenefit, activation)).activate();
+
+                payload.addTempEffect(targetBenefit.id, inputIndex, activationIndex);
             }
             else
             {
                 (new Activation(targetBenefit, activation)).deactivate();
+
+                payload.removeTempEffect(targetBenefit.id, inputIndex, activationIndex);
             }
         });
     }
 
-    useItem(benefitID, inputIndex)
+    // Used when a button is clicked which spawns a confirm/execute window
+    confirmItem(benefitID, inputIndex)
     {
         let targetBenefit = this.#benefits.find(function(potentialBenefit)
         {
             return potentialBenefit.id === benefitID;
         });
 
-        let targetInput = targetBenefit.inputs[inputIndex];
+        let targetInput = targetBenefit.effects[inputIndex];
 
         let actionMap = {
+            userID: payload.getUserID(),
+            targetID: targetBenefit.id,
+            action: targetBenefit.id,
+            actionType: "item",
+            buttonData: null,
+            actionCost: targetBenefit.getCost(targetInput, inputIndex),
+            global: false,
+            /////////////////////////////
             targetBenefit: targetBenefit,
             targetInput: targetInput,
-            inputIndex: inputIndex,
-            action: targetBenefit.id,
-            actionType: "item"
+            inputIndex: inputIndex
         };
 
         if(Object.keys(targetInput).includes("confirm"))
         {
             let buttonArray = [{
-				id: targetBenefit.id + ":" + inputIndex,
+				id: targetBenefit.id + "-" + inputIndex,
 				text: targetInput["confirm"]["button"],
 				data: session.getTerminalID(),
 				global: false
@@ -1832,7 +1962,7 @@ class Inventory
 
 			let confirmMap = {
 				headerText: "Confirm Item Activation",
-				bodyText: targetBenefit.parseLabel(targetInput["confirm"]["body"], targetInput["cost"] ?? null),
+				bodyText: targetBenefit.parseLabel(targetInput["confirm"]["body"], inputIndex),
 				buttonArray: buttonArray
 			};
 
@@ -1844,6 +1974,7 @@ class Inventory
         }
     }
 
+    // Used when executing an item
     executeItem(actionMap)
     {
         let maxTime = 30;
@@ -1856,7 +1987,7 @@ class Inventory
             {
                 // skip the execute window entirely
                 actionModal.skipExecutePage(actionMap, true);
-                break;
+                return;
             }
             case("static"):
             {
@@ -1878,6 +2009,7 @@ class Inventory
         actionModal.showExecutePage(actionMap, executeMap, true);
     }
 
+    // Used when an item's execution completes
     completeItem(actionMap)
     {
         closeModal("executed");
@@ -1905,90 +2037,76 @@ class Inventory
         let targetBenefit = actionMap["targetBenefit"];
         let targetInput = actionMap["targetInput"];
 
-        let inputHTML = targetBenefit.getInputHTML(actionMap["inputIndex"]);
-
-        if(inputHTML.location === "inventory")
+        targetInput["activations"].forEach(function(activation)
         {
-            $(".itemItem > .itemActions[data-effect*='" + targetBenefit.id + "']").html(inputHTML.value);
-        }
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/resources/scripts/terminal/db/useItems.php",
-            data:
-            {
-                userID: payload.getUserID(),
-                effects: targetBenefit.id,
-                termID: session.getTerminalID()
-            }
+            (new Activation(targetBenefit, activation)).activate();
         });
 
-        targetInput["activation"].forEach(function(activation)
-        {
-            this.#activateEffect(parentEffect, activation, true);
-        }, this.#globalThis);
+        targetBenefit.useBenefit();
+
+        this.resetOnScreenInputs();
     }
 
+    // Used when a user *first* logs into a terminal
     applyTermLoginEffects()
     {
-        let termLoginHavingEffects = this.#benefits.filter(function(potentialEffect)
+        let benefitsHavingTermLoginEffects = this.#benefits.filter(function(potentialEffect)
         {
-            return Object.keys(potentialEffect).includes("term_login");
+            return potentialEffect.effectType === "term_login";
         });
 
-        termLoginHavingEffects.forEach(function(mainEffect)
+        benefitsHavingTermLoginEffects.forEach(function(mainBenefit)
         {
-            let chargeDisabled = false;
-
-            if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
+            mainBenefit.effects.forEach(function(tlEntry, inputIndex)
             {
-                chargeDisabled = true;
-            }
+                let disabled = mainBenefit.isDisabled();
+                let conditionCheck = mainBenefit.checkConditions(tlEntry["conditions"] ?? null);
 
-            mainEffect.term_login.forEach(function(tlEntry)
-            {
-                let conditionCheck = true;
-
-                if(Object.keys(tlEntry).includes("condition"))
+                if((disabled === false) && (conditionCheck === true))
                 {
-                    let itemInstance = null
-
-                    if(Object.keys(mainEffect).includes("instance"))
-                    {
-                        itemInstance = mainEffect.instance;
-                    }
-                    let checkResults = this.#checkCondition(tlEntry.condition, itemInstance);
-                    if(typeof checkResults === "string")
-                    {
-                        conditionCheck = false;
-                        parsedLabel = checkResults;
-                    }
-                    else
-                    {
-                        conditionCheck = checkResults;
-                    }
+                    (new Activation(mainBenefit, tlEntry)).activate();
+                    payload.addTempEffect(mainBenefit.id, inputIndex, null);
                 }
-
-                if((conditionCheck === true) && (chargeDisabled === false))
-                {
-                    this.#activateEffect(mainEffect, tlEntry, true, true);
-                }
-            }, this.#globalThis);
-        }, this.#globalThis);
-
-        let decks = this.#items.filter(function(potentialItem)
-        {
-            return potentialItem.type === "cyberdeck";
-        });
-
-        decks.forEach(function(deck)
-        {
-            payload.addCyberdeck(deck.item_name);
+            });
         });
     }
 
-    reapplyDisplayEffects(payloadEffects)
+    // Used after every action
+    applyPostActionEffects(actionMap)
+    {
+        let benefitsHavingPostActionEffects = this.#benefits.filter(function(potentialBenefit)
+        {
+            return potentialBenefit.effectType === "post_action";
+        });
+
+        benefitsHavingPostActionEffects.forEach(function(mainBenefit)
+        {
+            let used = false;
+
+            mainEffect.effects.forEach(function(pAEntry)
+            {
+                let disabled = mainBenefit.isDisabled();
+                let conditionCheck = mainBenefit.checkConditions(pAEntry["conditions"] ?? null);
+
+                if((disabled === false) && (conditionCheck === true))
+                {
+                    used = true;
+                    pAEntry["activations"].forEach(function(activation, activationIndex)
+                    {
+                        (new Activation(mainBenefit, activation)).activate();
+                    });
+                }
+            });
+
+            if(used)
+            {
+                mainBenefit.useBenefit();
+            }
+        });
+    }
+
+    // Used when a user logs in with status effects
+    applyStatusEffects(statusEffects)
     {
         /*
         payloadEffects.forEach(function(payloadEffect)
@@ -2012,6 +2130,7 @@ class Inventory
         }, this.#globalThis); */
     }
 
+    /*
     submitInitialEffects()
     {
         $.ajax({
@@ -2026,125 +2145,45 @@ class Inventory
             }
         });
     }
+    */
 
-    submitEffects(effectArray)
+    // Used to submit effects, including Temp Effects, including login, but login should not apply activations
+    submitEffects(effectArray, initial=false)
     {
+        let uniqueBenefits = [];
+
         effectArray.forEach(function(effect)
         {
-            let parentEffect = this.#benefits.find(function(potentialEffect)
+            let targetBenefit = this.#benefits.find(function(potentialBenefit)
             {
-                return potentialEffect.effect_name === effect.effect_name;
-            });
-            let targetActivation = parentEffect["input"][effect.input_index]["activation"][effect.activation_index];
-
-            parentEffect.uses++;
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/resources/scripts/terminal/db/useItems.php",
-                data:
-                {
-                    userID: payload.getUserID(),
-                    effects: parentEffect["effect_name"],
-                    termID: session.getTerminalID()
-                }
+                return potentialBenefit.id === effect.benefit_id;
             });
 
-            this.#activateEffect(parentEffect, targetActivation, true);
-        }, this.#globalThis);
-    }
-
-    applyPostActionEffects(actionMap)
-    {
-        let postActionHavingEffects = this.#benefits.filter(function(potentialEffect)
-        {
-            return Object.keys(potentialEffect).includes("post_action");
-        });
-
-        postActionHavingEffects.forEach(function(mainEffect)
-        {
-            let chargeDisabled = false;
-
-            if((mainEffect["charges"] !== null) && (mainEffect["uses"] >= mainEffect["charges"]))
+            if(!initial)
             {
-                chargeDisabled = true;
-            }
-
-            mainEffect.post_action.forEach(function(pAEntry)
-            {
-                let conditionCheck = true;
-
-                if(Object.keys(pAEntry).includes("condition"))
+                if(targetBenefit.effectType === "inputs")
                 {
-                    let checkResults = this.#checkCondition(pAEntry.condition, actionMap);
+                    let targetActivation = targetBenefit.effects[effect.input_index].activations[effect.activation_index];
 
-                    conditionCheck = checkResults;
-                }
-
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/resources/scripts/terminal/db/useItems.php",
-                    data:
-                    {
-                        userID: payload.getUserID(),
-                        effects: mainEffect["effect_name"],
-                        termID: session.getTerminalID()
-                    }
-                });
-
-                if((conditionCheck === true) && (chargeDisabled === false))
-                {
-                    this.#activateEffect(mainEffect, pAEntry, true);
-                }
-            }, this.#globalThis);
-        }, this.#globalThis);
-    }
-
-    checkItemConditions()
-    {
-        let itemButtons = $(".itemButton");
-
-        let globalThis = this.#globalThis;
-
-        itemButtons.each(function (index, itemButton)
-        {
-            let parentEffect = globalThis.#benefits.find(function(proposedEffect)
-            {
-                return proposedEffect.effect_name === $(itemButton).attr("id");
-            });
-
-            let targetInput = parentEffect.input[Number($(itemButton).attr("data-input"))];
-
-            let chargeDisabled = false;
-
-            if((parentEffect["charges"] !== null) && (parentEffect["uses"] >= parentEffect["charges"]))
-            {
-                chargeDisabled = true;
-            }
-
-            let conditionCheck = true;
-
-            if(Object.keys(targetInput).includes("condition"))
-            {
-                let checkResults = globalThis.#checkCondition(targetInput.condition);
-                if(typeof checkResults === "string")
-                {
-                    conditionCheck = false;
-                    $(itemButton).html(checkResults);
+                    (new Activation(targetBenefit, targetActivation)).activate();
                 }
                 else
                 {
-                    conditionCheck = checkResults;
+                    let targetActivation = targetBenefit.effects[effect.input_index];
+
+                    (new Activation(targetBenefit, targetActivation)).activate();
                 }
             }
 
-            if((chargeDisabled === true) || (conditionCheck !== true))
+            if((uniqueBenefits.find((benefit) => benefit.id === targetBenefit.id)) === undefined)
             {
-                $(itemButton).prop("disabled",true);
-                $(itemButton).attr("disabled",true);
+                uniqueBenefits.push(targetBenefit);
             }
+        }, this.#globalThis);
+
+        uniqueBenefits.forEach(function(targetBenefit)
+        {
+            targetBenefit.useBenefit();
         });
     }
 }

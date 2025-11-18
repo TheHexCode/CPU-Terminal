@@ -233,20 +233,20 @@ class Payload
 
                 if(hackIndex !== -1)
                 {
-                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) + Number(amount);
+                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) + Number(plus_amount);
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Hacking",
-                        rank: Number(amount),
+                        rank: Number(plus_amount),
                         type: "ranked",
                         keyword: null,
                         hacking_cat: "initial"
                     });
                 }
 
-                updateTags(Number(amount) * 2, Session.HACK);
+                updateTags(Number(plus_amount) * 2, Session.HACK);
                 break;
             }
             case("alarm_sense"):
@@ -255,13 +255,13 @@ class Payload
 
                 if(asIndex !== -1)
                 {
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(amount);
+                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(plus_amount);
                 }
                 else
                 {
                     this.#extraFuncs.push({
                         name: "Alarm Sense",
-                        rank: Number(amount),
+                        rank: Number(plus_amount),
                         type: "ranked",
                         keyword: null,
                         hacking_cat: "passive"
@@ -272,7 +272,7 @@ class Payload
         }
     }
 
-    minusFunction(activation_function, amount)
+    minusFunction(activation_function, minus_amount)
     {
         switch(activation_function)
         {
@@ -282,8 +282,8 @@ class Payload
 
                 if(hackIndex !== -1)
                 {
-                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) - Number(amount);
-                    updateTags((Number(amount)*2) * -1, Session.HACK);
+                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) - Number(minus_amount);
+                    updateTags((Number(minus_amount)*2) * -1, Session.HACK);
                 }
 
                 break;
@@ -294,7 +294,7 @@ class Payload
 
                 if(asIndex !== -1)
                 {
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) - Number(amount);
+                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) - Number(minus_amount);
                 }
 
                 break;
@@ -321,20 +321,20 @@ class Payload
         */
     }
 
-    addTempEffect(effect_name, input_index, activation_index)
+    addTempEffect(benefit_id, input_index, activation_index)
     {
         this.#tempEffects.push({
-            "effect_name": effect_name,
+            "benefit_id": benefit_id,
             "input_index": input_index,
             "activation_index": activation_index
         });
     }
 
-    removeTempEffect(effect_name, input_index, activation_index)
+    removeTempEffect(benefit_id, input_index, activation_index)
     {
         this.#tempEffects.splice(this.#tempEffects.findIndex(function(effect)
         {
-            return ((effect.effect_name === effect_name) &&
+            return ((effect.benefit_id === benefit_id) &&
                     (effect.input_index === input_index) &&
                     (effect.activation_index === activation_index));
         }), 1);
@@ -350,26 +350,27 @@ class Payload
         });
     }
 
-    submitTempEffects()
+    submitTempEffects(initial=false)
     {
         this.#inventory.submitEffects(this.#tempEffects.filter(function(effect)
-            {
-                return ((effect.input_index !== null) &&
-                        (effect.activation_index !== null));
-            })
-        );
+        {
+            return (effect.input_index !== null);
+        }), initial);
+        
         this.#tempEffects = [];
-    }
-
-    submitInitialEffects()
-    {
-        this.#inventory.submitInitialEffects();
     }
 
     clearTempEffects()
     {
         this.#tempEffects = [];
     }
+
+    /*
+    submitInitialEffects()
+    {
+        this.#inventory.submitInitialEffects();
+    }
+    */
 
     addStatusEffect(effect_name, effect_duration, terminal_id)
     {
@@ -473,7 +474,7 @@ class Payload
     {
         this.#inventory.applyTermLoginEffects();
 
-        this.#inventory.reapplyDisplayEffects(this.#statusEffects);
+        //this.#inventory.reapplyDisplayEffects(this.#statusEffects);
     }
 
     addCyberdeck(deckSource)
@@ -491,12 +492,12 @@ class Payload
 
     toggleItemCheckbox(target, index)
     {
-        this.#inventory.toggleEffect(target.id, index, $(target).prop("checked"));
+        this.#inventory.toggleInitialEffect(target.id, index, $(target).prop("checked"));
     }
 
-    useItem(target, index)
+    confirmItem(target, index)
     {
-        this.#inventory.useItem(target.id, index);
+        this.#inventory.confirmItem(target.id, index);
     }
 
     executeItem(actionMap)
@@ -509,10 +510,12 @@ class Payload
         this.#inventory.completeItem(actionMap);
     }
 
+    /*
     activateItemEffect(effectName, inputIndex)
     {
         this.#inventory.toggleEffect(effectName, inputIndex, true);
     }
+    */
 
     applyPostActionEffects(actionMap)
     {
@@ -521,7 +524,7 @@ class Payload
 
     checkItemConditions()
     {
-        this.#inventory.checkItemConditions();
+        this.#inventory.resetOnScreenInputs();
     }
 
 /*

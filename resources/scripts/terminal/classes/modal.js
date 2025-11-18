@@ -149,7 +149,7 @@ class Modal
                 {
                     itemInput["function"](
                         event,
-                        itemInput["functionInput"],
+                        itemInput["functionBenefit"],
                         itemInput["functionIndex"]
                     );
                 });
@@ -257,7 +257,7 @@ class Modal
                     $("#" + itemInput["itemID"]).one("pointerup", {this: this}, function(event)
                     {
                         itemInput["function"](
-                            itemInput["functionInput"],
+                            itemInput["functionBenefit"],
                             itemInput["functionIndex"],
                             event.data.this.#modalTimer,
                             [executeMap["maxTime"], completeFunction, actionMap]

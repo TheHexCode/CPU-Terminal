@@ -460,6 +460,7 @@ ul
 	margin-top: 0.25rem;
 	/* 271px/0.72rem -> 400px/1rem */
 	font-size: clamp(0.72rem, 3.473vw + 0.132rem, 1rem);
+	white-space: nowrap;
 }
 
 .codeBox
@@ -600,6 +601,13 @@ ul
 {
 	--fg-color: var(--blue);
 	color: var(--fg-color);
+}
+
+.initActionRow
+{
+	grid-column: start / end;
+	display: grid;
+	grid-template-columns: subgrid;
 }
 
 .initGroup,

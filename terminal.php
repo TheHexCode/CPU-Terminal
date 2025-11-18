@@ -187,6 +187,7 @@
 						</div>
 					</div>
 					<div id="initItemList" class="initItemList">
+						<!--
 						<div id="cmm_init" class="initItem hidden">
 							<div class="initHeader">CMM ARMS:</div>
 							<div class="initOption">
@@ -236,6 +237,7 @@
 								<button data-effect="impl_mags" onclick="initAction(this)">Brick Device?</button>
 							</div>
 						</li>
+						-->
 					</div>
 					<div class="accessSpacer"></div>
 					<div class="accessBox">

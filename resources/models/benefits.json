@@ -151,7 +151,7 @@
 						{
 							"left": "payload:functions:hacking",
 							"operation": "greater_than",
-							"right": 1,
+							"right": 0,
 							"rejection_label": "You must have Hacking I to set up"
 						},
 						{
@@ -189,7 +189,7 @@
 						{
 							"left": "payload:functions:hacking",
 							"operation": "greater_than",
-							"right": 1,
+							"right": 0,
 							"rejection_label": "You must have Hacking I to set up"
 						},
 						{
