@@ -38,7 +38,7 @@
 					"conditions":
 					[
 						{
-							"left": "payload:copyables",
+							"left": "session:copyables",
 							"operation": "contains",
 							"right": "action:type"
 						}

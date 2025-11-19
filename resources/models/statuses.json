@@ -4,17 +4,19 @@
         "payload":
         [
             {
-                "name": "debutantalus_reporter_badge"
+                "name": "debutantalus_reporter_badge",
+                "duration": "scene"
             },
             {
                 "name": "pet_own",
+                "duration": null,
                 "icon":
                 {
                     "source": "/resources/images/status/pet_egg.png",
                     "hierarchy":
                     {
-                        "overwrites": [],
-                        "overwritten_by":
+                        "superior_to": [],
+                        "inferior_to":
                         [
                             "pet_play",
                             "pet_use"
@@ -24,16 +26,17 @@
             },
             {
                 "name": "pet_play",
+                "duration": "sim",
                 "icon":
                 {
                     "source": "/resources/images/status/pet_ready.png",
                     "hierarchy":
                     {
-                        "overwrites":
+                        "superior_to":
                         [
                             "pet_own"
                         ],
-                        "overwritten_by":
+                        "inferior_to":
                         [
                             "pet_use"
                         ]
@@ -42,23 +45,25 @@
             },
             {
                 "name": "pet_use",
+                "duration": "scene",
                 "icon":
                 {
                     "source": "/resources/images/status/pet_sleep.png",
                     "hierarchy":
                     {
                         "type": "payload",
-                        "overwrites":
+                        "superior_to":
                         [
                             "pet_own",
                             "pet_play"
                         ],
-                        "overwritten_by": []
+                        "inferior_to": []
                     }
                 }
             },
             {
                 "name": "johnnys_special_touch",
+                "duration": "term",
                 "icon":
                 {
                     "source": "/resources/images/status/touched.png"
@@ -74,6 +79,7 @@
             },
             {
                 "name": "power_glove_uh9k_equipped",
+                "duration": null,
                 "activations":
                 [
                     {
@@ -86,10 +92,12 @@
                 ]
             },
             {
-                "name": "shimmerstick_consumed"
+                "name": "shimmerstick_consumed",
+                "duration": "scene"
             },
             {
                 "name": "shimmerstick_applied",
+                "duration": "term",
                 "activations":
                 [
                     {
@@ -107,10 +115,12 @@
                 ]
             },
             {
-                "name": "vigil_consumed"
+                "name": "vigil_consumed",
+                "duration": "scene"
             },
             {
                 "name": "digisec_secret",
+                "duration": "scene",
                 "activations":
                 [
                     {
@@ -120,7 +130,8 @@
                 ]
             },
             {
-                "name": "marked"
+                "name": "marked",
+                "duration": "scene"
             }
         ],
         "session":

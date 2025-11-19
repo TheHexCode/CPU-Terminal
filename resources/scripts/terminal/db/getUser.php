@@ -163,8 +163,8 @@ else
                                         ':termID' => $termID]);
     $itemUseResponse = $itemUseStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    $effectQuery = "SELECT DISTINCT effect_name
-                    FROM sim_payload_effects
+    $effectQuery = "SELECT effect_name, effect_values
+                    FROM {$dbName}.sim_payload_effects
                     WHERE user_id = :userID
                        AND ( duration = :simCode
                           OR duration = :jobCode
@@ -175,7 +175,7 @@ else
                                        ':simCode' => $activeCodes["simCode"],
                                        ':jobCode' => $activeCodes["jobCode"],
                                        ':termID' => $termID]);
-    $effectArray = $effectStatement->fetchAll(PDO::FETCH_COLUMN);
+    $effectArray = $effectStatement->fetchAll(PDO::FETCH_ASSOC);
 
 /*
     $itemUseQuery = "   SELECT SUM(item_effects.charges - user_items.count)

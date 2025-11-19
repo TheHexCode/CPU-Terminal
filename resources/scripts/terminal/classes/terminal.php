@@ -15,6 +15,7 @@ class Terminal
     private $logEntries;
     private $iconModel;
     private $iceModel;
+    private $statusEffects;
 
     function __construct($termResponse)
     {
@@ -36,6 +37,7 @@ class Terminal
             $this->initialEntries = array();
             $this->logEntries = $termResponse["logEntries"];
             $this->iceModel = $termResponse["iceModel"];
+            $this->statusEffects = $termResponse["effects"];
 
             $iconFilepath = "./resources/models/icons.json";
             $iconFile = fopen($iconFilepath,"r");
@@ -658,7 +660,8 @@ class Terminal
                 "termState" => $this->termState,
                 "stateData" => $this->stateData,
                 "entries" => $this->initialEntries,
-                "puzzles" => $this->puzzles
+                "puzzles" => $this->puzzles,
+                "statusEffects" => $this->statusEffects
             );
 
             return "<script>var session = new Session(" . json_encode($termInfo) . ");</script>";

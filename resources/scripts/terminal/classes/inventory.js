@@ -285,6 +285,88 @@ class Benefit
         }
     }
 
+    static parseValuesLabel(labelString, parentValues)
+    {
+        let parseMatches = [];
+
+        if(labelString !== null)
+        {
+            parseMatches = labelString.match(/{.*?}/g) ?? [];
+        }
+
+        parseMatches.forEach(function(match)
+        {
+            let modifier = (match.split("!")[1] ?? "}").split("}")[0];
+            let pathArray = match.split("!")[0].split("{")[1].split("}")[0].split(":");
+
+            let result = 0;
+
+            if(pathArray[0] === "values")
+            {
+                let splitKey = pathArray[1].split(/([*/+-])/);
+
+                let resultValue = parentValues[splitKey[0]];
+
+                switch(splitKey[1])
+                {
+                    case("*"):
+                    {
+                        result = resultValue * Number(splitKey[2]);
+                        break;
+                    }
+                    case("/"):
+                    {
+                        result = resultValue / Number(splitKey[2]);
+                        break;
+                    }
+                    case("+"):
+                    {
+                        result = resultValue + Number(splitKey[2]);
+                        break;
+                    }
+                    case("-"):
+                    {
+                        result = resultValue - Number(splitKey[2]);
+                        break;
+                    }
+                    default: //undefined
+                    {
+                        result = resultValue;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // Needs to be a "values:..." string
+                return false;
+            }
+
+            switch(modifier)
+            {
+                case("plurality"):
+                {
+                    result = (result !== 1 ? "s" : "");
+                    break;
+                }
+                case("tens"):
+                {
+                    result = tens(result);
+                    break;
+                }
+                case("title"):
+                {
+                    result = titleCase(result);
+                    break;
+                }
+            }
+
+            labelString = labelString.replace(match, result);
+        }, this);
+
+        return labelString;
+    }
+
     parseLabel(labelString, effectIndex=null)
     {
         let parseMatches = [];
@@ -419,7 +501,7 @@ class Benefit
         return labelString;
     }
 
-    checkConditions(effectConditions)
+    checkConditions(effectConditions, extraValue=null)
     {
         // array of conditions
             // left
@@ -481,7 +563,7 @@ class Benefit
                                 case("status"):
                                 {
                                     leftType = "array";
-                                    left = payload.getStatusEffects();
+                                    left = payload.getStatusEffects().map((effectObject) => effectObject.name );
                                     break;
                                 }
                                 case("functions"):
@@ -501,6 +583,12 @@ class Benefit
                                 {
                                     leftType = "array";
                                     left = session.getStatusEffects();
+                                    break;
+                                }
+                                case("copyables"):
+                                {
+                                    leftType = "array";
+                                    left = session.getCopyableActions();
                                     break;
                                 }
                             }
@@ -526,7 +614,7 @@ class Benefit
                                 case("type"):
                                 {
                                     leftType = "value";
-                                    left = itemValues[leftkey];
+                                    left = extraValue;
                                     break;
                                 }
                             }
@@ -549,6 +637,18 @@ class Benefit
                                     case("owner"):
                                     {
                                         right = session.getTerminalOwner();
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                            case("action"):
+                            {
+                                switch(rightArray[1])
+                                {
+                                    case("type"):
+                                    {
+                                        right = extraValue;
                                         break;
                                     }
                                 }
@@ -623,6 +723,15 @@ class Benefit
                             break;
                         }
                     }
+
+                    /*
+                    console.log(this._name);
+                    console.log(left);
+                    console.log(operation);
+                    console.log(right);
+                    console.log(pass);
+                    console.log("-----------------------")
+                    */
 
                     if(pass)
                     {
@@ -700,14 +809,14 @@ class Benefit
                 (this.#remCharges <= 0));
     }
 
-    #getInputDetails(inputObject, inputIndex)
+    #getInputDetails(inputObject, inputIndex, extraValue=null)
     {
         let parsedLabel = this.parseLabel(inputObject.label);
         let conditionCheck = true;
 
         if(Object.keys(inputObject).includes("conditions"))
         {
-            let checkResults = this.checkConditions(inputObject.conditions);
+            let checkResults = this.checkConditions(inputObject.conditions, extraValue);
             if(typeof checkResults === "string")
             {
                 conditionCheck = false;
@@ -728,14 +837,14 @@ class Benefit
         }
     }
 
-    getInputHTML(inputIndex)
+    getInputHTML(inputIndex, extraValue=null)
     {
         if(this._effectType !== "inputs") { return; }
 
         let targetInput = this._effects[inputIndex];
         let inputID = this._id + "-" + inputIndex;
 
-        let inputDetails = this.#getInputDetails(targetInput, inputIndex);
+        let inputDetails = this.#getInputDetails(targetInput, inputIndex, extraValue);
         let chargeDisabled = this.isDisabled();
 
         let returnHTML = "";
@@ -959,7 +1068,7 @@ class Benefit
                     }
                     case("execute"):
                     {
-                        returnHTML += "<button id='" + this._id + "-" + inputIndex + "' class='modalButton'" + ((chargeDisabled || !inputDetails.passed) === false ? " disabled" : "") + ">" + inputDetails.label + "</button>";
+                        returnHTML += "<button id='" + this._id + "-" + inputIndex + "' class='modalButton'" + ((chargeDisabled || !inputDetails.passed) ? " disabled" : "") + ">" + inputDetails.label + "</button>";
 
                         let onPointerUpFunction = function(benefitArg, inputIndex, timer=null, startTimerArgs=null)
                         {
@@ -971,7 +1080,7 @@ class Benefit
                                 {
                                     case("complete_timer"):
                                     {
-                                        $("#" + this._id + "-" + inputIndex).remove();
+                                        $("#" + benefitArg._id + "-" + inputIndex).remove();
 
                                         if(activation.animation !== null)
                                         {
@@ -983,9 +1092,21 @@ class Benefit
                                         timer.startTimer(startTimerArgs[0], startTimerArgs[1], startTimerArgs[2]);
                                         break;
                                     }
-                                    case("payload_effect"):
+                                    case("status"):
                                     {
-                                        payload.addTempEffect(benefitArg.id, inputIndex, activationIndex);
+                                        switch(activation.scope)
+                                        {
+                                            case("payload"):
+                                            {
+                                                payload.addTempEffect(benefitArg.id, inputIndex, activationIndex);
+                                                break;
+                                            }
+                                            case("session"):
+                                            {
+                                                //session.addTempEffect(benefitArg.id, inputIndex, activationIndex);
+                                                break;
+                                            }
+                                        }
                                     }
                                     default:
                                     {
@@ -1090,7 +1211,6 @@ class Activation
     #type;
     #amount;
     #label;
-    #conditions;
     #name;
     /*
     #function;
@@ -1100,13 +1220,12 @@ class Activation
     */
     #detail;
 
-    constructor(parentBenefit, activationObject)
+    constructor(parentInstance, activationObject)
     {
-        this.#parent = parentBenefit;
+        this.#parent = parentInstance;
         this.#type = activationObject.type;
         this.#amount = activationObject.amount ?? null;
         this.#label = activationObject.label ?? null;
-        this.#conditions = activationObject.conditions ?? null;
         this.#name = activationObject.name ?? null;
 
         switch(true)
@@ -1181,9 +1300,18 @@ class Activation
         }
     }
 
-    activate()
+    activate(useStatic=false)
     {
-        let amount = Number(this.#parent.parseLabel("{" + this.#amount + "}"));
+        let amount = null;
+
+        if(useStatic)
+        {
+            amount = Number(Benefit.parseValuesLabel("{" + this.#amount + "}", this.#parent.values));
+        }
+        else
+        {
+            amount = Number(this.#parent.parseLabel("{" + this.#amount + "}"));
+        }
 
         switch(this.#type)
         {
@@ -1235,7 +1363,19 @@ class Activation
             }
             case("status"):
             {
-                // pass for now
+                switch(this.#detail) // scope
+                {
+                    case("payload"):
+                    {
+                        payload.addStatusEffect(this.#name, this.#parent.values);
+                        break;
+                    }
+                    case("session"):
+                    {
+                        session.addStatusEffect(this.#name);
+                        break;
+                    }
+                }
                 break;
             }
             case("pop-up"):
@@ -1246,9 +1386,18 @@ class Activation
         }
     }
 
-    deactivate()
+    deactivate(useStatic=false)
     {
-        let amount = (Number(this.#parent.parseLabel("{" + this.#amount + "}"))) * -1;
+        let amount = -1;
+
+        if(useStatic)
+        {
+            amount = amount * Number(Benefit.parseValuesLabel("{" + this.#amount + "}", this.#parent.values));
+        }
+        else
+        {
+            amount = amount * Number(this.#parent.parseLabel("{" + this.#amount + "}"));
+        }
 
         switch(this.#type)
         {
@@ -1300,7 +1449,19 @@ class Activation
             }
             case("status"):
             {
-                // pass for now
+                switch(this.#detail) // scope
+                {
+                    case("payload"):
+                    {
+                        payload.removeStatusEffect(this.#name);
+                        break;
+                    }
+                    case("session"):
+                    {
+                        session.removeStatusEffect(this.#name);
+                        break;
+                    }
+                }
                 break;
             }
             case("pop-up"):
@@ -1315,23 +1476,148 @@ class Activation
 class StatusEffect
 {
     _name;
+    _type;
+    _duration;
     #icon;
-    #parent;
-    #activations;
+    #activations = [];
+    _parentValues = [];
 
-    constructor(statusObject)
+    constructor(type, statusObject)
     {
         this._name = statusObject.name;
-        this.#icon = statusObject.icon;
-        this.#activations = [];
+        this._type = type;
+        this._duration = statusObject.duration ?? null;
+        this.#icon = statusObject.icon ?? null;
 
-        /*statusObject["activations"].forEach(function(activation)
+        if(Object.keys(statusObject).includes("activations"))
         {
-            this.#activations.push(new Activation(null, activation));
-        });*/
+            statusObject["activations"].forEach(function(activation)
+            {
+                this.#activations.push(new Activation(this, activation));
+            }, this);
+        }
     }
 
-    get name() { return this._name; }
+    get name()      { return this._name;            }
+    get id()        { return this._name;            }
+    get type()      { return this._type;            }
+    get duration()  { return this._duration;        }
+    get values()    { return this._parentValues;    }
+
+    setValues(parentValues)
+    {
+        this._parentValues = parentValues;
+    }
+
+    #displayStatusIcon()
+    {
+        if($("#itemStatus img[data-icon='" + this._name + "']").length === 0)
+        {
+            if(Object.keys(this.#icon).includes("hierarchy"))
+            {
+                let lower_tier = this.#icon.hierarchy.superior_to;
+                let higher_tier = this.#icon.hierarchy.inferior_to;
+
+                let higherImg = $("#itemStatus img").filter(function(index, imgElement)
+                {
+                    return higher_tier.includes(imgElement.dataset["icon"]);
+                });
+
+                if(higherImg.length === 0) // No img higher than you is present
+                {
+                    let lowerImg = $("#itemStatus img").filter(function(index, imgElement)
+                    {
+                        return lower_tier.includes(imgElement.dataset["icon"]);
+                    });
+
+                    if(lowerImg.length === 0) // No img lower than you is present either, so just exist
+                    {
+                        $("#itemStatus").append('<img data-icon="' + this._name + '" src="' + this.#icon.source + '"/>');
+                    }
+                    else
+                    {
+                        $(lowerImg[0]).attr("src", this.#icon.source);
+                        $(lowerImg[0]).attr("data-icon", this._name);
+                    }
+                }
+                else
+                {
+                    // Do nothing, you were the lower tier
+                }
+            }
+            else // No hierarchy, just add
+            {
+                $("#itemStatus").append('<img data-icon="' + this._name + '" src="' + this.#icon.source + '"/>');
+            }
+        }
+        else
+        {
+            $("#itemStatus img[data-icon='" + this._name + "']").attr("src", this.#icon.source);
+        }
+    }
+
+    #removeStatusIcon()
+    {
+         $("#itemStatus img[data-icon='" + this._name + "']").remove();
+    }
+
+    activate(reapply=false)
+    {
+        // display Icon
+        // create parentless Activations
+
+        this.#displayStatusIcon();
+        this.#activations.forEach(function(activation)
+        {
+            activation.activate(true);
+        });
+
+        if((!reapply) && (this._duration !== null))
+        {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/resources/scripts/terminal/db/toggleEffect.php",
+                data:
+                {
+                    targetType: this._type,
+                    targetID: payload.getUserID(),
+                    effectName: this._name,
+                    effectValues: JSON.stringify(this._parentValues),
+                    duration: this._duration,
+                    termID: session.getTerminalID(),
+                    toggle: true
+                }
+            });
+        }
+    }
+
+    deactivate()
+    {
+        // removeIcon
+        // deactivate Activations
+
+        this.#removeStatusIcon();
+        this.#activations.forEach(function(activation)
+        {
+            activation.deactivate(true);
+        });
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/resources/scripts/terminal/db/toggleEffect.php",
+            data:
+            {
+                targetType: this._type,
+                targetID: payload.getUserID(),
+                effect: this._name,
+                duration: this._duration,
+                termID: session.getTerminalID(),
+                toggle: false
+            }
+        });
+    }
 }
 
 class Inventory
@@ -1347,7 +1633,6 @@ class Inventory
 
     #items;
     #benefits;
-    #statusEffects;
 
     #confirmInputs;
     #executeInputs;
@@ -1358,10 +1643,7 @@ class Inventory
         this.#benefitModel = $.getJSON("/resources/models/benefits.json");
         this.#statusModel = $.getJSON("/resources/models/statuses.json");
 
-        this.#allStatusEffects = {
-            "payload": [],
-            "session": []
-        };
+        this.#allStatusEffects = [];
 
         this.#items = [];
         this.#benefits = [];
@@ -1380,6 +1662,16 @@ class Inventory
             "benefits": this.#benefitModel,
             "statuses": this.#statusModel
         }
+
+        this.#statusModel["payload"].forEach(function(modelStatus)
+        {
+            this.#allStatusEffects.push((new StatusEffect("payload", modelStatus)));
+        }, this);
+
+        this.#statusModel["session"].forEach(function(modelStatus)
+        {
+            this.#allStatusEffects.push((new StatusEffect("session", modelStatus)));
+        }, this);
 
         itemList.forEach(function(dbItem)
         {
@@ -1417,17 +1709,6 @@ class Inventory
 
                 this.#items.push(newItem);
             }
-
-            this.#statusModel["payload"].forEach(function(modelStatus)
-            {
-                this.#allStatusEffects.payload.push((new StatusEffect(modelStatus)));
-            }, this);
-
-            this.#statusModel["session"].forEach(function(modelStatus)
-            {
-                this.#allStatusEffects.session.push((new StatusEffect(modelStatus)));
-            }, this);
-
             /*
             let proposedItem = this.#itemModel.find(function(potentialItem)
             {
@@ -1544,9 +1825,6 @@ class Inventory
 
         }, this.#globalThis);
 
-        console.log(this.#items);
-        console.log(this.#benefits);
-
         this.#items.forEach(function(item)
         {
             $("#noItems").addClass("hidden");
@@ -1646,6 +1924,14 @@ class Inventory
         }, this);
     }
 
+    getStatusEffect(statusEffectName)
+    {
+        return this.#allStatusEffects.find(function(statusEffect)
+        {
+            return statusEffect.name === statusEffectName;
+        });
+    }
+
     resetOnScreenInputs()
     {
         let benefitsHavingInputs = this.#benefits.filter(function(potentialEffect)
@@ -1683,66 +1969,28 @@ class Inventory
         }, this);
     }
 
-    getConfirmInputs()
+    getConfirmInputs(actionType)
     {
+        this.#confirmInputs.forEach(function(confirmInput)
+        {
+            let newInputHTML =  confirmInput.functionBenefit.getInputHTML(confirmInput.functionIndex, actionType).value
+
+            confirmInput.inputHTML = newInputHTML.inputHTML;
+        }, this);
+
         return this.#confirmInputs;
     }
 
     getExecuteInputs()
     {
+        this.#executeInputs.forEach(function(executeInput)
+        {
+            let newInputHTML =  executeInput.functionBenefit.getInputHTML(executeInput.functionIndex).value
+
+            executeInput.buttonHTML = newInputHTML.buttonHTML;
+            executeInput.buttonEnabled = newInputHTML.buttonEnabled;
+        }, this);
         return this.#executeInputs;
-    }
-
-    #displayActivationIcon(activationDetails)
-    {
-        let iconObject = activationDetails["icon"];
-
-        if($("#itemStatus img[data-icon='" + activationDetails["name"] + "']").length === 0)
-        {
-            if(Object.keys(iconObject).includes("hierarchy"))
-            {
-                let overwrites = iconObject["hierarchy"]["overwrites"];
-                let overwritten = iconObject["hierarchy"]["overwritten_by"];
-
-                if($("#itemStatus img").filter(function(index, element)
-                {
-                    return overwritten.includes(element.dataset["icon"]);
-                }).length === 0)
-                {
-                    let replaceableImg = $("#itemStatus img").filter(function(index, element)
-                    {
-                        return overwrites.includes(element.dataset["icon"]);
-                    });
-
-                    if(replaceableImg.length === 0)
-                    {
-                        $("#itemStatus").append('<img data-icon="' + activationDetails["name"] + '" src="' + iconObject["source"] + '"/>');
-                    }
-                    else
-                    {
-                        $(replaceableImg[0]).attr("src", iconObject["source"]);
-                        $(replaceableImg[0]).attr("data-icon", activationDetails["name"]);
-                    }
-                }
-                else
-                {
-                    // Do nothing, you were overwritten
-                }
-            }
-            else
-            {
-                $("#itemStatus").append('<img data-icon="' + activationDetails["name"] + '" src="' + iconObject["source"] + '"/>');
-            }
-        }
-        else
-        {
-            $("#itemStatus img[data-icon='" + activationDetails["name"] + "']").attr("src", iconObject["source"]);
-        }
-    }
-
-    #removeActivationIcon(activationDetails)
-    {
-        $("#itemStatus img[data-icon='" + activationDetails["name"] + "']").remove();
     }
 
     /*
@@ -2076,25 +2324,22 @@ class Inventory
     {
         let benefitsHavingPostActionEffects = this.#benefits.filter(function(potentialBenefit)
         {
-            return potentialBenefit.effectType === "post_action";
+            return potentialBenefit.effectType === "post_actions";
         });
 
         benefitsHavingPostActionEffects.forEach(function(mainBenefit)
         {
             let used = false;
 
-            mainEffect.effects.forEach(function(pAEntry)
+            mainBenefit.effects.forEach(function(paEntry)
             {
                 let disabled = mainBenefit.isDisabled();
-                let conditionCheck = mainBenefit.checkConditions(pAEntry["conditions"] ?? null);
+                let conditionCheck = mainBenefit.checkConditions(paEntry["conditions"] ?? null, actionMap.action);
 
                 if((disabled === false) && (conditionCheck === true))
                 {
                     used = true;
-                    pAEntry["activations"].forEach(function(activation, activationIndex)
-                    {
-                        (new Activation(mainBenefit, activation)).activate();
-                    });
+                    (new Activation(mainBenefit, paEntry)).activate();
                 }
             });
 
@@ -2106,28 +2351,20 @@ class Inventory
     }
 
     // Used when a user logs in with status effects
-    applyStatusEffects(statusEffects)
+    applyStatusEffect(effectName, effectValues, reapply=false)
     {
-        /*
-        payloadEffects.forEach(function(payloadEffect)
-        {
-            let activation = null;
-            JSON.stringify(this.#benefits, (_, nestedValue) => {
-                if (nestedValue &&
-                    nestedValue["type"] === "payload_effect" &&
-                    Object.keys(nestedValue).includes("icon") &&
-                    nestedValue["name"] === payloadEffect)
-                {
-                    activation = nestedValue;
-                }
-                return nestedValue;
-            });
+        let statusEffect = this.getStatusEffect(effectName);
 
-            if(activation !== null)
-            {
-                this.#displayActivationIcon(activation);
-            }
-        }, this.#globalThis); */
+        statusEffect.setValues(effectValues);
+
+        statusEffect.activate(reapply);
+    }
+
+    disableStatusEffect(effectName)
+    {
+        let statusEffect = this.getStatusEffect(effectName);
+
+        statusEffect.deactivate();
     }
 
     /*

@@ -808,7 +808,7 @@ function injectUserPayload(userPayload)
 						*/
 					}
 				});
-				
+
 				session.setCurrentTags(userPayload["remTags"] + requiredTags);
 
 				updateEntryCosts();
@@ -1228,11 +1228,16 @@ function accessTerminal(event)
 		if(event !== "hasAccessed")
 		{
 			payload.submitTempEffects(true);
+
+			let reqTags = parseInt($("#reqTags").html());
+
+			session.setCurrentTags(session.getCurrentTags() - reqTags);
+		}
+		else
+		{
+			session.setCurrentTags(payload.getRemainingTags());
 		}
 
-		let reqTags = parseInt($("#reqTags").html());
-
-		session.setCurrentTags(session.getCurrentTags() - reqTags);
 		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
 
 		if(payload.getFunction("ALARM SENSE"))
@@ -2258,7 +2263,7 @@ function completeAction(actionMap)
 
 	payload.submitTempEffects();
 	payload.applyPostActionEffects(actionMap);
-	payload.checkItemConditions();
+	updateEntryCosts();
 
 	/*
 	if((payload.getItem("copycat")) && (!payload.getActiveEffect("copycat")))

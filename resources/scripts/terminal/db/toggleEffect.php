@@ -4,15 +4,16 @@ require('dbConnect.php');
 
 $targetType = $_POST["targetType"];
 $targetID = $_POST["targetID"];
-$effect = $_POST["effect"];
+$effectName = $_POST["effectName"];
+$effectValues = $_POST["effectValues"] ?? null;
 $duration = $_POST["duration"] ?? null;
 $termID = $_POST["termID"] ?? null;
 $toggle = $_POST["toggle"];
 
 
 $insertQuery = "INSERT INTO {$dbName}.!TABLE_NAME!
-                            (!TARGET!_id, effect_name!DURATION_APPEND!)
-                    VALUES  (!TARGET_ID!, '!EFFECT_NAME!'!EFFECT_DURATION!)";
+                            (!TARGET!_id, effect_name!VALUES_APPEND!!DURATION_APPEND!)
+                    VALUES  (!TARGET_ID!, '!EFFECT_NAME!'!EFFECT_VALUES!!EFFECT_DURATION!)";
 
 $removeQuery = "DELETE FROM {$dbName}.!TABLE_NAME!
                 WHERE !TARGET!_id = !TARGET_ID!
@@ -29,17 +30,19 @@ else
 
 switch($targetType)
 {
-    case("terminal"):
+    case("session"):
     {
         $effectQuery = str_replace("!TABLE_NAME!", "sim_session_effects", $effectQuery);
         $effectQuery = str_replace("!TARGET!", "terminal", $effectQuery);
+        $effectQuery = str_replace("!VALUES_APPEND!", "", $effectQuery);
         $effectQuery = str_replace("!DURATION_APPEND!", "", $effectQuery);
         $effectQuery = str_replace("!TARGET_ID!", $targetID, $effectQuery);
         $effectQuery = str_replace("!EFFECT_NAME!", $effect, $effectQuery);
+        $effectQuery = str_replace("!EFFECT_VALUES!","", $effectQuery);
         $effectQuery = str_replace("!EFFECT_DURATION!", "", $effectQuery);
         break;
     }
-    case("user"):
+    case("payload"):
     {
         $codeQuery = "SELECT * FROM {$dbName}.sim_active_codes";
         $codeStatement = $pdo->prepare($codeQuery);
@@ -50,33 +53,29 @@ switch($targetType)
         {
             case("sim"):
             {
-                $durationCode = $activeCodes["simCode"];
+                $durationCode = "'" . $activeCodes["simCode"] . "'";
                 break;
             }
             case("scene"):
             {
-                $durationCode = $activeCodes["jobCode"];
+                $durationCode = "'" . $activeCodes["jobCode"] . "'";
                 break;
             }
             case("term"):
             {
-                $durationCode = $termID;
-                break;
-            }
-            case("item"):
-            default:
-            {
-                $durationCode = null;
+                $durationCode = "'" . $termID . "'";
                 break;
             }
         }
 
         $effectQuery = str_replace("!TABLE_NAME!","sim_payload_effects",$effectQuery);
         $effectQuery = str_replace("!TARGET!", "user", $effectQuery);
+        $effectQuery = str_replace("!VALUES_APPEND!", ", effect_values", $effectQuery);
         $effectQuery = str_replace("!DURATION_APPEND!", ", duration", $effectQuery);
         $effectQuery = str_replace("!TARGET_ID!", $targetID, $effectQuery);
-        $effectQuery = str_replace("!EFFECT_NAME!", $effect, $effectQuery);
-        $effectQuery = str_replace("!EFFECT_DURATION!", ", '$durationCode'", $effectQuery);
+        $effectQuery = str_replace("!EFFECT_NAME!", $effectName, $effectQuery);
+        $effectQuery = str_replace("!EFFECT_VALUES!",", '$effectValues'", $effectQuery);
+        $effectQuery = str_replace("!EFFECT_DURATION!", ", $durationCode", $effectQuery);
         break;
     }
 }

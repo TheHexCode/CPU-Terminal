@@ -137,7 +137,7 @@ class Modal
 
         if(!itemExecute)
         {
-            let itemInputs = payload.getInventoryConfirmInputs();
+            let itemInputs = payload.getInventoryConfirmInputs(actionMap.action);
 
             $(this.#bodyText).append("<hr/>");
 

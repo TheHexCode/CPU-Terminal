@@ -55,8 +55,7 @@ class Session
         this.#stateData = termInfo["stateData"];
         this.#entryData = termInfo["entries"];
         this.#puzzleData = termInfo["puzzles"];
-
-        this.#statusEffects = [];
+        this.#statusEffects = termInfo["statusEffects"];
 
         switch(this.#termState)
         {
@@ -232,18 +231,8 @@ class Session
     {
         this.#statusEffects.push(effect_name);
 
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/resources/scripts/terminal/db/toggleEffect.php",
-            data:
-            {
-                targetType: "terminal",
-                targetID: this.getTerminalID(),
-                effect: effect_name,
-                toggle: true
-            }
-        });
+        // For Remote_Enabled / Alarm_Raised
+        //this.#handleStatusEffect(effect_name);
     }
 
     removeStatusEffect(effect_name)
@@ -253,18 +242,8 @@ class Session
             return effect === effect_name;
         }), 1);
 
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/resources/scripts/terminal/db/toggleEffect.php",
-            data:
-            {
-                targetType: "terminal",
-                targetID: this.getTerminalID(),
-                effect: effect_name,
-                toggle: false
-            }
-        });
+        // For Remote_Enabled / Alarm_Raised
+        //this.#handleStatusEffect(effect_name);
     }
 
     getStatusEffects()
@@ -422,6 +401,16 @@ class Session
                         "</ul></p>" +
                     */    "<p>Booting from Hard Drive C:\\<br/>" +
                         "ERROR: Missing OS");
+    }
+
+    setCopyableActions(actionArray)
+    {
+        this.#copyableActions = actionArray.map((action) => action.toLowerCase());
+    }
+
+    getCopyableActions()
+    {
+        return this.#copyableActions;
     }
 
     isActionCopyable(action)

@@ -1,12 +1,10 @@
 class Payload
 {
-    #itemModel;
-    #effectModel;
-
     #payloadSet;
 
     #userID;
     #handle;
+    #remTags;
     #functions;
     #extraFuncs;
     #roles;
@@ -35,12 +33,22 @@ class Payload
     {
         this.#userID = payload.id;
         this.#handle = payload.name;
+        this.#remTags = payload.remTags;
         this.#functions = payload.functions;
         this.#roles = payload.roles;
-        this.#statusEffects = payload.effects;
+
+        payload.effects.forEach(function(effect)
+        {
+            this.#statusEffects.push({
+                name: effect.effect_name,
+                values: JSON.parse(effect.effect_values)
+            });
+        }, this);
 
         this.#inventory.establishInventory(payload.items, payload.itemUses);
         this.#inventory.setupInputs();
+
+        session.setCopyableActions(payload.copyables);
 
         this.#payloadSet = true;
     }
@@ -60,6 +68,11 @@ class Payload
         return this.#handle;
     }
 
+    getRemainingTags()
+    {
+        return this.#remTags;
+    }
+
     getRoles()
     {
         return this.#roles.map(role => role.toLowerCase());
@@ -75,9 +88,9 @@ class Payload
         return this.#cyberdecks.length > 0;
     }
 
-    getInventoryConfirmInputs()
+    getInventoryConfirmInputs(actionType)
     {
-        return this.#inventory.getConfirmInputs();
+        return this.#inventory.getConfirmInputs(actionType);
     }
 
     getInventoryExecuteInputs()
@@ -344,7 +357,7 @@ class Payload
     {
         return this.#tempEffects.some(function(effect)
         {
-            return ((effect.effect_name === "skip_timer") &&
+            return ((effect.benefit_id === "skip_timer") &&
                     (effect.input_index === null) &&
                     (effect.activation_index === null));
         });
@@ -356,7 +369,7 @@ class Payload
         {
             return (effect.input_index !== null);
         }), initial);
-        
+
         this.#tempEffects = [];
     }
 
@@ -372,45 +385,24 @@ class Payload
     }
     */
 
-    addStatusEffect(effect_name, effect_duration, terminal_id)
+    addStatusEffect(effect_name, effect_values)
     {
-        this.#statusEffects.push(effect_name);
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/resources/scripts/terminal/db/toggleEffect.php",
-            data:
-            {
-                targetType: "user",
-                targetID: this.getUserID(),
-                effect: effect_name,
-                duration: effect_duration,
-                termID: terminal_id,
-                toggle: true
-            }
+        this.#statusEffects.push({
+            name: effect_name,
+            values: effect_values
         });
+
+        this.#inventory.applyStatusEffect(effect_name, effect_values);
     }
 
     removeStatusEffect(effect_name)
     {
-        this.#statusEffects.splice(this.#statusEffects.findIndex(function(effect)
+        this.#statusEffects.splice(this.#statusEffects.findIndex(function(potentialEffect)
         {
-            return effect === effect_name;
+            return potentialEffect.name === effect_name;
         }), 1);
 
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/resources/scripts/terminal/db/toggleEffect.php",
-            data:
-            {
-                targetType: "user",
-                targetID: this.getUserID(),
-                effect: effect_name,
-                toggle: false
-            }
-        });
+        this.#inventory.disableStatusEffect(effect_name, effect_values);
     }
 
     getStatusEffects()
@@ -472,9 +464,13 @@ class Payload
 
     applyTermLoginEffects()
     {
+        this.#statusEffects.forEach(function(statusEffect)
+        {
+            this.#inventory.applyStatusEffect(statusEffect.name, statusEffect.values, true);
+        }, this);
         this.#inventory.applyTermLoginEffects();
 
-        //this.#inventory.reapplyDisplayEffects(this.#statusEffects);
+        this.clearTempEffects();
     }
 
     addCyberdeck(deckSource)

@@ -229,9 +229,10 @@ CREATE TABLE sim_session_effects (
 );
 
 CREATE TABLE sim_payload_effects (
-    user_id     INT         NOT NULL,
-    effect_name VARCHAR(255) NOT NULL,
-    duration    VARCHAR(50),
+    user_id         INT             NOT NULL,
+    effect_name     VARCHAR(255)    NOT NULL,
+    effect_values   VARCHAR(255),
+    duration        VARCHAR(50),
     CONSTRAINT payload_effect
         PRIMARY KEY (user_id, effect_name, duration),
     FOREIGN KEY (user_id)

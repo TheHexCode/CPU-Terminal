@@ -97,10 +97,21 @@ else
 
     ###########################################################################################################
 
+    $effectQuery = "SELECT effect_name
+                    FROM {$dbName}.sim_session_effects
+                    WHERE terminal_id = :termID";
+
+    $effectStatement = $pdo->prepare($effectQuery);
+    $effectStatement->execute([':termID' => $termResponse["id"]]);
+    $effectResponse = $effectStatement->fetchAll(PDO::FETCH_COLUMN);
+
+    ###########################################################################################################
+
     $termResponse['entries'] = $entryResponse;
     $termResponse['puzzles'] = $puzzleResponse;
     $termResponse['logEntries'] = $logResponse;
     $termResponse['iceModel'] = $iceArray;
+    $termResponse['effects'] = $effectResponse;
 
     $terminal = new Terminal($termResponse);
 }
