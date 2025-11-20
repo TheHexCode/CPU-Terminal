@@ -158,6 +158,44 @@ class Payload
         }
     }
 
+    getBaseFunction(funcName)
+    {
+        let userFuncs = structuredClone(this.#functions).filter(function(func)
+        {
+            return func.name.toLowerCase() === funcName.toLowerCase();
+        });
+
+        if(userFuncs.length > 0)
+        {
+            if(userFuncs.length === 1)
+            {
+                if(userFuncs[0].rank !== null)
+                {
+                    return Number(userFuncs[0].rank);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else if(userFuncs.length >= 2)
+            {
+                return userFuncs.map(function(func)
+                {
+                    return func.keyword.split(";")[0];
+                }).join(";");
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
     getExtraFunction(xFuncName)
     {
         let extraFunc = this.#extraFuncs.find(xFunc => xFunc.name.toLowerCase() === xFuncName.toLowerCase());
@@ -296,7 +334,7 @@ class Payload
                 if(hackIndex !== -1)
                 {
                     this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) - Number(minus_amount);
-                    updateTags((Number(minus_amount)*2) * -1, Session.HACK);
+                    //updateTags((Number(minus_amount)*2) * -1, Session.HACK);
                 }
 
                 break;

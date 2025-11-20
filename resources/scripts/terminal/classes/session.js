@@ -127,10 +127,15 @@ class Session
             case(Session.TOTAL):
                 this.#totalTags = newTags;
                 break;
+            case(Session.BEACON):
+            case(Session.CLEC):
+            case(Session.DISSIM):
             case(Session.HACK):
                 this.#payTags[tagType] += newTags;
                 this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);
                 break;
+            case(Session.MASHER):
+            case(Session.REX):
             case(Session.EXTRA):
                 this.#extTags[tagType] += newTags;
                 this.#totalTags = this.getCurrentTags(Session.PAYLOAD) + this.getCurrentTags(Session.EXTRA);

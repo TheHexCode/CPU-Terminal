@@ -83,7 +83,7 @@ class Item
     {
         let targetTag = this._tags.find(function(potentialTag)
         {
-            return potentialTag.name === tagName;
+            return potentialTag.tag === tagName;
         });
 
         if(targetTag !== undefined)
@@ -304,7 +304,6 @@ class Benefit
             if(pathArray[0] === "values")
             {
                 let splitKey = pathArray[1].split(/([*/+-])/);
-
                 let resultValue = parentValues[splitKey[0]];
 
                 switch(splitKey[1])
@@ -388,7 +387,6 @@ class Benefit
                 case("values"):
                 {
                     let splitKey = pathArray[1].split(/([*/+-])/);
-
                     let resultValue = this._values[splitKey[0]];
 
                     switch(splitKey[1])
@@ -1262,18 +1260,16 @@ class Activation
     {
         if(labelObject !== null)
         {
-            let parsedLabel = this.#parent.parseLabel(labelObject.label);
-
             switch(labelObject.location)
             {
                 case("crack_extra"):
                 {
-                    $("#extraDetails").append("<span id='" + this.#parent.id + "'>" + parsedLabel + "</span>");
+                    $("#extraDetails").append("<span id='" + this.#parent.id + "'>" + labelObject.parsedLabel + "</span>");
                     break;
                 }
                 case("crack_hacking"):
                 {
-                    $("#hackDetails").append("<span id='" + this.#parent.id + "'>" + parsedLabel + "</span>");
+                    $("#hackDetails").append("<span id='" + this.#parent.id + "'>" + labelObject.parsedLabel + "</span>");
                     break;
                 }
             }
@@ -1307,10 +1303,18 @@ class Activation
         if(useStatic)
         {
             amount = Number(Benefit.parseValuesLabel("{" + this.#amount + "}", this.#parent.values));
+            if(this.#label !== null)
+            {
+                this.#label["parsedLabel"] = Benefit.parseValuesLabel(this.#label.label, this.#parent.values);
+            }
         }
         else
         {
             amount = Number(this.#parent.parseLabel("{" + this.#amount + "}"));
+            if(this.#label !== null)
+            {
+                this.#label["parsedLabel"] = this.#parent.parseLabel(this.#label.label);
+            }
         }
 
         switch(this.#type)
@@ -1564,11 +1568,14 @@ class StatusEffect
     activate(reapply=false)
     {
         // display Icon
-        // create parentless Activations
+        // create parentless Activation
 
-        this.#displayStatusIcon();
         this.#activations.forEach(function(activation)
         {
+            if(Object.keys(activation).includes("icon"))
+            {
+                this.#displayStatusIcon();
+            }
             activation.activate(true);
         });
 
@@ -1597,9 +1604,12 @@ class StatusEffect
         // removeIcon
         // deactivate Activations
 
-        this.#removeStatusIcon();
         this.#activations.forEach(function(activation)
         {
+            if(Object.keys(activation).includes("icon"))
+            {
+                this.#removeStatusIcon();
+            }
             activation.deactivate(true);
         });
 
@@ -1880,8 +1890,6 @@ class Inventory
                                 "<span class='itemActions' data-effect='" + item.dataEffectString + "'></span>" +
                             "</li>");
         });
-
-
     }
 
     setupInputs()
@@ -2298,6 +2306,22 @@ class Inventory
     // Used when a user *first* logs into a terminal
     applyTermLoginEffects()
     {
+        let hackingScriptTotal = this.#items.reduce(function(accumulator, currentItem)
+        {
+            let currentHackingScript = currentItem.hasTag("hacking_script");
+
+            return (accumulator + (currentHackingScript !== false ? currentHackingScript : 0));
+        }, 0);
+
+        if(hackingScriptTotal > 0)
+        {
+            let handmadeValues = {
+                "hacking": (hackingScriptTotal * -1)
+            }
+
+            this.applyStatusEffect("hacking_script", handmadeValues, true);
+        }
+
         let benefitsHavingTermLoginEffects = this.#benefits.filter(function(potentialEffect)
         {
             return potentialEffect.effectType === "term_login";

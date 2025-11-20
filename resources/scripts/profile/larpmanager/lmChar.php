@@ -44,11 +44,13 @@ curl_exec($curlHandle);
 ##################################################################################################
 
 // ABILITIES
-/*
+
 curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/character/$lmCharID/");
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
-$lmCharacter = json_decode(curl_exec($curlHandle));
-*/
+$lmCharacter = json_decode(curl_exec($curlHandle), true);
+
+echo var_dump($lmCharacter);
+/*
 $lmCharacter = json_decode('
     {
         "id": 30,
@@ -138,7 +140,7 @@ $lmCharacter = json_decode('
             }
         ]
     }', true);
-
+*/
 # 4 = Roles
 $lmRoleIDs =  array_column(array_filter($lmCharacter["abilities"], function ($ability) {
     return in_array($ability["id"],array(4,8,31));

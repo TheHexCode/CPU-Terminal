@@ -19,7 +19,7 @@
 		<script type="text/javascript" src="/resources/scripts/terminal/classes/modal.js" defer></script>
 		<script type="text/javascript" src="/resources/scripts/terminal/puzzles/reverse_mastermind/rev_mm.js"></script>
 		<link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
-		<link rel="stylesheet" type="text/css" href="/resources/styles/termstyle.css"/>
+		<link rel="stylesheet" type="text/css" href="/resources/styles/prestyle.css"/>
 	</head>
 	<body>
 		<div id="main">
@@ -72,7 +72,7 @@
 				<div class="infoTitle">
                     <h3>PRE-HACKING PAGE FOR JOB:</h3>
                     <br/>
-					<h2 id="termName">
+					<h2 id="jobName">
 						<?php echo $activeCodes["jobCode"]; ?>
 					</h2>
 				</div>

@@ -1,0 +1,302 @@
+body
+{
+	--fg-color: var(--main-fg-color);
+	--bg-color: var(--main-bg-color);
+	--border-color: var(--main-border-color);
+
+	height: 98vh;
+	margin: 0;
+	padding: 0.5rem;
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
+	font-size: 1em;
+	background: var(--bg-color);
+	color: var(--fg-color);
+	text-shadow: 0 0 0px;
+}
+
+body::before,
+body::after
+{
+	content:"";
+	background: linear-gradient(to bottom, #666, #AAA);
+    mix-blend-mode: overlay;
+    background-repeat: repeat;
+	background-size: 100% 2px;
+	pointer-events: none;
+    inset: 0;
+    position: fixed;
+    z-index: 99;
+	width: 100%;
+	height: 100%;
+}
+
+.red
+{
+	color: var(--red);
+}
+
+.amber
+{
+	--gem-color: var(--amber);
+}
+
+.blue
+{
+	--gem-color: var(--blue);
+}
+
+.clear
+{
+	--gem-color: var(--dimgrey);
+}
+
+@keyframes gemBlend
+{
+	0% {
+		background-color: var(--amber);
+	}
+	100% {
+		background-color: var(--blue);
+	}
+}
+
+@keyframes textBlend
+{
+	0% {
+		color: var(--amber);
+		border-color: var(--amber);
+	}
+	100% {
+		color: var(--blue);
+		border-color: var(--blue);
+	}
+}
+
+#stickyHeader
+{
+	position: sticky;
+	top: 0;
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.25rem;
+	background-color: var(--bg-color);
+	margin: -0.25rem;
+	padding: 0.25rem;
+	z-index: 90;
+}
+
+.gem.blend
+{
+	animation: gemBlend ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+.lcdBox.blend
+{
+	animation: textBlend ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+@keyframes gemNegative
+{
+	0% {
+		background-color: var(--red);
+	}
+	100% {
+		background-color: var(--grey);
+	}
+}
+
+.gem.negative
+{
+	animation: gemNegative ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+    animation-duration: 2s;
+    animation-fill-mode: both;
+}
+
+@keyframes gemRoot
+{
+	0% {
+		background-color: var(--red);
+	}
+	100% {
+		background-color: var(--dk-red);
+	}
+}
+
+.gem.root
+{
+	animation: gemRoot ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+button
+{
+	font-family: "BigBlue-TerminalPlus-NerdFont-Proportional";
+	background-color: var(--fg-color);
+	color: var(--bg-color);
+	border-color: var(--bg-color);
+	border-radius: 0.25rem;
+	border-width: 2px;
+	box-shadow: 0 0 0.5rem var(--fg-color);
+	font-size: 0.9rem;
+}
+
+button:disabled
+{
+	filter: brightness(50%);
+	box-shadow: none;
+}
+
+button:not(:disabled):not(.disabled):not(.hackTab):hover
+{
+	box-shadow: 0 0 1rem var(--fg-color);
+}
+
+button:not(:disabled):not(.disabled):not(.hackTab):active
+{
+	filter: brightness(75%);
+	box-shadow: 0 0 1rem var(--fg-color);
+}
+
+h2
+{
+	margin: 0.5rem;
+	text-decoration: underline;
+}
+
+h3
+{
+	margin: 0.25rem;
+}
+
+#main
+{
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.25rem;
+	max-width: var(--max-main-width);
+	margin: 0 auto;
+}
+
+#main.hidden
+{
+	display: none;
+}
+
+#statusBar
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 0 0.25rem 0 0.25rem;
+}
+
+#itemStatus
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	column-gap: 0.5rem;
+}
+
+#gemBar
+{
+	display: flex;
+	flex-direction: row;
+	column-gap: 0.25rem;
+	border: 0.5rem solid var(--border-color);
+	padding: 0.25rem;
+}
+
+#gemContainer
+{
+	display: flex;
+	flex-direction: row;
+	column-gap: 0.25rem;
+	flex-grow: 1;
+}
+
+.gemPair
+{
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	align-items: stretch;
+}
+
+.gem
+{
+	background-color: var(--gem-color,var(--grey));
+	border: 0.25rem inset black;
+	flex-grow: 1;
+}
+
+#gemTens
+{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.dimmed
+{
+	filter: brightness(50%);
+	text-shadow: none;
+}
+
+.infoTitle
+{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	justify-content: space-around;
+}
+
+.infoBox
+{
+	display: flex;
+	flex-direction: column;
+	border: 0.5rem solid var(--border-color);
+	align-items: center;
+	text-align: center;
+	padding: 0.25rem;
+}
+
+.lcdBox
+{
+	display: grid;
+    grid-template-columns: [clockstart] max-content [clockmid] 1fr [end];
+	grid-template-rows: [start] auto [hundstart] min-content [end];
+	/*border: 5px inset black;*/
+	color: var(--gem-color,var(--fg-color));
+	border: 2px solid var(--gem-color,var(--fg-color));
+	border-radius: 0.5rem;
+	width: fit-content;
+	padding: 0.25rem;
+	font-size: 1.25rem;
+	/*background-color: #77894D;/*#535A38;*/
+	/*color: #0D1C23/*#1B1C14;*/
+}
+
+.timerContainer
+{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	/*column-gap: 0.5rem;*/
+	/*margin-top: 0.5rem;*/
+}

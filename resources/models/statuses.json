@@ -4,6 +4,22 @@
         "payload":
         [
             {
+                "name": "hacking_script",
+                "activations":
+                [
+                    {
+                        "type": "plus_function",
+                        "function": "hacking",
+                        "amount": "values:hacking:amount",
+                        "label":
+                        {
+                            "location": "crack_hacking",
+                            "label": "[SCRIPTS:&nbsp;{values:hacking:amount*2!tens}]"
+                        }
+                    }
+                ]
+            },
+            {
                 "name": "debutantalus_reporter_badge",
                 "duration": "scene"
             },

@@ -199,7 +199,7 @@ function injectUserPayload(userPayload)
 
 		// Payload Tags
 		$("#hackDetails").html(
-			"<span>[HACKING:&nbsp;+" + tens(payload.getFunction("HACKING") * 2) + "]</span>"
+			"<span>[HACKING:&nbsp;+" + tens(payload.getBaseFunction("HACKING") * 2) + "]</span>"
 		)
 
 		$("#extraDetails").html(
@@ -1170,6 +1170,7 @@ function updateTags(change, tagType)
 			extTags = session.getCurrentTags(Session.EXTRA);
 			break;
 		case(Session.EXTRA):
+		{
 			newTags = Math.min(
 				Math.max(extTags + change, session.getExtraTagMin()),
 				99 - ( payTags - reqTags )
@@ -1190,13 +1191,14 @@ function updateTags(change, tagType)
 
 			extTags = session.getCurrentTags(Session.EXTRA);
 			break;
+		}
 	}
 
 	$("#extTags").html(tens(extTags));
 
 	$("#payTags").html(tens(session.getCurrentTags(Session.PAYLOAD)));
 
-	Gems.updateTagGems(Gems.ACCESS, reqTags, (extTags < 0 ? payTags + extTags : payTags), session.getCurrentTags());
+	Gems.updateTagGems(Gems.ACCESS, reqTags, (extTags < 0 ? payTags + extTags : payTags), Math.max(session.getCurrentTags(), 0));
 
 	remTags = session.getCurrentTags() - reqTags;
 
