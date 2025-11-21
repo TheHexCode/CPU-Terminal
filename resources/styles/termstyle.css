@@ -238,6 +238,12 @@ ul
 	column-gap: 0.5rem;
 }
 
+#itemStatus img
+{
+	width: 30px;
+	height: 30px;
+}
+
 #gemBar
 {
 	display: flex;

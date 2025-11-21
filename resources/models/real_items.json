@@ -441,6 +441,37 @@
 			]
 		},
 		{
+			"name": "Deputy&#39;s Hat",
+			"category": "utility",
+			"subCategory": "utility",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"benefits":
+					[
+						{
+							"name": "deputys_hat",
+							"values":
+							[
+								{
+									"name": "hacking",
+									"amount": 1
+								},
+								{
+									"name": "tag_limit",
+									"amount": 1
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "DigiPet",
 			"category": "utility",
 			"subCategory": "utility",
@@ -643,6 +674,11 @@
 					"benefits":
 					[
 						{
+							"name": "shimmerstick_consume",
+							"charges": 10,
+							"perType": "item"
+						},
+						{
 							"name": "shimmerstick_apply",
 							"values":
 							[
@@ -669,6 +705,11 @@
 					"benefits":
 					[
 						{
+							"name": "shimmerstick_consume",
+							"charges": 10,
+							"perType": "item"
+						},
+						{
 							"name": "shimmerstick_apply",
 							"values":
 							[
@@ -687,6 +728,82 @@
 							],
 							"charges": 1,
 							"perType": "scene"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Vigil",
+			"category": "utility",
+			"subCategory": "consumable_drug",
+			"flavor": "",
+			"owner": "",
+			"tags":
+			[
+				{
+					"tag": "multiple"
+				},
+				{
+					"tag": "exhausting"
+				},
+				{
+					"tag": "limited"
+				}
+			],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"benefits":
+					[
+						{
+							"name": "vigil_consume",
+							"charges": 1,
+							"perType": "item"
+						},
+						{
+							"name": "vigil_apply",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								},
+								{
+									"name": "limit",
+									"amount": 2
+								}
+							],
+							"charges": 1,
+							"perType": "term"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"benefits":
+					[
+						{
+							"name": "vigil_consume",
+							"charges": 1,
+							"perType": "item"
+						},
+						{
+							"name": "vigil_apply",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								},
+								{
+									"name": "limit",
+									"amount": 4
+								}
+							],
+							"charges": 1,
+							"perType": "term"
 						}
 					]
 				}

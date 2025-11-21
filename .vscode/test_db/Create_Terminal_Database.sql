@@ -13,7 +13,7 @@ CREATE TABLE cpu_orgs (
     name        TEXT    NOT NULL,
     discovered  BOOLEAN NOT NULL,
     PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE ice_types (
     type    VARCHAR(255),

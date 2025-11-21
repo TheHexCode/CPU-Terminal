@@ -331,10 +331,12 @@ function injectUserPayload(userPayload)
 			$("#passSeparator").removeClass("hidden");
 			$("#knowItem").removeClass("hidden");
 
+			/*
 			payload.getFunction("KNOWLEDGE").replace("&amp;","&").split(";").forEach(function (keyword)
 			{
 				$("#knowItem > ul").append("<li>" + keyword.toUpperCase().replace("&","&amp;") + "</li>");
 			});
+			*/
 		}
 
 		if(payload.getFunction("REPEAT"))
@@ -1139,6 +1141,7 @@ function updateTags(change, tagType)
 
 	switch(tagType)
 	{
+		case(Session.DISSIM):
 		case(Session.HACK):
 			newTags = payTags + change;
 
@@ -2301,28 +2304,18 @@ function completeAction(actionMap)
 
 function updateEntryCosts()
 {
-	$(".accessButton, .modifyButton").each(function(index,entryButton)
+	$(".accessButton, .modifyButton, .reassButton, .wipeButton").each(function(index,entryButton)
 	{
 		if($(entryButton).html() !== "N/A")
 		{
-			let entryAction = null;
-			switch(true)
-			{
-				case(entryButton.classList.contains("accessButton")):
-				{
-					entryAction = "access";
-					break;
-				}
-				case(entryButton.classList.contains("modifyButton")):
-				{
-					entryAction = "modify";
-					break;
-				}
-			}
+			let buttonSplit = entryButton.classList.value.match("(?:\s)?.*?Button")[0].split("Button");
 
-			if(entryAction !== null)
+			let entryAction = buttonSplit[0];
+
+			if(buttonSplit[1] === "")
 			{
-				let newCost = session.getActionCost($(entryButton).attr("data-id"), entryAction);
+				let entryID = ((entryAction === "access") || (entryAction === "modify")) ? $(entryButton).attr("data-id") : "nonEntry";
+				let newCost = session.getActionCost(entryID, entryAction);
 				$(entryButton).attr("data-cost",newCost);
 				$(entryButton).html(newCost + " Tag" + pluralize(newCost));
 			}

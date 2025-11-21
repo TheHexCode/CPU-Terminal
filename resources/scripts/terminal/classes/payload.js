@@ -408,6 +408,14 @@ class Payload
             return (effect.input_index !== null);
         }), initial);
 
+        if(initial)
+        {
+            this.#inventory.submitEffects(this.#tempEffects.filter(function(effect)
+            {
+                return (effect.name !== null);
+            }), false)
+        }
+
         this.#tempEffects = [];
     }
 
@@ -423,14 +431,25 @@ class Payload
     }
     */
 
-    addStatusEffect(effect_name, effect_values)
+    addStatusEffect(effect_name, effect_values, temp=false)
     {
-        this.#statusEffects.push({
-            name: effect_name,
-            values: effect_values
-        });
+        if(!temp)
+        {
+            this.#statusEffects.push({
+                name: effect_name,
+                values: effect_values
+            });
 
-        this.#inventory.applyStatusEffect(effect_name, effect_values);
+            this.#inventory.applyStatusEffect(effect_name, effect_values);
+        }
+        else
+        {
+            this.#tempEffects.push({
+                name: effect_name,
+                values: effect_values
+            });
+            this.#inventory.applyStatusEffect(effect_name, effect_values, true);
+        }
     }
 
     removeStatusEffect(effect_name)
@@ -440,7 +459,7 @@ class Payload
             return potentialEffect.name === effect_name;
         }), 1);
 
-        this.#inventory.disableStatusEffect(effect_name, effect_values);
+        this.#inventory.disableStatusEffect(effect_name);
     }
 
     getStatusEffects()
@@ -506,6 +525,7 @@ class Payload
         {
             this.#inventory.applyStatusEffect(statusEffect.name, statusEffect.values, true);
         }, this);
+
         this.#inventory.applyTermLoginEffects();
 
         this.clearTempEffects();

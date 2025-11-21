@@ -316,6 +316,18 @@ h2
 	align-self: center;
 }
 
+.itemType
+{
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.5rem;
+}
+
+.itemType h3
+{
+	margin: 0.5rem 0;
+}
+
 .itemInput
 {
 	display: grid;

@@ -40,5 +40,5 @@ curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/c
 
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 
-# [ { "id": 30, "name": "Puck" } ]
+# [ { "id": 30, "num": 12, "name": "Puck" } ]
 echo curl_exec($curlHandle);

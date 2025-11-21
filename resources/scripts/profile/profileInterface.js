@@ -158,8 +158,6 @@ function selectCharacter(char)
 
 	lmEmail = $("#lmEmail").val();
 	lmPass = $("#lmPass").val();
-	lmCharID = char["id"];
-	lmCharName = char["name"];
 
 	$.ajax({
 		type: "POST",
@@ -169,8 +167,7 @@ function selectCharacter(char)
 		{
 			lmEmail: lmEmail,
 			lmPass: lmPass,
-			lmCharID: lmCharID,
-			lmCharName: lmCharName
+			lmChar: char
 		}
 	})
 	.done(function(response)

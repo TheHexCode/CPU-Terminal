@@ -216,6 +216,30 @@ foreach($itemArray as $itemCat)
                 {
                     //non-instanced multiple
                     // e.g. shimmerstick; vigil
+
+                    $itemString .=  "<div class='itemContainer'>";
+
+                    foreach($item["tiers"] as $tier)
+                    {
+                        $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
+                        $tagUnique = count(array_filter($item["tags"], function($tag)
+                        {
+                            return $tag["tag"] === "unique";
+                        })) > 0;
+
+                        $itemString .=  "<div class='itemInput " . ($tagUnique ? "radio" : "check") . "'>" .
+                                            "<input type='" . ($tagUnique ? "radio" : "checkbox") . "' " .
+                                                "id='" . $itemName . "' " .
+                                                "data-item='" . strtolower($item["name"]) . "' " .
+                                                "data-tier='" . $tier["tier"] . "' " .
+                                                "form='itemForm' " .
+                                                ($tagUnique ? "name='" . $item["category"] . "_" . $item["subCategory"]. "' onclick='toggleRadio(this)' " : " ") .
+                                            ">" .
+                                            "<label for='" . $itemName . "'>" . $item["name"] . " [" . ($tier["tierName"] ?? ("T" . $tier["tier"])) . "]</label>";
+                        $itemString .=  "</div>"; //itemInput
+                }
+
+                $itemString .= "</div>"; //itemContainer
                 }
             }
             else

@@ -63,7 +63,7 @@ if($dbCharResponse === false)
     $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 }
 else
-{    
+{
     $userCode = $dbCharResponse["userCode"];
 
     updateUser($pdo,$dbName,$dbCharResponse["ml_id"],$mlCharName);
@@ -135,8 +135,8 @@ $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 echo json_encode(array(  "id" => $dbCharResponse["ml_id"],
                                 "name" => $mlCharName,
                                 "userCode" => $userCode,
-                                "origin" => $dbCharResponse["origin"],
+                                //"origin" => $dbCharResponse["origin"],
                                 "functions" => $functionResponse,
-                                "discoveries" => $discoResponse,
+                                //"discoveries" => $discoResponse,
                                 //"roles" => $roleResponse,
                                 "items" => $itemResponse ));

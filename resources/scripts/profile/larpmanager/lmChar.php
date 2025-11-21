@@ -5,8 +5,7 @@ require('./dbUser.php');
 
 $lmEmail = $_POST["lmEmail"];
 $lmPass = $_POST["lmPass"];
-$lmCharID = $_POST["lmCharID"];
-$lmCharName = $_POST["lmCharName"];
+$lmChar = $_POST["lmChar"];
 
 ##################################################################################################
 
@@ -45,11 +44,11 @@ curl_exec($curlHandle);
 
 // ABILITIES
 
-curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/character/$lmCharID/");
+curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/character/" . $lmChar["num"] . "/");
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 $lmCharacter = json_decode(curl_exec($curlHandle), true);
 
-echo var_dump($lmCharacter);
+#echo $lmCharacter;
 /*
 $lmCharacter = json_decode('
     {
@@ -142,16 +141,17 @@ $lmCharacter = json_decode('
     }', true);
 */
 # 4 = Roles
-$lmRoleIDs =  array_column(array_filter($lmCharacter["abilities"], function ($ability) {
-    return in_array($ability["id"],array(4,8,31));
-})[0]["abilities"],"id");
+# 8 = Base Roles (Origins)
+# 31 = ???
+$lmRoleIDs =  array_column(array_merge(...array_column(array_filter($lmCharacter["ability_types"], function ($ability_type) {
+    return in_array($ability_type["id"],array(4,8,31));
+}), "abilities")), "id");
 
-$lmAbilityIDs = array_column(array_merge(...array_column(array_filter($lmCharacter["abilities"], function ($ability) {
-    return !in_array($ability["id"],array(4,8,31));
+$lmAbilityIDs = array_column(array_merge(...array_column(array_filter($lmCharacter["ability_types"], function ($ability_type) {
+    return !in_array($ability_type["id"],array(4,8,31));
 }),"abilities")),"id");
 
 ##################################################################################################
-
 
 ##################################################################################################
 
@@ -159,7 +159,7 @@ $dbCharQuery = "SELECT * FROM {$dbName}.users
                 WHERE lm_id = :lmID;";
 
 $dbCharStatement = $pdo->prepare($dbCharQuery);
-$dbCharStatement->execute([':lmID' => $lmCharID]);
+$dbCharStatement->execute([':lmID' => $lmChar["id"]]);
 
 $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -167,10 +167,10 @@ if($dbCharResponse === false)
 {
     $userCode = generateCode($pdo, $dbName);
 
-    addDBUser($pdo,$dbName,$lmCharID, $userCode,$lmCharName,array_merge($lmRoleIDs, $lmAbilityIDs));
+    addDBUser($pdo,$dbName,$lmChar["id"], $userCode,$lmChar["name"],array_merge($lmRoleIDs, $lmAbilityIDs));
 
     $dbCharStatement = $pdo->prepare($dbCharQuery);
-    $dbCharStatement->execute([':lmID' => $lmCharID]);
+    $dbCharStatement->execute([':lmID' => $lmChar["id"]]);
 
     $dbCharResponse = $dbCharStatement->fetch(PDO::FETCH_ASSOC);
 }
@@ -178,7 +178,7 @@ else
 {
     $userCode = $dbCharResponse["userCode"];
 
-    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmCharName, array_merge($lmRoleIDs, $lmAbilityIDs));
+    updateDBUser($pdo,$dbName,$dbCharResponse["lm_id"],$lmChar["name"], array_merge($lmRoleIDs, $lmAbilityIDs));
 }
 
 ##################################################################################################
@@ -276,7 +276,7 @@ $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 ##################################################################################################
 
 echo json_encode(array(  "id" => $dbCharResponse["lm_id"],
-                                "name" => $lmCharName,
+                                "name" => $lmChar["name"],
                                 "userCode" => $userCode,
                                 //"roles" => $roleResponse,
                                 "functions" => $functionResponse,

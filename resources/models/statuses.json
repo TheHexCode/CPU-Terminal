@@ -114,6 +114,10 @@
             {
                 "name": "shimmerstick_applied",
                 "duration": "term",
+                "icon":
+                {
+                    "source": "{values:icon:source}"
+                },
                 "activations":
                 [
                     {
@@ -156,7 +160,7 @@
                 "name": "remote_enabled",
                 "icon":
                 {
-
+                    "source": ""
                 }
             },
             {

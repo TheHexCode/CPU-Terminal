@@ -232,7 +232,7 @@ class Session
         return actionCost;
     }
 
-    addStatusEffect(effect_name)
+    addStatusEffect(effect_name, temp=false)
     {
         this.#statusEffects.push(effect_name);
 

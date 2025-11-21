@@ -17,9 +17,9 @@ $insertQuery = "INSERT INTO {$dbName}.!TABLE_NAME!
 
 $removeQuery = "DELETE FROM {$dbName}.!TABLE_NAME!
                 WHERE !TARGET!_id = !TARGET_ID!
-                    AND effect = '!EFFECT_NAME!'";
+                    AND effect_name = '!EFFECT_NAME!'";
 
-if($toggle)
+if($toggle === "true")
 {
     $effectQuery = $insertQuery;
 }
