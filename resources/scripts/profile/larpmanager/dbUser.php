@@ -81,19 +81,27 @@ function addDBUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCh
                         VALUES (:lmID, :userCode, :charName)";
 
     $newCharStatement = $pdo->prepare($newCharQuery);
-
     $newCharStatement->execute([':lmID' => $newID, ':userCode' => $newCode, ':charName' => $newCharName]);
+
+    $reviseQuery = "SELECT lm_id FROM {$dbName}.cpu_abilities
+                    WHERE lm_id IN ( ?" . str_repeat(',?', count($charAbils)-1) . " )";
+
+    $reviseStatement = $pdo->prepare($reviseQuery);
+    $reviseStatement->execute(array_map(function($value) {
+        return intval($value);
+    },$charAbils));
+    $revisedCharAbils = $reviseStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $userAbilArray = array();
 
-    foreach($charAbils as $abilityID)
+    foreach($revisedCharAbils as $abilityID)
     {
         array_push($userAbilArray,$newID, $abilityID);
     }
 
     $userAbilQuery = "  INSERT INTO {$dbName}.user_abilities
-                            (user_id, ability_id)
-                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($charAbils)-1) . ")";
+                            (user_id, ability_lmid)
+                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($revisedCharAbils)-1) . ")";
 
     $userAbilStatement = $pdo->prepare($userAbilQuery);
     $userAbilStatement->execute($userAbilArray);
@@ -125,16 +133,25 @@ function updateDBUser(PDO $pdo, $dbName, int $userID, String $charName, array $c
     $deleteStatement = $pdo->prepare($deleteQuery);
     $deleteStatement->execute([':userID' => $userID]);
 
+    $reviseQuery = "SELECT lm_id FROM {$dbName}.cpu_abilities
+                    WHERE lm_id IN ( ?" . str_repeat(',?', count($charAbils)-1) . " )";
+
+    $reviseStatement = $pdo->prepare($reviseQuery);
+    $reviseStatement->execute(array_map(function($value) {
+        return intval($value);
+    },$charAbils));
+    $revisedCharAbils = $reviseStatement->fetchAll(PDO::FETCH_COLUMN);
+
     $userAbilArray = array();
 
-    foreach($charAbils as $abilityID)
+    foreach($revisedCharAbils as $abilityID)
     {
         array_push($userAbilArray,$userID, $abilityID);
     }
 
     $userAbilQuery = "  INSERT INTO {$dbName}.user_abilities
-                            (user_id, ability_id)
-                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($charAbils)-1) . ")";
+                            (user_id, ability_lmid)
+                        VALUES ( ?,? " . str_repeat('), ( ?,? ',count($revisedCharAbils)-1) . ")";
 
     $userAbilStatement = $pdo->prepare($userAbilQuery);
     $userAbilStatement->execute($userAbilArray);

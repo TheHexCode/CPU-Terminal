@@ -305,11 +305,11 @@ CREATE TABLE cpu_functions (
 );
 
 CREATE TABLE cpu_abilities (
-    id      INT     AUTO_INCREMENT,
-    lm_id   INT,
-    role_id INT     NOT NULL,
+    id      INT AUTO_INCREMENT,
+    lm_id   INT UNIQUE,
+    role_id INT NOT NULL,
     path_id INT,
-    tier    INT     NOT NULL,
+    tier    INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (role_id)
         REFERENCES cpu_roles(id)
@@ -351,17 +351,17 @@ CREATE TABLE cpu_ability_functions (
 );
 
 CREATE TABLE user_abilities (
-    user_id         INT     NOT NULL,
-    ability_id      INT     NOT NULL,
+    user_id         INT NOT NULL,
+    ability_lmid    INT NOT NULL,
     keyword_id      INT,
     CONSTRAINT userFunction
-        PRIMARY KEY (user_id, ability_id),
+        PRIMARY KEY (user_id, ability_lmid),
     FOREIGN KEY (user_id)
         REFERENCES users(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (ability_id)
-        REFERENCES cpu_abilities(id)
+    FOREIGN KEY (ability_lmid)
+        REFERENCES cpu_abilities(lm_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );

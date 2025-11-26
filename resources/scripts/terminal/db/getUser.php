@@ -28,7 +28,7 @@ if($userResponse === false)
 }
 else
 {
-    $abilityQuery = "   SELECT ability_id
+    $abilityQuery = "   SELECT ability_lmid
                         FROM {$dbName}.user_abilities
                         WHERE user_id = :userID";
 

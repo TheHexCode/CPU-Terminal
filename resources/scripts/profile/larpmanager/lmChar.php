@@ -48,7 +48,7 @@ curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/c
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 $lmCharacter = json_decode(curl_exec($curlHandle), true);
 
-#echo $lmCharacter;
+#echo var_dump($lmCharacter);
 /*
 $lmCharacter = json_decode('
     {
@@ -142,14 +142,20 @@ $lmCharacter = json_decode('
 */
 # 4 = Roles
 # 8 = Base Roles (Origins)
-# 31 = ???
+# 31 = Protocols
 $lmRoleIDs =  array_column(array_merge(...array_column(array_filter($lmCharacter["ability_types"], function ($ability_type) {
     return in_array($ability_type["id"],array(4,8,31));
 }), "abilities")), "id");
 
+# 30 = Infamy
+# 37 = SimRAM Chips
 $lmAbilityIDs = array_column(array_merge(...array_column(array_filter($lmCharacter["ability_types"], function ($ability_type) {
-    return !in_array($ability_type["id"],array(4,8,31));
+    return !in_array($ability_type["id"],array(4,8,31,30,37));
 }),"abilities")),"id");
+
+#echo var_dump($lmRoleIDs);
+#echo "---------------------------";
+#echo var_dump($lmAbilityIDs);
 
 ##################################################################################################
 
