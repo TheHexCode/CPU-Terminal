@@ -36,81 +36,89 @@ else
     $abilityStatement->execute([':userID' => $userResponse["lm_id"]]);
     $abilityList = $abilityStatement->fetchAll(PDO::FETCH_COLUMN);
 
-    $roleQuery = "  SELECT DISTINCT cpu_roles.name
-                    FROM {$dbName}.cpu_roles
-                    WHERE cpu_roles.lm_id IN ( ?" . str_repeat(", ?",count($abilityList)-1) . " )
-                    GROUP BY cpu_roles.name";
+    if(count($abilityList) >= 1)
+    {
+        $roleQuery = "  SELECT DISTINCT cpu_roles.name
+                        FROM {$dbName}.cpu_roles
+                        WHERE cpu_roles.lm_id IN ( ?" . str_repeat(", ?",count($abilityList)-1) . " )
+                        GROUP BY cpu_roles.name";
 
-    $roleStatement = $pdo->prepare($roleQuery);
-    $roleStatement->execute($abilityList);
+        $roleStatement = $pdo->prepare($roleQuery);
+        $roleStatement->execute($abilityList);
 
-    $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
+        $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
-    $functionQuery = "  SELECT DISTINCT CONCAT_WS(
-                                            ' ',
-                                            (SELECT cpu_mods.name AS `mod` WHERE cpu_mods.id = cpu_ability_functions.mod_id),
-                                            (SELECT cpu_sources.name AS source WHERE cpu_sources.id = cpu_ability_functions.source_id),
-                                            cpu_functions.name,
-                                            CASE
-                                                WHEN cpu_functions.type <> 'unique' AND cpu_functions.keyworded
-                                                THEN (
-                                                    CASE cpu_ability_functions.keyword_type
-                                                        WHEN 'keyword'
-                                                        THEN ( CONCAT( '(', ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id ), ')' ) )
-                                                        WHEN 'proficiency'
-                                                        THEN ( CONCAT( '(', ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id), ')' ) )
-                                                        WHEN 'knowledge'
-                                                        THEN ( CONCAT( '(', ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id), ')' ) )
-                                                        ELSE NULL
-                                                    END
-                                                )
-                                                ELSE NULL
-                                            END
-                                        ) AS name,
-                                        SUM(cpu_ability_functions.rank) AS `rank`,
-                                        cpu_functions.type,
-                                        cpu_functions.hacking_cat,
-                                        GROUP_CONCAT(
-                                            CASE
-                                                WHEN cpu_functions.type = 'unique' AND cpu_functions.keyworded
-                                                THEN (
-                                                    CASE cpu_ability_functions.keyword_choose
-                                                        WHEN TRUE
-                                                        THEN ( '[Choice]' )
-                                                        ELSE (
-                                                            CASE cpu_ability_functions.keyword_type
-                                                                WHEN 'keyword'
-                                                                THEN ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id )
-                                                                WHEN 'proficiency'
-                                                                THEN ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id )
-                                                                WHEN 'knowledge'
-                                                                THEN ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id )
-                                                                ELSE NULL
-                                                            END
-                                                        )
-                                                    END
-                                                )
-                                                ELSE NULL
-                                            END
-                                        SEPARATOR ';'
-                                        ) AS keyword
-                        FROM cpu_ability_functions
-                        INNER JOIN cpu_abilities ON cpu_abilities.id = cpu_ability_functions.ability_id
-                        LEFT JOIN cpu_mods ON cpu_mods.id = cpu_ability_functions.mod_id
-                        LEFT JOIN cpu_sources ON cpu_sources.id = cpu_ability_functions.source_id
-                        LEFT JOIN cpu_keywords ON cpu_keywords.id = cpu_ability_functions.keyword_id
-                        INNER JOIN cpu_functions ON cpu_functions.id = cpu_ability_functions.func_id
-                        WHERE cpu_abilities.lm_id IN ( ?" . str_repeat(', ?', count($abilityList)-1) . " )
-                        GROUP BY 	cpu_ability_functions.mod_id,
-                                    cpu_ability_functions.source_id,
-                                    cpu_ability_functions.func_id,
-                                    cpu_ability_functions.keyword_id,
-                                    cpu_ability_functions.keyword_type";
+        $functionQuery = "  SELECT DISTINCT CONCAT_WS(
+                                                ' ',
+                                                (SELECT cpu_mods.name AS `mod` WHERE cpu_mods.id = cpu_ability_functions.mod_id),
+                                                (SELECT cpu_sources.name AS source WHERE cpu_sources.id = cpu_ability_functions.source_id),
+                                                cpu_functions.name,
+                                                CASE
+                                                    WHEN cpu_functions.type <> 'unique' AND cpu_functions.keyworded
+                                                    THEN (
+                                                        CASE cpu_ability_functions.keyword_type
+                                                            WHEN 'keyword'
+                                                            THEN ( CONCAT( '(', ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id ), ')' ) )
+                                                            WHEN 'proficiency'
+                                                            THEN ( CONCAT( '(', ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id), ')' ) )
+                                                            WHEN 'knowledge'
+                                                            THEN ( CONCAT( '(', ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id), ')' ) )
+                                                            ELSE NULL
+                                                        END
+                                                    )
+                                                    ELSE NULL
+                                                END
+                                            ) AS name,
+                                            SUM(cpu_ability_functions.rank) AS `rank`,
+                                            cpu_functions.type,
+                                            cpu_functions.hacking_cat,
+                                            GROUP_CONCAT(
+                                                CASE
+                                                    WHEN cpu_functions.type = 'unique' AND cpu_functions.keyworded
+                                                    THEN (
+                                                        CASE cpu_ability_functions.keyword_choose
+                                                            WHEN TRUE
+                                                            THEN ( '[Choice]' )
+                                                            ELSE (
+                                                                CASE cpu_ability_functions.keyword_type
+                                                                    WHEN 'keyword'
+                                                                    THEN ( SELECT cpu_keywords.name FROM cpu_keywords WHERE cpu_keywords.id = cpu_ability_functions.keyword_id )
+                                                                    WHEN 'proficiency'
+                                                                    THEN ( SELECT cpu_proficiencies.name FROM cpu_proficiencies WHERE cpu_proficiencies.id = cpu_ability_functions.keyword_id )
+                                                                    WHEN 'knowledge'
+                                                                    THEN ( SELECT cpu_knowledges.name FROM cpu_knowledges WHERE cpu_knowledges.id = cpu_ability_functions.keyword_id )
+                                                                    ELSE NULL
+                                                                END
+                                                            )
+                                                        END
+                                                    )
+                                                    ELSE NULL
+                                                END
+                                            SEPARATOR ';'
+                                            ) AS keyword
+                            FROM cpu_ability_functions
+                            INNER JOIN cpu_abilities ON cpu_abilities.id = cpu_ability_functions.ability_id
+                            LEFT JOIN cpu_mods ON cpu_mods.id = cpu_ability_functions.mod_id
+                            LEFT JOIN cpu_sources ON cpu_sources.id = cpu_ability_functions.source_id
+                            LEFT JOIN cpu_keywords ON cpu_keywords.id = cpu_ability_functions.keyword_id
+                            INNER JOIN cpu_functions ON cpu_functions.id = cpu_ability_functions.func_id
+                            WHERE cpu_abilities.lm_id IN ( ?" . str_repeat(', ?', count($abilityList)-1) . " )
+                            GROUP BY 	cpu_ability_functions.mod_id,
+                                        cpu_ability_functions.source_id,
+                                        cpu_ability_functions.func_id,
+                                        cpu_ability_functions.keyword_id,
+                                        cpu_ability_functions.keyword_type";
 
-    $functionStatement = $pdo->prepare($functionQuery);
-    $functionStatement->execute($abilityList);
+        $functionStatement = $pdo->prepare($functionQuery);
+        $functionStatement->execute($abilityList);
 
-    $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
+        $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else
+    {
+        $roleResponse = [];
+        $functionResponse = [];
+    }
 
     $itemQuery = "  SELECT  item AS name,
                             tier,
