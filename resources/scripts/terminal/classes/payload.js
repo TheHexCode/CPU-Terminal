@@ -405,7 +405,8 @@ class Payload
     {
         this.#inventory.submitEffects(this.#tempEffects.filter(function(effect)
         {
-            return (effect.input_index !== null);
+            return ((effect.input_index !== null) &&
+                    (effect.input_index !== undefined));
         }), initial);
 
         if(initial)
@@ -413,7 +414,7 @@ class Payload
             this.#inventory.submitEffects(this.#tempEffects.filter(function(effect)
             {
                 return (effect.name !== null);
-            }), false)
+            }), false);
         }
 
         this.#tempEffects = [];
@@ -467,14 +468,39 @@ class Payload
         return this.#statusEffects;
     }
 
-    setActionTime(timeSource, timeAmount)
+    addActionTime(timeSource, timeAmount)
     {
-        this.#timeMods.push(
-            {
-                "source": timeSource,
-                "amount": timeAmount
-            }
-        )
+        let extantMod = this.#timeMods.find(function(mod)
+        {
+            return mod.source === timeSource;
+        })
+
+        if(extantMod !== undefined)
+        {
+            extantMod.amount = timeAmount;
+        }
+        else
+        {
+            this.#timeMods.push(
+                {
+                    "source": timeSource,
+                    "amount": timeAmount
+                }
+            )
+        }
+    }
+
+    minusActionTime(timeSource)
+    {
+        let extantModIndex = this.#timeMods.find(function(mod)
+        {
+            return mod.source === timeSource;
+        })
+
+        if(extantModIndex !== -1)
+        {
+            this.#timeMods.splice(extantModIndex,1);
+        }
     }
 
     getActionTime()
@@ -491,15 +517,40 @@ class Payload
         return actionTime;
     }
 
-    setActionCost(costSource, actionType, costAmount)
+    addActionCost(costSource, actionType, costAmount)
     {
-        this.#costMods.push(
-            {
-                "source": costSource,
-                "actionType": actionType,
-                "amount": costAmount
-            }
-        )
+        let extantMod = this.#costMods.find(function(mod)
+        {
+            return mod.source === costSource;
+        })
+
+        if(extantMod !== undefined)
+        {
+            extantMod.amount = costAmount;
+        }
+        else
+        {
+            this.#costMods.push(
+                {
+                    "source": costSource,
+                    "actionType": actionType,
+                    "amount": costAmount
+                }
+            )
+        }
+    }
+
+    minusActionCost(costSource)
+    {
+        let extantModIndex = this.#costMods.find(function(mod)
+        {
+            return mod.source === costSource;
+        })
+
+        if(extantModIndex !== -1)
+        {
+            this.#costMods.splice(extantModIndex,1);
+        }
     }
 
     getActionCost(baseCost, actionType)

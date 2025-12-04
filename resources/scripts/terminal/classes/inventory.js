@@ -1353,12 +1353,12 @@ class Activation
             }
             case("action_cost"):
             {
-                payload.setActionCost(this.#parent.id, this.#detail, amount);
+                payload.addActionCost(this.#parent.id, this.#detail, amount);
                 break;
             }
             case("action_time"):
             {
-                payload.setActionTime(this.#parent.id, amount);
+                payload.addActionTime(this.#parent.id, amount);
                 break;
             }
             case("cyberdeck_override"):
@@ -1439,12 +1439,12 @@ class Activation
             }
             case("action_cost"):
             {
-                payload.setActionCost(this.#parent.id, this.#detail, amount);
+                payload.minusActionCost(this.#parent.id, this.#detail, amount);
                 break;
             }
             case("action_time"):
             {
-                payload.setActionTime(this.#parent.id, amount);
+                payload.minusActionTime(this.#parent.id);
                 break;
             }
             case("cyberdeck_override"):

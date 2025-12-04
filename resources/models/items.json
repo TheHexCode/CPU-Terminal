@@ -703,62 +703,11 @@
 					"tag": "multiple"
 				}
 			],
-			"instance":
-			[
-				{
-					"name": "corp_name",
-					"displayName": "CORP",
-					"options":
-					{
-						"path": "db:cpu_orgs",
-						"value": "id",
-						"label": "name"
-					}
-				}
-			],
 			"tiers":
 			[
 				{
 					"tier": 0,
-					"tierName": "Minor",
-					"benefits":
-					[
-						{
-							"name": "digisec_secret",
-							"values":
-							[
-								{
-									"name": "time",
-									"amount": -10
-								}
-							],
-							"charges": 1,
-							"perType": "item"
-						}
-					]
-				},
-				{
-					"tier": 1,
-					"tierName": "Moderate",
-					"benefits":
-					[
-						{
-							"name": "digisec_secret",
-							"values":
-							[
-								{
-									"name": "time",
-									"amount": -10
-								}
-							],
-							"charges": 1,
-							"perType": "item"
-						}
-					]
-				},
-				{
-					"tier": 2,
-					"tierName": "Major",
+					"tierName": "All Tiers",
 					"benefits":
 					[
 						{

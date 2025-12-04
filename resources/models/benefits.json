@@ -664,12 +664,26 @@
 					"screen": "ph_login",
 					"header": "DIGITAL SECURITY SECRETS: ",
 					"label": "Burn DigiSec Secret?",
+					"activations":
+					[
+						{
+							"type": "status",
+							"scope": "payload",
+							"name": "digisec_secret"
+						}
+					]
+				},
+				{
+					"type": "checkbox",
+					"screen": "crack",
+					"header": "DIGITAL SECURITY SECRETS: ",
+					"label": "Burn DigiSec Secret?",
 					"conditions":
 					[
 						{
-							"left": "item:instance:corp_name",
-							"operation": "equals",
-							"right": "terminal:owner"
+							"left": "payload:status",
+							"operation": "not_contains",
+							"right": "digisec_secret"
 						}
 					],
 					"activations":

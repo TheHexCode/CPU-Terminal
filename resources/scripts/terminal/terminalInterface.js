@@ -1245,25 +1245,6 @@ function accessTerminal(event)
 
 		Gems.updateTagGems(Gems.STANDBY, session.getCurrentTags());
 
-		if(payload.getFunction("ALARM SENSE"))
-		{
-			//MOVED HERE SO THAT ADDING ALARM SENSE FROM POLYMATH STILL APPLIES
-
-			$(".accessButton, .modifyButton").each(function(index,entryButton)
-			{
-				if($(entryButton).html() !== "N/A")
-				{
-					let action = entryButton.classList[0].split("Button")[0];
-					let newCost = session.getActionCost($(entryButton).attr("data-id"), action);
-					$(entryButton).attr("data-cost",newCost);
-					$(entryButton).html(newCost + " Tag" + (newCost === 1 ? "" : "s"));
-				};
-			});
-		}
-
-		// Disable Expensive Buttons
-		disableExpensiveButtons();
-
 		if($(".logEntry[data-user='" + payload.getUserID() + "']").length === 0)
 		{
 			let logMask = false;
@@ -1304,6 +1285,10 @@ function accessTerminal(event)
 											'</div>' : "") +
 										'</li>');
 
+				// Disable Expensive Buttons
+				updateEntryCosts();
+				disableExpensiveButtons();
+
 				$("#accessZone").addClass("hidden");
 				$("#hackZone").removeClass("hidden");
 			});
@@ -1314,6 +1299,10 @@ function accessTerminal(event)
 			$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html(
 				$(".logEntry[data-user='" + payload.getUserID() + "'] .logPerson").html().replace("User:","You:&nbsp;")
 			);
+
+			// Disable Expensive Buttons
+			updateEntryCosts();
+			disableExpensiveButtons();
 
 			$("#accessZone").addClass("hidden");
 			$("#hackZone").removeClass("hidden");
@@ -2315,7 +2304,9 @@ function updateEntryCosts()
 			if(buttonSplit[1] === "")
 			{
 				let entryID = ((entryAction === "access") || (entryAction === "modify")) ? $(entryButton).attr("data-id") : "nonEntry";
+
 				let newCost = session.getActionCost(entryID, entryAction);
+
 				$(entryButton).attr("data-cost",newCost);
 				$(entryButton).html(newCost + " Tag" + pluralize(newCost));
 			}
