@@ -27,12 +27,33 @@
 			]
 		},
 		{
+			"name": "spiders_carapace",
+			"term_login":
+			[
+				{
+					"type": "plus_function",
+					"function": "hacking",
+					"amount": "values:hacking",
+					"label":
+					{
+						"location": "crack_hacking",
+						"label": "[CARAPACE:+{values:hacking*2!tens}]"
+					}
+				},
+				{
+					"type": "plus_function",
+					"function": "repeat",
+					"amount": "values:repeat"
+				}
+			]
+		},
+		{
 			"name": "copycat",
 			"inputs":
 			[
 				{
-					"screen": "confirm",
 					"type": "checkbox",
+					"screen": "confirm",
 					"header": "COPYCAT: ",
 					"label": "({charges}/{perType!title}) Activate {displayName} for this action to complete it immediately?",
 					"conditions":

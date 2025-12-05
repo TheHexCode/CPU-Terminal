@@ -199,7 +199,7 @@ function injectUserPayload(userPayload)
 
 		// Payload Tags
 		$("#hackDetails").html(
-			"<span>[HACKING:&nbsp;+" + tens(payload.getBaseFunction("HACKING") * 2) + "]</span>"
+			"<span>[HACKING:&nbsp;+" + tens(payload.getBaseFunction("HACKING").rank * 2) + "]</span>"
 		)
 
 		$("#extraDetails").html(
@@ -224,6 +224,19 @@ function injectUserPayload(userPayload)
 		}
 
 		//!! Bastion!
+
+		///////////// ITEMS
+
+		payload.applyTermLoginEffects();
+
+		if(payload.hasCyberdeck())
+		{
+			$(".hasDeck").removeClass("hidden");
+		}
+		else
+		{
+			$(".noDeck").removeClass("hidden");
+		}
 
 		// FUNCTIONS
 
@@ -348,19 +361,6 @@ function injectUserPayload(userPayload)
 
 			$(".repeatBox .subContModifierTitle").append(" " + romanize(payload.getFunction("REPEAT")));
 			$(".repeatBox").removeClass("hidden");
-		}
-
-		///////////// ITEMS
-
-		payload.applyTermLoginEffects();
-
-		if(payload.hasCyberdeck())
-		{
-			$(".hasDeck").removeClass("hidden");
-		}
-		else
-		{
-			$(".noDeck").removeClass("hidden");
 		}
 
 		////////////// START TERMACCESS TIMER
@@ -881,39 +881,27 @@ function initRadio(target)
 			case("plusHack"):
 			{
 				$("#hackDetails #disDetails").remove();
-				updateTags(-2,Session.DISSIM);
+				payload.minusFunction("hacking", -1);
 
 				break;
 			}
 			case("k_HDS"):
 			{
-				if(payload.getExtraFunction("KNOWLEDGE"))
-				{
-					if(payload.getExtraFunction("KNOWLEDGE")["keywords"].includes("Hacking &amp; DigiSec"))
-					{
-						$("#knowItem #disKnow").remove();
-						payload.minusFunction("k_HDS");
-					}
-				}
+				$("#knowItem #disKnow").remove();
+				payload.minusFunction("knowledge", "Hacking &amp; DigiSec", "dissimulator");
 
 				break;
 			}
 			case("alarmSense"):
 			{
-				if(payload.getExtraFunction("ALARM SENSE"))
-				{
-					$("#polyAS").remove();
-					payload.minusFunction("alarmSense");
-				}
+				$("#polyAS").remove();
+				payload.minusFunction("alarm_sense", 1);
 
 				break;
 			}
 			case("plusRepair"):
 			{
-				if(payload.getExtraFunction("REPAIR"))
-				{
-					payload.minusFunction("repair");
-				}
+				payload.minusFunction("repair", 1);
 
 				break;
 			}
@@ -928,33 +916,27 @@ function initRadio(target)
 			case("plusHack"):
 			{
 				$("#hackDetails").append("<span id='disDetails'>[DISSIM:&nbsp;&nbsp;+02]</span>");
-				updateTags(2,Session.DISSIM);
+				payload.plusFunction("hacking", 1);
 
 				break;
 			}
 			case("k_HDS"):
 			{
-				if(!(payload.getFunction("KNOWLEDGE").includes("Hacking &amp; DigiSec")))
-				{
-					$("#knowItem > ul").append("<li id='disKnow'>DISSIM: HACKING &amp; DIGISEC</li>");
-					payload.plusFunction("k_HDS");
-				}
+				$("#knowItem > ul").append("<li id='disKnow'>DISSIM: HACKING &amp; DIGISEC</li>");
+				payload.plusFunction("knowledge", "Hacking &amp; DigiSec", "dissimulator");
 
 				break;
 			}
 			case("alarmSense"):
 			{
-				if(!(payload.getFunction("ALARM SENSE")))
-				{
-					$("#alarmItem").after("<li id='polyAS'>POLY: ALARM SENSE</li>");
-					payload.plusFunction("alarmSense");
-				}
+				$("#alarmItem").after("<li id='polyAS'>POLY: ALARM SENSE</li>");
+				payload.plusFunction("alarm_sense", 1);
 
 				break;
 			}
 			case("plusRepair"):
 			{
-				payload.plusFunction("repair");
+				payload.plusFunction("repair", 1);
 
 				break;
 			}

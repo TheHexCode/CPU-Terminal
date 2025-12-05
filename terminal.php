@@ -446,7 +446,7 @@
 										</ul>
 									</div>
 									<div class="itemCat hidden" data-cat="arms">
-										<h4>WEAPONS / SHIELDS</h4>
+										<h4>WEAPONS / ARMOR</h4>
 										<ul class="itemList">
 										</ul>
 									</div>

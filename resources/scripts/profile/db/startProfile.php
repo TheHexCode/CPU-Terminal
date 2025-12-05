@@ -69,6 +69,10 @@ $itemArray = array(
             "shield_small" => array(
                 "heading" => "SHIELD, SMALL",
                 "items" => array()
+            ),
+            "armor" => array(
+                "heading" => "ARMOR",
+                "items" => array()
             )
         )
     ),
@@ -266,10 +270,10 @@ foreach($itemArray as $itemCat)
                 foreach($item["tiers"] as $tier)
                 {
                     $itemName = strtolower($item["name"]) . "_t" . $tier["tier"];
-                    $tagUnique = count(array_filter($item["tags"], function($tag)
+                    $tagUnique = ((count(array_filter($item["tags"], function($tag)
                     {
                         return $tag["tag"] === "unique";
-                    })) > 0;
+                    })) > 0) || ($item["subCategory"] === "armor"));
 
                     $itemString .=  "<div class='itemInput " . ($tagUnique ? "radio" : "check") . "'>" .
                                         "<input type='" . ($tagUnique ? "radio" : "checkbox") . "' " .

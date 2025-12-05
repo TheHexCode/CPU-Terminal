@@ -39,12 +39,15 @@ else
     if(count($abilityList) >= 1)
     {
         $roleQuery = "  SELECT DISTINCT cpu_roles.name
-                        FROM {$dbName}.cpu_roles
-                        WHERE cpu_roles.lm_id IN ( ?" . str_repeat(", ?",count($abilityList)-1) . " )
-                        GROUP BY cpu_roles.name";
+                        FROM {$dbName}.cpu_abilities
+                        INNER JOIN {$dbName}.cpu_roles ON cpu_roles.id = cpu_abilities.role_id
+                        WHERE cpu_abilities.lm_id IN (
+                            SELECT ability_lmid FROM user_abilities
+                            WHERE user_id = :userID
+                        )";
 
         $roleStatement = $pdo->prepare($roleQuery);
-        $roleStatement->execute($abilityList);
+        $roleStatement->execute([':userID' => $userResponse["lm_id"]]);
 
         $roleResponse = $roleStatement->fetchAll(PDO::FETCH_COLUMN);
 
@@ -102,7 +105,10 @@ else
                             LEFT JOIN cpu_sources ON cpu_sources.id = cpu_ability_functions.source_id
                             LEFT JOIN cpu_keywords ON cpu_keywords.id = cpu_ability_functions.keyword_id
                             INNER JOIN cpu_functions ON cpu_functions.id = cpu_ability_functions.func_id
-                            WHERE cpu_abilities.lm_id IN ( ?" . str_repeat(', ?', count($abilityList)-1) . " )
+                            WHERE cpu_abilities.lm_id IN (
+                                SELECT ability_lmid FROM user_abilities
+                                WHERE user_id = :userID
+                            )
                             GROUP BY 	cpu_ability_functions.mod_id,
                                         cpu_ability_functions.source_id,
                                         cpu_ability_functions.func_id,
@@ -110,7 +116,7 @@ else
                                         cpu_ability_functions.keyword_type";
 
         $functionStatement = $pdo->prepare($functionQuery);
-        $functionStatement->execute($abilityList);
+        $functionStatement->execute([':userID' => $userResponse["lm_id"]]);
 
         $functionResponse = $functionStatement->fetchAll(PDO::FETCH_ASSOC);
     }

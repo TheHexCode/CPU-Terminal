@@ -21,7 +21,141 @@ class Payload
         this.#inventory = new Inventory();
 
         this.#payloadSet = false;
-        this.#extraFuncs = [];
+        this.#extraFuncs = [
+            {
+                name: "Button Masher",
+                rank: 0,
+                type: "ranked",
+                keywords: null,
+                hacking_cat: "initial"
+            },
+            {
+                name: "Knowledge",
+                rank: null,
+                type: "unique",
+                keywords: [],
+                hacking_cat: "passive"
+            },
+            {
+                name: "Repair",
+                rank: 0,
+                type: "ranked",
+                keywords: null,
+                hacking_cat: "repair"
+            },
+            {
+                name: "Hacking",
+                rank: 0,
+                type: "ranked",
+                keywords: null,
+                hacking_cat: "initial"
+            },
+            {
+                name: "Siphon Charge",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "active"
+            },
+            {
+                name: "Field Repair",
+                rank: 0,
+                type: "ranked",
+                keywords: null,
+                hacking_cat: "repair"
+            },
+            {
+                name: "Dark Web Operator",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "passive"
+            },
+            {
+                name: "Reassign",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "active"
+            },
+            {
+                name: "Alarm Sense",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "passive"
+            },
+            {
+                name: "Backdoor",
+                rank: 0,
+                type: "ranked",
+                keywords: null,
+                hacking_cat: "passive"
+            },
+            {
+                name: "Ping",
+                rank: 0,
+                type: "charges",
+                keywords: null,
+                hacking_cat: "active"
+            },
+            {
+                name: "Repeat",
+                rank: 0,
+                type: "ranked",
+                keywords: null,
+                hacking_cat: "passive"
+            },
+            {
+                name: "Wipe Your Tracks",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "active"
+            },
+            {
+                name: "Brick",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "active"
+            },
+            {
+                name: "Rigged",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "active"
+            },
+            {
+                name: "Root Exploit",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "initial"
+            },
+            {
+                name: "Dark Web Merchant",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "passive"
+            },
+            {
+                name: "Mask",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "initial"
+            },
+            {
+                name: "Root Device",
+                rank: 0,
+                type: "unique",
+                keywords: null,
+                hacking_cat: "active"
+            }
+        ];
         this.#statusEffects = [];
         this.#tempEffects = [];
         this.#cyberdecks = [];
@@ -105,271 +239,89 @@ class Payload
 
     getFunction(funcName)
     {
-        let allFuncs = structuredClone(this.#functions); //DEEP COPY SO AS TO NOT AFFECT ORIGINAL #functions ARRAY
+        let baseFunc = this.getBaseFunction(funcName);
+        let extraFunc = this.getExtraFunction(funcName);
 
-        this.#extraFuncs.forEach(function(xFunc)
+        let baseRank = 0;
+        let baseKW = "";
+
+        if(baseFunc !== undefined)
         {
-            let mainFuncIndex = allFuncs.findIndex(mFunc => mFunc.name.toLowerCase() === xFunc.name.toLowerCase());
-
-            if(mainFuncIndex !== -1)
-            {
-                allFuncs[mainFuncIndex]["rank"] = Number(allFuncs[mainFuncIndex]["rank"]) + Number(xFunc["rank"]);
-                allFuncs[mainFuncIndex]["keyword"] += ";" + xFunc.keyword;
-            }
-            else
-            {
-                allFuncs.push(xFunc);
-            }
-        }, this);
-
-        let userFuncs = allFuncs.filter(function(func)
-        {
-            return func.name.toLowerCase() === funcName.toLowerCase();
-        });
-
-        if(userFuncs.length > 0)
-        {
-            if(userFuncs.length === 1)
-            {
-                if(userFuncs[0].rank !== null)
-                {
-                    return Number(userFuncs[0].rank);
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else if(userFuncs.length >= 2)
-            {
-                return userFuncs.map(function(func)
-                {
-                    return func.keyword.split(";")[0];
-                }).join(";");
-            }
-            else
-            {
-                return 0;
-            }
+            baseRank = Number(baseFunc.rank);
+            baseKW = baseFunc.keyword + ";";
         }
-        else
+
+        if(extraFunc.keywords === null)
         {
-            return 0;
+            return baseRank + extraFunc.rank;
+        }
+        else // KNOWLEDGE
+        {
+            return (baseKW + extraFunc.keywords.map(kw => kw.keyword).join(";")).split(";");
         }
     }
 
     getBaseFunction(funcName)
     {
-        let userFuncs = structuredClone(this.#functions).filter(function(func)
+        return this.#functions.find(function(bFunc)
         {
-            return func.name.toLowerCase() === funcName.toLowerCase();
+            return bFunc.name.toLowerCase().replace(" ","_") === funcName.toLowerCase().replace(" ","_");
         });
-
-        if(userFuncs.length > 0)
-        {
-            if(userFuncs.length === 1)
-            {
-                if(userFuncs[0].rank !== null)
-                {
-                    return Number(userFuncs[0].rank);
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else if(userFuncs.length >= 2)
-            {
-                return userFuncs.map(function(func)
-                {
-                    return func.keyword.split(";")[0];
-                }).join(";");
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
-        {
-            return 0;
-        }
     }
 
     getExtraFunction(xFuncName)
     {
-        let extraFunc = this.#extraFuncs.find(xFunc => xFunc.name.toLowerCase() === xFuncName.toLowerCase());
-
-        return extraFunc;
+        return this.#extraFuncs.find(function(xFunc)
+        {
+            return xFunc.name.toLowerCase().replace(" ","_") === xFuncName.toLowerCase().replace(" ","_");
+        });
     }
 
-    plusFunction(activation_function, plus_amount)
+    plusFunction(activation_function, plus_amount, keyword_source=null)
     {
-        /*
-        switch(func.toLowerCase())
+        let extraFunc = this.#extraFuncs.find(function(xFunc)
         {
-            case("k_hds"): // DISSIM
-            {
-                let knowIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "knowledge");
+            return xFunc.name.toLowerCase().replaceAll(" ","_") === activation_function;
+        });
 
-                if(knowIndex !== -1)
-                {
-                    this.#extraFuncs[knowIndex]["extra"] += "dissim;";
-                    this.#extraFuncs[knowIndex]["keyword"] += ";Hacking &amp; DigiSec";
-                }
-                else
-                {
-                    this.#extraFuncs.push({
-                        name: "Knowledge",
-                        rank: null,
-                        type: "unique",
-                        keyword: "Hacking &amp; DigiSec",
-                        hacking_cat: "passive",
-                        extra: "dissim;"
-                    });
-                }
-                break;
-            }
-            case("alarmsense"): // POLYMATH
-            {
-                let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
-
-                if(asIndex !== -1)
-                {
-                    this.#extraFuncs[asIndex]["extra"] += "poly;";
-                }
-                else
-                {
-                    this.#extraFuncs.push({
-                        name: "Alarm Sense",
-                        rank: null,
-                        type: "unique",
-                        keyword: null,
-                        hacking_cat: "passive",
-                        extra: "poly;"
-                    });
-                }
-                break;
-            }
-            case("repair"): // POLYMATH
-            {
-                let repIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "repair");
-
-                if(repIndex !== -1)
-                {
-                    this.#extraFuncs[repIndex]["extra"] += "poly;";
-                    this.#extraFuncs[repIndex]["rank"] = Number(this.#extraFuncs[repIndex]["rank"]) + 1;
-                }
-                else
-                {
-                    this.#extraFuncs.push({
-                        name: "Repair",
-                        rank: 1,
-                        type: "ranked",
-                        keyword: null,
-                        hacking_cat: "repair",
-                        extra: "poly;"
-                    });
-                }
-                break;
-            }
+        if(extraFunc.keywords === null)
+        {
+            extraFunc["rank"] += Number(plus_amount);
         }
-        */
-
-        switch(activation_function)
+        else // KNOWLEDGE
         {
-            case("hacking"):
-            {
-                let hackIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
+            extraFunc["keywords"].push(
+                {
+                    "source": keyword_source,
+                    "keyword": plus_amount
+                }
+            )
+        }
 
-                if(hackIndex !== -1)
-                {
-                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) + Number(plus_amount);
-                }
-                else
-                {
-                    this.#extraFuncs.push({
-                        name: "Hacking",
-                        rank: Number(plus_amount),
-                        type: "ranked",
-                        keyword: null,
-                        hacking_cat: "initial"
-                    });
-                }
-
-                updateTags(Number(plus_amount) * 2, Session.HACK);
-                break;
-            }
-            case("alarm_sense"):
-            {
-                let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
-
-                if(asIndex !== -1)
-                {
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) + Number(plus_amount);
-                }
-                else
-                {
-                    this.#extraFuncs.push({
-                        name: "Alarm Sense",
-                        rank: Number(plus_amount),
-                        type: "ranked",
-                        keyword: null,
-                        hacking_cat: "passive"
-                    });
-                }
-                break;
-            }
+        if(activation_function.toLowerCase() === "hacking")
+        {
+            updateTags(Number(plus_amount) * 2, Session.HACK);
         }
     }
 
-    minusFunction(activation_function, minus_amount)
+    minusFunction(activation_function, minus_amount, keyword_source=null)
     {
-        switch(activation_function)
+        let extraFunc = this.#extraFuncs.find(function(xFunc)
         {
-            case("hacking"):
-            {
-                let hackIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "hacking");
+            return xFunc.name.toLowerCase().replaceAll(" ","_") === activation_function;
+        });
 
-                if(hackIndex !== -1)
-                {
-                    this.#extraFuncs[hackIndex]["rank"] = Number(this.#extraFuncs[hackIndex]["rank"]) - Number(minus_amount);
-                    //updateTags((Number(minus_amount)*2) * -1, Session.HACK);
-                }
-
-                break;
-            }
-            case("alarm_sense"):
-            {
-                let asIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "alarm sense");
-
-                if(asIndex !== -1)
-                {
-                    this.#extraFuncs[asIndex]["rank"] = Number(this.#extraFuncs[asIndex]["rank"]) - Number(minus_amount);
-                }
-
-                break;
-            }
+        if(extraFunc.keywords === null)
+        {
+            extraFunc["rank"] -= Number(minus_amount);
         }
-        /*
-            case("repair"): // POLYMATH
+        else // KNOWLEDGE
+        {
+            extraFunc["keywords"].splice(extraFunc["keywords"].findIndex(function(keyword)
             {
-                let repIndex = this.#extraFuncs.findIndex(xFunc => xFunc.name.toLowerCase() === "repair");
-
-                if(knowIndex["extra"] !== "poly;")
-                {
-                    this.#extraFuncs[repIndex]["extra"] = this.#extraFuncs[repIndex]["extra"].replace("poly;","");
-                    this.#extraFuncs[repIndex]["rank"] = Number(this.#extraFuncs[repIndex]["rank"]) - 1;
-                }
-                else
-                {
-                    this.#extraFuncs.splice(repIndex,1);
-                }
-
-                break;
-            }
+                return keyword.source === keyword_source;
+            }), 1);
         }
-        */
     }
 
     addTempEffect(benefit_id, input_index, activation_index)

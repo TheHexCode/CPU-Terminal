@@ -60,6 +60,37 @@
 			]
 		},
 		{
+			"name": "Spider&#39;s Carapace",
+			"category": "arms",
+			"subCategory": "armor",
+			"flavor": "",
+			"owner": "",
+			"tags": [],
+			"tiers":
+			[
+				{
+					"tier": 0,
+					"benefits":
+					[
+						{
+							"name": "spiders_carapace",
+							"values":
+							[
+								{
+									"name": "hacking",
+									"amount": 1
+								},
+								{
+									"name": "repeat",
+									"amount": 1
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "Copycat",
 			"category": "customization",
 			"subCategory": "cyberdeck_software",
@@ -593,6 +624,24 @@
 							],
 							"charges": 2,
 							"perType": "sim"
+						}
+					]
+				},
+				{
+					"tier": 1,
+					"benefits":
+					[
+						{
+							"name": "mm_console",
+							"values":
+							[
+								{
+									"name": "tags",
+									"amount": 1
+								}
+							],
+							"charges": 1,
+							"perType": "scene"
 						}
 					]
 				}

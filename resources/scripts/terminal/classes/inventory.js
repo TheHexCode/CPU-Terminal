@@ -1424,7 +1424,7 @@ class Activation
             case("plus_function"):
             {
                 this.#removeActivationLabel(this.#label);
-                payload.plusFunction(this.#detail, amount);
+                payload.minusFunction(this.#detail, amount);
                 break;
             }
             case("skip_timer"):
