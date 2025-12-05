@@ -1,0 +1,138 @@
+DEFINE:
+	LABEL: Pattern{ "^[^{]*(({((values(:[^!*/+-]+)?)|charges|perType|displayName|totalCharges|remainCharges|cost)([*/+-]\d+)?(!(tens|title|plurality))?)?}[^{]*)*$" }
+
+	CONDITION:
+	 - left: Pattern (session : copyables|status) | (item : instance : [^:]+) | (payload : (functions : hacking|forgery) | (roles) | (status)) | (action : type)
+	 - operation: Enum[contains, not_contains, equals, not_equals, greater_than, greater_than_equals, less_than, less_than_equals]
+	 - right: Pattern (action : type) | (terminal : owner) | ([^:]+) OR number
+	 - rejection_label: string
+	 - effect: number
+
+	ACTIVATION:
+	 * type: Enum[ "plus_tags", "plus_function", "skip_timer", "status", "complete_timer", "pop-up" ]
+	 - amount: Pattern{ "(values):.+" }
+	 - label:
+		* location: Enum[ "crack_extra", "crack_hacking" ]
+		* label: LABEL
+	 - conditions: [ CONDITION ]
+	 - animation: null
+	 - anyOf:
+		- if (type = const:"plus_function"), then (
+			* function: Enum["hacking", "repeat", "alarm_sense"]
+			required += amount
+		- if (type = enum:("plus_tags"), then (
+			required += amount
+		- if (type = const:"status"), then (
+			* scope: Enum["session", "payload"]
+			* name: string
+		- if (type = enum:("pop-up"), then (
+			* name: string
+
+
+
+A BENEFIT HAS:
+ * name: String
+ - stacking: const: true
+ ONE OF:
+	- inputs:
+		AN INPUT HAS:
+		 * type: Enum[ "checkbox", "button" ]
+		 * screen: Enum[ "crack", "confirm", "inventory", "execute" ]
+		 - header: string
+		 * label: LABEL
+		 - conditions: [ CONDITION ]
+		 - cost:
+			* type: Enum["dynamic"]
+			* amount: string
+			* conditions: [ CONDITION ]
+		 * activations: ACTIVATIONS
+		 - anyOf:
+			- if (type = const:"checkbox"), then (
+				required += header
+			- if (type = const:"button"), then (
+				* confirm:
+					* body: LABEL
+					* button: LABEL
+					* timer:
+						- type: Enum("skip", "static", "action")
+						- anyOf: not "skip",
+							* seconds: number
+
+	- term_login:
+		A TERM_LOGIN HAS:
+		 ACTIVATIONS
+	- ph_login:
+		A PH_LOGIN HAS:
+		 ACTIVATIONS
+	- post_actions:
+		A POST_ACTION HAS:
+		 ACTIVATIONS
+
+
+
+
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "ItemSchema",
+    "type": "object",
+    "properties":
+    {
+        "benefits":
+        {
+            "type": "array",
+            "items":
+            {
+                "type": "object",
+                "properties":
+                {
+                    "name": { "type": "string" },
+                    "stacking": { "const": true }
+                },
+                "anyOf":
+                [
+                    {
+                        "properties":
+                        {
+                            "inputs":
+                            {
+                                "type": "array",
+                                "items":
+                                {
+                                    "type": "object",
+                                    "properties":
+                                    {
+                                        "type":
+                                        {
+                                            "enum":
+                                            [
+                                                "button",
+                                                "checkbox"
+                                            ]
+                                        },
+                                        "screen":
+                                        {
+                                            "enum":
+                                            [
+                                                "crack"
+                                            ]
+                                        },
+                                        "header": { "type": "string" },
+                                        "label": { "type": "string" },
+                                        "activations": []
+                                    },
+                                    "required":
+                                    [
+                                        "type",
+                                        "screen"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [ "inputs" ]
+                    }
+                ],
+                "required": [ "name" ]
+            }
+        }
+    }
+}

@@ -1,4 +1,5 @@
 {
+	"$schema": "./schemas/items.schema.json",
 	"items":
 	[
 		{
@@ -479,7 +480,14 @@
 			"owner": "",
 			"instance": [
 				{
-					"name": "sprite"
+					"name": "sprite",
+					"displayName": "",
+					"options":
+					{
+						"path": "db:?",
+						"value": "",
+						"label": ""
+					}
 				}
 			],
 			"tags": [],

@@ -14,27 +14,11 @@
                 {
                     "name":
                     {
-                        "type": "string"
-                    },
-                    "category":
-                    {
                         "type": "string",
-                        "enum":
-                        [
-                            "arms",
-                            "customization",
-                            "utility",
-                            "resource"
-                        ]
+                        "pattern": "^[^']+$"
                     },
-                    "flavor":
-                    {
-                        "type": "string"
-                    },
-                    "owner":
-                    {
-                        "type": "string"
-                    },
+                    "flavor": { "type": "string" },
+                    "owner": { "type": "string" },
                     "instance":
                     {
                         "type": "array",
@@ -43,14 +27,8 @@
                             "type": "object",
                             "properties":
                             {
-                                "name":
-                                {
-                                    "type": "string"
-                                },
-                                "displayName":
-                                {
-                                    "type": "string"
-                                },
+                                "name": { "type": "string" },
+                                "displayName": { "type": "string" },
                                 "options":
                                 {
                                     "type": "object",
@@ -58,19 +36,26 @@
                                     {
                                         "path":
                                         {
-                                            "type": "string"
+                                            "type": "string",
+                                            "pattern": "^(db):.+$"
                                         },
-                                        "value":
-                                        {
-                                            "type": "string"
-                                        },
-                                        "label":
-                                        {
-                                            "type": "string"
-                                        }
-                                    }
+                                        "value": { "type": "string" },
+                                        "label": { "type": "string" }
+                                    },
+                                    "required":
+                                    [
+                                        "path",
+                                        "value",
+                                        "label"
+                                    ]
                                 }
-                            }
+                            },
+                            "required":
+                            [
+                                "name",
+                                "displayName",
+                                "options"
+                            ]
                         }
                     },
                     "tags":
@@ -102,26 +87,17 @@
                                     {
                                         "properties":
                                         {
-                                            "tag":
-                                            {
-                                                "const": "hacking_script"
-                                            }
-                                        }
+                                            "tag": { "const": "hacking_script" }
+                                        },
+                                        "required": [ "tag" ]
                                     },
                                     "then":
                                     {
                                         "properties":
                                         {
-                                            "value":
-                                            {
-                                                "type": "number"
-                                            }
+                                            "value": { "type": "number" }
                                         },
-                                        "required":
-                                        [
-                                            "tag",
-                                            "value"
-                                        ]
+                                        "required": [ "value" ]
                                     }
                                 },
                                 {
@@ -129,32 +105,19 @@
                                     {
                                         "properties":
                                         {
-                                            "tag":
-                                            {
-                                                "const": "charges"
-                                            }
-                                        }
+                                            "tag": { "const": "charges" }
+                                        },
+                                        "required": [ "tag" ]
                                     },
                                     "then":
                                     {
                                         "properties":
                                         {
-                                            "value":
-                                            {
-                                                "type": "string"
-                                            }
+                                            "value": { "type": "string" }
                                         },
-                                        "required":
-                                        [
-                                            "tag",
-                                            "value"
-                                        ]
+                                        "required": [ "value" ]
                                     }
                                 }
-                            ],
-                            "required":
-                            [
-                                "tag"
                             ]
                         }
                     },
@@ -166,12 +129,9 @@
                             "type": "object",
                             "properties":
                             {
-                                "tier":
-                                {
-                                    "type": "number",
-                                    "minimum": 0
-                                },
-                                "effects":
+                                "tier": { "type": "number"},
+                                "tierName": { "type": "string" },
+                                "benefits":
                                 {
                                     "type": "array",
                                     "items":
@@ -179,10 +139,7 @@
                                         "type": "object",
                                         "properties":
                                         {
-                                            "name":
-                                            {
-                                                "type": "string"
-                                            },
+                                            "name": { "type": "string" },
                                             "values":
                                             {
                                                 "type": "array",
@@ -191,135 +148,111 @@
                                                     "type": "object",
                                                     "properties":
                                                     {
-                                                        "name":
+                                                        "name": { "type": "string"},
+                                                        "amount": { "type": "number" },
+                                                        "source":
                                                         {
-                                                            "type": "string"
+                                                            "type": "string",
+                                                            "pattern": "^/resources/images/.+\\.png$"
                                                         }
-                                                    }
+                                                    },
+                                                    "required": [ "name" ]
                                                 }
+                                            },
+                                            "charges": { "type": "number" },
+                                            "perType":
+                                            {
+                                                "enum":
+                                                [
+                                                    "sim",
+                                                    "scene",
+                                                    "term",
+                                                    "item"
+                                                ]
                                             }
+                                        },
+                                        "required": [ "name" ],
+                                        "dependentRequired":
+                                        {
+                                            "charges": [ "perType" ],
+                                            "perType": [ "charges" ]
                                         }
                                     }
                                 }
-                            }
+                            },
+                            "required":
+                            [
+                                "tier",
+                                "benefits"
+                            ]
                         }
                     }
                 },
-                "allOf":
+                "anyOf":
                 [
                     {
-                        "if":
+                        "properties":
                         {
-                            "properties":
+                            "category": { "const": "arms" },
+                            "subCategory":
                             {
-                                "category":
-                                {
-                                    "const": "arms"
-                                }
-                            }
-                        },
-                        "then":
-                        {
-                            "properties":
-                            {
-                                "type":
-                                {
-                                    "enum":
-                                    [
-                                        "melee_1h",
-                                        "melee_2h",
-                                        "ranged_1h",
-                                        "ranged_2h",
-                                        "shield_small",
-                                        "shield_large"
-                                    ]
-                                }
+                                "enum":
+                                [
+                                    "ranged_1h",
+                                    "ranged_2h",
+                                    "melee_1h",
+                                    "melee_2h",
+                                    "shield_small",
+                                    "shield_large",
+                                    "armor"
+                                ]
                             }
                         }
                     },
                     {
-                        "if":
+                        "properties":
                         {
-                            "properties":
+                            "category": { "const": "customization" },
+                            "subCategory":
                             {
-                                "category":
-                                {
-                                    "const": "customization"
-                                }
-                            }
-                        },
-                        "then":
-                        {
-                            "properties":
-                            {
-                                "type":
-                                {
-                                    "enum":
-                                    [
-                                        "asw_body",
-                                        "cyberdeck",
-                                        "cyberdeck_software"
-                                    ]
-                                }
+                                "enum":
+                                [
+                                    "cyberdeck_software",
+                                    "cyberdeck",
+                                    "asw_body"
+                                ]
                             }
                         }
                     },
                     {
-                        "if":
+                        "properties":
                         {
-                            "properties":
+                            "category": { "const": "utility" },
+                            "subCategory":
                             {
-                                "category":
-                                {
-                                    "const": "resource"
-                                }
-                            }
-                        },
-                        "then":
-                        {
-                            "properties":
-                            {
-                                "type":
-                                {
-                                    "enum":
-                                    [
-                                        "secret"
-                                    ]
-                                }
+                                "enum":
+                                [
+                                    "utility",
+                                    "cyberdeck",
+                                    "hacking_watch",
+                                    "modscript",
+                                    "implant_arm",
+                                    "consumable",
+                                    "consumable_drug"
+                                ]
                             }
                         }
                     },
                     {
-                        "if":
+                        "properties":
                         {
-                            "properties":
+                            "category": { "const": "resource" },
+                            "subCategory":
                             {
-                                "category":
-                                {
-                                    "const": "utility"
-                                }
-                            }
-                        },
-                        "then":
-                        {
-                            "properties":
-                            {
-                                "type":
-                                {
-                                    "enum":
-                                    [
-                                        "consumable",
-                                        "consumable_drug",
-                                        "cyberdeck",
-                                        "hacking_watch",
-                                        "implant_arm",
-                                        "implant_leg",
-                                        "implant_body",
-                                        "implant_head",
-                                        "modscript",
-                                        "utility"
-                                    ]
-                                }
+                                "enum":
+                                [
+                                    "secret"
+                                ]
                             }
                         }
                     }
@@ -328,7 +261,8 @@
                 [
                     "name",
                     "category",
-                    "type",
+                    "subCategory",
+                    "tags",
                     "tiers"
                 ]
             }
