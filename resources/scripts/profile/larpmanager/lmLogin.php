@@ -3,7 +3,7 @@
 $lmEmail = $_POST["lmEmail"];
 $lmPass = $_POST["lmPass"];
 
-$curlHandle = curl_init("http://larpmanager.cpularp.com/login/");
+$curlHandle = curl_init("https://larpmanager.cpularp.com/login/");
 
 $curlOptions = array(
     CURLOPT_COOKIEFILE => "",
@@ -11,13 +11,14 @@ $curlOptions = array(
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => array(
         "Host: larpmanager.cpularp.com",
-        "Origin: http://larpmanager.cpularp.com"
+        "Origin: https://larpmanager.cpularp.com"
     )
 );
 
 curl_setopt_array($curlHandle, $curlOptions);
+curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
 #curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
-curl_setopt($curlHandle,CURLOPT_USE_SSL,CURLUSESSL_NONE);
+#curl_setopt($curlHandle,CURLOPT_USE_SSL,CURLUSESSL_NONE);
 
 $loginDOM = new DOMDocument();
 @$loginDOM->loadHtml(curl_exec($curlHandle), LIBXML_NOWARNING);
@@ -36,7 +37,7 @@ curl_exec($curlHandle);
 
 ##################################################################################
 
-curl_setopt($curlHandle,CURLOPT_URL,"http://larpmanager.cpularp.com/api/test/1/character/list/");
+curl_setopt($curlHandle,CURLOPT_URL,"https://larpmanager.cpularp.com/api/test/1/character/list/");
 
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 

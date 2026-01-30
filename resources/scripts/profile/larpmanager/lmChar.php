@@ -9,7 +9,7 @@ $lmChar = $_POST["lmChar"];
 
 ##################################################################################################
 
-$curlHandle = curl_init("http://larpmanager.cpularp.com/login/");
+$curlHandle = curl_init("https://larpmanager.cpularp.com/login/");
 
 $curlOptions = array(
     CURLOPT_COOKIEFILE => "",
@@ -17,13 +17,14 @@ $curlOptions = array(
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => array(
         "Host: larpmanager.cpularp.com",
-        "Origin: http://larpmanager.cpularp.com"
+        "Origin: https://larpmanager.cpularp.com"
     )
 );
 
 curl_setopt_array($curlHandle, $curlOptions);
+curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
 #curl_setopt($curlHandle,CURLOPT_SSL_OPTIONS,CURLSSLOPT_NATIVE_CA);
-curl_setopt($curlHandle,CURLOPT_USE_SSL,CURLUSESSL_NONE);
+#curl_setopt($curlHandle,CURLOPT_USE_SSL,CURLUSESSL_NONE);
 
 $loginDOM = new DOMDocument();
 @$loginDOM->loadHtml(curl_exec($curlHandle), LIBXML_NOWARNING);
