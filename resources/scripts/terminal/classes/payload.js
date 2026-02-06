@@ -263,10 +263,22 @@ class Payload
 
     getBaseFunction(funcName)
     {
-        return this.#functions.find(function(bFunc)
+        let baseFunc = this.#functions.find(function(bFunc)
         {
             return bFunc.name.toLowerCase().replace(" ","_") === funcName.toLowerCase().replace(" ","_");
         });
+
+        if(baseFunc === undefined)
+        {
+            return {
+                "name": funcName,
+                "rank": 0
+            };
+        }
+        else
+        {
+            return baseFunc;
+        }
     }
 
     getExtraFunction(xFuncName)
@@ -462,6 +474,14 @@ class Payload
         {
             return accumulator + timeObject.amount;
         }, 0);
+
+        if(this.getFunction("BACKDOOR"))
+        {
+            // BACKDOOR I   = -10
+            // BACKDOOR II  = -15
+            // BACKDOOR III = -20
+            timeModification = timeModification - (5 + (5 * this.getFunction("BACKDOOR")));
+        }
 
         // DEFAULT TIME IS 30s
         let actionTime = Math.max(10, 30 + timeModification);
