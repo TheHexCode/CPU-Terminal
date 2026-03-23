@@ -9,8 +9,9 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-		<script type="text/javascript" src="/resources/scripts/font/fontManip.js"></script>
+		<!--<script type="text/javascript" src="/resources/scripts/utility/fontManip.js"></script>-->
 		<script type="text/javascript" src="/resources/scripts/profile/profileInterface.js"></script>
+		<script type="module" src="/resources/scripts/profile/profile.js"></script>
         <link rel="stylesheet" type="text/css" href="/resources/styles/rootstyle.css"/>
 		<link rel="stylesheet" type="text/css" href="/resources/styles/prostyle.css"/>
 	</head>

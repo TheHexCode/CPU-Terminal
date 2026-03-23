@@ -187,57 +187,6 @@
 						</div>
 					</div>
 					<div id="initItemList" class="initItemList">
-						<!--
-						<div id="cmm_init" class="initItem hidden">
-							<div class="initHeader">CMM ARMS:</div>
-							<div class="initOption">
-								<input type="checkbox" id="cmm_opt" data-stack="0" onclick="initCheck(this)">
-								<label for="cmm_opt">Used Slip this Scene?</label>
-							</div>
-						</div>
-						<div id="impl_clec_init" class="initItem hidden">
-							<div class="initHeader">CLEC FINGERS:</div>
-							<div class="initOption">
-								<input type="checkbox" id="impl_clec_opt" onclick="initCheck(this)">
-								<label for="impl_clec_opt">+1 HACKING (1/Sim)?</label>
-							</div>
-						</div>
-						<li id="shim_0_init" class="initItem hidden">
-							<div class="initHeader">SHIMMERSTICK [T0]:</div>
-							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
-							<div class="initOption">
-								<input type="checkbox" id="shim_0_opt" onclick="initCheck(this)">
-								<label for="shim_0_opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
-							</div>
-						</li>
-						<li id="shim_1_init" class="initItem hidden">
-							<div class="initHeader">SHIMMERSTICK [T1]:</div>
-							<div class="initUses">USES LEFT: <span class="useSum"></span></div>
-							<div class="initOption">
-								<input type="checkbox" id="shim_1_opt" onclick="initCheck(this)">
-								<label for="shim_1_opt">Apply to this Device?<span class="hasDeck hidden"><br/>(Can apply later)</span><span class="noDeck hidden"><br/>(This can be used in lieu of a Cyberdeck)</span></label>
-							</div>
-						</li>
-						<li id="vigil_init" class="initItem hidden">
-							<div class="initHeader">VIGIL:</div>
-							<div class="initOption">
-								<input type="checkbox" id="vigil_opt" onclick="initCheck(this)">
-								<label for="vigil_opt">Consumed dose before Scene?</label>
-							</div>
-						</li>
-						<div id="brad_init" class="initItem hidden">
-							<div class="initHeader">BUDGET ACCESS REMOTE DRIVE:</div>
-							<div class="initOption">
-								<button data-effect="brad" onclick="initAction(this)">Set up for Remote Contractor?<span class="hasDeck hidden"><br/>(Can set up later)</span></button>
-							</div>
-						</div>
-						<li id="impl_mags_init" class="initItem hidden">
-							<div class="initHeader">CANOPIC JAR [MAGSWEEP]:</div>
-							<div class="initOption">
-								<button data-effect="impl_mags" onclick="initAction(this)">Brick Device?</button>
-							</div>
-						</li>
-						-->
 					</div>
 					<div class="accessSpacer"></div>
 					<div class="accessBox">
@@ -277,7 +226,7 @@
 						<div class="subTabCol">
 							<div id="termSubTabs" class="subTabInset">
 								<button class="subTab active" onpointerup="openSubTab(this,'logContent')">
-									<img src="/resources/images/subtabs/log.png" onerror="this.onerror=null;this.src='https://placehold.co/30'"/>
+									<img src="/resources/images/subtabs/log.png"/>
 								</button>
 								<?php echo $terminal->setupSubTabButtons() ?>
 							</div>
@@ -476,13 +425,13 @@
 						<div class="subTabCol">
 							<div id="deckSubTabs" class="subTabInset">
 								<button class="subTab active" onpointerup="openSubTab(this,'actContent')">
-									<img src="/resources/images/subtabs/active.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
+									<img src="/resources/images/subtabs/active.png">
 								</button>
 								<button class="subTab inactive" onpointerup="openSubTab(this,'passContent')">
-									<img src="/resources/images/subtabs/passive.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
+									<img src="/resources/images/subtabs/passive.png">
 								</button>
 								<button class="subTab inactive" onpointerup="openSubTab(this,'itemContent')">
-									<img src="/resources/images/subtabs/items.png" onerror="this.onerror=null;this.src='https://placehold.co/30'">
+									<img src="/resources/images/subtabs/items.png">
 								</button>
 							</div>
 							<div id="deckSubFill" class="subFill"></div>

@@ -137,16 +137,6 @@ else
     $itemStatement->execute([':userID' => $userResponse["lm_id"]]);
     $itemResponse = $itemStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    /*
-    $effectQuery = "    SELECT item_effects.abbr, charges, per_type, use_loc, req_type, requirement
-                        FROM {$dbName}.item_effects
-                        INNER JOIN {$dbName}.items_to_effects ON items_to_effects.effect_abbr = item_effects.abbr
-                        INNER JOIN {$dbName}.items ON items.abbr = items_to_effects.item_abbr
-                        WHERE item_abbr = :itemAbbr";
-
-    $effectStatement = $pdo->prepare($effectQuery);
-    */
-
     $itemUseQuery = "   SELECT DISTINCT effect,
                                         ( SELECT COUNT(effect)
                                         WHERE user_id = :userID
@@ -191,86 +181,6 @@ else
                                        ':termID' => $termID]);
     $effectArray = $effectStatement->fetchAll(PDO::FETCH_ASSOC);
 
-/*
-    $itemUseQuery = "   SELECT SUM(item_effects.charges - user_items.count)
-                        FROM user_items
-                        INNER JOIN {$dbName}.items_to_effects ON items_to_effects.item_abbr = user_items.item_abbr
-                        INNER JOIN {$dbName}.item_effects ON item_effects.abbr = items_to_effects.effect_abbr
-                        WHERE 	user_id = :userID
-                            AND user_items.item_abbr = :itemAbbr";
-
-    $itemUseStatement = $pdo->prepare($itemUseQuery);
-
-    $newItems = array();
-
-    foreach($itemResponse as $item)
-    {
-        $effectStatement->execute([':itemAbbr' => $item["abbr"]]);
-        $effectResponse = $effectStatement->fetchAll(PDO::FETCH_ASSOC);
-
-        $newEffects = array();
-
-        foreach($effectResponse as $effect)
-        {
-            switch($effect["per_type"])
-            {
-                case ("sim"):
-                    $simUseStatement->execute([
-                            ':userID' => $userResponse["lm_id"],
-                            ':effectAbbr' => $effect["abbr"],
-                            ':simCode' => $activeCodes["simCode"]
-                        ]);
-                    $useResponse = $simUseStatement->fetch(PDO::FETCH_COLUMN);
-                    break;
-                case ("scene"):
-                    $sceneUseStatement->execute([
-                            ':userID' => $userResponse["lm_id"],
-                            ':effectAbbr' => $effect["abbr"],
-                            ':jobCode' => $activeCodes["jobCode"],
-                            ':simCode' => $activeCodes["simCode"]
-                        ]);
-                    $useResponse = $sceneUseStatement->fetch(PDO::FETCH_COLUMN);
-                    break;
-                case ("item"):
-                    $itemUseStatement->execute([
-                            ':userID' => $userResponse["lm_id"],
-                            ':itemAbbr' => $item["abbr"]
-                        ]);
-                    $useResponse = $itemUseStatement->fetch(PDO::FETCH_COLUMN);
-                    break;
-                default:
-                    $useResponse = 0;
-                    break;
-            }
-
-            $effect["uses"] = intval($useResponse);
-
-            $termUseQuery = "   SELECT COUNT(*)
-                                FROM {$dbName}.item_uses
-                                WHERE 	user_id = :userID
-                                    AND effect_abbr = :effectAbbr
-                                    AND jobCode = :jobCode
-                                    AND simCode = :simCode
-                                    AND terminal_id = :termID";
-
-            $termUseStatement = $pdo->prepare($termUseQuery);
-            $termUseStatement->execute([
-                    ':userID' => $userResponse["lm_id"],
-                    ':effectAbbr' => $effect["abbr"],
-                    ':jobCode' => $activeCodes["jobCode"],
-                    ':simCode' => $activeCodes["simCode"],
-                    ':termID' => $termID
-                ]);
-            $termUseResponse = $termUseStatement->fetch(PDO::FETCH_COLUMN);
-
-            $effect["termUses"] = $termUseResponse;
-            array_push($newEffects, $effect);
-        }
-
-        $item["effects"] = $newEffects;
-        array_push($newItems, $item);
-    }
-*/
     //////////////////////////////////////////////////////////////////////////////
 
     $accessQuery = "SELECT COUNT(user_id)

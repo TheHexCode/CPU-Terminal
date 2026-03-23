@@ -1,8 +1,43 @@
+class Utility
+{
+	static romanize(num)
+	{
+		let roman = "";
+
+		let numeralMap = {
+			M: 1000,
+			CM: 900,
+			D: 500,
+			CD: 400,
+			C: 100,
+			XC: 90,
+			L: 50,
+			XL: 40,
+			X: 10,
+			IX: 9,
+			V: 5,
+			IV: 4,
+			I: 1
+		}
+
+		for (let i in numeralMap)
+		{
+			while (num >= numeralMap[i])
+			{
+				roman += i;
+				num -= numeralMap[i];
+			}
+		}
+
+		return roman;
+	}
+}
+
 function setClamp(textElement, minSize, maxSize)
 {
 	const rootEM = 16;
 
-    /* PX 
+    /* PX
     minFontRem = minSize / 16;
     maxFontRem = maxSize / 16;
     */
@@ -31,3 +66,5 @@ function setClamp(textElement, minSize, maxSize)
 
     $(textElement).css("font-size","clamp(" + minFontRem + "rem, " + yAxis + "rem + " + (slope * 100) + "vw, " + maxFontRem + "rem)");
 }
+
+export default Utility;
