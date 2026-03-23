@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-    require 'resources/scripts/profile/db/startProfile.php';
+    require 'resources/scripts/profile/start/buildItems.php';
 ?>
 <html>
 	<head>
@@ -85,24 +85,6 @@
 						<ul id="otherList" class="skillTypeList hidden">
 						</ul>
 					</div>
-					<!-- SELF REPORT FUNCTIONS
-					<?php //echo getOriginRadios($roleArray); ?>
-					<script id="tempScript">$("#origin1").prop("data-active",true);$("#tempScript").remove();</script>
-					<hr/>
-					<div class="infoRole">
-						<label for="roleSelect">Role:</label>
-						<select id="roleSelect" onchange="changeRole(this)">
-							<?php //echo getRoleSelect($roleArray); ?>
-						</select>
-						<label for="pathSelect">Path:</label>
-						<select id="pathSelect" onchange="changePath(this)" disabled>
-							<option value="" selected>--</option>
-							<?php //echo getPathSelect($pathArray); ?>
-						</select>
-					</div>
-					<hr/>
-					<?php //echo fillRoleSection($roleArray, $pathArray, $sourceArray, $modArray, $funcArray, $keywordArray, $profArray, $profChoiceArray, $knowArray, $entryArray, $entryFuncArray); ?>
-					-->
 				</div>
 				<div id="itemBox" class="zoneBox">
 					<?php echo getItemsTab(); ?>
