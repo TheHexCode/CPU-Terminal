@@ -1,5 +1,5 @@
 <?php
-require('../../utility/db/dbConnect.php');
+require('resources/scripts/utility/db/dbConnect.php');
 
 ######################################################################
 ### GET ITEMS FILE

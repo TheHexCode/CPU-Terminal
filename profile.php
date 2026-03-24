@@ -100,18 +100,6 @@
 			<footer>
 				<span>&copy; CPU Larp <?php echo date("Y"); ?></span>
 			</footer>
-        </div>
-        <div id="modalBG">
-			<div id="charSelectModal" class="modalBox">
-				<div class="modalHeaderRow">
-					<span class="modalHeaderText"></span>
-					<span class="modalClose" onpointerup="closeModal(event)" onkeyup="closeModal(event)">&#xf1398;</span>
-				</div>
-				<div class="modalBody">
-					<div class="modalBodyText">
-					</div>
-				</div>
-			</div>
 		</div>
     </body>
 </html>

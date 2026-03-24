@@ -1,4 +1,4 @@
-class Utility
+export default class Utility
 {
 	static romanize(num)
 	{
@@ -66,5 +66,3 @@ function setClamp(textElement, minSize, maxSize)
 
     $(textElement).css("font-size","clamp(" + minFontRem + "rem, " + yAxis + "rem + " + (slope * 100) + "vw, " + maxFontRem + "rem)");
 }
-
-export default Utility;
