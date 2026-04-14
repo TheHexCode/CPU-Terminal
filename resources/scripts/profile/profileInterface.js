@@ -87,7 +87,6 @@ function lmLogin(event)
 		})
 		.fail(function(response)
 		{
-			/*
 			console.log(response);
 			alert("Login Failed! Please Try Again");
 
@@ -95,8 +94,6 @@ function lmLogin(event)
 			$("#lmPass").prop("readonly",false);
 
 			$("#load").addClass("hidden");
-			*/
-			processLogin(JSON.parse('[{"id":30,"name":"Puck"}]'))
 		});
 	}
 }

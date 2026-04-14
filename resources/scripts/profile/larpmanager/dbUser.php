@@ -74,7 +74,7 @@ function generateCode(PDO $pdo, $dbName)
     return implode($newCode);
 }
 
-function addDBUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCharName, array $charAbils)
+function addDBUser(PDO $pdo, $dbName, string $newID, string $newCode, string $newCharName, array $charAbils)
 {
     $newCharQuery = "   INSERT INTO {$dbName}.users
                             (lm_id, userCode, charName)
@@ -87,16 +87,14 @@ function addDBUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCh
                     WHERE lm_id IN ( ?" . str_repeat(',?', count($charAbils)-1) . " )";
 
     $reviseStatement = $pdo->prepare($reviseQuery);
-    $reviseStatement->execute(array_map(function($value) {
-        return intval($value);
-    },$charAbils));
+    $reviseStatement->execute($charAbils);
     $revisedCharAbils = $reviseStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $userAbilArray = array();
 
     foreach($revisedCharAbils as $abilityID)
     {
-        array_push($userAbilArray,$newID, $abilityID);
+        array_push($userAbilArray, $newID, $abilityID);
     }
 
     $userAbilQuery = "  INSERT INTO {$dbName}.user_abilities
@@ -107,7 +105,7 @@ function addDBUser(PDO $pdo, $dbName, int $newID, string $newCode, string $newCh
     $userAbilStatement->execute($userAbilArray);
 }
 
-function updateDBUser(PDO $pdo, $dbName, int $userID, String $charName, array $charAbils)
+function updateDBUser(PDO $pdo, $dbName, string $userID, String $charName, array $charAbils)
 {
     $dbNameQuery = "SELECT charName FROM {$dbName}.users
                     WHERE lm_id = :userID";
@@ -137,16 +135,14 @@ function updateDBUser(PDO $pdo, $dbName, int $userID, String $charName, array $c
                     WHERE lm_id IN ( ?" . str_repeat(',?', count($charAbils)-1) . " )";
 
     $reviseStatement = $pdo->prepare($reviseQuery);
-    $reviseStatement->execute(array_map(function($value) {
-        return intval($value);
-    },$charAbils));
+    $reviseStatement->execute($charAbils);
     $revisedCharAbils = $reviseStatement->fetchAll(PDO::FETCH_COLUMN);
 
     $userAbilArray = array();
 
     foreach($revisedCharAbils as $abilityID)
     {
-        array_push($userAbilArray,$userID, $abilityID);
+        array_push($userAbilArray, $userID, $abilityID);
     }
 
     $userAbilQuery = "  INSERT INTO {$dbName}.user_abilities

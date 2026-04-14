@@ -37,9 +37,9 @@ curl_exec($curlHandle);
 
 ##################################################################################
 
-curl_setopt($curlHandle,CURLOPT_URL,"https://larpmanager.cpularp.com/api/test/1/character/list/");
+curl_setopt($curlHandle,CURLOPT_URL,"https://larpmanager.cpularp.com/test/character/list/json/");
 
 curl_setopt($curlHandle,CURLOPT_HTTPGET,1);
 
-# [ { "id": 30, "num": 12, "name": "Puck" } ]
+# [{"uuid": "f3b1e2a3-2c38-4fd7-b838-e4e702bc057c", "name": "Puck"}]
 echo curl_exec($curlHandle);
